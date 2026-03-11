@@ -1,0 +1,75 @@
+import { BrowserRouter,Routes,Route } from "react-router-dom";
+import Register from "./Register";
+import Login from "./Login";
+import Buyer_Register from "./Buyer_Register";
+import Buyer_Login from "./Buyer_Login";
+import Home from "./Home";
+import Dashboard from "./Dashboard";
+import Add_Product from "./Add_Product";
+import My_Store from "./My_Store";
+import Seller_Profile from "./Seller_Profile";
+import Buyer_Dashboard from "./Buyer_Dashboard";
+import View_Profile from "./View_Profile";
+import View_Products from "./View_Products";
+import Agriculture from "./Agriculture";
+import Services from "./Services";
+import Fashion from "./Fashion";
+import RealEstate from "./RealEstate";
+import Vehicles from "./Vehicles";
+import Hospitality from "./Hospitality";
+import Electronics from "./Electronics";
+import Furniture from "./Furniture";
+import Construction from "./Construction";
+import Buyer_Profile from "./Buyer_Profile";
+import Steps from "./Steps";
+import Help from "./Help";
+import Buyer_Chat from "./Buyer_Chat";
+import Seller_Chat from "./Seller_Chat";
+import SellerConversations from "./SellerConversations";
+import BuyerConversations from "./BuyerConversations";
+import Cart from "./Cart";
+import Checkout from "./Checkout";
+import SellerOrders from "./SellerOrders";
+function App(){
+  return(
+    <div>
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/register" element={<Register/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/buyer_register" element={<Buyer_Register/>}/>
+        <Route path="/buyer_login" element={<Buyer_Login/>}/>
+        <Route path="/dashboard" element={<Dashboard/>}/>
+        <Route path="/add_product" element={<Add_Product/>}/>
+        <Route path="/my_store" element={<My_Store/>}/>
+        <Route path="/seller_profile" element={<Seller_Profile/>}/>
+        <Route path="/buyer_dashboard" element={<Buyer_Dashboard/>}/>
+        <Route path="/view_profile/:id" element={<View_Profile/>}/>
+        <Route path="/view_products/:id" element={<View_Products/>}/>
+        <Route path="/Agriculture" element={<Agriculture/>}/>
+        <Route path="/services" element={<Services/>}/>
+        <Route path="/fashion" element={<Fashion/>}/>
+        <Route path="/RealEstate" element={<RealEstate/>}/>
+        <Route path="/Vehicles" element={<Vehicles/>}/>
+        <Route path="/Hospitality" element={<Hospitality/>}/>
+        <Route path="/Electronics" element={<Electronics/>}/>
+        <Route path="/Furniture" element={<Furniture/>}/>
+        <Route path="/Construction" element={<Construction/>}/>
+        <Route path="/buyer_profile" element={<Buyer_Profile/>}/>
+        <Route path="/Steps" element={<Steps/>}/>
+        <Route path="/Help" element={<Help/>}/>
+        <Route path="/buyer_chat/:sellerId" element={<Buyer_Chat />} />
+        <Route path="/seller_chat/:buyerId" element={<Seller_Chat />} />
+        <Route path="/SellerConversations" element={<SellerConversations/>}/>
+        <Route path="/BuyerConversations" element={<BuyerConversations/>}/>
+        <Route path="/Cart" element={<Cart/>}/>
+        <Route path="/checkout" element={<Checkout/>}/>
+        <Route path="/seller_orders" element={<SellerOrders/>}/>
+      </Routes>
+      </BrowserRouter>
+    </div>
+  )
+}
+
+export default App;

@@ -1,0 +1,120 @@
+.help-wrapper {
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f4f8;
+  padding: 3rem 1rem;
+  min-height: 100vh;
+  text-align: center;
+}
+
+/* Navbar */
+.help-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff6600;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #ff4d4f;
+  transition: transform 0.2s;
+}
+
+.logout-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Header */
+.help-wrapper h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #111;
+}
+
+.help-subheading {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 3rem;
+}
+
+/* FAQ Cards */
+.faq-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.faq-card {
+  background: #fff;
+  width: 300px;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.faq-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+}
+
+.faq-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #ff6600, #ff9c33);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  margin: 0 auto 1rem auto;
+}
+
+/* Contact Section */
+.contact-section {
+  margin-top: 4rem;
+}
+
+.contact-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.contact-card {
+  background: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  width: 220px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.3s;
+}
+
+.contact-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .faq-container, .contact-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+}

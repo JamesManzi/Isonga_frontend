@@ -1,0 +1,154 @@
+/* ===== MAIN PAGE ===== */
+.Login {
+    min-height: 100vh;
+    background: #f4f6f9;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ===== NAVBAR ===== */
+.Login_navbar {
+    display: flex;
+    align-items: center;
+    padding: 15px 40px;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.Login_logo img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.Login_heads {
+    margin-left: 10px;
+}
+
+.Login_heads h1 {
+    margin: 0;
+    font-size: 22px;
+    color: #2c3e50;
+}
+
+.Login_heads h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #27ae60;
+}
+
+/* ===== CONTAINER (SIDE BY SIDE) ===== */
+.Login_Container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 8%;
+    gap: 70px;
+}
+
+/* ===== HERO SECTION ===== */
+.Login_Hero {
+    flex: 1;
+}
+
+.Login_Hero h1 {
+    font-size: 38px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.Login_Hero p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #555;
+}
+
+/* ===== FORM ===== */
+form {
+    flex: 1;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+.Login_form h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #27ae60;
+}
+
+/* Inputs */
+.login {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 18px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 15px;
+}
+
+.login:focus {
+    border-color: #27ae60;
+}
+
+/* Button */
+.Login_btn {
+    text-align: center;
+}
+
+.Login_btn button {
+    width: 100%;
+    background: #27ae60;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.Login_btn button:hover {
+    background: #219150;
+}
+
+/* Links */
+.Login_links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.Login_links a {
+    text-decoration: none;
+    color: #27ae60;
+    font-weight: 500;
+}
+
+.Login_links a:hover {
+    text-decoration: underline;
+}
+
+/* Error Message */
+.error {
+    color: red;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .Login_Container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .Login_Hero {
+        margin-bottom: 40px;
+    }
+
+    form {
+        width: 100%;
+    }
+}

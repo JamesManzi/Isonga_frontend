@@ -1,0 +1,214 @@
+/* General container */
+.View_Profile {
+  font-family: Arial, sans-serif;
+  color: #333;
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Navbar */
+.Seller_Profile_navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #004d40;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+}
+
+.Seller_profile_logos img {
+  height: 40px;
+}
+
+.seller_profile_heads h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.seller_profile_heads h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: normal;
+  color: #cfd8dc;
+}
+
+.seller_profile_logout a {
+  color: white;
+  font-size: 20px;
+  text-decoration: none;
+}
+
+/* Profile section */
+.profile {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.seller-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #004d40;
+  cursor: pointer;
+}
+
+.profile p {
+  font-size: 18px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* Seller info */
+.Seller_Profile_info {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.Seller_Profile_info p {
+  margin: 8px 0;
+}
+
+.seller_profile_location {
+  margin-top: 15px;
+}
+
+.seller_profile_location h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.seller_profile_location img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin: 5px;
+  border-radius: 4px;
+  border: 2px solid #ccc;
+}
+
+/* Ratings section */
+.seller-rating {
+  background: #e8f5e9;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.seller-rating h3 {
+  margin-top: 0;
+}
+
+.stars {
+  margin: 10px 0;
+}
+
+.rating-form {
+  margin-top: 15px;
+}
+
+.rating-form textarea {
+  width: 100%;
+  min-height: 60px;
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+.rating-form button {
+  background: #004d40;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.rating-form button:hover {
+  background: #00695c;
+}
+
+/* Reviews */
+.review-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.review-buyer {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.review-stars {
+  margin: 5px 0;
+}
+
+.review-comment {
+  margin: 5px 0;
+  font-style: italic;
+}
+
+.review-date {
+  color: #777;
+  font-size: 12px;
+}
+
+/* Modal overlay */
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Full-width zoomed image */
+.image-modal img {
+  max-width: 95%;
+  max-height: 95%;
+  border-radius: 8px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.6);
+  transform: scale(0.9);
+  animation: zoomIn 0.4s ease forwards;
+}
+
+/* Close button */
+.image-modal .close-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 32px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.image-modal .close-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.9); }
+  to { transform: scale(1); }
+}

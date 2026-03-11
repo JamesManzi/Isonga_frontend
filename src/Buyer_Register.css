@@ -1,0 +1,173 @@
+/* ===== MAIN PAGE ===== */
+.Buyer_Register {
+    min-height: 100vh;
+    background: #f4f6f9;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ===== NAVBAR ===== */
+.Register_navbar {
+    display: flex;
+    align-items: center;
+    padding: 15px 40px;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.Register_logo img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.Register_Text {
+    margin-left: 10px;
+}
+
+.Register_Text h1 {
+    margin: 0;
+    font-size: 22px;
+    color: #2c3e50;
+}
+
+.Register_Text h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #27ae60;
+}
+
+/* ===== CONTAINER (SIDE BY SIDE) ===== */
+.Buyer_Register_Container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 8%;
+    gap: 70px;
+}
+
+/* ===== HERO SECTION ===== */
+.Buyer_Register_Hero {
+    flex: 1;
+}
+
+.Buyer_Register_Hero h1 {
+    font-size: 38px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.Buyer_Register_Hero p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.Buyer_Register_Hero ul {
+    list-style: none;
+    padding: 0;
+}
+
+.Buyer_Register_Hero ul li {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #27ae60;
+    font-weight: 500;
+}
+
+/* ===== FORM ===== */
+form {
+    flex: 1;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+form h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #27ae60;
+}
+
+/* Inputs */
+.buyer_register {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 18px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 15px;
+}
+
+.buyer_register:focus {
+    border-color: #27ae60;
+}
+
+/* Profile preview image */
+form img {
+    display: block;
+    margin: 10px auto;
+}
+
+/* Button */
+.Buyer_Register_btn {
+    text-align: center;
+}
+
+.Buyer_btn {
+    width: 100%;
+    background: #27ae60;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.Buyer_btn:hover {
+    background: #219150;
+}
+
+/* Links */
+.Buyer_Register_links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.Buyer_Register_links a {
+    text-decoration: none;
+    color: #27ae60;
+    font-weight: 500;
+}
+
+.Buyer_Register_links a:hover {
+    text-decoration: underline;
+}
+
+/* Error */
+.error {
+    color: red;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .Buyer_Register_Container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .Buyer_Register_Hero {
+        margin-bottom: 40px;
+    }
+
+    form {
+        width: 100%;
+    }
+}

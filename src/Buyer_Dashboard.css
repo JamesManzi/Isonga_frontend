@@ -1,0 +1,446 @@
+/* General container */
+.Buyer_Dashboard {
+  font-family: Arial, sans-serif;
+  color: #333;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Navbar */
+.Buyer_Dashboard_navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #004d40;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  flex-wrap: wrap;
+}
+
+.Buyer_Dashboard_logos img {
+  height: 40px;
+}
+
+.Buyer_Dashboard_heads h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.Buyer_Dashboard_heads h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: normal;
+  color: #cfd8dc;
+}
+
+.Buyer_Dashboard_user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+}
+
+.Buyer_Dashboard_nav ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+}
+
+.Buyer_Dashboard_nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.Buyer_Dashboard_logout button {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.Buyer_Dashboard_logout button:hover {
+  background: #d32f2f;
+}
+
+/* Heading */
+.Buyer_Dashboard_Heading {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.Buyer_Dashboard_Heading h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+/* Search */
+.Buyer_Dashboard_search {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.searching {
+  padding: 8px;
+  width: 250px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.Buyer_Dashboard_search button {
+  background: #004d40;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.Buyer_Dashboard_search button:hover {
+  background: #00695c;
+}
+
+/* Shop grid */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+/* Shop card */
+.shop-card {
+  background: #f5f5f5;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Image section */
+.card-image-section {
+  position: relative;
+}
+
+.slider-image,
+.card-image-section video {
+  width: 100%;       /* Full width */
+  height: auto;      /* Maintain aspect ratio */
+  display: block;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.image-slider {
+  position: relative;
+}
+
+.slider-controls {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  padding: 0 10px;
+}
+
+.slider-icon {
+  font-size: 24px;
+  color: white;
+  background: rgba(0,0,0,0.4);
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.slider-icon:hover {
+  background: rgba(0,0,0,0.7);
+}
+
+/* Profile avatar */
+.profile-avatar {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.avatar-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover;
+}
+
+/* Info section */
+.shop-card-info {
+  padding: 15px;
+}
+
+.seller-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.seller-location,
+.seller-category,
+.seller-description {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.rating p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* Buttons */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.visit-btn,
+.chat-btn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.visit-btn {
+  background: #004d40;
+  color: white;
+}
+
+.visit-btn:hover {
+  background: #00695c;
+}
+
+.chat-btn {
+  background: #2196f3;
+  color: white;
+}
+
+.chat-btn:hover {
+  background: #1976d2;
+}
+
+/* Modal overlay */
+.media-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Full-width image/video */
+.media-modal img,
+.media-modal video {
+  max-width: 95%;
+  max-height: 95%;
+  border-radius: 8px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.6);
+  transform: scale(0.9);
+  animation: zoomIn 0.4s ease forwards;
+}
+
+/* Close button */
+.media-modal .close-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 32px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.media-modal .close-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.9); }
+  to { transform: scale(1); }
+}
+
+
+/* Navbar message icon container */
+.message-icon-link {
+  position: relative;
+  display: inline-block;
+  margin-left: 16px;
+  color: #ffffff; /* White icon in navbar */
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.message-icon-link:hover {
+  transform: scale(1.1); /* Slight hover effect */
+  color: #facc15; /* Optional: change color on hover */
+}
+
+/* Unread badge on top-right of icon */
+.unread-badge-navbar {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: #f87171; /* Red badge */
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  line-height: 1;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* Optional: make the icon vertically centered in navbar */
+.Buyer_Dashboard_user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Search input styling */
+.Buyer_Dashboard.search {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Placeholder text */
+.Buyer_Dashboard.search::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* Focus effect */
+.Buyer_Dashboard.search:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0,123,255,0.3);
+}
+
+/* Optional: make it responsive */
+@media (max-width: 600px) {
+  .Buyer_Dashboard.search {
+    max-width: 100%;
+    font-size: 13px;
+  }
+}
+
+.faEnvelope{
+  color: white;
+  font-size: 30px;
+}
+
+/* --- Action Buttons --- */
+.card-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Visit Shop button */
+.visit-btn {
+  background: #007bff; /* bright blue */
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.visit-btn:hover {
+  background: #0056b3; /* darker blue */
+  transform: translateY(-2px);
+}
+
+/* Chat button */
+.chat-btn {
+  background: #28a745; /* green */
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.chat-btn:hover {
+  background: #1e7e34; /* darker green */
+  transform: translateY(-2px);
+}
+
+/* Optional: make both buttons consistent in width */
+.visit-btn,
+.chat-btn {
+  min-width: 120px;
+  text-align: center;
+}
+
+.faCartShopping{
+  color: white;
+  font-size: 20px;
+}
+
+
+.cart-link {
+  position: relative;
+  display: inline-block;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-weight: bold;
+}
