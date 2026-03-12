@@ -8,7 +8,7 @@ function MobilePaymentModal({ isOpen, onClose, orderId }) {
   const handlePayment = async (network) => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/order/${orderId}/pay`,
+        `https://isonga-backend.onrender.com/api/order/${orderId}/pay`,
         { network },
         { withCredentials: true }
       );
