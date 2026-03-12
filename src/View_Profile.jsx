@@ -135,15 +135,13 @@ function View_Profile() {
          {reviews.map((r) => (
           <div key={r._id} className="review-item">
             <h4>{r.buyer?.name || "Anonymous"}</h4>
-            {r.buyer?.profile ? (
+            {r.buyer?.profile (
               <img
                 src={`https://isonga-backend.onrender.com/uploads/${r.buyer.profile}`}
                 alt="Profile"
                 onClick={() => setSelectedImage(r.buyer.profile)}
       style={{ cursor: "pointer" }}
               />
-            ) : (
-              <img src="/placeholder.png" alt="Profile" />
             )}
             <div className="review-stars">{renderStars(r.rating)}</div>
             {r.comment && <p>{r.comment}</p>}

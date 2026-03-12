@@ -250,9 +250,8 @@ const [popupMessage, setPopupMessage] = useState("");
                       >
                         <img
                           src={
-                            seller.profile
-                              ? `https://isonga-backend.onrender.com/uploads/${seller.profile}`
-                              : "/placeholder.png"
+                               `https://isonga-backend.onrender.com/uploads/${seller.profile}`
+                              
                           }
                           alt="seller profile"
                         />
