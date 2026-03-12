@@ -12,7 +12,7 @@ function Buyer_Login(){
         e.preventDefault();
 
         try {
-            const res=await axios.post("http://localhost:8000/api/buyer_login",{
+            const res=await axios.post("https://isonga-backend.onrender.com/api/buyer_login",{
                 email,
                 password
             },
