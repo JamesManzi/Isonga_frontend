@@ -146,7 +146,7 @@ const fetchCartCount = async () => {
         <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
         <div className="Buyer_Dashboard_user">
           <Link to="/buyer_profile">
-            <img src={profile ? `https://isonga-backend.onrender.com/uploads/${profile}` : "/placeholder.png"} alt="Profile" />
+            <img src={ `https://isonga-backend.onrender.com/uploads/${profile}`}/>
           </Link>
           <ChatNotification />
         </div>
@@ -239,7 +239,7 @@ const fetchCartCount = async () => {
                 <img src="/placeholder.png" alt="No Images" className="slider-image" />
               )}
               <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
-                <img src={seller.profile ? `https://isonga-backend.onrender.com/uploads/${seller.profile}` : "/placeholder.png"} alt={`${seller.name} Profile`} className="avatar-image" />
+                <img src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`}/>
               </Link>
             </div>
             <div className="shop-card-info">

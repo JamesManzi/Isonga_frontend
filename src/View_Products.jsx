@@ -198,7 +198,7 @@ const [popupMessage, setPopupMessage] = useState("");
                   <div className="image-slider">
                     {isVideoFile(currentFile) ? (
                       <video
-                        src={`https://isonga-backend.onrender.com${currentFile}`}
+                        src={`https://isonga-backend.onrender.com/uploads/${currentFile}`}
                         controls
                         muted
                         className="slider-media"
@@ -209,7 +209,7 @@ const [popupMessage, setPopupMessage] = useState("");
                       />
                     ) : (
                       <img
-                        src={`https://isonga-backend.onrender.com${currentFile}`}
+                        src={`https://isonga-backend.onrender.com/uploads/${currentFile}`}
                         alt={product.name}
                         className="slider-media"
                         onClick={(e) => {
@@ -293,13 +293,13 @@ const [popupMessage, setPopupMessage] = useState("");
           <span className="close-btn">&times;</span>
           {isVideoFile(selectedMedia) ? (
             <video
-              src={`https://isonga-backend.onrender.com${selectedMedia}`}
+              src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`}
               controls
               autoPlay
             />
           ) : (
             <img
-              src={`https://isonga-backend.onrender.com${selectedMedia}`}
+              src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`}
               alt="preview"
             />
           )}

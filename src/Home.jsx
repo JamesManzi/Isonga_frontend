@@ -200,7 +200,7 @@ function Home() {
 
                 {/* Profile Avatar */}
                 <img
-                  src={seller.profile ? `https://isonga-backend.onrender.com/uploads/${seller.profile}` : "/placeholder.png"}
+                  src={ `https://isonga-backend.onrender.com/uploads/${seller.profile}`}
                   alt={`${seller.name} Profile`}
                   className="avatar-image"
                   onClick={() => showAlert("Please login first!")}
