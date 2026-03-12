@@ -24,8 +24,8 @@ function Buyer_Login(){
             navigate("/buyer_dashboard");
         }
         } catch (error) {
-            console.log(error);
-            setMessage("Login Error")
+            console.log(error.response?.data);
+    setMessage(error.response?.data?.message || "Login Error");
         }
     }
     return(
