@@ -71,7 +71,7 @@ function Add_Product() {
     files.forEach((file) => formData.append("files", file));
 
     try {
-      const res = await axios.post("http://localhost:8000/api/add_product", formData, {
+      const res = await axios.post("https://isonga-backend.onrender.com/api/add_product", formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });

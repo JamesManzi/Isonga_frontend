@@ -16,7 +16,7 @@ function ChatNotification() {
       try {
 
         const res = await axios.get(
-          "http://localhost:8000/api/buyer_dashboard",
+          "https://isonga-backend.onrender.com/api/buyer_dashboard",
           { withCredentials: true }
         );
 
@@ -31,7 +31,7 @@ function ChatNotification() {
         });
 
         const convRes = await axios.get(
-          "http://localhost:8000/api/buyer/conversations",
+          "https://isonga-backend.onrender.com/api/buyer/conversations",
           { withCredentials: true }
         );
 

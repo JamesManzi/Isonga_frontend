@@ -10,7 +10,7 @@ function Buyer_Profile(){
     useEffect(()=>{
         const fetchBuyer=async()=>{
             try {
-                const res=await axios.get("http://localhost:8000/api/buyer_profile",{
+                const res=await axios.get("https://isonga-backend.onrender.com/api/buyer_profile",{
                     withCredentials:true
                 })
 
@@ -48,7 +48,7 @@ function Buyer_Profile(){
             <div className="buyer_profile">
                 {buyer.profile&&(
                     <img
-                    src={`http://localhost:8000/uploads/${buyer.profile}`}
+                    src={`https://isonga-backend.onrender.com/uploads/${buyer.profile}`}
                     />
                 )}
                 <p>{buyer.name}</p>

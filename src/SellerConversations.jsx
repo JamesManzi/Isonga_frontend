@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 import "./SellerConversations.css";
 
 // Initialize socket outside component to prevent multiple connections
-const socket = io("http://localhost:8000", {
+const socket = io("https://isonga-backend.onrender.com", {
   withCredentials: true,
   transports: ["websocket"],
 });
@@ -23,7 +23,7 @@ function SellerConversations() {
     const fetchInitialData = async () => {
       try {
         // Fetch seller profile to get ID
-        const sellerRes = await axios.get("http://localhost:8000/api/dashboard", {
+        const sellerRes = await axios.get("https://isonga-backend.onrender.com/api/dashboard", {
           withCredentials: true,
         });
 
@@ -39,7 +39,7 @@ function SellerConversations() {
         socket.emit("userOnline", { userId: id, userModel: "Seller" });
 
         // Fetch conversation list from backend
-        const convRes = await axios.get("http://localhost:8000/api/seller/conversations", { 
+        const convRes = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations", { 
           withCredentials: true 
         });
 
@@ -88,7 +88,7 @@ function SellerConversations() {
   }, [sellerId]);
 
   const fetchLatestConversations = async () => {
-    const res = await axios.get("http://localhost:8000/api/seller/conversations", { withCredentials: true });
+    const res = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations", { withCredentials: true });
     if (res.data.success) setConversations(res.data.conversations);
   };
 
@@ -104,7 +104,7 @@ function SellerConversations() {
     try {
       // Mark messages in this room as read
       await axios.put(
-        `http://localhost:8000/api/messages/read/${chat.room}`,
+        `https://isonga-backend.onrender.com/api/messages/read/${chat.room}`,
         {},
         { withCredentials: true }
       );
@@ -148,7 +148,7 @@ function SellerConversations() {
             <div key={chat.room} className="chat-item" onClick={() => openChat(chat)}>
               <div className="avatar">
                 <img
-                  src={chat.buyerProfile ? `http://localhost:8000/uploads/${chat.buyerProfile}` : "/placeholder.png"}
+                  src={chat.buyerProfile ? `https://isonga-backend.onrender.com/uploads/${chat.buyerProfile}` : "/placeholder.png"}
                   alt={chat.buyerName}
                   onError={(e) => { e.target.src = "https://via.placeholder.com/50"; }}
                 />

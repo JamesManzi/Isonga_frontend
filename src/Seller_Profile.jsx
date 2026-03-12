@@ -34,7 +34,7 @@ function Seller_Profile() {
   // ================= FETCH SELLER =================
   const fetchSeller = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/seller_profile", {
+      const res = await axios.get("https://isonga-backend.onrender.com/api/seller_profile", {
         withCredentials: true,
       });
       if(!res.data.success){
@@ -69,7 +69,7 @@ function Seller_Profile() {
   useEffect(() => {
     if (!seller?._id) return;
 
-    const socket = io("http://localhost:8000", { withCredentials: true });
+    const socket = io("https://isonga-backend.onrender.com", { withCredentials: true });
     socket.emit("joinSellerRoom", seller._id);
 
     socket.on("sellerRatingUpdated", (data) => {
@@ -109,7 +109,7 @@ function Seller_Profile() {
 
     try {
       const res = await axios.put(
-        "http://localhost:8000/api/seller_profile",
+        "https://isonga-backend.onrender.com/api/seller_profile",
         updatedForm,
         { withCredentials: true }
       );
@@ -131,7 +131,7 @@ function Seller_Profile() {
   const deleteImage = async (filename) => {
     try {
       await axios.delete(
-        `http://localhost:8000/api/delete_location_image/${filename}`,
+        `https://isonga-backend.onrender.com/api/delete_location_image/${filename}`,
         { withCredentials: true }
       );
       setSeller((prev) => ({
@@ -150,7 +150,7 @@ function Seller_Profile() {
       <div className="profile">
         {seller.profile && (
           <img
-            src={`http://localhost:8000/uploads/${seller.profile}`}
+            src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`}
             alt="Seller"
             className="seller-image"
             onClick={() => setSelectedImage(seller.profile)}
@@ -187,7 +187,7 @@ function Seller_Profile() {
         {seller.files?.map((file) => (
           <div key={file} className="image-wrapper">
             <img
-              src={`http://localhost:8000/uploads/${file}`}
+              src={`https://isonga-backend.onrender.com/uploads/${file}`}
               alt="Location"
               onClick={() => setSelectedImage(file)}
             />
@@ -213,7 +213,7 @@ function Seller_Profile() {
       {selectedImage && (
         <div className="image-modal" onClick={() => setSelectedImage(null)}>
           <img
-            src={`http://localhost:8000/uploads/${selectedImage}`}
+            src={`https://isonga-backend.onrender.com/uploads/${selectedImage}`}
             alt="Full"
             className="full-image"
           />
@@ -299,7 +299,7 @@ function Seller_Profile() {
             <h4>{r.buyer?.name || "Anonymous"}</h4>
             {r.buyer?.profile ? (
               <img
-                src={`http://localhost:8000/uploads/${r.buyer.profile}`}
+                src={`https://isonga-backend.onrender.com/uploads/${r.buyer.profile}`}
                 alt="Profile"
                 onClick={() => setSelectedImage(r.buyer.profile)}
       style={{ cursor: "pointer" }}

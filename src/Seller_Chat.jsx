@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Seller_Chat.css";
 
-const socket = io("http://localhost:8000", { withCredentials: true });
+const socket = io("https://isonga-backend.onrender.com", { withCredentials: true });
 
 function Seller_Chat() {
   const { buyerId } = useParams();
@@ -28,12 +28,12 @@ function Seller_Chat() {
   useEffect(() => {
     const loadChat = async () => {
       try {
-        const sellerRes = await axios.get("http://localhost:8000/api/dashboard", { withCredentials: true });
+        const sellerRes = await axios.get("https://isonga-backend.onrender.com/api/dashboard", { withCredentials: true });
         if (!sellerRes.data.success) return;
         const sellerData = sellerRes.data.seller;
         setSeller(sellerData);
 
-        const buyerRes = await axios.get(`http://localhost:8000/api/get_buyer/${buyerId}`, { withCredentials: true });
+        const buyerRes = await axios.get(`https://isonga-backend.onrender.com/api/get_buyer/${buyerId}`, { withCredentials: true });
         if (buyerRes.data.success) setBuyer(buyerRes.data.buyer);
 
         const room = `Buyer_${buyerId}__Seller_${sellerData._id}`;
@@ -44,10 +44,10 @@ function Seller_Chat() {
           receiverModel: "Buyer"
         });
 
-        const msgRes = await axios.get(`http://localhost:8000/api/messages/${room}`, { withCredentials: true });
+        const msgRes = await axios.get(`https://isonga-backend.onrender.com/api/messages/${room}`, { withCredentials: true });
         if (msgRes.data.success) setMessages(msgRes.data.messages);
 
-        await axios.put(`http://localhost:8000/api/messages/read/${room}`, {}, { withCredentials: true });
+        await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: true });
         socket.emit("messagesRead", { room });
       } catch (err) { console.error(err); }
     };
@@ -62,7 +62,7 @@ function Seller_Chat() {
         setMessages((prev) => [...prev, msg]);
         if (msg.senderModel === "Buyer") {
           try {
-            await axios.put(`http://localhost:8000/api/messages/read/${room}`, {}, { withCredentials: true });
+            await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: true });
             socket.emit("messagesRead", { room });
           } catch (err) { console.error(err); }
         }
@@ -109,7 +109,7 @@ function Seller_Chat() {
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach(f => formData.append("files", f));
-        const res = await axios.post("http://localhost:8000/api/chat/upload", formData, {
+        const res = await axios.post("https://isonga-backend.onrender.com/api/chat/upload", formData, {
           withCredentials: true,
           headers: { "Content-Type": "multipart/form-data" }
         });
@@ -162,7 +162,7 @@ function Seller_Chat() {
 
                 {msg.files && msg.files.map((filePath, idx) => {
                   const clean = filePath.trim().replace(/\\/g, "/");
-                  const url = `http://localhost:8000/${clean.replace(/^\/+/, "")}`;
+                  const url = `https://isonga-backend.onrender.com/${clean.replace(/^\/+/, "")}`;
                   const isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(clean);
 
                   if (isVideo) {

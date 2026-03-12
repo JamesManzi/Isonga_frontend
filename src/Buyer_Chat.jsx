@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
-const socket = io("http://localhost:8000", { withCredentials: true });
+const socket = io("https://isonga-backend.onrender.com", { withCredentials: true });
 
 function Buyer_Chat() {
   const { sellerId } = useParams();
@@ -30,12 +30,12 @@ function Buyer_Chat() {
   useEffect(() => {
     const loadChat = async () => {
       try {
-        const buyerRes = await axios.get("http://localhost:8000/api/buyer_dashboard", { withCredentials: true });
+        const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", { withCredentials: true });
         if (!buyerRes.data.success) return;
         const buyerData = buyerRes.data.buyer;
         setBuyer(buyerData);
 
-        const sellerRes = await axios.get(`http://localhost:8000/api/get_seller/${sellerId}`, { withCredentials: true });
+        const sellerRes = await axios.get(`https://isonga-backend.onrender.com/api/get_seller/${sellerId}`, { withCredentials: true });
         if (sellerRes.data.success) setSeller(sellerRes.data.seller);
 
         const room = `Buyer_${buyerData._id}__Seller_${sellerId}`;
@@ -46,7 +46,7 @@ function Buyer_Chat() {
           receiverModel: "Seller"
         });
 
-        const msgRes = await axios.get(`http://localhost:8000/api/messages/${room}`, { withCredentials: true });
+        const msgRes = await axios.get(`https://isonga-backend.onrender.com/api/messages/${room}`, { withCredentials: true });
         if (msgRes.data.success) setMessages(msgRes.data.messages);
       } catch (err) { console.log(err); }
     };
@@ -98,7 +98,7 @@ function Buyer_Chat() {
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach(file => formData.append("files", file));
-        const uploadRes = await axios.post("http://localhost:8000/api/chat/upload", formData, {
+        const uploadRes = await axios.post("https://isonga-backend.onrender.com/api/chat/upload", formData, {
           withCredentials: true,
           headers: { "Content-Type": "multipart/form-data" }
         });
@@ -150,7 +150,7 @@ function Buyer_Chat() {
                 {msg.message && <p>{msg.message}</p>}
                 {msg.files && msg.files.map((file, index) => {
                   const clean = file.trim().replace(/\\/g, "/");
-                  const url = `http://localhost:8000/${clean.replace(/^\/+/, "")}`;
+                  const url = `https://isonga-backend.onrender.com/${clean.replace(/^\/+/, "")}`;
                   const isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(clean);
 
                   if (isVideo) {

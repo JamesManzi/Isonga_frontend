@@ -32,7 +32,7 @@ const fetchCart = async () => {
 try {
 
 const res = await axios.get(
-"http://localhost:8000/api/cart",
+"https://isonga-backend.onrender.com/api/cart",
 { withCredentials: true }
 );
 
@@ -72,7 +72,7 @@ try {
 setPlacingOrder(true);
 
 const res = await axios.post(
-"http://localhost:8000/api/order",
+"https://isonga-backend.onrender.com/api/order",
 form,
 { withCredentials: true }
 );

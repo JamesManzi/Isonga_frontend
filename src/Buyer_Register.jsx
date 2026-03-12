@@ -49,7 +49,7 @@ function Buyer_Register(){
 
        setLoading(true);
             try {
-            const res=await axios.post("http://localhost:8000/api/buyer_register",formData,{
+            const res=await axios.post("https://isonga-backend.onrender.com/api/buyer_register",formData,{
                 withCredentials:true
             })
             setMessage(res.data.message);

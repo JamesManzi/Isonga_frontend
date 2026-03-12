@@ -26,7 +26,7 @@ function Dashboard() {
   const handleLogout = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/logout",
+        "https://isonga-backend.onrender.com/api/logout",
         {},
         { withCredentials: true }
       );
@@ -54,7 +54,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchSellerData = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/dashboard", {
+        const res = await axios.get("https://isonga-backend.onrender.com/api/dashboard", {
           withCredentials: true,
         });
 
@@ -76,7 +76,7 @@ function Dashboard() {
         // This relies on the backend fix: adding 'newOrders' to the dashboard response
         setNewOrdersCount(s.newOrders || 0);
 
-        const unreadRes = await axios.get("http://localhost:8000/api/seller/conversations", {
+        const unreadRes = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations", {
           withCredentials: true
         });
         if (unreadRes.data.success) {
@@ -99,7 +99,7 @@ function Dashboard() {
     if (!seller?._id) return;
 
     if (!socketRef.current) {
-      socketRef.current = io("http://localhost:8000", {
+      socketRef.current = io("https://isonga-backend.onrender.com", {
         withCredentials: true,
         transports: ["websocket"],
       });
@@ -190,7 +190,7 @@ socket.on("sellerRatingUpdated", (data) => {
           <Link to="/seller_profile">
             <div className="dashboard_profile">
               {seller.profile ? (
-                <img src={`http://localhost:8000/uploads/${seller.profile}`} alt="Seller" className="dashboard_seller-image" />
+                <img src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`} alt="Seller" className="dashboard_seller-image" />
               ) : <div className="placeholder_profile">No Image</div>}
             </div>
           </Link>

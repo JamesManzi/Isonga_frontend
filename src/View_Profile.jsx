@@ -19,7 +19,7 @@ function View_Profile() {
 
   // Socket for live rating updates
   useEffect(() => {
-    const socket = io("http://localhost:8000", { withCredentials: true });
+    const socket = io("https://isonga-backend.onrender.com", { withCredentials: true });
     socket.on("sellerRatingUpdated", (data) => {
       if (data.sellerId === id) {
         setAverageRating(data.averageRating);
@@ -33,7 +33,7 @@ function View_Profile() {
   useEffect(() => {
     const fetchSeller = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/view_profile/${id}`, { withCredentials: true });
+        const res = await axios.get(`https://isonga-backend.onrender.com/api/view_profile/${id}`, { withCredentials: true });
         if(!res.data.success){
             navigate("/buyer_login");
             return;
@@ -51,7 +51,7 @@ function View_Profile() {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/view_profile/${id}`, { withCredentials: true });
+      const res = await axios.get(`https://isonga-backend.onrender.com/api/view_profile/${id}`, { withCredentials: true });
       if (res.data.success) setReviews(res.data.seller.ratings || []);
     } catch (err) { console.log(err); }
   };
@@ -59,7 +59,7 @@ function View_Profile() {
   const submitRating = async () => {
     if (!rating) { setMessage("Select a rating!"); return; }
     try {
-      const res = await axios.post(`http://localhost:8000/api/rate_seller/${id}`, { rating, comment }, { withCredentials: true });
+      const res = await axios.post(`https://isonga-backend.onrender.com/api/rate_seller/${id}`, { rating, comment }, { withCredentials: true });
       if (res.data.success) {
         setMessage("Rating submitted!");
         setRating(0);
@@ -92,7 +92,7 @@ function View_Profile() {
       </div>
 
       <div className="profile">
-        {seller.profile && <img src={`http://localhost:8000/uploads/${seller.profile}`} alt="Seller" className="seller-image" onClick={() => setSelectedImage(seller.profile)} />}
+        {seller.profile && <img src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`} alt="Seller" className="seller-image" onClick={() => setSelectedImage(seller.profile)} />}
         <p>{seller.name} Shop</p>
       </div>
 
@@ -106,7 +106,7 @@ function View_Profile() {
   {seller.files && seller.files.map((file, index) => (
     <img
       key={index}
-      src={`http://localhost:8000/uploads/${file}`}
+      src={`https://isonga-backend.onrender.com/uploads/${file}`}
       alt={`Seller File ${index}`}
       onClick={() => setSelectedImage(file)}
       style={{ cursor: "pointer" }}
@@ -137,7 +137,7 @@ function View_Profile() {
             <h4>{r.buyer?.name || "Anonymous"}</h4>
             {r.buyer?.profile ? (
               <img
-                src={`http://localhost:8000/uploads/${r.buyer.profile}`}
+                src={`https://isonga-backend.onrender.com/uploads/${r.buyer.profile}`}
                 alt="Profile"
                 onClick={() => setSelectedImage(r.buyer.profile)}
       style={{ cursor: "pointer" }}
@@ -156,7 +156,7 @@ function View_Profile() {
       {selectedImage && (
   <div className="image-modal" onClick={() => setSelectedImage(null)}>
     <span className="close-btn">&times;</span>
-    <img src={`http://localhost:8000/uploads/${selectedImage}`} alt="Full view" />
+    <img src={`https://isonga-backend.onrender.com/uploads/${selectedImage}`} alt="Full view" />
   </div>
 )}
 

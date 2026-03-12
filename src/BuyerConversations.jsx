@@ -15,13 +15,13 @@ function BuyerConversations() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const buyerRes = await axios.get("http://localhost:8000/api/buyer_dashboard", { withCredentials: true });
+        const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", { withCredentials: true });
         if (!buyerRes.data.success) return navigate("/buyer_login");
         setBuyerId(buyerRes.data.buyer._id);
 
         socket.emit("userOnline", { userId: buyerRes.data.buyer._id, userModel: "Buyer" });
 
-        const convRes = await axios.get("http://localhost:8000/api/buyer/conversations", { withCredentials: true });
+        const convRes = await axios.get("https://isonga-backend.onrender.com/api/buyer/conversations", { withCredentials: true });
         if (convRes.data.success) setConversations(convRes.data.conversations);
       } catch (err) {
         console.error(err);
@@ -63,7 +63,7 @@ function BuyerConversations() {
 
   const openChat = async (chat) => {
     try {
-      await axios.put(`http://localhost:8000/api/messages/read/${chat.room}`, {}, { withCredentials: true });
+      await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${chat.room}`, {}, { withCredentials: true });
       socket.emit("messagesRead", { room: chat.room });
 
       setConversations((prev) => prev.map((c) => (c.room === chat.room ? { ...c, unreadCount: 0 } : c)));
@@ -91,7 +91,7 @@ function BuyerConversations() {
           filteredChats.map((chat) => (
             <div key={chat.room} className="chat-item" onClick={() => openChat(chat)}>
               <div className="avatar">
-                <img src={chat.sellerProfile ? `http://localhost:8000/uploads/${chat.sellerProfile}` : "/placeholder.png"} alt={chat.sellerName} />
+                <img src={chat.sellerProfile ? `https://isonga-backend.onrender.com/uploads/${chat.sellerProfile}` : "/placeholder.png"} alt={chat.sellerName} />
               </div>
               <div className="chat-details">
                 <div className="chat-top">

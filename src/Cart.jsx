@@ -21,7 +21,7 @@ const fetchCart = async()=>{
 try{
 
 const res = await axios.get(
-"http://localhost:8000/api/cart",
+"https://isonga-backend.onrender.com/api/cart",
 {withCredentials:true}
 );
 
@@ -40,7 +40,7 @@ setLoading(false);
 const removeItem = async(productId)=>{
 
 await axios.delete(
-`http://localhost:8000/api/cart/remove/${productId}`,
+`https://isonga-backend.onrender.com/api/cart/remove/${productId}`,
 {withCredentials:true}
 );
 
@@ -53,7 +53,7 @@ const updateQuantity = async(productId,quantity)=>{
 if(quantity < 1) return;
 
 await axios.put(
-"http://localhost:8000/api/cart/update",
+"https://isonga-backend.onrender.com/api/cart/update",
 {productId,quantity},
 {withCredentials:true}
 );
@@ -65,7 +65,7 @@ fetchCart();
 const logout = async()=>{
 
 await axios.post(
-"http://localhost:8000/api/logout",
+"https://isonga-backend.onrender.com/api/logout",
 {},
 {withCredentials:true}
 );
@@ -110,7 +110,7 @@ return(
 <div className="nav-right">
 
 <div className="Cart_profile">
-<img src={profile ? `http://localhost:8000/uploads/${profile}` : "/placeholder.png"} alt="Profile" />
+<img src={profile ? `https://isonga-backend.onrender.com/uploads/${profile}` : "/placeholder.png"} alt="Profile" />
 </div>
 
 <button className="logout-btn" onClick={logout}>
@@ -135,7 +135,7 @@ return(
 <div className="cart-item" key={item.product._id}>
 
 <img
-src={`http://localhost:8000${item.product.files[0]}`}
+src={`https://isonga-backend.onrender.com${item.product.files[0]}`}
 className="cart-image"
 />
 

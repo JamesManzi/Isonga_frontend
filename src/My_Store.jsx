@@ -24,7 +24,7 @@ function My_Store() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/my_store", {
+        const res = await axios.get("https://isonga-backend.onrender.com/api/my_store", {
           withCredentials: true,
         });
         if (res.data.success) {
@@ -85,7 +85,7 @@ function My_Store() {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
       const res = await axios.delete(
-        `http://localhost:8000/api/products/delete/${productId}`,
+        `https://isonga-backend.onrender.com/api/products/delete/${productId}`,
         { withCredentials: true }
       );
       if (res.data.success) {
@@ -120,7 +120,7 @@ function My_Store() {
 
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/products/update/${editingProduct._id}`,
+        `https://isonga-backend.onrender.com/api/products/update/${editingProduct._id}`,
         formData,
         { withCredentials: true, headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -190,7 +190,7 @@ function My_Store() {
                   {(() => {
                     const index = currentIndex[product._id] ?? 0;
                     const file = product.files[index];
-                    const url = `http://localhost:8000${file}`;
+                    const url = `https://isonga-backend.onrender.com${file}`;
                     return isVideoFile(file) ? (
                       <video
                         src={url}
@@ -305,7 +305,7 @@ function My_Store() {
       {modalMedia.productId && (() => {
         const product = products.find((p) => p._id === modalMedia.productId);
         const file = product.files[modalMedia.index];
-        const url = `http://localhost:8000${file}`;
+        const url = `https://isonga-backend.onrender.com${file}`;
         const video = isVideoFile(file);
 
         const handleNextModal = () => {

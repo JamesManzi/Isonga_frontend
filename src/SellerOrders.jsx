@@ -9,7 +9,7 @@ function SellerOrders() {
 
   const getOrders = () => {
     axios
-      .get("http://localhost:8000/api/seller/orders", { withCredentials: true })
+      .get("https://isonga-backend.onrender.com/api/seller/orders", { withCredentials: true })
       .then((res) => {
         if (res.data.success) setOrders(res.data.orders);
       })
@@ -23,7 +23,7 @@ function SellerOrders() {
   const updateStatus = (orderId, newStatus) => {
     axios
       .put(
-        `http://localhost:8000/api/order/status/${orderId}`,
+        `https://isonga-backend.onrender.com/api/order/status/${orderId}`,
         { status: newStatus },
         { withCredentials: true }
       )

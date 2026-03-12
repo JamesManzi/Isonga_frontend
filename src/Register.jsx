@@ -84,7 +84,7 @@ if(!phoneRule.test(phone)){
 }
 setLoading(true);
         try {
-            const res=await axios.post("http://localhost:8000/api/register",formData,{
+            const res=await axios.post("https://isonga-backend.onrender.com/api/register",formData,{
                 withCredentials:true
             })
             setMessage(res.data.message);

@@ -38,7 +38,7 @@ const [popupMessage, setPopupMessage] = useState("");
       setLoading(true);
 
       const res = await axios.get(
-        `http://localhost:8000/api/view_products/${id}`,
+        `https://isonga-backend.onrender.com/api/view_products/${id}`,
         { withCredentials: true }
       );
 
@@ -57,7 +57,7 @@ const [popupMessage, setPopupMessage] = useState("");
       if (!hasTracked.current && fetchedProducts.length > 0) {
         fetchedProducts.forEach((product) => {
           axios.post(
-            `http://localhost:8000/api/product/view/${product._id}`,
+            `https://isonga-backend.onrender.com/api/product/view/${product._id}`,
             {},
             { withCredentials: true }
           ).catch(err => console.log("Silent view fail for:", product._id));
@@ -121,7 +121,7 @@ const [popupMessage, setPopupMessage] = useState("");
   const addToCart = async (productId, productName) => {
   try {
     const res = await axios.post(
-      "http://localhost:8000/api/cart/add",
+      "https://isonga-backend.onrender.com/api/cart/add",
       { productId, quantity: 1 },
       { withCredentials: true }
     );
@@ -198,7 +198,7 @@ const [popupMessage, setPopupMessage] = useState("");
                   <div className="image-slider">
                     {isVideoFile(currentFile) ? (
                       <video
-                        src={`http://localhost:8000${currentFile}`}
+                        src={`https://isonga-backend.onrender.com${currentFile}`}
                         controls
                         muted
                         className="slider-media"
@@ -209,7 +209,7 @@ const [popupMessage, setPopupMessage] = useState("");
                       />
                     ) : (
                       <img
-                        src={`http://localhost:8000${currentFile}`}
+                        src={`https://isonga-backend.onrender.com${currentFile}`}
                         alt={product.name}
                         className="slider-media"
                         onClick={(e) => {
@@ -251,7 +251,7 @@ const [popupMessage, setPopupMessage] = useState("");
                         <img
                           src={
                             seller.profile
-                              ? `http://localhost:8000/uploads/${seller.profile}`
+                              ? `https://isonga-backend.onrender.com/uploads/${seller.profile}`
                               : "/placeholder.png"
                           }
                           alt="seller profile"
@@ -293,13 +293,13 @@ const [popupMessage, setPopupMessage] = useState("");
           <span className="close-btn">&times;</span>
           {isVideoFile(selectedMedia) ? (
             <video
-              src={`http://localhost:8000${selectedMedia}`}
+              src={`https://isonga-backend.onrender.com${selectedMedia}`}
               controls
               autoPlay
             />
           ) : (
             <img
-              src={`http://localhost:8000${selectedMedia}`}
+              src={`https://isonga-backend.onrender.com${selectedMedia}`}
               alt="preview"
             />
           )}

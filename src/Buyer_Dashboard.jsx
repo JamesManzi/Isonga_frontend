@@ -19,7 +19,7 @@ function Buyer_Dashboard() {
   const [cartCount, setCartCount] = useState(0); // rename from cartItems
 const fetchCartCount = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/cart/count", {
+      const res = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
         withCredentials: true
       });
       if (res.data.success) setCartCount(res.data.count);
@@ -35,7 +35,7 @@ const fetchCartCount = async () => {
   const addToCart = async (productId, quantity) => {
   try {
     const res = await axios.post(
-      "http://localhost:8000/api/cart/add",
+      "https://isonga-backend.onrender.com/api/cart/add",
       { productId, quantity },
       { withCredentials: true }
     );
@@ -51,7 +51,7 @@ const fetchCartCount = async () => {
   try {
 
     const res = await axios.post(
-      "http://localhost:8000/api/logout",
+      "https://isonga-backend.onrender.com/api/logout",
       {},
       { withCredentials: true }
     );
@@ -82,7 +82,7 @@ const fetchCartCount = async () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/buyer_dashboard", { withCredentials: true });
+        const res = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", { withCredentials: true });
         if (!res.data.success){
            navigate("/buyer_login");
            return;
@@ -146,7 +146,7 @@ const fetchCartCount = async () => {
         <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
         <div className="Buyer_Dashboard_user">
           <Link to="/buyer_profile">
-            <img src={profile ? `http://localhost:8000/uploads/${profile}` : "/placeholder.png"} alt="Profile" />
+            <img src={profile ? `https://isonga-backend.onrender.com/uploads/${profile}` : "/placeholder.png"} alt="Profile" />
           </Link>
           <ChatNotification />
         </div>
@@ -217,14 +217,14 @@ const fetchCartCount = async () => {
                 <div className="image-slider">
                   {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
                     <video
-                      src={`http://localhost:8000/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`}
+                      src={`https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`}
                       controls
                       className="slider-image"
                       onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
                     />
                   ) : (
                     <img 
-                      src={`http://localhost:8000/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`} 
+                      src={`https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`} 
                       alt={seller.name} 
                       className="slider-image" 
                       onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])} 
@@ -239,7 +239,7 @@ const fetchCartCount = async () => {
                 <img src="/placeholder.png" alt="No Images" className="slider-image" />
               )}
               <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
-                <img src={seller.profile ? `http://localhost:8000/uploads/${seller.profile}` : "/placeholder.png"} alt={`${seller.name} Profile`} className="avatar-image" />
+                <img src={seller.profile ? `https://isonga-backend.onrender.com/uploads/${seller.profile}` : "/placeholder.png"} alt={`${seller.name} Profile`} className="avatar-image" />
               </Link>
             </div>
             <div className="shop-card-info">
@@ -262,9 +262,9 @@ const fetchCartCount = async () => {
         <div className="media-modal" onClick={() => setSelectedMedia(null)}>
           <span className="close-btn">&times;</span>
           {isVideoFile(selectedMedia) ? (
-            <video src={`http://localhost:8000/uploads/${selectedMedia}`} controls autoPlay />
+            <video src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`} controls autoPlay />
           ) : (
-            <img src={`http://localhost:8000/uploads/${selectedMedia}`} alt="Full view" />
+            <img src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`} alt="Full view" />
           )}
         </div>
       )}
