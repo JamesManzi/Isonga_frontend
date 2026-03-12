@@ -207,7 +207,7 @@ const handleNext = (sellerId, totalImages) => {
         {/* Profile small avatar overlay */}
 <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
   <img
-    src={seller.profile ? `https://isonga-backend.onrender.com/uploads/${seller.profile}` : "/placeholder.png"}
+    src={ `https://isonga-backend.onrender.com/uploads/${seller.profile}`}
     alt={`${seller.name} Profile`}
     className="avatar-image" // optional: add a class for styling
   />
