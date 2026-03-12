@@ -135,7 +135,7 @@ function View_Profile() {
          {reviews.map((r) => (
           <div key={r._id} className="review-item">
             <h4>{r.buyer?.name || "Anonymous"}</h4>
-            {r.buyer?.profile (
+            {r.buyer?.profile&& (
               <img
                 src={`https://isonga-backend.onrender.com/uploads/${r.buyer.profile}`}
                 alt="Profile"
