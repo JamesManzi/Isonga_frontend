@@ -4,7 +4,9 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import "./BuyerConversations.css";
 
-const socket = io("https://isonga-backend.onrender.com", { withCredentials: true });
+const socket = io("https://isonga-backend.onrender.com", { withCredentials: true,
+  transports: ["websocket"],
+ });
 
 function BuyerConversations() {
   const [buyerId, setBuyerId] = useState("");

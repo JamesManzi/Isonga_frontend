@@ -5,7 +5,9 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
-const socket = io("https://isonga-backend.onrender.com", { withCredentials: true });
+const socket = io("https://isonga-backend.onrender.com", { withCredentials: true,
+  transports: ["websocket"],
+ });
 
 function Buyer_Chat() {
   const { sellerId } = useParams();
