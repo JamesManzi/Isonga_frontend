@@ -189,14 +189,9 @@ function Home() {
                       />
                     </div>
                   </div>
-                ) : (
-                  <img
-                    src="/placeholder.png"
-                    alt="No Images"
-                    className="slider-image"
-                    onClick={() => showAlert("Please login first!")}
-                  />
-                )}
+                   ) : (
+              <img src="/placeholder.png" alt="Profile" />
+            )}
 
                 {/* Profile Avatar */}
                 <img
