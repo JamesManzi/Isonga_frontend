@@ -168,40 +168,30 @@ function Home() {
           filteredSellers.map((seller) => (
             <div key={seller._id} className="shop-card">
               <div className="card-image-section">
-                {seller.files && seller.files.length > 0 ? (
-                  <div className="image-slider">
-                    <img
-                      src={`https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`}
-                      alt={seller.name}
-                      className="slider-image"
-                      onClick={() => showAlert("Please login first!")}
-                    />
-                    <div className="slider-controls">
-                      <FontAwesomeIcon
-                        icon={faChevronLeft}
-                        className="slider-icon"
-                        onClick={() => handlePrev(seller._id, seller.files.length)}
-                      />
-                      <FontAwesomeIcon
-                        icon={faChevronRight}
-                        className="slider-icon"
-                        onClick={() => handleNext(seller._id, seller.files.length)}
-                      />
-                    </div>
-                  </div>
-                   ) : (
-              <img src="/placeholder.png" alt="Profile" />
-            )}
+  {seller.files && seller.files.length > 0 ? (
+    <div className="image-slider">
+      <img
+        src={`https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`}
+        alt={seller.name}
+        className="slider-image"
+        onError={(e) => { e.target.src = "/placeholder.png"; }} // Add this to catch broken links
+        onClick={() => showAlert("Please login first!")}
+      />
+      {/* ... slider controls ... */}
+    </div>
+  ) : (
+    <img src="/placeholder.png" alt="Placeholder" className="slider-image" />
+  )}
 
-                {/* Profile Avatar */}
-                <img
-                  src={ `https://isonga-backend.onrender.com/uploads/${seller.profile}`}
-                  alt={`${seller.name} Profile`}
-                  className="avatar-image"
-                  onClick={() => showAlert("Please login first!")}
-                />
-              </div>
-
+  {/* Profile Avatar */}
+  <img
+    src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`}
+    alt={`${seller.name} Profile`}
+    className="avatar-image"
+    onError={(e) => { e.target.src = "/default-avatar.png"; }}
+    onClick={() => showAlert("Please login first!")}
+  />
+</div>
               {/* Info */}
               <div className="shop-card-info">
                 <h3 className="seller-name">{seller.name} Shop</h3>
