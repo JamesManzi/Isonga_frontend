@@ -56,9 +56,9 @@ function Buyer_Register(){
             if(res.data.success){
                 navigate("/buyer_login")
             }
-        } catch (error) {
-            console.log(error);
-            setMessage("Register Error");
+         } catch (error) {
+    console.error("REGISTRATION ERROR:", error); // Check Render Logs for this!
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
         } finally{
             setLoading(false);
         }
