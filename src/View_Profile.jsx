@@ -83,6 +83,13 @@ function View_Profile() {
 
   if (!seller) return <p>Loading seller profile...</p>;
 
+  const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
+
   return (
     <div className="View_Profile">
       <div className="Seller_Profile_navbar">
@@ -92,7 +99,7 @@ function View_Profile() {
       </div>
 
       <div className="profile">
-        {seller.profile && <img src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`} alt="Seller" className="seller-image" onClick={() => setSelectedImage(seller.profile)} />}
+        {seller.profile && <img src={getFileUrl(seller.profile)} alt="Seller" className="seller-image" onClick={() => setSelectedImage(seller.profile)} />}
         <p>{seller.name} Shop</p>
       </div>
 
@@ -106,7 +113,7 @@ function View_Profile() {
   {seller.files && seller.files.map((file, index) => (
     <img
       key={index}
-      src={`https://isonga-backend.onrender.com/uploads/${file}`}
+      src={getFileUrl(file)}
       alt={`Seller File ${index}`}
       onClick={() => setSelectedImage(file)}
       style={{ cursor: "pointer" }}
@@ -137,7 +144,7 @@ function View_Profile() {
             <h4>{r.buyer?.name || "Anonymous"}</h4>
             {r.buyer?.profile&& (
               <img
-                src={`https://isonga-backend.onrender.com/uploads/${r.buyer.profile}`}
+                src={getFileUrl(r.buyer.profile)}
                 alt="Profile"
                 onClick={() => setSelectedImage(r.buyer.profile)}
       style={{ cursor: "pointer" }}
@@ -154,7 +161,7 @@ function View_Profile() {
       {selectedImage && (
   <div className="image-modal" onClick={() => setSelectedImage(null)}>
     <span className="close-btn">&times;</span>
-    <img src={`https://isonga-backend.onrender.com/uploads/${selectedImage}`} alt="Full view" />
+    <img src={getFileUrl(selectedImage)} alt="Full view" />
   </div>
 )}
 
