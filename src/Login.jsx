@@ -21,7 +21,6 @@ function Login(){
 
         setMessage(res.data.message);
         if(res.data.success){
-            socket.connect();
             navigate("/dashboard");
         }
         } catch (error) {
