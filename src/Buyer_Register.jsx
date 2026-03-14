@@ -57,11 +57,17 @@ function Buyer_Register(){
                 navigate("/buyer_login")
             }
          } catch (error) {
-    console.error("REGISTRATION ERROR:", error); // Check Render Logs for this!
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
-        } finally{
-            setLoading(false);
-        }
+    console.error("REGISTRATION ERROR:", error);
+    
+    // Check if the error came from the server response
+    if (error.response && error.response.data) {
+        setMessage(error.response.data.message || "Registration failed");
+    } else {
+        setMessage("Network error. Please check your connection.");
+    }
+} finally {
+    setLoading(false);
+}
     };
     return(
         <div className="Buyer_Register">
