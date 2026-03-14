@@ -146,7 +146,7 @@ const fetchCartCount = async () => {
         <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
         <div className="Buyer_Dashboard_user">
           <Link to="/buyer_profile">
-            <img src={ `https://isonga-backend.onrender.com/uploads/${profile}`}/>
+            <img src={profile?.startsWith("http") ? profile : `https://isonga-backend.onrender.com/uploads/${profile}`} alt="Profile" />
           </Link>
           <ChatNotification />
         </div>
@@ -217,15 +217,20 @@ const fetchCartCount = async () => {
                 <div className="image-slider">
                   {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
                     <video
-                      src={`https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`}
+  src={seller.files[currentImageIndex[seller._id] || 0]?.startsWith("http") 
+    ? seller.files[currentImageIndex[seller._id] || 0] 
+    : `https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`}
+  // ... rest of props
                       controls
                       className="slider-image"
                       onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
                     />
                   ) : (
                     <img 
-                      src={`https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`} 
-                      alt={seller.name} 
+                      src={seller.files[currentImageIndex[seller._id] || 0]?.startsWith("http") 
+    ? seller.files[currentImageIndex[seller._id] || 0] 
+    : `https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`} 
+  alt={seller.name} 
                       className="slider-image" 
                       onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])} 
                     />
@@ -239,7 +244,7 @@ const fetchCartCount = async () => {
                 <img src="/placeholder.png" alt="No Images" className="slider-image" />
               )}
               <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
-                <img src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`}/>
+                <img src={seller.profile?.startsWith("http") ? seller.profile : `https://isonga-backend.onrender.com/uploads/${seller.profile}`}/>
               </Link>
             </div>
             <div className="shop-card-info">
@@ -261,11 +266,11 @@ const fetchCartCount = async () => {
       {selectedMedia && (
         <div className="media-modal" onClick={() => setSelectedMedia(null)}>
           <span className="close-btn">&times;</span>
-          {isVideoFile(selectedMedia) ? (
-            <video src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`} controls autoPlay />
-          ) : (
-            <img src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`} alt="Full view" />
-          )}
+         {isVideoFile(selectedMedia) ? (
+  <video src={selectedMedia.startsWith("http") ? selectedMedia : `https://isonga-backend.onrender.com/uploads/${selectedMedia}`} controls autoPlay />
+) : (
+  <img src={selectedMedia.startsWith("http") ? selectedMedia : `https://isonga-backend.onrender.com/uploads/${selectedMedia}`} alt="Full view" />
+)}
         </div>
       )}
     </div>
