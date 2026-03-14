@@ -169,6 +169,13 @@ socket.on("sellerRatingUpdated", (data) => {
     return stars;
   };
 
+  const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
+
   return (
     <div className="Dashboard">
       <Toaster position="top-center" />
@@ -190,7 +197,7 @@ socket.on("sellerRatingUpdated", (data) => {
           <Link to="/seller_profile">
             <div className="dashboard_profile">
               {seller.profile ? (
-                <img src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`} alt="Seller" className="dashboard_seller-image" />
+                <img src={getFileUrl(seller.profile)} alt="Seller" className="dashboard_seller-image" />
               ) : <div className="placeholder_profile">No Image</div>}
             </div>
           </Link>
