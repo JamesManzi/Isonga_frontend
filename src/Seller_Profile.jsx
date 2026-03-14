@@ -144,13 +144,20 @@ function Seller_Profile() {
     }
   };
 
+  const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
+
   return (
     <div className="Seller_Profile">
       {/* PROFILE HEADER */}
       <div className="profile">
         {seller.profile && (
           <img
-            src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`}
+            src={getFileUrl(seller.profile)}
             alt="Seller"
             className="seller-image"
             onClick={() => setSelectedImage(seller.profile)}
@@ -187,7 +194,7 @@ function Seller_Profile() {
         {seller.files?.map((file) => (
           <div key={file} className="image-wrapper">
             <img
-              src={`https://isonga-backend.onrender.com/uploads/${file}`}
+              src={getFileUrl(file)}
               alt="Location"
               onClick={() => setSelectedImage(file)}
             />
@@ -213,7 +220,7 @@ function Seller_Profile() {
       {selectedImage && (
         <div className="image-modal" onClick={() => setSelectedImage(null)}>
           <img
-            src={`https://isonga-backend.onrender.com/uploads/${selectedImage}`}
+            src={getFileUrl(selectedImage)}
             alt="Full"
             className="full-image"
           />
@@ -299,7 +306,7 @@ function Seller_Profile() {
             <h4>{r.buyer?.name || "Anonymous"}</h4>
             {r.buyer?.profile ? (
               <img
-                src={`https://isonga-backend.onrender.com/uploads/${r.buyer.profile}`}
+                src={getFileUrl(r.buyer.profile)}
                 alt="Profile"
                 onClick={() => setSelectedImage(r.buyer.profile)}
       style={{ cursor: "pointer" }}
