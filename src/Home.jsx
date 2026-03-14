@@ -111,6 +111,12 @@ function Home() {
       [sellerId]: (prev[sellerId] - 1 + totalImages) % totalImages,
     }));
   };
+const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
 
   return (
     <div className="Home">
@@ -171,7 +177,7 @@ function Home() {
   {seller.files && seller.files.length > 0 ? (
     <div className="image-slider">
       <img
-        src={`https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`}
+      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
         alt={seller.name}
         className="slider-image"
         onError={(e) => { e.target.src = "/placeholder.png"; }} // Add this to catch broken links
@@ -185,7 +191,7 @@ function Home() {
 
   {/* Profile Avatar */}
   <img
-    src={`https://isonga-backend.onrender.com/uploads/${seller.profile}`}
+  src={getFileUrl(seller.profile)}
     alt={`${seller.name} Profile`}
     className="avatar-image"
     onError={(e) => { e.target.src = "/default-avatar.png"; }}
@@ -223,9 +229,9 @@ function Home() {
         <div className="media-modal" onClick={() => setSelectedMedia(null)}>
           <span className="close-btn">&times;</span>
           {isVideoFile(selectedMedia) ? (
-            <video src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`} controls autoPlay />
+            <video src={getFileUrl(selectedMedia)} controls autoPlay />
           ) : (
-            <img src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`} alt="Full view" />
+            <img src={getFileUrl(selectedMedia)} alt="Full view" />
           )}
         </div>
       )}
