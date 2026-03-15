@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faShoePrints } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faShoePrints,faStar } from "@fortawesome/free-solid-svg-icons";
 import { faChevronLeft, faChevronRight,faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { Link,useNavigate } from "react-router-dom";
 import ChatNotification from "./ChatNotification";
@@ -78,6 +78,23 @@ const handleNext = (sellerId, totalImages) => {
 
     fetchSellers();
   }, []);
+
+  const renderStars = (rating) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (i <= rating) {
+      // Full Star
+      stars.push(<FontAwesomeIcon key={i} icon={faStar} style={{ color: "#ffc107" }} />);
+    } else if (i - 0.5 <= rating) {
+      // Half Star
+      stars.push(<FontAwesomeIcon key={i} icon={faStarHalfAlt} style={{ color: "#ffc107" }} />);
+    } else {
+      // Empty Star
+      stars.push(<FontAwesomeIcon key={i} icon={faRegStar} style={{ color: "#ffc107" }} />);
+    }
+  }
+  return stars;
+};
 
   const getFileUrl = (path) => {
   if (!path) return "/placeholder.png"; // Fallback if no image exists
