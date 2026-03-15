@@ -1,38 +1,83 @@
-/* General container */
-.Buyer_Dashboard {
-  font-family: Arial, sans-serif;
-  color: #333;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+:root {
+  --primary: #2563eb;
+  --secondary: #4f46e5;
+  --accent: #facc15;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
+  --bg-gray: #f8fafc;
+  --white: #ffffff;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --glass: rgba(255, 255, 255, 0.8);
 }
 
-/* Navbar */
+.Buyer_Dashboard {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--bg-gray);
+  min-height: 100vh;
+  padding-bottom: 50px;
+}
+
+/* --- Navbar --- */
 .Buyer_Dashboard_navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #004d40;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
+  padding: 1rem 5%;
+  background: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow);
   flex-wrap: wrap;
+  gap: 15px;
 }
 
 .Buyer_Dashboard_logos img {
   height: 40px;
+  width: auto;
 }
 
-.Buyer_Dashboard_heads h1 {
-  margin: 0;
-  font-size: 22px;
+.Buyer_Dashboard_heads {
+  display: flex;
+  gap: 5px;
 }
 
-.Buyer_Dashboard_heads h2 {
+.Buyer_Dashboard_heads h1 { font-size: 1.5rem; color: var(--primary); margin: 0; }
+.Buyer_Dashboard_heads h2 { font-size: 1.5rem; color: var(--text-dark); margin: 0; }
+
+/* Horizontal Category Nav */
+.Buyer_Dashboard_nav {
+  width: 100%;
+  order: 4; /* Moves below on mobile */
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 5px;
+}
+
+.Buyer_Dashboard_nav::-webkit-scrollbar { display: none; }
+
+.Buyer_Dashboard_nav ul {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+  padding: 0;
   margin: 0;
-  font-size: 16px;
-  font-weight: normal;
-  color: #cfd8dc;
+}
+
+.Buyer_Dashboard_nav a {
+  text-decoration: none;
+  color: var(--text-light);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.Buyer_Dashboard_nav a:hover { color: var(--primary); }
+
+.Buyer_Dashboard_user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .Buyer_Dashboard_user img {
@@ -40,407 +85,203 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid white;
-}
-
-.Buyer_Dashboard_nav ul {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin: 0;
-  padding: 0;
-}
-
-.Buyer_Dashboard_nav ul li a {
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
+  border: 2px solid var(--primary);
 }
 
 .Buyer_Dashboard_logout button {
-  background: #f44336;
-  color: white;
+  background: #fee2e2;
+  color: #ef4444;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
 }
 
-.Buyer_Dashboard_logout button:hover {
-  background: #d32f2f;
-}
-
-/* Heading */
+/* --- Search & Heading --- */
 .Buyer_Dashboard_Heading {
   text-align: center;
-  margin: 20px 0;
+  padding: 40px 20px;
 }
 
-.Buyer_Dashboard_Heading h1 {
-  margin: 0;
-  font-size: 26px;
-}
-
-/* Search */
 .Buyer_Dashboard_search {
+  max-width: 600px;
+  margin: 0 auto 40px;
   display: flex;
-  justify-content: center;
   gap: 10px;
-  margin-bottom: 20px;
+  padding: 0 20px;
 }
 
-.searching {
-  padding: 8px;
-  width: 250px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+.Buyer_Dashboard_search input {
+  flex: 1;
+  padding: 12px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  box-shadow: var(--shadow);
 }
 
 .Buyer_Dashboard_search button {
-  background: #004d40;
+  background: var(--primary);
   color: white;
   border: none;
-  padding: 8px 14px;
-  border-radius: 4px;
+  padding: 0 20px;
+  border-radius: 12px;
   cursor: pointer;
 }
 
-.Buyer_Dashboard_search button:hover {
-  background: #00695c;
-}
-
-/* Shop grid */
+/* --- Shop Grid --- */
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 0 5%;
 }
 
-/* Shop card */
 .shop-card {
-  background: #f5f5f5;
-  border-radius: 6px;
+  background: var(--white);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
 }
 
-/* Image section */
+.shop-card:hover {
+  transform: translateY(-5px);
+}
+
+/* --- Image Slider --- */
 .card-image-section {
   position: relative;
+  height: 220px;
 }
 
-.slider-image,
-.card-image-section video {
-  width: 100%;       /* Full width */
-  height: auto;      /* Maintain aspect ratio */
-  display: block;
+.slider-image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  cursor: pointer;
-}
-
-.image-slider {
-  position: relative;
+  cursor: zoom-in;
 }
 
 .slider-controls {
   position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
+  width: 100%;
   display: flex;
   justify-content: space-between;
-  transform: translateY(-50%);
   padding: 0 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .slider-icon {
-  font-size: 24px;
-  color: white;
-  background: rgba(0,0,0,0.4);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 8px;
   border-radius: 50%;
-  padding: 6px;
   cursor: pointer;
+  pointer-events: auto;
+  font-size: 0.8rem;
 }
 
-.slider-icon:hover {
-  background: rgba(0,0,0,0.7);
-}
-
-/* Profile avatar */
 .profile-avatar {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: -20px;
+  left: 20px;
+  z-index: 2;
 }
 
-.avatar-image {
+.profile-avatar img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  border: 2px solid white;
-  object-fit: cover;
+  border: 3px solid var(--white);
+  box-shadow: var(--shadow);
 }
 
-/* Info section */
+/* --- Card Info --- */
 .shop-card-info {
-  padding: 15px;
+  padding: 25px 20px 20px;
 }
 
-.seller-name {
-  margin: 0;
-  font-size: 18px;
-  font-weight: bold;
-}
+.seller-name { font-size: 1.2rem; margin-bottom: 5px; color: var(--text-dark); }
+.seller-location { color: var(--text-light); font-size: 0.85rem; margin-bottom: 2px; }
+.seller-category { color: var(--primary); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
+.rating { margin: 10px 0; font-size: 0.9rem; }
 
-.seller-location,
-.seller-category,
 .seller-description {
-  margin: 5px 0;
-  font-size: 14px;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 15px;
 }
 
-.rating p {
-  margin: 5px 0;
-  font-size: 14px;
-}
-
-/* Buttons */
 .card-actions {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: auto;
 }
 
-.visit-btn,
-.chat-btn {
+.visit-btn, .chat-btn {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
+  border-radius: 8px;
   border: none;
-  border-radius: 4px;
+  font-weight: 600;
   cursor: pointer;
+  transition: opacity 0.2s;
 }
 
-.visit-btn {
-  background: #004d40;
-  color: white;
+.visit-btn { background: var(--primary); color: white; }
+.chat-btn { background: #f1f5f9; color: var(--text-dark); }
+
+/* --- Cart Badge --- */
+.faCartShopping { color: var(--text-dark); }
+.cart-link span {
+  animation: pulse 2s infinite;
 }
 
-.visit-btn:hover {
-  background: #00695c;
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
-.chat-btn {
-  background: #2196f3;
-  color: white;
-}
-
-.chat-btn:hover {
-  background: #1976d2;
-}
-
-/* Modal overlay */
+/* --- Media Modal --- */
 .media-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.85);
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
-  animation: fadeIn 0.3s ease-in-out;
+  padding: 20px;
 }
 
-/* Full-width image/video */
-.media-modal img,
-.media-modal video {
-  max-width: 95%;
-  max-height: 95%;
-  border-radius: 8px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.6);
-  transform: scale(0.9);
-  animation: zoomIn 0.4s ease forwards;
+.media-modal img, .media-modal video {
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 10px;
 }
 
-/* Close button */
-.media-modal .close-btn {
+.close-btn {
   position: absolute;
   top: 20px;
   right: 30px;
-  font-size: 32px;
   color: white;
+  font-size: 40px;
   cursor: pointer;
-  transition: transform 0.2s ease;
 }
 
-.media-modal .close-btn:hover {
-  transform: scale(1.2);
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes zoomIn {
-  from { transform: scale(0.9); }
-  to { transform: scale(1); }
-}
-
-
-/* Navbar message icon container */
-.message-icon-link {
-  position: relative;
-  display: inline-block;
-  margin-left: 16px;
-  color: #ffffff; /* White icon in navbar */
-  text-decoration: none;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.message-icon-link:hover {
-  transform: scale(1.1); /* Slight hover effect */
-  color: #facc15; /* Optional: change color on hover */
-}
-
-/* Unread badge on top-right of icon */
-.unread-badge-navbar {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background-color: #f87171; /* Red badge */
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 600;
-  padding: 2px 5px;
-  border-radius: 50%;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  line-height: 1;
-  min-width: 16px;
-  text-align: center;
-}
-
-/* Optional: make the icon vertically centered in navbar */
-.Buyer_Dashboard_user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* Search input styling */
-.Buyer_Dashboard.search {
-  width: 100%;
-  max-width: 400px;
-  padding: 10px 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  transition: all 0.2s ease;
-  background-color: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-/* Placeholder text */
-.Buyer_Dashboard.search::placeholder {
-  color: #999;
-  font-style: italic;
-}
-
-/* Focus effect */
-.Buyer_Dashboard.search:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 6px rgba(0,123,255,0.3);
-}
-
-/* Optional: make it responsive */
-@media (max-width: 600px) {
-  .Buyer_Dashboard.search {
-    max-width: 100%;
-    font-size: 13px;
-  }
-}
-
-.faEnvelope{
-  color: white;
-  font-size: 30px;
-}
-
-/* --- Action Buttons --- */
-.card-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-/* Visit Shop button */
-.visit-btn {
-  background: #007bff; /* bright blue */
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.visit-btn:hover {
-  background: #0056b3; /* darker blue */
-  transform: translateY(-2px);
-}
-
-/* Chat button */
-.chat-btn {
-  background: #28a745; /* green */
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.chat-btn:hover {
-  background: #1e7e34; /* darker green */
-  transform: translateY(-2px);
-}
-
-/* Optional: make both buttons consistent in width */
-.visit-btn,
-.chat-btn {
-  min-width: 120px;
-  text-align: center;
-}
-
-.faCartShopping{
-  color: white;
-  font-size: 20px;
-}
-
-
-.cart-link {
-  position: relative;
-  display: inline-block;
-}
-
-.cart-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: red;
-  color: white;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 50%;
-  font-weight: bold;
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .Buyer_Dashboard_navbar { padding: 10px 15px; }
+  .Buyer_Dashboard_heads h1, .Buyer_Dashboard_heads h2 { font-size: 1.2rem; }
+  .shop-grid { grid-template-columns: 1fr; }
+  .Buyer_Dashboard_search { flex-direction: column; }
 }
