@@ -1,219 +1,203 @@
-/* General Layout */
-.View_Products {
-  font-family: "Segoe UI", sans-serif;
-  padding: 20px;
-  background: #f9f9f9;
-  min-height: 100vh;
+/* --- Variables & Core Layout --- */
+:root {
+  --isonga-blue: #2c3e50;
+  --isonga-green: #27ae60;
+  --light-gray: #f8f9fa;
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+  --white: #ffffff;
 }
 
-/* Navbar */
+.View_Products {
+  background-color: var(--light-gray);
+  min-height: 100vh;
+  padding-bottom: 50px;
+}
+
+/* --- Navbar --- */
 .View_Products_navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
-  padding: 10px 20px;
-  border-bottom: 1px solid #ddd;
+  padding: 15px 5%;
+  background: var(--white);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .View_Products_logo {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
-.View_Products_logo img {
-  height: 40px;
-  margin-right: 10px;
+.View_Products_logo img { height: 40px; }
+.View_Products_heads h1 { font-size: 1.2rem; color: var(--isonga-blue); margin: 0; }
+.View_Products_heads h2 { font-size: 1.2rem; color: var(--isonga-green); margin: 0; }
+
+.View_Products_back {
+  font-size: 1.5rem;
+  color: var(--isonga-blue);
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.View_Products_heads h1 {
-  font-size: 20px;
-  margin: 0;
-}
+.View_Products_back:hover { transform: translateX(-5px); }
 
-.View_Products_heads h2 {
-  font-size: 14px;
-  margin: 0;
-  color: #777;
-}
-
-.View_Products_back a {
-  color: #333;
-  font-size: 18px;
-}
-
-/* Header */
-.View_Products_body {
-  text-align: center;
-  margin: 20px 0;
-}
-
-.View_Products_body p {
-  font-size: 18px;
-  font-weight: 500;
-}
-
-/* Search */
+/* --- Search Bar --- */
 .View_Products_search {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  padding: 30px 5%;
+  gap: 0;
 }
 
 .View_Products_search input {
-  width: 60%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px 0 0 6px;
+  width: 100%;
+  max-width: 600px;
+  padding: 12px 20px;
+  border: 1px solid #ddd;
+  border-radius: 25px 0 0 25px;
   outline: none;
 }
 
 .View_Products_search button {
-  padding: 10px 15px;
+  padding: 12px 25px;
+  background: var(--isonga-green);
+  color: white;
   border: none;
-  background: #333;
-  color: #fff;
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 25px 25px 0;
   cursor: pointer;
-  transition: background 0.3s;
 }
 
-.View_Products_search button:hover {
-  background: #555;
-}
-
-/* Store Container */
+/* --- Product Grid & Cards --- */
 .store_container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+  padding: 0 5%;
 }
 
-/* Product Card */
 .productcard {
-  background: #fff;
-  border-radius: 10px;
+  background: var(--white);
+  border-radius: 15px;
   padding: 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
 }
 
-.productcard:hover {
-  transform: translateY(-5px);
-}
-
-.productcard h1 {
-  font-size: 18px;
-  margin: 10px 0;
-}
-
-.productcard p {
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-/* Image Slider */
+/* --- Media Slider (Handles Video & Image) --- */
 .image-slider {
   position: relative;
   width: 100%;
-  height: 200px;
+  height: 250px;
+  background: #000;
+  border-radius: 10px;
   overflow: hidden;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .slider-media {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
+  object-fit: contain; /* Ensures videos/images aren't cropped weirdly */
+  cursor: zoom-in;
 }
 
-/* Slider Controls */
 .slider-controls {
   position: absolute;
   top: 50%;
   width: 100%;
+  transform: translateY(-50%);
   display: flex;
   justify-content: space-between;
-  transform: translateY(-50%);
   padding: 0 10px;
+  pointer-events: none;
 }
 
 .slider-icon {
-  font-size: 20px;
-  color: #fff;
-  background: rgba(0,0,0,0.4);
-  padding: 6px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #333;
+  padding: 8px;
   border-radius: 50%;
   cursor: pointer;
-  transition: background 0.3s;
+  pointer-events: auto;
 }
 
-.slider-icon:hover {
-  background: rgba(0,0,0,0.6);
-}
-
-/* Seller Avatar */
+/* --- Floating Avatar --- */
 .profile-avatar {
   position: absolute;
   bottom: 10px;
   right: 10px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
+  border: 2px solid white;
   overflow: hidden;
-  border: 2px solid #fff;
-  width: 40px;
-  height: 40px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-.profile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Buttons */
+/* --- Product Details --- */
+.productcard h1 { font-size: 1.3rem; margin: 10px 0; color: var(--isonga-blue); }
+.productcard p { font-size: 0.9rem; color: #555; margin-bottom: 5px; }
+.productcard strong { color: var(--isonga-green); font-size: 1.1rem; }
+
 .View_Products_btns {
   display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: auto; /* Pushes buttons to bottom of card */
+  padding-top: 15px;
 }
 
 .View_Products_btns button {
   flex: 1;
-  margin: 0 5px;
-  padding: 8px;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
-  border-radius: 6px;
-  background: #333;
-  color: #fff;
+  font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: opacity 0.2s;
 }
 
-.View_Products_btns button:hover {
-  background: #555;
+.View_Products_btns button:first-child { background: #eee; color: var(--isonga-blue); }
+.View_Products_btns button:last-child { background: var(--isonga-green); color: white; }
+
+/* --- Cart Success Popup --- */
+.cart-popup {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 50px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  z-index: 2000;
+  animation: slideUp 0.3s ease-out;
 }
 
-/* Media Modal */
+@keyframes slideUp {
+  from { bottom: -50px; opacity: 0; }
+  to { bottom: 30px; opacity: 1; }
+}
+
+/* --- Media Modal --- */
 .media-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.8);
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 3000;
 }
 
-.media-modal img,
-.media-modal video {
+.media-modal img, .media-modal video {
   max-width: 90%;
   max-height: 80%;
   border-radius: 8px;
@@ -221,67 +205,12 @@
 
 .close-btn {
   position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 30px;
-  color: #fff;
-  cursor: pointer;
+  top: 20px; right: 30px;
+  color: white; font-size: 40px; cursor: pointer;
 }
 
-
-/* Buttons */
-.View_Products_btns {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.View_Products_btns button {
-  flex: 1;
-  margin: 0 5px;
-  padding: 8px;
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.3s;
-  font-weight: 500;
-}
-
-/* Chat Seller Button */
-.View_Products_btns button:first-child {
-  background: #007bff; /* Blue */
-}
-
-.View_Products_btns button:first-child:hover {
-  background: #0056b3;
-}
-
-/* Order Button */
-.View_Products_btns button:last-child {
-  background: #28a745; /* Green */
-}
-
-.View_Products_btns button:last-child:hover {
-  background: #1e7e34;
-}
-
-
-.cart-popup {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #007BFF; /* nice blue */
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 1000;
-  animation: slideDown 0.5s ease;
-}
-
-@keyframes slideDown {
-  0% { opacity: 0; transform: translateY(-20px); }
-  100% { opacity: 1; transform: translateY(0); }
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .store_container { grid-template-columns: 1fr; }
+  .View_Products_search input { font-size: 14px; }
 }
