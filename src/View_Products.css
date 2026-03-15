@@ -1,4 +1,4 @@
-/* ===== Base Styles (Desktop first) ===== */
+/* ================== Base Styles (Desktop First) ================== */
 .View_Products {
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -107,7 +107,8 @@
 
 .slider-media {
   width: 100%;
-  height: auto;
+  height: 200px;
+  object-fit: cover;
   border-radius: 6px;
 }
 
@@ -185,16 +186,76 @@
   z-index: 1000;
 }
 
-/* ===== Mobile Responsive ===== */
+/* ================== Mobile Responsive ================== */
 @media (max-width: 768px) {
+  /* Container & Cards */
   .store_container {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   .productcard {
-    flex: 1 1 100%;
+    flex: 1 1 calc(50% - 10px); /* Two small cards per row */
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 12px;
   }
 
+  /* Images & Media */
+  .slider-media {
+    height: 120px; /* Smaller images/videos */
+    object-fit: cover;
+  }
+
+  .slider-controls .slider-icon {
+    padding: 3px;
+    font-size: 14px;
+  }
+
+  /* Product Info */
+  .productcard h1 {
+    font-size: 14px;
+    margin: 5px 0 3px 0;
+  }
+
+  .productcard p {
+    font-size: 11px;
+    margin: 2px 0;
+  }
+
+  /* Buttons */
+  .View_Products_btns {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .View_Products_btns button {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  /* Navbar & Logo */
+  .View_Products_navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .View_Products_logo img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .View_Products_heads h1 {
+    font-size: 18px;
+  }
+
+  .View_Products_heads h2 {
+    font-size: 12px;
+  }
+
+  /* Search */
   .View_Products_search {
     flex-direction: column;
   }
@@ -203,38 +264,9 @@
     width: 100%;
   }
 
-  .View_Products_navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .slider-controls {
-    padding: 0 5px;
-  }
-
-  .View_Products_heads h1 {
-    font-size: 20px;
-  }
-
-  .View_Products_heads h2 {
-    font-size: 14px;
-  }
-
-  .productcard h1 {
-    font-size: 16px;
-  }
-
-  .productcard p {
-    font-size: 13px;
-  }
-
-  .View_Products_btns {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .View_Products_btns button {
-    width: 100%;
+  /* Profile avatar */
+  .profile-avatar img {
+    width: 25px;
+    height: 25px;
   }
 }
