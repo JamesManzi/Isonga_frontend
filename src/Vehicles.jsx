@@ -123,15 +123,9 @@ const getFileUrl = (path) => {
         <div className="Buyer_Dashboard_nav">
           <nav>
             <ul>
-              <li><Link to="/fashion">Fashion</Link></li>
               <li><Link to="/RealEstate">Real Estate</Link></li>
               <li><Link to="/Vehicles">Vehicles</Link></li>
               <li><Link to="/Agriculture">Agriculture</Link></li>
-              <li><Link to="/services">Services</Link></li>
-              <li><Link to="/Hospitality">Hospitality</Link></li>
-              <li><Link to="/Electronics">Electronics</Link></li>
-              <li><Link to="/Furniture">Furniture</Link></li>
-              <li><Link to="/Construction">Construction</Link></li>
             </ul>
           </nav>
         </div>
