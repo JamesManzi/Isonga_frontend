@@ -172,7 +172,7 @@ const getFileUrl = (path) => {
 
       {/* Header */}
       <div className="View_Products_body">
-        <p>Find All Products You Desire</p>
+        <p>Find All Services You Desire</p>
       </div>
 
       {/* Search */}
@@ -278,7 +278,7 @@ const getFileUrl = (path) => {
                  <button
   onClick={() => addToCart(product._id, product.name)}
 >
-  Book Now <FontAwesomeIcon icon={faCartShopping} />
+  Book Now 
 </button>
                 </div>
               </div>

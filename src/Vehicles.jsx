@@ -224,7 +224,7 @@ const getFileUrl = (path) => {
                 </div>
                 <p className="seller-description">{seller.description}</p>
                 <div className="card-actions">
-                  <Link to={`/view_products/${seller._id}`}>
+                  <Link to={`/Asset_products/${seller._id}`}>
                     <button className="visit-btn">Visit Shop</button>
                   </Link>
                   <Link to="#">

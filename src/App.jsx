@@ -31,6 +31,7 @@ import Cart from "./Cart";
 import Checkout from "./Checkout";
 import SellerOrders from "./SellerOrders";
 import Service_Products from "./Service_Products";
+import Asset_Products from "./Asset_Products";
 function App(){
   return(
     <div>
@@ -68,6 +69,7 @@ function App(){
         <Route path="/checkout" element={<Checkout/>}/>
         <Route path="/seller_orders" element={<SellerOrders/>}/>
         <Route path="/Service_products/:id" element={<Service_Products/>}/>
+        <Route path="/Asset_products/:id" element={<Asset_Products/>}/>
       </Routes>
       </BrowserRouter>
     </div>
