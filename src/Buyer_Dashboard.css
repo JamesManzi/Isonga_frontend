@@ -1,178 +1,146 @@
-/* --- Global Variables & Resets --- */
-:root {
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --bg-body: #f1f5f9;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --white: #ffffff;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+/* Buyer_Dashboard.css */
+
+/* General Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 .Buyer_Dashboard {
-  background-color: var(--bg-body);
-  min-height: 100vh;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: var(--text-main);
+  font-family: Arial, sans-serif;
+  padding: 10px;
+  background-color: #f9f9f9;
 }
 
-/* --- Navbar Styles --- */
+/* Navbar */
 .Buyer_Dashboard_navbar {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
-  padding: 10px 20px;
-  background: var(--white);
-  box-shadow: var(--shadow);
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
-  z-index: 1000;
-  flex-wrap: wrap;
+  z-index: 100;
 }
 
 .Buyer_Dashboard_logos img {
+  width: 40px;
   height: 40px;
-  width: auto;
 }
 
 .Buyer_Dashboard_heads h1 {
   font-size: 1.2rem;
-  margin: 0;
-  color: var(--primary);
 }
 
 .Buyer_Dashboard_heads h2 {
   font-size: 0.9rem;
-  margin: 0;
-  font-weight: 400;
-}
-
-.Buyer_Dashboard_user {
-  display: flex;
-  align-items: center;
-  gap: 15px;
+  color: #555;
 }
 
 .Buyer_Dashboard_user img {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--primary);
 }
 
-.Buyer_Dashboard_nav {
-  width: 100%;
-  margin-top: 10px;
-  order: 4;
-}
-
-.Buyer_Dashboard_nav ul {
+.Buyer_Dashboard_nav nav ul {
   display: flex;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
   list-style: none;
-  padding: 0;
-  margin: 0;
-  border-top: 1px solid #e2e8f0;
-  padding-top: 10px;
 }
 
-.Buyer_Dashboard_nav a {
+.Buyer_Dashboard_nav nav ul li a {
   text-decoration: none;
-  color: var(--text-muted);
-  font-weight: 600;
+  color: #333;
   font-size: 0.9rem;
 }
 
-.faCartShopping {
-  color: var(--text-main);
+/* Cart */
+.cart-link {
+  margin-left: 10px;
 }
 
+/* Logout Button */
 .Buyer_Dashboard_logout button {
-  background: #ef4444;
-  color: white;
+  padding: 5px 10px;
+  font-size: 0.9rem;
   border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 5px;
   cursor: pointer;
-  font-weight: 600;
 }
 
-/* --- Heading Section --- */
+/* Welcome Section */
 .Buyer_Dashboard_Heading {
-  text-align: center;
-  padding: 30px 20px;
+  margin: 15px 0;
 }
 
 .Buyer_Dashboard_Heading h1 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   margin-bottom: 5px;
 }
 
-/* --- Search Bar --- */
+.Buyer_Dashboard_Heading p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Search Bar */
 .Buyer_Dashboard_search {
   display: flex;
-  max-width: 600px;
-  margin: 0 auto 30px;
-  padding: 0 20px;
+  gap: 5px;
+  margin-bottom: 15px;
 }
 
 .Buyer_Dashboard_search input {
   flex: 1;
-  padding: 12px 15px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px 0 0 8px;
-  font-size: 1rem;
-  outline: none;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
 }
 
 .Buyer_Dashboard_search button {
-  background: var(--primary);
-  color: white;
+  padding: 8px 10px;
+  background-color: #1890ff;
   border: none;
-  padding: 0 20px;
-  border-radius: 0 8px 8px 0;
+  border-radius: 5px;
+  color: white;
+  font-size: 0.9rem;
   cursor: pointer;
 }
 
-/* --- Shop Grid --- */
+/* Shop Cards Grid */
 .shop-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
+/* Shop Card */
 .shop-card {
-  background: var(--white);
-  border-radius: 12px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
   overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: transform 0.2s;
-}
-
-.shop-card:hover {
-  transform: translateY(-5px);
 }
 
 .card-image-section {
   position: relative;
-  height: 200px;
-  background: #e2e8f0;
-}
-
-.image-slider {
-  height: 100%;
-  width: 100%;
 }
 
 .slider-image {
   width: 100%;
-  height: 100%;
+  height: auto;
+  display: block;
   object-fit: cover;
-  cursor: pointer;
+  max-height: 200px;
 }
 
 .slider-controls {
@@ -183,132 +151,133 @@
   justify-content: space-between;
   padding: 0 10px;
   transform: translateY(-50%);
-  pointer-events: none;
 }
 
 .slider-icon {
-  background: rgba(255, 255, 255, 0.8);
-  padding: 8px;
+  background-color: rgba(0,0,0,0.4);
+  color: white;
   border-radius: 50%;
+  padding: 5px;
   cursor: pointer;
-  pointer-events: auto;
-  color: var(--text-main);
 }
 
 .profile-avatar {
   position: absolute;
-  bottom: -20px;
-  left: 20px;
-  z-index: 2;
-}
-
-.profile-avatar img {
-  width: 50px;
-  height: 50px;
+  bottom: -15px;
+  right: 10px;
   border-radius: 50%;
-  border: 3px solid var(--white);
-  object-fit: cover;
-  background: white;
+  overflow: hidden;
+  width: 35px;
+  height: 35px;
+  border: 2px solid white;
 }
 
 .shop-card-info {
-  padding: 30px 20px 20px;
+  padding: 10px;
 }
 
-.seller-name { font-size: 1.2rem; margin-bottom: 5px; }
-.seller-location { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
-.seller-category { font-size: 0.85rem; font-weight: bold; color: var(--primary); margin: 5px 0; }
-.rating { margin: 10px 0; font-size: 0.9rem; }
-.seller-description { 
-  font-size: 0.9rem; 
-  color: #475569; 
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 15px;
+.shop-card-info h3 {
+  font-size: 1rem;
+}
+
+.shop-card-info p {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 2px 0;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.85rem;
 }
 
 .card-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  margin-top: 10px;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
 .card-actions button {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
+  flex: 1;
+  padding: 5px;
+  font-size: 0.85rem;
   border: none;
-  font-weight: 600;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.visit-btn { background: var(--primary); color: white; }
-.chat-btn { background: #f1f5f9; color: var(--text-main); }
+.visit-btn {
+  background-color: #1890ff;
+  color: white;
+}
 
-/* --- Media Modal --- */
+.chat-btn {
+  background-color: #52c41a;
+  color: white;
+}
+
+/* Media Modal */
 .media-modal {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.9);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 2000;
+  align-items: center;
+  z-index: 200;
+  padding: 10px;
 }
 
-.media-modal img, .media-modal video {
-  max-width: 90%;
-  max-height: 80%;
-  border-radius: 8px;
+.media-modal img,
+.media-modal video {
+  max-width: 100%;
+  max-height: 90%;
 }
 
-.close-btn {
+.media-modal .close-btn {
   position: absolute;
-  top: 20px; right: 30px;
-  color: white; font-size: 40px; cursor: pointer;
+  top: 15px;
+  right: 20px;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
 }
 
-/* --- MOBILE RESPONSIVE --- */
+/* Responsive for small screens */
 @media (max-width: 768px) {
   .Buyer_Dashboard_navbar {
-    padding: 10px;
-  }
-  
-  .Buyer_Dashboard_heads {
-    display: none; /* Hide text logo on small mobile */
-  }
-
-  .Buyer_Dashboard_search {
     flex-direction: column;
-    gap: 10px;
+    align-items: flex-start;
   }
 
-  .Buyer_Dashboard_search input {
-    border-radius: 8px;
+  .Buyer_Dashboard_nav nav ul {
+    flex-direction: column;
   }
 
-  .Buyer_Dashboard_search button {
-    border-radius: 8px;
-    padding: 12px;
+  .shop-card-info h3 {
+    font-size: 0.95rem;
   }
 
-  .shop-grid {
-    grid-template-columns: 1fr; /* One card per row */
-    padding: 10px;
+  .shop-card-info p,
+  .rating,
+  .card-actions button {
+    font-size: 0.8rem;
   }
 
-  .Buyer_Dashboard_Heading h1 {
-    font-size: 1.25rem;
+  .slider-image {
+    max-height: 180px;
   }
 
-  .Buyer_Dashboard_logout {
-    margin-left: auto;
-  }
-  
-  .cart-link {
-    margin-right: 10px;
+  .profile-avatar {
+    width: 30px;
+    height: 30px;
+    bottom: -10px;
+    right: 10px;
   }
 }
