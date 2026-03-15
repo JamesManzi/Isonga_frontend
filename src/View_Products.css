@@ -1,139 +1,317 @@
-/* ================= MODERN MOBILE PRODUCT CARDS ================= */
-@media (max-width:768px){
+/* ================= GLOBAL ================= */
 
-/* product grid */
-.store_container{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-  padding:10px;
+.View_Products{
+width:100%;
+min-height:100vh;
+background:#f5f5f5;
+font-family:Arial, Helvetica, sans-serif;
 }
 
-/* card */
-.productcard{
-  background:white;
-  border-radius:10px;
-  overflow:hidden;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
-  padding:0;
+/* ================= NAVBAR ================= */
+
+.View_Products_navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 30px;
+background:white;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* image slider */
-.image-slider{
-  position:relative;
-  width:100%;
-  height:140px;
+.View_Products_logo{
+display:flex;
+align-items:center;
+gap:10px;
 }
 
-.slider-media{
-  width:100%;
-  height:140px;
-  object-fit:cover;
+.View_Products_logo img{
+width:45px;
+height:45px;
 }
 
-/* seller avatar */
-.profile-avatar{
-  position:absolute;
-  top:8px;
-  right:8px;
+.View_Products_heads h1{
+font-size:22px;
+margin:0;
 }
 
-.profile-avatar img{
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  border:2px solid white;
+.View_Products_heads h2{
+font-size:14px;
+margin:0;
+color:gray;
 }
 
-/* slider arrows */
-.slider-controls{
-  position:absolute;
-  bottom:5px;
-  left:0;
-  right:0;
-  display:flex;
-  justify-content:space-between;
-  padding:0 5px;
+.View_Products_back svg{
+font-size:22px;
+color:black;
 }
 
-.slider-icon{
-  background:rgba(0,0,0,0.5);
-  color:white;
-  padding:5px;
-  border-radius:50%;
-  font-size:12px;
+/* ================= HEADER ================= */
+
+.View_Products_body{
+text-align:center;
+padding:20px;
 }
 
-/* product info */
-.productcard h1{
-  font-size:14px;
-  padding:6px 8px 0;
-  margin:0;
+.View_Products_body p{
+font-size:20px;
+font-weight:bold;
 }
 
-.productcard p{
-  font-size:12px;
-  padding:0 8px;
-  margin:3px 0;
-}
+/* ================= SEARCH ================= */
 
-/* buttons */
-.View_Products_btns{
-  display:flex;
-  gap:5px;
-  padding:8px;
-}
-
-.View_Products_btns button{
-  flex:1;
-  font-size:11px;
-  padding:6px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-/* chat button */
-.View_Products_btns button:first-child{
-  background:#f1f1f1;
-}
-
-/* cart button */
-.View_Products_btns button:last-child{
-  background:#2e7d32;
-  color:white;
-}
-
-/* search */
 .View_Products_search{
-  padding:10px;
-  display:flex;
-  gap:6px;
+display:flex;
+justify-content:center;
+gap:10px;
+padding:10px 20px;
 }
 
 .View_Products_search input{
-  flex:1;
-  padding:8px;
-  font-size:13px;
+width:350px;
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
 }
 
 .View_Products_search button{
-  padding:8px 10px;
-  font-size:13px;
+padding:10px 20px;
+border:none;
+background:#2e7d32;
+color:white;
+border-radius:6px;
+cursor:pointer;
 }
 
-/* popup */
+/* ================= PRODUCTS GRID ================= */
+
+.store_container{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:20px;
+padding:20px;
+}
+
+/* ================= PRODUCT CARD ================= */
+
+.productcard{
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+padding-bottom:10px;
+}
+
+/* ================= IMAGE SLIDER ================= */
+
+.image-slider{
+position:relative;
+width:100%;
+height:200px;
+}
+
+.slider-media{
+width:100%;
+height:200px;
+object-fit:cover;
+}
+
+/* arrows */
+
+.slider-controls{
+position:absolute;
+top:50%;
+width:100%;
+display:flex;
+justify-content:space-between;
+transform:translateY(-50%);
+padding:0 10px;
+}
+
+.slider-icon{
+background:rgba(0,0,0,0.5);
+color:white;
+padding:6px;
+border-radius:50%;
+cursor:pointer;
+}
+
+/* seller avatar */
+
+.profile-avatar{
+position:absolute;
+top:10px;
+right:10px;
+}
+
+.profile-avatar img{
+width:35px;
+height:35px;
+border-radius:50%;
+border:2px solid white;
+}
+
+/* ================= PRODUCT INFO ================= */
+
+.productcard h1{
+font-size:18px;
+margin:10px;
+}
+
+.productcard p{
+font-size:14px;
+margin:4px 10px;
+}
+
+/* ================= BUTTONS ================= */
+
+.View_Products_btns{
+display:flex;
+gap:10px;
+margin:10px;
+}
+
+.View_Products_btns button{
+flex:1;
+padding:8px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.View_Products_btns button:first-child
+
+.View_Products_btns button:last-child{
+background:#2e7d32;
+color:white;
+}
+
+/* ================= MEDIA MODAL ================= */
+
+.media-modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.media-modal img,
+.media-modal video{
+max-width:90%;
+max-height:90%;
+}
+
+.close-btn{
+position:absolute;
+top:20px;
+right:30px;
+font-size:40px;
+color:white;
+cursor:pointer;
+}
+
+/* ================= CART POPUP ================= */
+
 .cart-popup{
-  position:fixed;
-  bottom:20px;
-  left:10%;
-  width:80%;
-  background:#2e7d32;
-  color:white;
-  padding:10px;
-  text-align:center;
-  border-radius:8px;
-  font-size:14px;
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+background:#2e7d32;
+color:white;
+padding:12px 20px;
+border-radius:8px;
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width:768px){
+
+.View_Products_navbar{
+padding:10px;
+}
+
+.View_Products_logo img{
+width:35px;
+height:35px;
+}
+
+.View_Products_heads h1{
+font-size:16px;
+}
+
+.View_Products_heads h2{
+font-size:12px;
+}
+
+/* search */
+
+.View_Products_search{
+flex-direction:column;
+gap:8px;
+}
+
+.View_Products_search input{
+width:100%;
+}
+
+.View_Products_search button{
+width:100%;
+}
+
+/* product grid */
+
+.store_container{
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+padding:10px;
+}
+
+/* smaller cards */
+
+.productcard{
+font-size:12px;
+}
+
+.image-slider{
+height:130px;
+}
+
+.slider-media{
+height:130px;
+}
+
+.productcard h1{
+font-size:14px;
+}
+
+.productcard p{
+font-size:12px;
+}
+
+/* buttons stack */
+
+.View_Products_btns{
+flex-direction:column;
+gap:5px;
+}
+
+.View_Products_btns button{
+font-size:12px;
+padding:6px;
+}
+
+/* seller avatar */
+
+.profile-avatar img{
+width:25px;
+height:25px;
 }
 
 }
