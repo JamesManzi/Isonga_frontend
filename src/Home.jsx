@@ -193,7 +193,7 @@ const getFileUrl = (path) => {
   <img
   src={getFileUrl(seller.profile)}
     alt={`${seller.name} Profile`}
-    className="avatar-image"
+    className="profile-avatar"
     onError={(e) => { e.target.src = "/default-avatar.png"; }}
     onClick={() => showAlert("Please login first!")}
   />
