@@ -89,6 +89,12 @@ if (!cart || cart.items.length === 0) {
     </div>
   );
 }
+const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
 return(
 
 <div className="cart-page">
@@ -110,7 +116,7 @@ return(
 <div className="nav-right">
 
 <div className="Cart_profile">
-<img src={profile ? `https://isonga-backend.onrender.com/uploads/${profile}` : "/placeholder.png"} alt="Profile" />
+<img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="Profile" />
 </div>
 
 <button className="logout-btn" onClick={logout}>
@@ -135,7 +141,7 @@ return(
 <div className="cart-item" key={item.product._id}>
 
 <img
-src={`https://isonga-backend.onrender.com${item.product.files[0]}`}
+src={getFileUrl(item.product.files[0])}
 className="cart-image"
 />
 

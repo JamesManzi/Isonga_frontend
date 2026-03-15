@@ -142,6 +142,12 @@ function My_Store() {
     }
   };
 
+  const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
   return (
     <div className="My_Store">
       {/* Navbar */}
@@ -190,7 +196,7 @@ function My_Store() {
                   {(() => {
                     const index = currentIndex[product._id] ?? 0;
                     const file = product.files[index];
-                    const url = `https://isonga-backend.onrender.com${file}`;
+                    const url = getFileUrl(file);
                     return isVideoFile(file) ? (
                       <video
                         src={url}
@@ -305,7 +311,7 @@ function My_Store() {
       {modalMedia.productId && (() => {
         const product = products.find((p) => p._id === modalMedia.productId);
         const file = product.files[modalMedia.index];
-        const url = `https://isonga-backend.onrender.com${file}`;
+        const url = getFileUrl(file);
         const video = isVideoFile(file);
 
         const handleNextModal = () => {

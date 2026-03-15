@@ -121,7 +121,12 @@ function SellerConversations() {
     if (!date) return "";
     return new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
-
+const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
   return (
     <div className="chat-container">
       <div className="chat-header">
@@ -148,7 +153,7 @@ function SellerConversations() {
             <div key={chat.room} className="chat-item" onClick={() => openChat(chat)}>
               <div className="avatar">
                 <img
-                  src={chat.buyerProfile ? `https://isonga-backend.onrender.com/uploads/${chat.buyerProfile}` : "/placeholder.png"}
+                  src={chat.buyerProfile ? getFileUrl(chat.buyerProfile) : "/placeholder.png"}
                   alt={chat.buyerName}
                   onError={(e) => { e.target.src = "https://via.placeholder.com/50"; }}
                 />

@@ -76,7 +76,12 @@ function BuyerConversations() {
   };
 
   const filteredChats = conversations.filter((chat) => chat.sellerName?.toLowerCase().includes(search.toLowerCase()));
-
+ const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
   return (
     <div className="chat-container">
       <div className="chat-header">
@@ -93,7 +98,7 @@ function BuyerConversations() {
           filteredChats.map((chat) => (
             <div key={chat.room} className="chat-item" onClick={() => openChat(chat)}>
               <div className="avatar">
-                <img src={chat.sellerProfile ? `https://isonga-backend.onrender.com/uploads/${chat.sellerProfile}` : "/placeholder.png"} alt={chat.sellerName} />
+                <img src={chat.sellerProfile ? getFileUrl(chat.sellerProfile) : "/placeholder.png"} alt={chat.sellerName} />
               </div>
               <div className="chat-details">
                 <div className="chat-top">

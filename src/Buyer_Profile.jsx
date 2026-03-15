@@ -28,6 +28,12 @@ function Buyer_Profile(){
     if(!buyer){
         return <p>Loading.....</p>
     }
+    const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
     return(
         <div className="Buyer_Profile">
             <div className="Buyer_Profile_navbar">
@@ -48,7 +54,7 @@ function Buyer_Profile(){
             <div className="buyer_profile">
                 {buyer.profile&&(
                     <img
-                    src={`https://isonga-backend.onrender.com/uploads/${buyer.profile}`}
+                    src={getFileUrl(buyer.profile)}
                     />
                 )}
                 <p>{buyer.name}</p>

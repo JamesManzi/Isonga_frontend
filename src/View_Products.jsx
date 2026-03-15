@@ -145,7 +145,12 @@ const [popupMessage, setPopupMessage] = useState("");
     setTimeout(() => setShowCartPopup(false), 2000);
   }
 };
-
+const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
   return (
     <div className="View_Products">
       {/* Navbar */}
@@ -198,7 +203,7 @@ const [popupMessage, setPopupMessage] = useState("");
                   <div className="image-slider">
                     {isVideoFile(currentFile) ? (
                       <video
-                        src={`https://isonga-backend.onrender.com/uploads/${currentFile}`}
+                        src={getFileUrl(currentFile)}
                         controls
                         muted
                         className="slider-media"
@@ -209,7 +214,7 @@ const [popupMessage, setPopupMessage] = useState("");
                       />
                     ) : (
                       <img
-                        src={`https://isonga-backend.onrender.com/uploads/${currentFile}`}
+                        src={getFileUrl(currentFile)}
                         alt={product.name}
                         className="slider-media"
                         onClick={(e) => {
@@ -250,7 +255,7 @@ const [popupMessage, setPopupMessage] = useState("");
                       >
                         <img
                           src={
-                               `https://isonga-backend.onrender.com/uploads/${seller.profile}`
+                               getFileUrl(seller.profile)
                               
                           }
                           alt="seller profile"
@@ -292,13 +297,13 @@ const [popupMessage, setPopupMessage] = useState("");
           <span className="close-btn">&times;</span>
           {isVideoFile(selectedMedia) ? (
             <video
-              src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`}
+              src={getFileUrl(selectedMedia)}
               controls
               autoPlay
             />
           ) : (
             <img
-              src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`}
+              src={getFileUrl(selectedMedia)}
               alt="preview"
             />
           )}

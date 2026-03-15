@@ -98,6 +98,13 @@ const handleNext = (sellerId, totalImages) => {
 
     fetchSellers();
   }, []);
+
+  const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png"; // Fallback if no image exists
+  return path.startsWith("http") 
+    ? path 
+    : `https://isonga-backend.onrender.com/uploads/${path}`;
+};
     return(
         <div>
           {/* Navbar */}
@@ -113,7 +120,7 @@ const handleNext = (sellerId, totalImages) => {
                   <Link to="/buyer_profile">
             {profile ? (
               <img
-                src={`https://isonga-backend.onrender.com/uploads/${profile}`}
+                src={getFileUrl(profile)}
                 alt="Profile"
               />
             ) : (
@@ -182,7 +189,7 @@ const handleNext = (sellerId, totalImages) => {
         {seller.files && seller.files.length > 0 ? (
           <div className="image-slider">
             <img
-              src={`https://isonga-backend.onrender.com/uploads/${seller.files[currentImageIndex[seller._id] || 0]}`}
+              src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
               alt={seller.name}
               className="slider-image"
               onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
@@ -207,7 +214,7 @@ const handleNext = (sellerId, totalImages) => {
         {/* Profile small avatar overlay */}
 <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
   <img
-    src={seller.profile ? `https://isonga-backend.onrender.com/uploads/${seller.profile}` : "/placeholder.png"}
+    src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"}
     alt={`${seller.name} Profile`}
     className="avatar-image" // optional: add a class for styling
   />
@@ -246,9 +253,9 @@ const handleNext = (sellerId, totalImages) => {
   <div className="media-modal" onClick={() => setSelectedMedia(null)}>
     <span className="close-btn">&times;</span>
     {selectedMedia.endsWith(".mp4") ? (
-      <video src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`} controls autoPlay />
+      <video src={getFileUrl(selectedMedia)} controls autoPlay />
     ) : (
-      <img src={`https://isonga-backend.onrender.com/uploads/${selectedMedia}`} alt="Full view" />
+      <img src={getFileUrl(selectedMedia)} alt="Full view" />
     )}
   </div>
 )}
