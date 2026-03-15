@@ -137,7 +137,12 @@ const fetchCartCount = async () => {
   };
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
 
-
+const getFileUrl = (path) => {
+    if (!path) return "/placeholder.png";
+    return path.startsWith("http") 
+      ? path 
+      : `https://isonga-backend.onrender.com/uploads/${path}`;
+  };
   return (
     <div className="Buyer_Dashboard">
       {/* Navbar */}
@@ -145,8 +150,8 @@ const fetchCartCount = async () => {
         <div className="Buyer_Dashboard_logos"><img src="/logo.png" alt="Logo" /></div>
         <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
         <div className="Buyer_Dashboard_user">
-          <Link to="/buyer_profile">
-            <img src={profile?.startsWith("http") ? profile : `https://isonga-backend.onrender.com/uploads/${profile}`} alt="Profile" />
+         <Link to="/buyer_profile">
+            <img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="Profile" />
           </Link>
           <ChatNotification />
         </div>
@@ -238,7 +243,7 @@ const fetchCartCount = async () => {
                 <img src="/placeholder.png" alt="No Images" className="slider-image" />
               )}
               <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
-                <img src={seller.profile?.startsWith("http") ? seller.profile : `https://isonga-backend.onrender.com/uploads/${seller.profile}`}/>
+                <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={`${seller.name} Profile`} className="avatar-image" />
               </Link>
             </div>
             <div className="shop-card-info">
@@ -260,11 +265,11 @@ const fetchCartCount = async () => {
       {selectedMedia && (
         <div className="media-modal" onClick={() => setSelectedMedia(null)}>
           <span className="close-btn">&times;</span>
-         {isVideoFile(selectedMedia) ? (
-  <video src={selectedMedia.startsWith("http") ? selectedMedia : `https://isonga-backend.onrender.com/uploads/${selectedMedia}`} controls autoPlay />
-) : (
-  <img src={selectedMedia.startsWith("http") ? selectedMedia : `https://isonga-backend.onrender.com/uploads/${selectedMedia}`} alt="Full view" />
-)}
+        {isVideoFile(selectedMedia) ? (
+            <video src={getFileUrl(selectedMedia)} controls autoPlay />
+          ) : (
+            <img src={getFileUrl(selectedMedia)} alt="Full view" />
+          )}
         </div>
       )}
     </div>
