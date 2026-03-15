@@ -179,7 +179,7 @@ const fetchCartCount = async () => {
         </span>
       )}
     </Link>
-        <div className="Buyer_Dashboard_logout">
+        <div className="Dashboard_Logout">
         <button onClick={handleLogout}>Logout</button>
         </div>
       </div>
