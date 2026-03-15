@@ -237,7 +237,7 @@ const fetchCartCount = async () => {
               ) : (
                 <img src="/placeholder.png" alt="No Images" className="slider-image" />
               )}
-              <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
+              <Link to={`/view_profile/${seller._id}`} className="profile_avatar">
                 <img src={seller.profile?.startsWith("http") ? seller.profile : `https://isonga-backend.onrender.com/uploads/${seller.profile}`}/>
               </Link>
             </div>
