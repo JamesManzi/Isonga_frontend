@@ -195,7 +195,7 @@ const fetchCartCount = async () => {
         <input 
             type="text" 
             placeholder="Search sellers by name, category, location..." 
-            className="Buyer_Dashboard search"
+            className="searching"
             value={searchQuery} 
             onChange={e => setSearchQuery(e.target.value)} 
         />
