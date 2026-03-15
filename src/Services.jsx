@@ -230,7 +230,7 @@ const handleNext = (sellerId, totalImages) => {
 
         {/* Buttons */}
         <div className="card-actions">
-          <Link to={`/view_products/${seller._id}`}>
+          <Link to={`/Service_Products/${seller._id}`}>
             <button className="visit-btn">Visit Shop</button>
           </Link>
 

@@ -30,6 +30,7 @@ import BuyerConversations from "./BuyerConversations";
 import Cart from "./Cart";
 import Checkout from "./Checkout";
 import SellerOrders from "./SellerOrders";
+import Service_Products from "./Service_Products";
 function App(){
   return(
     <div>
@@ -66,6 +67,7 @@ function App(){
         <Route path="/Cart" element={<Cart/>}/>
         <Route path="/checkout" element={<Checkout/>}/>
         <Route path="/seller_orders" element={<SellerOrders/>}/>
+        <Route path="/Service_products/:id" element={<Service_Products/>}/>
       </Routes>
       </BrowserRouter>
     </div>
