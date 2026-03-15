@@ -216,3 +216,9 @@
 
   .searching { width: 70%; }
 }
+
+.profile_avatar {
+  position: absolute;
+  bottom: -20px;
+  right: 20px;
+}
