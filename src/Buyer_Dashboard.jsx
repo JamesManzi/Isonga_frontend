@@ -154,8 +154,8 @@ const fetchCartCount = async () => {
           <nav>
             <ul>
               <li><Link to="/fashion">Products</Link></li>
-              <li><Link to="/RealEstate">Services</Link></li>
-              <li><Link to="/Assets">Assets</Link></li>
+              <li><Link to="/services">Services</Link></li>
+              <li><Link to="/RealEstate">Assets</Link></li>
             </ul>
           </nav>
         </div>
