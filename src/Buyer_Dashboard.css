@@ -1,174 +1,315 @@
-:root {
-  --primary: #2563eb;
-  --bg-main: #f1f5f9;
-  --card-bg: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --radius: 12px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
-}
+/* Buyer_Dashboard.css */
 
+/* --- Global resets and basics --- */
 .Buyer_Dashboard {
-  background-color: var(--bg-main);
-  min-height: 100vh;
-  padding-bottom: 2rem;
-  color: var(--text-main);
+  font-family: Arial, sans-serif;
+  color: #333;
+  padding: 10px;
+  background-color: #f9f9f9;
 }
 
-/* --- Clean, Professional Navbar --- */
+/* Navbar */
 .Buyer_Dashboard_navbar {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
-  background: var(--card-bg);
-  padding: 0.75rem 5%;
+  background-color: #fff;
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: var(--shadow-sm);
 }
 
-.Buyer_Dashboard_heads { display: flex; gap: 4px; }
-.Buyer_Dashboard_heads h1 { font-size: 1.4rem; color: var(--primary); margin: 0; }
-.Buyer_Dashboard_heads h2 { font-size: 1.4rem; margin: 0; }
-
-/* Category Chips (Mobile-friendly scroll) */
-.Buyer_Dashboard_nav {
-  grid-column: 1 / -1; /* Full width row below logo */
-  border-top: 1px solid #e2e8f0;
-  padding-top: 0.75rem;
+.Buyer_Dashboard_logos img {
+  height: 40px;
 }
 
+.Buyer_Dashboard_heads h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.Buyer_Dashboard_heads h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.Buyer_Dashboard_user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.Buyer_Dashboard_user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* Navbar links */
 .Buyer_Dashboard_nav ul {
   display: flex;
-  gap: 0.75rem;
-  overflow-x: auto;
-  padding-bottom: 5px;
+  flex-wrap: wrap;
+  gap: 10px;
   list-style: none;
+  padding: 0;
+  margin: 5px 0;
 }
 
-.Buyer_Dashboard_nav ul::-webkit-scrollbar { display: none; }
-
-.Buyer_Dashboard_nav a {
-  background: #f8fafc;
-  padding: 6px 16px;
-  border-radius: 20px;
+.Buyer_Dashboard_nav ul li a {
   text-decoration: none;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  border: 1px solid #e2e8f0;
-  white-space: nowrap;
-  transition: 0.2s;
+  color: #333;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background 0.2s;
 }
 
-.Buyer_Dashboard_nav a:hover {
-  background: var(--primary);
+.Buyer_Dashboard_nav ul li a:hover {
+  background-color: #f0f0f0;
+}
+
+/* Cart & logout */
+.cart-link {
+  margin-left: 10px;
+}
+
+.Buyer_Dashboard_logout button {
+  background-color: #e53935;
   color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-/* --- Unified Shop Grid --- */
+.Buyer_Dashboard_logout button:hover {
+  background-color: #c62828;
+}
+
+/* Heading */
+.Buyer_Dashboard_Heading {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.Buyer_Dashboard_Heading h1 {
+  font-size: 1.5rem;
+}
+
+.Buyer_Dashboard_Heading p {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Search bar */
+.Buyer_Dashboard_search {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 5px;
+}
+
+.Buyer_Dashboard_search input {
+  flex: 1 1 200px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  min-width: 150px;
+}
+
+.Buyer_Dashboard_search button {
+  padding: 8px 12px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.Buyer_Dashboard_search button:hover {
+  background-color: #1976d2;
+}
+
+/* Sellers Grid */
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  padding: 0 5%;
-  max-width: 1400px;
-  margin: 0 auto;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
 }
 
-/* --- The Shop Card (Fixed Layout) --- */
 .shop-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
+  background-color: #fff;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
-  height: 480px; /* Fixed height keeps grid perfectly aligned */
-  transition: transform 0.2s ease;
 }
 
-.shop-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-
 .card-image-section {
-  height: 200px; /* Fixed image height */
-  background: #e2e8f0;
   position: relative;
 }
 
 .slider-image {
   width: 100%;
-  height: 100%;
+  height: 200px;
   object-fit: cover;
+  cursor: pointer;
+}
+
+.slider-controls {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  padding: 0 10px;
+}
+
+.slider-icon {
+  color: white;
+  background: rgba(0,0,0,0.5);
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .profile-avatar {
   position: absolute;
-  bottom: -15px;
-  right: 15px;
-}
-
-.profile-avatar img {
-  width: 50px;
-  height: 50px;
+  bottom: 10px;
+  left: 10px;
+  border: 2px solid white;
   border-radius: 50%;
-  border: 3px solid white;
-  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  width: 40px;
+  height: 40px;
 }
 
+/* Card info */
 .shop-card-info {
-  padding: 1.5rem 1rem 1rem;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  gap: 5px;
 }
 
-.seller-name { font-size: 1.1rem; font-weight: 700; margin: 0; }
-.seller-category { color: var(--primary); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin: 4px 0; }
-.seller-location { font-size: 0.8rem; color: var(--text-muted); }
+.seller-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
 
-.seller-description {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin: 12px 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3; /* Clips long text to exactly 3 lines */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.seller-location, .seller-category, .seller-description {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.rating span {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 5px;
 }
 
 .card-actions {
-  margin-top: auto; /* Pushes buttons to the bottom */
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
-.visit-btn, .chat-btn {
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
+.card-actions button {
+  flex: 1;
+  padding: 5px 0;
+  margin-right: 5px;
   border: none;
-  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.visit-btn { background: var(--primary); color: white; }
-.chat-btn { background: #f1f5f9; color: var(--text-main); }
+.visit-btn {
+  background-color: #4caf50;
+  color: white;
+}
 
-/* --- Mobile Specific Fixes --- */
-@media (max-width: 600px) {
+.chat-btn {
+  background-color: #ff9800;
+  color: white;
+}
+
+.card-actions button:hover {
+  opacity: 0.9;
+}
+
+/* Media modal */
+.media-modal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.8);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:200;
+}
+
+.media-modal img, .media-modal video {
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.media-modal .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 768px) {
   .Buyer_Dashboard_navbar {
-    grid-template-columns: 1fr auto auto;
-  }
-  .Buyer_Dashboard_heads { grid-column: 1; }
-  .shop-grid { grid-template-columns: 1fr; padding: 0 15px; }
-  .shop-card { height: auto; min-height: 450px; }
-  .Buyer_Dashboard_search {
     flex-direction: column;
-    padding: 0 15px;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .Buyer_Dashboard_nav ul {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .shop-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
+  .slider-image {
+    height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .Buyer_Dashboard_Heading h1 {
+    font-size: 1.2rem;
+  }
+
+  .Buyer_Dashboard_search input {
+    flex: 1 1 100%;
+  }
+
+  .card-actions {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .card-actions button {
+    margin-right: 0;
   }
 }
