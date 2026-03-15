@@ -161,15 +161,9 @@ const removeImage = (index) => {
   required
 >
   <option value="">-- Select Category --</option>
-  <option value="Agriculture">Agriculture</option>
+  <option value="Products">Products</option>
   <option value="Services">Services</option>
-  <option value="Fashion">Fashion</option>
-  <option value="RealEstate">Real Estate</option>
-  <option value="Vehicles">Vehicles</option>
-  <option value="Hospitality">Hospitality</option>
-  <option value="Electronics">Electronics</option>
-  <option value="Furniture">Furniture</option>
-  <option value="Construction">construction</option>
+  <option value="Assets">Assets</option>
 </select>
                 <label htmlFor="location">Location</label><br/>
                 <input type="text" name="location" className="register" 
