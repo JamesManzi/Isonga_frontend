@@ -131,6 +131,7 @@ const handleNext = (sellerId, totalImages) => {
                 <div className="Buyer_Dashboard_nav">
                   <nav>
                     <ul>
+                       <li><Link to="/fashion">Fashion</Link></li>
                       <li><Link to="/Electronics">Electronics</Link></li>
                       <li><Link to="/Furniture">Furniture</Link></li>
                       <li><Link to="/Construction">Construction</Link></li>
