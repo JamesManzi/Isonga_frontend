@@ -173,18 +173,42 @@ body {
   color: #333;
 }
 
+/* --- Seller Profile Avatar on Cards (Updated Like Home) --- */
 .profile-avatar {
   position: absolute;
-  bottom: -20px;
-  right: 20px;
+  bottom: -25px;                /* slight overlap with card */
+  right: 15px;
+  width: 60px;                   /* larger and consistent with Home */
+  height: 60px;
+  border-radius: 50%;            /* circular */
+  border: 3px solid var(--accent); /* use accent color instead of white */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25); /* subtle shadow */
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 2;                     /* above slider image */
+  overflow: hidden;               /* ensures circular clipping */
 }
 
 .profile-avatar img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 3px solid white;
-  box-shadow: var(--shadow);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;             /* maintain aspect ratio */
+  display: block;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.1);         /* slight zoom on hover */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35); /* stronger hover shadow */
+}
+
+/* --- Mobile Adjustments --- */
+@media screen and (max-width: 768px) {
+  .profile-avatar {
+    width: 50px;
+    height: 50px;
+    bottom: -20px;
+    right: 10px;
+  }
 }
 
 .shop-card-info {
