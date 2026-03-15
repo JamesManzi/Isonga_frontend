@@ -112,7 +112,7 @@ function Add_Product() {
             type="text"
             name="name"
             className="product"
-            placeholder="Enter Product Name"
+            placeholder="Enter Product/Service Name"
             onChange={(e) => setName(e.target.value)}
             required
           />
@@ -142,9 +142,8 @@ function Add_Product() {
             type="number"
             name="quantity"
             className="product"
-            placeholder="Enter Quantity"
+            placeholder="Enter Quantity/Optional"
             onChange={(e) => setQuantity(e.target.value)}
-            required
           />
 
           <label htmlFor="category">Category</label>
