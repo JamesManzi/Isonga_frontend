@@ -1,65 +1,50 @@
-/* --- Global Reset & Variables --- */
+/* --- Global Variables & Resets --- */
 :root {
-  --primary-color: #2c3e50;
-  --accent-color: #27ae60;
-  --danger-color: #e74c3c;
-  --background-gray: #f4f7f6;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --bg-body: #f1f5f9;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
   --white: #ffffff;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--background-gray);
-  color: #333;
+.Buyer_Dashboard {
+  background-color: var(--bg-body);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text-main);
 }
 
-/* --- Navbar Layout --- */
+/* --- Navbar Styles --- */
 .Buyer_Dashboard_navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 5%;
+  padding: 10px 20px;
   background: var(--white);
   box-shadow: var(--shadow);
   position: sticky;
   top: 0;
   z-index: 1000;
-  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .Buyer_Dashboard_logos img {
-  height: 45px;
+  height: 40px;
   width: auto;
 }
 
-.Buyer_Dashboard_heads {
-  display: flex;
-  gap: 5px;
-}
-
-.Buyer_Dashboard_heads h1 { font-size: 1.5rem; color: var(--primary-color); margin: 0; }
-.Buyer_Dashboard_heads h2 { font-size: 1.5rem; color: var(--accent-color); margin: 0; }
-
-.Buyer_Dashboard_nav ul {
-  display: flex;
-  list-style: none;
-  gap: 20px;
+.Buyer_Dashboard_heads h1 {
+  font-size: 1.2rem;
   margin: 0;
-  padding: 0;
+  color: var(--primary);
 }
 
-.Buyer_Dashboard_nav a {
-  text-decoration: none;
-  color: var(--primary-color);
-  font-weight: 600;
-  transition: var(--transition);
-}
-
-.Buyer_Dashboard_nav a:hover {
-  color: var(--accent-color);
+.Buyer_Dashboard_heads h2 {
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: 400;
 }
 
 .Buyer_Dashboard_user {
@@ -73,66 +58,99 @@ body {
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--accent-color);
+  border: 2px solid var(--primary);
+}
+
+.Buyer_Dashboard_nav {
+  width: 100%;
+  margin-top: 10px;
+  order: 4;
+}
+
+.Buyer_Dashboard_nav ul {
+  display: flex;
+  justify-content: space-around;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 10px;
+}
+
+.Buyer_Dashboard_nav a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.faCartShopping {
+  color: var(--text-main);
 }
 
 .Buyer_Dashboard_logout button {
-  background: var(--danger-color);
+  background: #ef4444;
   color: white;
   border: none;
   padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-/* --- Header & Search --- */
-.Buyer_Dashboard_Heading {
-  text-align: center;
-  padding: 40px 20px;
-}
-
-.Buyer_Dashboard_search {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 40px;
-  padding: 0 20px;
-}
-
-.Buyer_Dashboard_search input {
-  width: 100%;
-  max-width: 500px;
-  padding: 12px 20px;
-  border: 1px solid #ddd;
-  border-radius: 25px;
-  outline: none;
-}
-
-.Buyer_Dashboard_search button {
-  padding: 10px 25px;
-  background: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 25px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
 }
 
-/* --- Shop Grid & Cards --- */
+/* --- Heading Section --- */
+.Buyer_Dashboard_Heading {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.Buyer_Dashboard_Heading h1 {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+/* --- Search Bar --- */
+.Buyer_Dashboard_search {
+  display: flex;
+  max-width: 600px;
+  margin: 0 auto 30px;
+  padding: 0 20px;
+}
+
+.Buyer_Dashboard_search input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px 0 0 8px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.Buyer_Dashboard_search button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0 20px;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+}
+
+/* --- Shop Grid --- */
 .shop-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
-  padding: 0 5% 50px;
+  gap: 25px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .shop-card {
   background: var(--white);
-  border-radius: 15px;
+  border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow);
-  transition: transform 0.3s ease;
+  transition: transform 0.2s;
 }
 
 .shop-card:hover {
@@ -141,8 +159,13 @@ body {
 
 .card-image-section {
   position: relative;
-  height: 220px;
-  background: #eee;
+  height: 200px;
+  background: #e2e8f0;
+}
+
+.image-slider {
+  height: 100%;
+  width: 100%;
 }
 
 .slider-image {
@@ -158,102 +181,88 @@ body {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  transform: translateY(-50%);
   padding: 0 10px;
-  box-sizing: border-box;
+  transform: translateY(-50%);
   pointer-events: none;
 }
 
 .slider-icon {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.8);
   padding: 8px;
   border-radius: 50%;
   cursor: pointer;
   pointer-events: auto;
-  color: #333;
+  color: var(--text-main);
 }
 
-/* --- Seller Profile Avatar on Cards (Updated Like Home) --- */
 .profile-avatar {
   position: absolute;
-  bottom: -25px;                /* slight overlap with card */
-  right: 15px;
-  width: 60px;                   /* larger and consistent with Home */
-  height: 60px;
-  border-radius: 50%;            /* circular */
-  border: 3px solid var(--accent); /* use accent color instead of white */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25); /* subtle shadow */
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  z-index: 2;                     /* above slider image */
-  overflow: hidden;               /* ensures circular clipping */
+  bottom: -20px;
+  left: 20px;
+  z-index: 2;
 }
 
 .profile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;             /* maintain aspect ratio */
-  display: block;
-}
-
-.profile-avatar:hover {
-  transform: scale(1.1);         /* slight zoom on hover */
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35); /* stronger hover shadow */
-}
-
-/* --- Mobile Adjustments --- */
-@media screen and (max-width: 768px) {
-  .profile-avatar {
-    width: 50px;
-    height: 50px;
-    bottom: -20px;
-    right: 10px;
-  }
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid var(--white);
+  object-fit: cover;
+  background: white;
 }
 
 .shop-card-info {
-  padding: 25px 20px 20px;
+  padding: 30px 20px 20px;
 }
 
-.seller-name { margin: 0; font-size: 1.2rem; }
-.seller-location { color: #777; font-size: 0.9rem; margin: 5px 0; }
-.seller-category { color: var(--accent-color); font-weight: bold; font-size: 0.85rem; }
-
-.rating { margin: 10px 0; display: flex; align-items: center; gap: 5px; }
+.seller-name { font-size: 1.2rem; margin-bottom: 5px; }
+.seller-location { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+.seller-category { font-size: 0.85rem; font-weight: bold; color: var(--primary); margin: 5px 0; }
+.rating { margin: 10px 0; font-size: 0.9rem; }
+.seller-description { 
+  font-size: 0.9rem; 
+  color: #475569; 
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
 
 .card-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-top: 15px;
 }
 
 .card-actions button {
-  flex: 1;
+  width: 100%;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: none;
-  cursor: pointer;
   font-weight: 600;
+  cursor: pointer;
 }
 
-.visit-btn { background: var(--primary-color); color: white; }
-.chat-btn { background: #eee; color: var(--primary-color); }
+.visit-btn { background: var(--primary); color: white; }
+.chat-btn { background: #f1f5f9; color: var(--text-main); }
 
 /* --- Media Modal --- */
 .media-modal {
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: rgba(0,0,0,0.9);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 2000;
 }
 
 .media-modal img, .media-modal video {
   max-width: 90%;
-  max-height: 80vh;
-  border-radius: 10px;
+  max-height: 80%;
+  border-radius: 8px;
 }
 
 .close-btn {
@@ -262,28 +271,44 @@ body {
   color: white; font-size: 40px; cursor: pointer;
 }
 
-/* --- Responsive Adjustments (Mobile) --- */
-@media screen and (max-width: 768px) {
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 768px) {
   .Buyer_Dashboard_navbar {
-    flex-wrap: wrap;
-    justify-content: space-between;
+    padding: 10px;
   }
   
-  .Buyer_Dashboard_nav {
-    order: 10;
-    width: 100%;
-  }
-
-  .Buyer_Dashboard_nav ul {
-    justify-content: space-around;
-    padding-bottom: 10px;
+  .Buyer_Dashboard_heads {
+    display: none; /* Hide text logo on small mobile */
   }
 
   .Buyer_Dashboard_search {
     flex-direction: column;
+    gap: 10px;
+  }
+
+  .Buyer_Dashboard_search input {
+    border-radius: 8px;
+  }
+
+  .Buyer_Dashboard_search button {
+    border-radius: 8px;
+    padding: 12px;
   }
 
   .shop-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* One card per row */
+    padding: 10px;
+  }
+
+  .Buyer_Dashboard_Heading h1 {
+    font-size: 1.25rem;
+  }
+
+  .Buyer_Dashboard_logout {
+    margin-left: auto;
+  }
+  
+  .cart-link {
+    margin-right: 10px;
   }
 }
