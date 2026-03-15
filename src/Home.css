@@ -217,10 +217,33 @@
   .searching { width: 70%; }
 }
 
+/* --- Profile Avatar --- */
 .profile_avatar {
   position: absolute;
-  bottom: -20px;
-  right: 20px;
-  border-radius: 50%;
-  font-size: 20px;
+  bottom: -25px;        /* slightly lower for overlap effect */
+  right: 15px;
+  width: 60px;           /* fixed size for all avatars */
+  height: 60px;
+  border-radius: 50%;    /* makes it circular */
+  border: 3px solid var(--accent); /* colored border */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* subtle shadow */
+  object-fit: cover;     /* ensures image covers circle without distortion */
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 2;            /* makes sure it stays on top */
+}
+
+.profile_avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Mobile Adjustments --- */
+@media screen and (max-width: 768px) {
+  .profile_avatar {
+    width: 50px;
+    height: 50px;
+    bottom: -20px;
+    right: 10px;
+  }
 }
