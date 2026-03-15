@@ -186,7 +186,7 @@
   z-index: 1000;
 }
 
-/* ================== Mobile Responsive ================== */
+/* ================== Mobile Responsive: Small Cards ================== */
 @media (max-width: 768px) {
   /* Container & Cards */
   .store_container {
@@ -196,7 +196,7 @@
   }
 
   .productcard {
-    flex: 1 1 calc(50% - 10px); /* Two small cards per row */
+    flex: 1 1 calc(50% - 10px); /* Two cards per row */
     padding: 8px;
     border-radius: 6px;
     font-size: 12px;
@@ -204,7 +204,7 @@
 
   /* Images & Media */
   .slider-media {
-    height: 120px; /* Smaller images/videos */
+    height: 120px; /* smaller image/video */
     object-fit: cover;
   }
 
