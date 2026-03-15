@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faChevronLeft, faChevronRight, faSearch,faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import {faChevronLeft, faChevronRight, faSearch,faCartShopping,faStar } from "@fortawesome/free-solid-svg-icons";
 function Services(){
     const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
