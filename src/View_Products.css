@@ -1,272 +1,139 @@
-/* ================== Base Styles (Desktop First) ================== */
-.View_Products {
-  padding: 20px;
-  font-family: Arial, sans-serif;
+/* ================= MODERN MOBILE PRODUCT CARDS ================= */
+@media (max-width:768px){
+
+/* product grid */
+.store_container{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  padding:10px;
 }
 
-.View_Products_navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+/* card */
+.productcard{
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  padding:0;
 }
 
-.View_Products_logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* image slider */
+.image-slider{
+  position:relative;
+  width:100%;
+  height:140px;
 }
 
-.View_Products_logo img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
+.slider-media{
+  width:100%;
+  height:140px;
+  object-fit:cover;
 }
 
-.View_Products_heads h1 {
-  margin: 0;
-  font-size: 24px;
+/* seller avatar */
+.profile-avatar{
+  position:absolute;
+  top:8px;
+  right:8px;
 }
 
-.View_Products_heads h2 {
-  margin: 0;
-  font-size: 16px;
-  color: gray;
+.profile-avatar img{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  border:2px solid white;
 }
 
-.View_Products_back a {
-  font-size: 20px;
-  color: black;
-  text-decoration: none;
+/* slider arrows */
+.slider-controls{
+  position:absolute;
+  bottom:5px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:space-between;
+  padding:0 5px;
 }
 
-.View_Products_body p {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 15px;
+.slider-icon{
+  background:rgba(0,0,0,0.5);
+  color:white;
+  padding:5px;
+  border-radius:50%;
+  font-size:12px;
 }
 
-.View_Products_search {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+/* product info */
+.productcard h1{
+  font-size:14px;
+  padding:6px 8px 0;
+  margin:0;
 }
 
-.View_Products_search input {
-  flex: 1;
-  padding: 8px;
-  font-size: 14px;
+.productcard p{
+  font-size:12px;
+  padding:0 8px;
+  margin:3px 0;
 }
 
-.View_Products_search button {
-  padding: 8px 12px;
-  font-size: 14px;
-  cursor: pointer;
+/* buttons */
+.View_Products_btns{
+  display:flex;
+  gap:5px;
+  padding:8px;
 }
 
-.store_container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+.View_Products_btns button{
+  flex:1;
+  font-size:11px;
+  padding:6px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
 }
 
-.productcard {
-  flex: 1 1 calc(33.333% - 20px);
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-  box-sizing: border-box;
+/* chat button */
+.View_Products_btns button:first-child{
+  background:#f1f1f1;
 }
 
-.productcard h1 {
-  font-size: 18px;
-  margin: 10px 0 5px 0;
+/* cart button */
+.View_Products_btns button:last-child{
+  background:#2e7d32;
+  color:white;
 }
 
-.productcard p {
-  font-size: 14px;
-  margin: 4px 0;
+/* search */
+.View_Products_search{
+  padding:10px;
+  display:flex;
+  gap:6px;
 }
 
-.View_Products_btns {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+.View_Products_search input{
+  flex:1;
+  padding:8px;
+  font-size:13px;
 }
 
-.View_Products_btns button {
-  padding: 6px 10px;
-  font-size: 14px;
-  cursor: pointer;
+.View_Products_search button{
+  padding:8px 10px;
+  font-size:13px;
 }
 
-.image-slider {
-  position: relative;
-  margin-bottom: 10px;
+/* popup */
+.cart-popup{
+  position:fixed;
+  bottom:20px;
+  left:10%;
+  width:80%;
+  background:#2e7d32;
+  color:white;
+  padding:10px;
+  text-align:center;
+  border-radius:8px;
+  font-size:14px;
 }
 
-.slider-media {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-
-.slider-controls {
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-  padding: 0 10px;
-}
-
-.slider-icon {
-  background: rgba(0,0,0,0.4);
-  color: white;
-  padding: 5px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.profile-avatar {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-}
-
-.profile-avatar img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-/* Media Modal */
-.media-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.media-modal img,
-.media-modal video {
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 8px;
-}
-
-.close-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 28px;
-  color: white;
-  cursor: pointer;
-}
-
-/* Cart Popup */
-.cart-popup {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
-  z-index: 1000;
-}
-
-/* ================== Mobile Responsive: Small Cards ================== */
-@media (max-width: 768px) {
-  /* Container & Cards */
-  .store_container {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .productcard {
-    flex: 1 1 calc(50% - 10px); /* Two cards per row */
-    padding: 8px;
-    border-radius: 6px;
-    font-size: 12px;
-  }
-
-  /* Images & Media */
-  .slider-media {
-    height: 120px; /* smaller image/video */
-    object-fit: cover;
-  }
-
-  .slider-controls .slider-icon {
-    padding: 3px;
-    font-size: 14px;
-  }
-
-  /* Product Info */
-  .productcard h1 {
-    font-size: 14px;
-    margin: 5px 0 3px 0;
-  }
-
-  .productcard p {
-    font-size: 11px;
-    margin: 2px 0;
-  }
-
-  /* Buttons */
-  .View_Products_btns {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .View_Products_btns button {
-    font-size: 12px;
-    padding: 4px 6px;
-  }
-
-  /* Navbar & Logo */
-  .View_Products_navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .View_Products_logo img {
-    width: 40px;
-    height: 40px;
-  }
-
-  .View_Products_heads h1 {
-    font-size: 18px;
-  }
-
-  .View_Products_heads h2 {
-    font-size: 12px;
-  }
-
-  /* Search */
-  .View_Products_search {
-    flex-direction: column;
-  }
-
-  .View_Products_search button {
-    width: 100%;
-  }
-
-  /* Profile avatar */
-  .profile-avatar img {
-    width: 25px;
-    height: 25px;
-  }
 }
