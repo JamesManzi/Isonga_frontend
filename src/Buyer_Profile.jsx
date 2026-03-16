@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Profile.css";
 
 function Buyer_Profile() {
@@ -15,8 +17,6 @@ const [profile,setProfile] = useState(null);
 const [preview,setPreview] = useState("");
 
 const [message,setMessage] = useState("");
-
-
 
 //////////////////////////////////////////////////
 // FETCH BUYER
@@ -53,8 +53,6 @@ fetchBuyer();
 
 },[]);
 
-
-
 //////////////////////////////////////////////////
 // IMAGE PREVIEW
 //////////////////////////////////////////////////
@@ -71,8 +69,6 @@ setPreview(URL.createObjectURL(file));
 }
 
 };
-
-
 
 //////////////////////////////////////////////////
 // UPDATE PROFILE
@@ -121,8 +117,6 @@ setMessage("Update failed");
 
 };
 
-
-
 //////////////////////////////////////////////////
 // IMAGE URL
 //////////////////////////////////////////////////
@@ -137,8 +131,6 @@ return path.startsWith("http")
 
 };
 
-
-
 //////////////////////////////////////////////////
 // LOADING
 //////////////////////////////////////////////////
@@ -146,8 +138,6 @@ return path.startsWith("http")
 if(!buyer){
 return <p>Loading...</p>;
 }
-
-
 
 //////////////////////////////////////////////////
 // UI
@@ -157,17 +147,17 @@ return(
 
 <div className="profile-page">
 
+{/* HEADER */}
+
 <div className="profile-header">
 
 <Link to="/buyer_dashboard" className="back-btn">
-← Back
+<FontAwesomeIcon icon={faArrowLeft}/> Back
 </Link>
 
 <h1>Account Settings</h1>
 
 </div>
-
-
 
 <div className="profile-card">
 
@@ -176,15 +166,15 @@ return(
 <div className="profile-image-section">
 
 <img
-  src={
-    profile
-      ? URL.createObjectURL(profile)     // newly selected image
-      : buyer?.profile
-      ? getFileUrl(buyer.profile)        // image from database
-      : "/placeholder.png"
-  }
-  alt="profile"
-  className="profile-image"
+src={
+profile
+? preview
+: buyer?.profile
+? getFileUrl(buyer.profile)
+: "/placeholder.png"
+}
+alt="profile"
+className="profile-image"
 />
 
 <input
@@ -194,8 +184,6 @@ className="file-input"
 />
 
 </div>
-
-
 
 <form className="profile-form" onSubmit={handleUpdate}>
 
@@ -212,8 +200,6 @@ required
 
 </div>
 
-
-
 <div className="form-group">
 
 <label>New Password</label>
@@ -226,8 +212,6 @@ onChange={(e)=>setPassword(e.target.value)}
 />
 
 </div>
-
-
 
 <div className="form-group">
 
@@ -242,14 +226,11 @@ onChange={(e)=>setConfirmPassword(e.target.value)}
 
 </div>
 
-
-
 <button className="save-btn">
 Update Profile
 </button>
 
 </form>
-
 
 {message && <p className="profile-message">{message}</p>}
 
