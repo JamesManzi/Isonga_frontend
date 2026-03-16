@@ -176,9 +176,15 @@ return(
 <div className="profile-image-section">
 
 <img
-src={preview ? getFileUrl(preview) : "/placeholder.png"}
-alt="profile"
-className="profile-image"
+  src={
+    preview
+      ? preview.startsWith("blob:")
+        ? preview
+        : getFileUrl(preview)
+      : "/placeholder.png"
+  }
+  alt="profile"
+  className="profile-image"
 />
 
 <input
