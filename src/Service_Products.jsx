@@ -112,7 +112,7 @@ const [popupMessage, setPopupMessage] = useState("");
   if (loading) {
     return (
       <div className="View_Products">
-        <p>Loading Services...</p>
+        <p>Loading Services.....</p>
       </div>
     );
   }
