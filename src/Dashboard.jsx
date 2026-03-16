@@ -83,6 +83,15 @@ function Dashboard() {
       ? "Service Views"
       : "Asset Views";
 
+      /* ---------------- SELLER TYPE LOGIC ---------------- */
+// ... your existing addLink, addText, orderTitle ...
+
+const orderLink = 
+  seller?.sellerType === "Product" 
+    ? "/seller_orders" 
+    : seller?.sellerType === "Service" 
+    ? "/seller_bookings" // Change this to your new bookings route
+    : "/seller_rentals";
   /* ---------------- CLICK OUTSIDE MENU ---------------- */
 
   useEffect(() => {
@@ -431,21 +440,16 @@ function Dashboard() {
           <h2>Dashboard</h2>
         </Link>
 
-        <Link to="/seller_orders" className="footer_item">
-
-          <div style={{ position: "relative", display: "inline-block" }}>
-
-            <FontAwesomeIcon icon={faBox} />
-
-            {newOrdersCount > 0 && (
-              <span className="order_badge">{newOrdersCount}</span>
-            )}
-
-          </div>
-
-          <h2>{orderTitle}</h2>
-
-        </Link>
+        {/* Updated Footer Item */}
+<Link to={orderLink} className="footer_item">
+  <div style={{ position: "relative", display: "inline-block" }}>
+    <FontAwesomeIcon icon={faBox} />
+    {newOrdersCount > 0 && (
+      <span className="order_badge">{newOrdersCount}</span>
+    )}
+  </div>
+  <h2>{orderTitle}</h2> {/* This will show "Orders", "Bookings", or "Rentals" */}
+</Link>
 
         <Link to="/SellerConversations" className="footer_item">
 
