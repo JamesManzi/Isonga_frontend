@@ -6,11 +6,21 @@ import "./Buyer_Profile.css";
 function Buyer_Profile() {
 
 const [buyer,setBuyer] = useState(null);
+
 const [name,setName] = useState("");
-const [email,setEmail] = useState("");
+const [password,setPassword] = useState("");
+const [confirmPassword,setConfirmPassword] = useState("");
+
 const [profile,setProfile] = useState(null);
 const [preview,setPreview] = useState("");
+
 const [message,setMessage] = useState("");
+
+
+
+//////////////////////////////////////////////////
+// FETCH BUYER
+//////////////////////////////////////////////////
 
 useEffect(()=>{
 
@@ -29,7 +39,6 @@ const b = res.data.buyer;
 
 setBuyer(b);
 setName(b.name);
-setEmail(b.email);
 setPreview(b.profile);
 
 }
@@ -46,6 +55,10 @@ fetchBuyer();
 
 
 
+//////////////////////////////////////////////////
+// IMAGE PREVIEW
+//////////////////////////////////////////////////
+
 const handleImageChange = (e)=>{
 
 const file = e.target.files[0];
@@ -61,16 +74,28 @@ setPreview(URL.createObjectURL(file));
 
 
 
+//////////////////////////////////////////////////
+// UPDATE PROFILE
+//////////////////////////////////////////////////
+
 const handleUpdate = async(e)=>{
 
 e.preventDefault();
+
+if(password !== confirmPassword){
+setMessage("Passwords do not match");
+return;
+}
 
 try{
 
 const formData = new FormData();
 
 formData.append("name",name);
-formData.append("email",email);
+
+if(password){
+formData.append("password",password);
+}
 
 if(profile){
 formData.append("profile",profile);
@@ -98,6 +123,10 @@ setMessage("Update failed");
 
 
 
+//////////////////////////////////////////////////
+// IMAGE URL
+//////////////////////////////////////////////////
+
 const getFileUrl = (path)=>{
 
 if(!path) return "/placeholder.png";
@@ -109,17 +138,24 @@ return path.startsWith("http")
 };
 
 
+
+//////////////////////////////////////////////////
+// LOADING
+//////////////////////////////////////////////////
+
 if(!buyer){
 return <p>Loading...</p>;
 }
 
 
 
+//////////////////////////////////////////////////
+// UI
+//////////////////////////////////////////////////
+
 return(
 
 <div className="profile-page">
-
-{/* HEADER */}
 
 <div className="profile-header">
 
@@ -127,15 +163,15 @@ return(
 ← Back
 </Link>
 
-<h1>My Profile</h1>
+<h1>Account Settings</h1>
 
 </div>
 
 
 
-{/* PROFILE CARD */}
-
 <div className="profile-card">
+
+{/* PROFILE IMAGE */}
 
 <div className="profile-image-section">
 
@@ -171,22 +207,39 @@ required
 </div>
 
 
+
 <div className="form-group">
 
-<label>Email</label>
+<label>New Password</label>
 
 <input
-type="email"
-value={email}
-onChange={(e)=>setEmail(e.target.value)}
-required
+type="password"
+placeholder="Enter new password"
+value={password}
+onChange={(e)=>setPassword(e.target.value)}
 />
 
 </div>
 
 
+
+<div className="form-group">
+
+<label>Confirm Password</label>
+
+<input
+type="password"
+placeholder="Confirm password"
+value={confirmPassword}
+onChange={(e)=>setConfirmPassword(e.target.value)}
+/>
+
+</div>
+
+
+
 <button className="save-btn">
-Save Changes
+Update Profile
 </button>
 
 </form>
