@@ -3,6 +3,7 @@ import "./Register.css";
 import axios from "axios";
 import { useState,useRef } from "react";
 function Register(){
+    const [sellerType, setSellerType] = useState("");
     const fileInputRef = useRef(null);
     const [loading,setLoading]=useState(false);
     const[name,setName]=useState("");
@@ -33,6 +34,7 @@ function Register(){
         formData.append("repeat_pass",repeat_pass);
         formData.append("description",description.trim());
         formData.append("category",category);
+        formData.append("sellerType", sellerType);
 
         if(!profile){
             alert("Please Upload Profile Picture");
@@ -192,6 +194,17 @@ uppercase, lowercase, number, special character.
                 <label htmlFor="repeat">Repeat Password</label><br/>
                 <input type="password" name="repeat_pass" className="register" placeholder="Repeat Password"
                 onChange={(e)=>setRepeat_Pass(e.target.value)} required/><br/>
+                <label htmlFor="sellerType">Seller Type</label><br/>
+<select
+  value={category}  // <- Actually create a separate state for sellerType
+  onChange={(e) => setSellerType(e.target.value)}
+  required
+>
+  <option value="">-- Select Seller Type --</option>
+  <option value="Product">Product</option>
+  <option value="Service">Service</option>
+  <option value="Asset">Asset</option>
+</select><br/>
                 <label htmlFor="description">Description</label><br/>
                 <textarea name="description" placeholder="Describe Your Business"
                 onChange={(e)=>setDescription(e.target.value)} required></textarea>
