@@ -59,8 +59,8 @@ function Dashboard() {
     seller?.sellerType === "Product"
       ? "/add_product"
       : seller?.sellerType === "Service"
-      ? "/add_service"
-      : "/add_asset";
+      ? "/add_product"
+      : "/add_product";
 
   const addText =
     seller?.sellerType === "Product"
