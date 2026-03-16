@@ -4,7 +4,6 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Profile.css";
-
 function Buyer_Profile() {
 
 const [buyer,setBuyer] = useState(null);

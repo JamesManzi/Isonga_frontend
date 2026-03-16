@@ -279,7 +279,7 @@ const getFileUrl = (path) => {
             );
           })
         ) : (
-          <p>No products found</p>
+          <p>No Assets found</p>
         )}
       </div>
 

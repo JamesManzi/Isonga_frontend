@@ -255,7 +255,7 @@ const getFileUrl = (path) => {
             );
           })
         ) : (
-          <p>No products found</p>
+          <p>No Services found</p>
         )}
       </div>
 
