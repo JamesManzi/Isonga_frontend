@@ -140,3 +140,39 @@ h2 {
     max-width: 80px;
   }
 }
+
+
+.payment-type {
+  font-weight: 600;
+  text-transform: capitalize;
+  font-size: 0.9rem;
+}
+
+.view-proof-link {
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.view-proof-link:hover {
+  color: #0056b3;
+}
+
+.no-proof {
+  color: #999;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+/* Ensure the table is responsive */
+.table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.bookings-table th, .bookings-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}

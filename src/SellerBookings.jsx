@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./SellerBookings.css";
+
 function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +46,8 @@ function SellerBookings() {
                 <th>Service</th>
                 <th>Date & Time</th>
                 <th>Phone</th>
-                <th>Message</th>
+                <th>Payment</th>
+                <th>Proof</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -56,7 +58,29 @@ function SellerBookings() {
                   <td>{b.product?.name || "Deleted Service"}</td>
                   <td>{b.date} at {b.time}</td>
                   <td>{b.phone}</td>
-                  <td className="msg-cell">{b.message}</td>
+                  
+                  {/* PAYMENT METHOD COLUMN */}
+                  <td className="payment-type">
+                    {b.paymentMethod === "cash" ? "💸 Cash" : 
+                     b.paymentMethod === "mobile" ? "📱 Mobile Money" : "💳 Card"}
+                  </td>
+
+                  {/* PAYMENT PROOF COLUMN */}
+                  <td>
+                    {b.paymentProof ? (
+                      <a 
+                        href={`https://isonga-backend.onrender.com/${b.paymentProof}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="view-proof-link"
+                      >
+                        View Image
+                      </a>
+                    ) : (
+                      <span className="no-proof">No Proof</span>
+                    )}
+                  </td>
+
                   <td>
                     <span className={`status-badge ${b.status.toLowerCase()}`}>
                       {b.status}
