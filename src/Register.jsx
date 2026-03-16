@@ -196,7 +196,7 @@ uppercase, lowercase, number, special character.
                 onChange={(e)=>setRepeat_Pass(e.target.value)} required/><br/>
                 <label htmlFor="sellerType">Seller Type</label><br/>
 <select
-  value={category}  // <- Actually create a separate state for sellerType
+  value={sellerType}  // <- Actually create a separate state for sellerType
   onChange={(e) => setSellerType(e.target.value)}
   required
 >
