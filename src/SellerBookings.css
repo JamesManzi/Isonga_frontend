@@ -1,142 +1,119 @@
-/* SellerBookings.css */
-
-/* General page styles */
+/* --- Base Styles & Layout --- */
 .bookings-page {
-  padding: 16px;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
 }
 
 .bookings-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
 .btn-back {
-  padding: 8px 12px;
-  font-size: 14px;
-  background-color: #007bff;
-  color: white;
+  padding: 8px 16px;
   border: none;
+  background: #e5e7eb;
   border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .btn-back:hover {
-  background-color: #0056b3;
+  background: #d1d5db;
 }
 
-h2 {
-  font-size: 20px;
-  margin: 0;
-}
-
-/* No bookings message */
-.no-bookings {
-  text-align: center;
-  font-size: 16px;
-  color: #555;
-  margin-top: 32px;
-}
-
-/* Table container */
+/* --- Table Container --- */
 .table-container {
-  overflow-x: auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-/* Bookings table */
 .bookings-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px; /* Ensures scroll on small screens */
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
+  text-align: left;
 }
 
-.bookings-table th,
+.bookings-table th, 
 .bookings-table td {
-  padding: 12px 8px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  font-size: 14px;
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .bookings-table th {
-  background-color: #f0f0f0;
-  font-weight: bold;
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  font-size: 0.85rem;
 }
 
-.msg-cell {
-  max-width: 150px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Status badges */
+/* --- Status Badges --- */
 .status-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
   text-transform: capitalize;
 }
 
-.status-badge.pending {
-  background-color: #ffc107;
-}
+.status-badge.pending { background: #fef3c7; color: #92400e; }
+.status-badge.confirmed { background: #dcfce7; color: #166534; }
+.status-badge.cancelled { background: #fee2e2; color: #991b1b; }
 
-.status-badge.confirmed {
-  background-color: #28a745;
-}
-
-.status-badge.cancelled {
-  background-color: #dc3545;
-}
-
-/* Mobile responsive */
+/* --- Mobile Responsive Magic --- */
 @media (max-width: 768px) {
-  .bookings-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  /* Hide the table header on mobile */
+  .bookings-table thead {
+    display: none;
   }
 
-  .bookings-table {
-    min-width: 0;
-  }
-
-  .bookings-table th,
+  /* Force table elements to block display */
+  .bookings-table, 
+  .bookings-table tbody, 
+  .bookings-table tr, 
   .bookings-table td {
-    padding: 10px 6px;
-    font-size: 13px;
+    display: block;
+    width: 100%;
   }
 
-  .msg-cell {
-    max-width: 100px;
-  }
-}
-
-@media (max-width: 480px) {
-  .btn-back {
-    font-size: 12px;
-    padding: 6px 10px;
+  /* Create space between "cards" */
+  .bookings-table tr {
+    margin-bottom: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 10px;
   }
 
-  h2 {
-    font-size: 18px;
-  }
-
-  .bookings-table th,
   .bookings-table td {
-    padding: 8px 4px;
-    font-size: 12px;
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+    border-bottom: 1px solid #f3f4f6;
   }
 
-  .msg-cell {
-    max-width: 80px;
+  /* Add labels before the data */
+  .bookings-table td::before {
+    content: attr(data-label); /* Requires a small change in JSX below */
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: 700;
+    color: #6b7280;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .bookings-table td:last-child {
+    border-bottom: none;
   }
 }
