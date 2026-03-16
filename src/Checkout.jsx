@@ -8,8 +8,10 @@ function Checkout() {
   const [loading, setLoading] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [error, setError] = useState("");
-  const [screenshot, setScreenshot] = useState(null);
-  const [preview, setPreview] = useState("");
+
+  // New states for File Upload and Preview
+  const [paymentImage, setPaymentImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const navigate = useNavigate();
 
@@ -29,8 +31,14 @@ function Checkout() {
 
   const fetchCart = async () => {
     try {
-      const res = await axios.get("https://isonga-backend.onrender.com/api/cart", { withCredentials: true });
-      if (res.data.success) setCart(res.data.cart);
+      const res = await axios.get(
+        "https://isonga-backend.onrender.com/api/cart",
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        setCart(res.data.cart);
+      }
     } catch (error) {
       console.log(error);
       setError("Failed to load cart");
@@ -39,55 +47,64 @@ function Checkout() {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   };
 
-  // Handle screenshot preview
+  // Handle image selection and create a preview URL
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setScreenshot(file);
-      setPreview(URL.createObjectURL(file));
+      setPaymentImage(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const placeOrder = async () => {
     setError("");
 
-    // basic validation
+    // Validation
     if (!form.name || !form.phone || !form.address) {
       setError("Please fill all required fields");
       return;
     }
 
-    // If payment requires screenshot
-    if ((form.paymentMethod === "mobile" || form.paymentMethod === "card") && !screenshot) {
-      setError("Please upload your payment screenshot");
+    // Validation for payment proof
+    if (form.paymentMethod !== "cash" && !paymentImage) {
+      setError("Please upload a screenshot of your payment confirmation");
       return;
     }
 
     try {
       setPlacingOrder(true);
 
-      // Use FormData to send file + JSON data
+      // Create FormData because we are sending a file
       const formData = new FormData();
-      Object.keys(form).forEach(key => formData.append(key, form[key]));
-      formData.append("items", JSON.stringify(cart.items));
-      formData.append("totalAmount", cart.totalPrice);
-
-      if (screenshot) formData.append("paymentScreenshot", screenshot);
+      formData.append("name", form.name);
+      formData.append("phone", form.phone);
+      formData.append("address", form.address);
+      formData.append("deliveryMethod", form.deliveryMethod);
+      formData.append("paymentMethod", form.paymentMethod);
+      formData.append("notes", form.notes);
+      formData.append("deliveryDate", form.deliveryDate);
+      
+      if (paymentImage) {
+        formData.append("paymentProof", paymentImage);
+      }
 
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/order",
         formData,
-        {
+        { 
           withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" }
+          headers: { "Content-Type": "multipart/form-data" } 
         }
       );
 
       if (res.data.success) {
-        alert("Order placed successfully! Waiting for verification.");
+        alert("Order placed successfully");
         navigate("/buyer_dashboard");
       } else {
         setError(res.data.message || "Order failed");
@@ -96,7 +113,6 @@ function Checkout() {
       console.log(error);
       setError("Server error while placing order");
     }
-
     setPlacingOrder(false);
   };
 
@@ -106,7 +122,9 @@ function Checkout() {
     return (
       <div className="checkout-empty">
         <h2>Your cart is empty</h2>
-        <button onClick={() => navigate("/buyer_dashboard")}>Back to Shop</button>
+        <button onClick={() => navigate("/buyer_dashboard")}>
+          Back to Shop
+        </button>
       </div>
     );
   }
@@ -117,7 +135,6 @@ function Checkout() {
 
       {error && <p className="checkout-error">{error}</p>}
 
-      {/* Order Summary */}
       <div className="checkout-summary">
         <h2>Order Summary</h2>
         {cart.items.map(item => (
@@ -126,54 +143,114 @@ function Checkout() {
               <strong>{item.product.name}</strong>
               <p>Quantity: {item.quantity}</p>
             </div>
-            <div>{item.quantity * item.price} Rwf</div>
+            <div>
+              {item.quantity * item.price} Rwf
+            </div>
           </div>
         ))}
         <hr />
         <h3>Total: {cart.totalPrice} Rwf</h3>
       </div>
 
-      {/* Delivery & Payment */}
       <div className="checkout-form">
         <h2>Delivery Details</h2>
-        <input type="text" name="name" placeholder="Full Name" value={form.name} onChange={handleChange} />
-        <input type="text" name="phone" placeholder="Phone Number" value={form.phone} onChange={handleChange} />
-        <input type="text" name="address" placeholder="Delivery Address" value={form.address} onChange={handleChange} />
+
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={form.name}
+          onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone Number"
+          value={form.phone}
+          onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          name="address"
+          placeholder="Delivery Address"
+          value={form.address}
+          onChange={handleChange}
+        />
 
         <h3>Delivery Method</h3>
-        <select name="deliveryMethod" value={form.deliveryMethod} onChange={handleChange}>
+        <select
+          name="deliveryMethod"
+          value={form.deliveryMethod}
+          onChange={handleChange}
+        >
           <option value="standard">Standard Delivery</option>
           <option value="express">Express Delivery</option>
           <option value="pickup">Store Pickup</option>
         </select>
 
         <h3>Payment Method</h3>
-        <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
+        <select
+          name="paymentMethod"
+          value={form.paymentMethod}
+          onChange={handleChange}
+        >
           <option value="cash">Cash on Delivery</option>
           <option value="mobile">Mobile Money</option>
           <option value="card">Card Payment</option>
         </select>
 
-        {/* Upload screenshot only for mobile/card */}
-        {(form.paymentMethod === "mobile" || form.paymentMethod === "card") && (
-          <>
-            <label>Upload Payment Screenshot</label>
-            <input type="file" accept="image/*" onChange={handleFileChange} />
-            {preview && <img src={preview} alt="Preview" style={{ width: "200px", marginTop: "10px" }} />}
-          </>
+        {/* CONDITIONAL UPLOAD FIELD */}
+        {form.paymentMethod !== "cash" && (
+          <div className="payment-upload">
+            <h3>Upload Payment Screenshot</h3>
+            <p className="upload-hint">Please upload a screenshot of your transaction confirmation.</p>
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleFileChange} 
+            />
+            {imagePreview && (
+              <div className="preview-container">
+                <p>Preview:</p>
+                <img src={imagePreview} alt="Payment Proof" className="payment-preview-img" />
+              </div>
+            )}
+          </div>
         )}
 
         <h3>Delivery Date</h3>
-        <input type="date" name="deliveryDate" value={form.deliveryDate} onChange={handleChange} />
+        <input
+          type="date"
+          name="deliveryDate"
+          value={form.deliveryDate}
+          onChange={handleChange}
+        />
 
         <h3>Order Notes</h3>
-        <textarea name="notes" placeholder="Extra instructions" value={form.notes} onChange={handleChange} />
+        <textarea
+          name="notes"
+          placeholder="Extra instructions"
+          value={form.notes}
+          onChange={handleChange}
+        />
 
         <div className="checkout-buttons">
-          <button className="place-order" onClick={placeOrder} disabled={placingOrder}>
+          <button
+            className="place-order"
+            onClick={placeOrder}
+            disabled={placingOrder}
+          >
             {placingOrder ? "Placing Order..." : "Place Order"}
           </button>
-          <button className="return-btn" onClick={() => navigate(-1)}>Return</button>
+
+          <button
+            className="return-btn"
+            onClick={() => navigate(-1)}
+          >
+            Return
+          </button>
         </div>
       </div>
     </div>
