@@ -34,71 +34,47 @@ function SellerBookings() {
       </div>
 
       {loading ? (
-        <p>Loading bookings...</p>
+        <p className="loading-text">Loading bookings...</p>
       ) : bookings.length === 0 ? (
         <div className="no-bookings">No bookings found yet.</div>
       ) : (
-        <div className="table-container">
-          <table className="bookings-table">
-            <thead>
-              <tr>
-                <th>Customer</th>
-                <th>Service</th>
-                <th>Date & Time</th>
-                <th>Phone</th>
-                <th>Payment Method</th>
-                <th>Payment Proof</th>
-                <th>Message</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((b) => (
-                <tr key={b._id}>
-                  <td>{b.name}</td>
-                  <td>{b.product?.name || "Deleted Service"}</td>
-                  <td>{b.date} at {b.time}</td>
-                  <td>{b.phone}</td>
-                  
-                  {/* PAYMENT METHOD COLUMN */}
-                  <td className="payment-method-cell">
-                    <span className={`payment-tag ${b.paymentMethod}`}>
-                      {b.paymentMethod === "mobile" ? "📱 MoMo" : 
-                       b.paymentMethod === "card" ? "💳 Card" : "💵 Cash"}
-                    </span>
-                  </td>
+        <div className="bookings-list">
+          {bookings.map((b) => (
+            <div key={b._id} className="booking-form-card">
+              <div className="form-group">
+                <label>Customer Name</label>
+                <input type="text" value={b.name} readOnly />
+              </div>
 
-                  {/* PAYMENT PROOF COLUMN */}
-                  <td>
-                    {b.paymentProof ? (
-                      <div className="proof-preview">
-                        <a 
-                          href={`https://isonga-backend.onrender.com/${b.paymentProof}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          <img 
-                            src={`https://isonga-backend.onrender.com/${b.paymentProof}`} 
-                            alt="Proof" 
-                            className="booking-thumbnail"
-                          />
-                        </a>
-                      </div>
-                    ) : (
-                      <span className="no-proof-text">No Proof</span>
-                    )}
-                  </td>
+              <div className="form-group">
+                <label>Service Requested</label>
+                <input type="text" value={b.product?.name || "Deleted Service"} readOnly />
+              </div>
 
-                  <td className="msg-cell">{b.message}</td>
-                  <td>
-                    <span className={`status-badge ${b.status.toLowerCase()}`}>
-                      {b.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Date & Time</label>
+                  <input type="text" value={`${b.date} at ${b.time}`} readOnly />
+                </div>
+                <div className="form-group">
+                  <label>Phone Number</label>
+                  <input type="text" value={b.phone} readOnly />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Message/Notes</label>
+                <textarea value={b.message} readOnly rows="3" />
+              </div>
+
+              <div className="form-status">
+                <label>Booking Status:</label>
+                <span className={`status-badge ${b.status.toLowerCase()}`}>
+                  {b.status}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
