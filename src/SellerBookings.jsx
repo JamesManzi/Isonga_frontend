@@ -41,58 +41,59 @@ function SellerBookings() {
         <div className="bookings-list">
           {bookings.map((b) => (
             <div key={b._id} className="booking-form-card">
-              {/* SECTION 1: CUSTOMER INFO */}
-              <div className="form-section">
-                <label className="section-title">Customer Details</label>
-                <div className="form-group">
-                  <label>Name</label>
-                  <input type="text" value={b.name || "N/A"} readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Service</label>
-                  <input type="text" value={b.product?.name || "Service Deleted"} readOnly />
-                </div>
+              {/* Customer Info Section */}
+              <div className="form-group">
+                <label>Customer Name</label>
+                <input type="text" value={b.name} readOnly />
               </div>
 
-              {/* SECTION 2: PAYMENT INFO (THIS IS WHAT WAS MISSING) */}
-              <div className="form-section payment-section">
-                <label className="section-title">Payment Information</label>
-                
-                <div className="form-group">
-                  <label>Method</label>
-                  <input 
-                    type="text" 
-                    className="highlight-input" 
-                    value={b.paymentMethod || "Not Provided"} 
-                    readOnly 
-                  />
-                </div>
+              <div className="form-group">
+                <label>Service</label>
+                <input type="text" value={b.product?.name || "Deleted Service"} readOnly />
+              </div>
 
-                <div className="screenshot-container">
-                  <label>Screenshot / Proof</label>
+              {/* PAYMENT SECTION - Using your requested structure */}
+              <h3>Payment Method</h3>
+              <select
+                name="paymentMethod"
+                value={b.paymentMethod} // Uses the booking's data
+                disabled // Keep it disabled so the seller doesn't accidentally change it
+              >
+                <option value="cash">Cash on Delivery</option>
+                <option value="mobile">Mobile Money</option>
+                <option value="card">Card Payment</option>
+              </select>
+
+              {/* CONDITIONAL UPLOAD FIELD - Shows the saved screenshot */}
+              {b.paymentMethod !== "cash" && (
+                <div className="payment-upload">
+                  <h3>Payment Screenshot</h3>
                   {b.paymentScreenshot ? (
-                    <div className="image-box">
+                    <div className="preview-container">
+                      <p>Customer Uploaded Proof:</p>
                       <a href={b.paymentScreenshot} target="_blank" rel="noreferrer">
-                        <img src={b.paymentScreenshot} alt="Payment Proof" />
+                        <img 
+                          src={b.paymentScreenshot} 
+                          alt="Payment Proof" 
+                          className="payment-preview-img" 
+                        />
                       </a>
-                      <p className="tap-hint">Tap image to open full size</p>
                     </div>
                   ) : (
-                    <div className="missing-proof">
-                      ⚠️ No screenshot uploaded
-                    </div>
+                    <p className="no-upload-error">⚠️ No screenshot was uploaded by the customer.</p>
                   )}
                 </div>
+              )}
+
+              <div className="form-group" style={{ marginTop: '15px' }}>
+                <label>Message</label>
+                <textarea value={b.message} readOnly rows="2" />
               </div>
 
-              {/* SECTION 3: STATUS */}
-              <div className="form-footer">
-                <div className="status-row">
-                  <label>Booking Status:</label>
-                  <span className={`status-text ${b.status?.toLowerCase()}`}>
-                    {b.status || "Pending"}
-                  </span>
-                </div>
+              <div className="form-status">
+                <span className={`status-badge ${b.status.toLowerCase()}`}>
+                  {b.status}
+                </span>
               </div>
             </div>
           ))}
