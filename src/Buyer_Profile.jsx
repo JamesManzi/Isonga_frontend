@@ -177,10 +177,10 @@ return(
 
 <img
   src={
-    preview
-      ? preview.startsWith("blob:")
-        ? preview
-        : getFileUrl(preview)
+    profile
+      ? URL.createObjectURL(profile)     // newly selected image
+      : buyer?.profile
+      ? getFileUrl(buyer.profile)        // image from database
       : "/placeholder.png"
   }
   alt="profile"
