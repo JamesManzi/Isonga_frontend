@@ -129,26 +129,6 @@ const getFileUrl = (path) => {
             </ul>
           </nav>
         </div>
-        <Link to="/cart" className="cart-link" style={{ position: "relative" }}>
-      <FontAwesomeIcon icon={faCartShopping} size="2x" className="faCartShopping"/>
-      {cartCount > 0 && (
-        <span
-          style={{
-            position: "absolute",
-            top: "-5px",
-            right: "-5px",
-            background: "red",
-            color: "white",
-            borderRadius: "50%",
-            padding: "2px 6px",
-            fontSize: "12px",
-            fontWeight: "bold"
-          }}
-        >
-          {cartCount}
-        </span>
-      )}
-    </Link>
         <div className="Buyer_Dashboard_logout">
           <Link to="/buyer_dashboard">
             <button>Dashboard</button>
