@@ -41,57 +41,58 @@ function SellerBookings() {
         <div className="bookings-list">
           {bookings.map((b) => (
             <div key={b._id} className="booking-form-card">
-              <div className="form-group">
-                <label>Customer Name</label>
-                <input type="text" value={b.name} readOnly />
-              </div>
-
-              <div className="form-row">
+              {/* SECTION 1: CUSTOMER INFO */}
+              <div className="form-section">
+                <label className="section-title">Customer Details</label>
+                <div className="form-group">
+                  <label>Name</label>
+                  <input type="text" value={b.name || "N/A"} readOnly />
+                </div>
                 <div className="form-group">
                   <label>Service</label>
-                  <input type="text" value={b.product?.name || "Deleted Service"} readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Phone</label>
-                  <input type="text" value={b.phone} readOnly />
+                  <input type="text" value={b.product?.name || "Service Deleted"} readOnly />
                 </div>
               </div>
 
-              {/* PAYMENT SECTION */}
-              <div className="payment-details-section">
+              {/* SECTION 2: PAYMENT INFO (THIS IS WHAT WAS MISSING) */}
+              <div className="form-section payment-section">
+                <label className="section-title">Payment Information</label>
+                
                 <div className="form-group">
-                  <label>Payment Method</label>
-                  <input type="text" value={b.paymentMethod || "Not Specified"} readOnly className="payment-method-input" />
+                  <label>Method</label>
+                  <input 
+                    type="text" 
+                    className="highlight-input" 
+                    value={b.paymentMethod || "Not Provided"} 
+                    readOnly 
+                  />
                 </div>
 
-                {/* SHOW SCREENSHOT IF IT EXISTS */}
-                {b.paymentScreenshot && (
-                  <div className="screenshot-display">
-                    <label>Payment Proof</label>
-                    <div className="image-container">
+                <div className="screenshot-container">
+                  <label>Screenshot / Proof</label>
+                  {b.paymentScreenshot ? (
+                    <div className="image-box">
                       <a href={b.paymentScreenshot} target="_blank" rel="noreferrer">
-                        <img 
-                          src={b.paymentScreenshot} 
-                          alt="Payment Screenshot" 
-                          className="view-payment-img" 
-                        />
+                        <img src={b.paymentScreenshot} alt="Payment Proof" />
                       </a>
-                      <p className="zoom-hint">Click image to enlarge</p>
+                      <p className="tap-hint">Tap image to open full size</p>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="missing-proof">
+                      ⚠️ No screenshot uploaded
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="form-group">
-                <label>Customer Message</label>
-                <textarea value={b.message} readOnly rows="2" />
-              </div>
-
-              <div className="form-status">
-                <label>Status:</label>
-                <span className={`status-badge ${b.status.toLowerCase()}`}>
-                  {b.status}
-                </span>
+              {/* SECTION 3: STATUS */}
+              <div className="form-footer">
+                <div className="status-row">
+                  <label>Booking Status:</label>
+                  <span className={`status-text ${b.status?.toLowerCase()}`}>
+                    {b.status || "Pending"}
+                  </span>
+                </div>
               </div>
             </div>
           ))}
