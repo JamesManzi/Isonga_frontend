@@ -14,7 +14,6 @@ function Booking() {
     time: "",
     message: ""
   });
-
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -110,7 +109,7 @@ function Booking() {
           onChange={handleChange}
         />
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className="btn-submit">
           {loading ? "Sending..." : "Send Booking"}
         </button>
       </form>
