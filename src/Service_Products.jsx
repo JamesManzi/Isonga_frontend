@@ -25,8 +25,7 @@ function Service_Products() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCartPopup, setShowCartPopup] = useState(false);
 const [popupMessage, setPopupMessage] = useState("");
-
-  // ✅ 1. Ref to track if we've already sent view requests for this session
+  // 1. Ref to track if we've already sent view requests for this session
   const hasTracked = useRef(false);
 
   useEffect(() => {
@@ -52,7 +51,7 @@ const [popupMessage, setPopupMessage] = useState("");
       setFilteredProducts(fetchedProducts);
       setSeller(res.data.seller);
 
-      // ✅ 2. Only fire the view tracking requests ONCE per component mount.
+      //  2. Only fire the view tracking requests ONCE per component mount.
       // The Backend will then decide if this specific buyer counts for "today".
       if (!hasTracked.current && fetchedProducts.length > 0) {
         fetchedProducts.forEach((product) => {
