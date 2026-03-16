@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAdd, faBars, faBoxOpen, faCommentDots, faDigitalTachograph,
   faDollarSign, faEye, faHand, faHome, faStar, faStore, faBox,
+  faConciergeBell, faBuilding, faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { io } from "socket.io-client";
@@ -22,22 +23,6 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-  const handleLogout = async () => {
-    try {
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/logout",
-        {},
-        { withCredentials: true }
-      );
-      if (res.data.success) {
-        if (socketRef.current) socketRef.current.disconnect();
-        navigate("/login");
-      }
-    } catch (error) {
-      console.log("Logout error", error);
-    }
-  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -70,10 +55,11 @@ function Dashboard() {
           numReviews: s.numReviews || 0,
           totalOrders: s.totalOrders || 0,
           totalSales: s.totalSales || 0,
+          // Support for backend inventory stats
+          inventoryStats: s.inventoryStats || { Product: 0, Service: 0, Asset: 0 }
         });
 
         setTotalViews(res.data.totalViews || 0);
-        // This relies on the backend fix: adding 'newOrders' to the dashboard response
         setNewOrdersCount(s.newOrders || 0);
 
         const unreadRes = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations", {
@@ -108,7 +94,6 @@ function Dashboard() {
     const socket = socketRef.current;
     socket.emit("userOnline", { userId: seller._id, userModel: "Seller" });
 
-    // New order listener
     socket.on("newOrderNotification", (data) => {
       toast.success(data.message || "New Order Received!", { icon: '🛍️' });
       setSeller(prev => ({
@@ -118,13 +103,11 @@ function Dashboard() {
       setNewOrdersCount(prev => prev + 1);
     });
 
-    // New message listener
     socket.on("newMessageNotification", () => {
       setUnreadCount(prev => prev + 1);
       toast('New message from buyer!', { icon: '💬' });
     });
 
-    // Product view listener
     socket.on("newView", (data) => {
       setTotalViews(data.totalViews);
       toast.success("Someone is viewing your products!", {
@@ -132,18 +115,16 @@ function Dashboard() {
         position: 'top-right',
       });
     });
-// Rating update listener
-socket.on("sellerRatingUpdated", (data) => {
 
-  toast.success("You received a new rating ⭐");
+    socket.on("sellerRatingUpdated", (data) => {
+      toast.success("You received a new rating ⭐");
+      setSeller(prev => ({
+        ...prev,
+        averageRating: data.averageRating,
+        numReviews: data.numReviews
+      }));
+    });
 
-  setSeller(prev => ({
-    ...prev,
-    averageRating: data.averageRating,
-    numReviews: data.numReviews
-  }));
-
-});
     return () => {
       socket.off("newOrderNotification");
       socket.off("newMessageNotification");
@@ -151,6 +132,22 @@ socket.on("sellerRatingUpdated", (data) => {
       socket.off("sellerRatingUpdated");
     };
   }, [seller?._id]);
+
+  const handleLogout = async () => {
+    try {
+      const res = await axios.post(
+        "https://isonga-backend.onrender.com/api/logout",
+        {},
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        if (socketRef.current) socketRef.current.disconnect();
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log("Logout error", error);
+    }
+  };
 
   if (!seller) return <div className="Dashboard"><h2>Loading...</h2></div>;
 
@@ -170,11 +167,9 @@ socket.on("sellerRatingUpdated", (data) => {
   };
 
   const getFileUrl = (path) => {
-  if (!path) return "/placeholder.png"; // Fallback if no image exists
-  return path.startsWith("http") 
-    ? path 
-    : `https://isonga-backend.onrender.com/uploads/${path}`;
-};
+    if (!path) return "/placeholder.png";
+    return path.startsWith("http") ? path : `https://isonga-backend.onrender.com/uploads/${path}`;
+  };
 
   return (
     <div className="Dashboard">
@@ -222,6 +217,25 @@ socket.on("sellerRatingUpdated", (data) => {
         </div>
       </div>
 
+      {/* --- ADDED: CATEGORY QUICK VIEW --- */}
+      <div className="Category_Summary_Grid">
+        <div className="cat_stat_card">
+          <FontAwesomeIcon icon={faBox} className="icon_blue" />
+          <span>{seller.inventoryStats.Product}</span>
+          <p>Products</p>
+        </div>
+        <div className="cat_stat_card">
+          <FontAwesomeIcon icon={faConciergeBell} className="icon_orange" />
+          <span>{seller.inventoryStats.Service}</span>
+          <p>Services</p>
+        </div>
+        <div className="cat_stat_card">
+          <FontAwesomeIcon icon={faBuilding} className="icon_green" />
+          <span>{seller.inventoryStats.Asset}</span>
+          <p>Assets</p>
+        </div>
+      </div>
+
       <div className="Dashboard_body2">
         <div className="views">
           <FontAwesomeIcon icon={faEye} /><h2>Product Views</h2>
@@ -236,13 +250,13 @@ socket.on("sellerRatingUpdated", (data) => {
 
       <div className="Dashboard_body3">
         <div className="add_product">
-          <Link to="/add_product"><FontAwesomeIcon icon={faAdd} /><h2>Add New Product</h2></Link>
+          <Link to="/add_product"><FontAwesomeIcon icon={faAdd} /><h2>Add New Item</h2></Link>
         </div>
         <div className="viewOrders">
-          <Link to="#"><FontAwesomeIcon icon={faDigitalTachograph} /><h2>Performance</h2></Link>
+          <Link to="/performance"><FontAwesomeIcon icon={faDigitalTachograph} /><h2>Performance</h2></Link>
         </div>
         <div className="buyer_messages">
-          <Link to="#"><FontAwesomeIcon icon={faDollarSign} /><h2>Today's Profit</h2></Link>
+          <Link to="/profit"><FontAwesomeIcon icon={faDollarSign} /><h2>Today's Profit</h2></Link>
         </div>
       </div>
 
@@ -256,9 +270,7 @@ socket.on("sellerRatingUpdated", (data) => {
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <FontAwesomeIcon icon={faBox} />
             {newOrdersCount > 0 && (
-              <span className="order_badge">
-                {newOrdersCount}
-              </span>
+              <span className="order_badge">{newOrdersCount}</span>
             )}
           </div>
           <h2>Orders</h2>
@@ -268,9 +280,7 @@ socket.on("sellerRatingUpdated", (data) => {
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <FontAwesomeIcon icon={faCommentDots} />
             {unreadCount > 0 && (
-              <span className="badge">
-                {unreadCount}
-              </span>
+              <span className="badge">{unreadCount}</span>
             )}
           </div>
           <h2>Messages</h2>

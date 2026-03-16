@@ -70,7 +70,6 @@ function Booking() {
         />
 
         <button type="submit">Send Booking</button>
-
       </form>
     </div>
   );
