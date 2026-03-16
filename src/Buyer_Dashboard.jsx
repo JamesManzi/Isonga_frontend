@@ -15,504 +15,524 @@ import "./Buyer_Dashboard.css";
 
 function Buyer_Dashboard() {
 
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
-  const [buyerName, setBuyerName] = useState("");
-  const [profile, setProfile] = useState("");
-  const [sellers, setSellers] = useState([]);
-  const [filteredSellers, setFilteredSellers] = useState([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState({});
-  const [selectedMedia, setSelectedMedia] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [buyerId, setBuyerId] = useState("");
-  const [cartCount, setCartCount] = useState(0);
+const [buyerName,setBuyerName]=useState("");
+const [profile,setProfile]=useState("");
+const [sellers,setSellers]=useState([]);
+const [filteredSellers,setFilteredSellers]=useState([]);
+const [currentImageIndex,setCurrentImageIndex]=useState({});
+const [selectedMedia,setSelectedMedia]=useState(null);
+const [searchQuery,setSearchQuery]=useState("");
+const [buyerId,setBuyerId]=useState("");
+const [cartCount,setCartCount]=useState(0);
 
 
-  // CATEGORY CLASSIFICATION
-  const productCategories = ["Fashion","Electronics","Furniture","Construction"];
-  const serviceCategories = ["services","Hospitality"];
-  const assetCategories = ["RealEstate","Vehicles","Agriculture"];
+//////////////////////////////////////////////////
+// CATEGORY CLASSIFICATION
+//////////////////////////////////////////////////
 
-  const getSellerRoute = (category, sellerId) => {
+const productCategories=["Fashion","Electronics","Furniture","Construction"];
+const serviceCategories=["services","Hospitality"];
+const assetCategories=["RealEstate","Vehicles","Agriculture"];
 
-    if(productCategories.includes(category)){
-      return `/view_products/${sellerId}`;
-    }
+const getSellerRoute=(category,id)=>{
 
-    if(serviceCategories.includes(category)){
-      return `/Service_Products/${sellerId}`;
-    }
+if(productCategories.includes(category)){
+return `/view_products/${id}`;
+}
 
-    if(assetCategories.includes(category)){
-      return `/Asset_products/${sellerId}`;
-    }
+if(serviceCategories.includes(category)){
+return `/Service_Products/${id}`;
+}
 
-    return `/view_products/${sellerId}`;
-  };
+if(assetCategories.includes(category)){
+return `/Asset_products/${id}`;
+}
 
+return `/view_products/${id}`;
+};
 
-  // FETCH CART COUNT
-  const fetchCartCount = async () => {
-    try {
 
-      const res = await axios.get(
-        "https://isonga-backend.onrender.com/api/cart/count",
-        { withCredentials: true }
-      );
 
-      if(res.data.success){
-        setCartCount(res.data.count);
-      }
+//////////////////////////////////////////////////
+// FETCH CART COUNT
+//////////////////////////////////////////////////
 
-    } catch(err){
-      console.log(err);
-    }
-  };
+const fetchCartCount=async()=>{
+try{
 
-  useEffect(()=>{
-    fetchCartCount();
-  },[]);
+const res=await axios.get(
+"https://isonga-backend.onrender.com/api/cart/count",
+{withCredentials:true}
+);
 
+if(res.data.success){
+setCartCount(res.data.count);
+}
 
+}catch(err){
+console.log(err);
+}
+};
 
-  // ADD TO CART
-  const addToCart = async (productId, quantity) => {
+useEffect(()=>{
+fetchCartCount();
+},[]);
 
-    try{
 
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/cart/add",
-        {productId,quantity},
-        {withCredentials:true}
-      );
 
-      if(res.data.success){
-        setCartCount(res.data.cartCount);
-      }
+//////////////////////////////////////////////////
+// LOGOUT
+//////////////////////////////////////////////////
 
-    }catch(err){
-      console.log(err);
-    }
+const handleLogout=async()=>{
 
-  };
+try{
 
+const res=await axios.post(
+"https://isonga-backend.onrender.com/api/logout",
+{},
+{withCredentials:true}
+);
 
-  // LOGOUT
-  const handleLogout = async () => {
+if(res.data.success){
+navigate("/buyer_login");
+}
 
-    try{
+}catch(err){
+console.log(err);
+}
 
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/logout",
-        {},
-        {withCredentials:true}
-      );
+};
 
-      if(res.data.success){
-        navigate("/buyer_login");
-      }
 
-    }catch(error){
-      console.log(error);
-    }
 
-  };
+//////////////////////////////////////////////////
+// STAR RENDER
+//////////////////////////////////////////////////
 
+const renderStars=(avg=0)=>{
 
-  // STAR RATINGS
-  const renderStars = (avg=0)=>{
+const stars=[];
 
-    const stars=[];
+for(let i=1;i<=5;i++){
 
-    for(let i=1;i<=5;i++){
+if(avg>=i){
+stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold"/>);
+}
 
-      if(avg>=i){
-        stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold"/>);
-      }
+else if(avg>=i-0.5){
+stars.push(
+<FontAwesomeIcon
+key={i}
+icon={faStar}
+color="gold"
+style={{clipPath:"inset(0 50% 0 0)"}}
+/>
+);
+}
 
-      else if(avg>=i-0.5){
-        stars.push(
-          <FontAwesomeIcon
-            key={i}
-            icon={faStar}
-            color="gold"
-            style={{clipPath:"inset(0 50% 0 0)"}}
-          />
-        );
-      }
+else{
+stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray"/>);
+}
 
-      else{
-        stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray"/>);
-      }
+}
 
-    }
+return stars;
+};
 
-    return stars;
-  };
 
 
-  // FETCH DASHBOARD DATA
-  useEffect(()=>{
+//////////////////////////////////////////////////
+// FETCH DASHBOARD DATA
+//////////////////////////////////////////////////
 
-    const fetchData = async ()=>{
+useEffect(()=>{
 
-      try{
+const fetchData=async()=>{
 
-        const res = await axios.get(
-          "https://isonga-backend.onrender.com/api/buyer_dashboard",
-          {withCredentials:true}
-        );
+try{
 
-        if(!res.data.success){
-          navigate("/buyer_login");
-          return;
-        }
+const res=await axios.get(
+"https://isonga-backend.onrender.com/api/buyer_dashboard",
+{withCredentials:true}
+);
 
-        const buyer=res.data.buyer;
+if(!res.data.success){
+navigate("/buyer_login");
+return;
+}
 
-        setBuyerName(buyer.name);
-        setProfile(buyer.profile);
-        setBuyerId(buyer._id);
+const buyer=res.data.buyer;
 
+setBuyerName(buyer.name);
+setProfile(buyer.profile);
+setBuyerId(buyer._id);
 
-        const sellersWithRatings = res.data.sellers.map(s=>({
-          ...s,
-          averageRating:s.averageRating || 0,
-          numReviews:s.numReviews || 0
-        }));
 
-        setSellers(sellersWithRatings);
-        setFilteredSellers(sellersWithRatings);
+const sellersWithRatings=res.data.sellers.map(s=>({
+...s,
+averageRating:s.averageRating || 0,
+numReviews:s.numReviews || 0
+}));
 
+setSellers(sellersWithRatings);
+setFilteredSellers(sellersWithRatings);
 
-        const indexes={};
 
-        sellersWithRatings.forEach(s=>{
-          indexes[s._id]=0;
-        });
+const indexes={};
 
-        setCurrentImageIndex(indexes);
+sellersWithRatings.forEach(s=>{
+indexes[s._id]=0;
+});
 
-      }
+setCurrentImageIndex(indexes);
 
-      catch(error){
-        console.log(error);
-      }
+}catch(err){
+console.log(err);
+}
 
-    };
+};
 
-    fetchData();
+fetchData();
 
-  },[navigate]);
+},[navigate]);
 
 
-  // SEARCH FILTER
-  useEffect(()=>{
 
-    if(!searchQuery.trim()){
-      setFilteredSellers(sellers);
-      return;
-    }
+//////////////////////////////////////////////////
+// SEARCH FILTER
+//////////////////////////////////////////////////
 
-    const q = searchQuery.toLowerCase();
+useEffect(()=>{
 
-    setFilteredSellers(
+if(!searchQuery.trim()){
+setFilteredSellers(sellers);
+return;
+}
 
-      sellers.filter(s=>
+const q=searchQuery.toLowerCase();
 
-        (s.name && s.name.toLowerCase().includes(q)) ||
-        (s.category && s.category.toLowerCase().includes(q)) ||
-        (s.location && s.location.toLowerCase().includes(q)) ||
-        (s.description && s.description.toLowerCase().includes(q))
+setFilteredSellers(
 
-      )
+sellers.filter(s=>
 
-    );
+(s.name && s.name.toLowerCase().includes(q)) ||
+(s.category && s.category.toLowerCase().includes(q)) ||
+(s.location && s.location.toLowerCase().includes(q)) ||
+(s.description && s.description.toLowerCase().includes(q))
 
-  },[searchQuery,sellers]);
+)
 
+);
 
+},[searchQuery,sellers]);
 
-  // SLIDER
-  const handleNext=(sellerId,total)=>{
-    setCurrentImageIndex(prev=>({
-      ...prev,
-      [sellerId]:(prev[sellerId]+1)%total
-    }));
-  };
 
-  const handlePrev=(sellerId,total)=>{
-    setCurrentImageIndex(prev=>({
-      ...prev,
-      [sellerId]:(prev[sellerId]-1+total)%total
-    }));
-  };
 
+//////////////////////////////////////////////////
+// SLIDER
+//////////////////////////////////////////////////
 
+const handleNext=(sellerId,total)=>{
+setCurrentImageIndex(prev=>({
+...prev,
+[sellerId]:(prev[sellerId]+1)%total
+}));
+};
 
-  const isVideoFile = (filename)=>/\.(mp4|webm|ogg|mov)$/i.test(filename);
+const handlePrev=(sellerId,total)=>{
+setCurrentImageIndex(prev=>({
+...prev,
+[sellerId]:(prev[sellerId]-1+total)%total
+}));
+};
 
 
-  const getFileUrl = (path)=>{
-    if(!path) return "/placeholder.png";
 
-    return path.startsWith("http")
-      ? path
-      : `https://isonga-backend.onrender.com/uploads/${path}`;
-  };
+//////////////////////////////////////////////////
+// FILE TYPE DETECTION
+//////////////////////////////////////////////////
 
+const isVideoFile=(filename)=>/\.(mp4|webm|ogg|mov)$/i.test(filename);
 
 
-  return (
 
-    <div className="Buyer_Dashboard">
+const getFileUrl=(path)=>{
 
-      {/* NAVBAR */}
+if(!path) return "/placeholder.png";
 
-      <div className="Buyer_Dashboard_navbar">
+return path.startsWith("http")
+? path
+: `https://isonga-backend.onrender.com/uploads/${path}`;
 
-        <div className="Buyer_Dashboard_logos">
-          <img src="/logo.png" alt="logo"/>
-        </div>
+};
 
-        <div className="Buyer_Dashboard_heads">
-          <h1>Isonga</h1>
-          <h2>Market</h2>
-        </div>
 
-        <div className="Buyer_Dashboard_user">
 
-          <Link to="/buyer_profile">
-            <img
-              src={profile ? getFileUrl(profile) : "/placeholder.png"}
-              alt="profile"
-            />
-          </Link>
+//////////////////////////////////////////////////
+// COMPONENT UI
+//////////////////////////////////////////////////
 
-          <ChatNotification/>
+return(
 
-        </div>
+<div className="Buyer_Dashboard">
 
 
-        <div className="Buyer_Dashboard_nav">
+{/* NAVBAR */}
 
-          <nav>
-            <ul>
+<div className="Buyer_Dashboard_navbar">
 
-              <li>
-                <Link to="/fashion">Products</Link>
-              </li>
+<div className="Buyer_Dashboard_logos">
+<img src="/logo.png" alt="Logo"/>
+</div>
 
-              <li>
-                <Link to="/services">Services</Link>
-              </li>
+<div className="Buyer_Dashboard_heads">
+<h1>Isonga</h1>
+<h2>Market</h2>
+</div>
 
-              <li>
-                <Link to="/RealEstate">Assets</Link>
-              </li>
+<div className="Buyer_Dashboard_user">
 
-            </ul>
-          </nav>
+<Link to="/buyer_profile">
+<img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="profile"/>
+</Link>
 
-        </div>
+<ChatNotification/>
 
+</div>
 
 
-        {/* CART */}
+<div className="Buyer_Dashboard_nav">
 
-        <Link to="/cart" style={{position:"relative"}}>
+<nav>
+<ul>
 
-          <FontAwesomeIcon
-            icon={faCartShopping}
-            size="2x"
-          />
+<li><Link to="/fashion">Products</Link></li>
+<li><Link to="/services">Services</Link></li>
+<li><Link to="/RealEstate">Assets</Link></li>
 
-          {cartCount>0 &&(
+</ul>
+</nav>
 
-            <span
-              style={{
-                position:"absolute",
-                top:"-5px",
-                right:"-5px",
-                background:"red",
-                color:"white",
-                borderRadius:"50%",
-                padding:"2px 6px",
-                fontSize:"12px",
-                fontWeight:"bold"
-              }}
-            >
-              {cartCount}
-            </span>
+</div>
 
-          )}
 
-        </Link>
 
+<Link to="/cart" style={{position:"relative"}}>
 
+<FontAwesomeIcon icon={faCartShopping} size="2x"/>
 
-        <div className="Buyer_Dashboard_Logout">
-          <button onClick={handleLogout}>Logout</button>
-        </div>
+{cartCount>0 &&(
 
+<span
+style={{
+position:"absolute",
+top:"-5px",
+right:"-5px",
+background:"red",
+color:"white",
+borderRadius:"50%",
+padding:"2px 6px",
+fontSize:"12px",
+fontWeight:"bold"
+}}
+>
+{cartCount}
+</span>
 
-      </div>
+)}
 
+</Link>
 
 
-      {/* WELCOME */}
+<div className="Buyer_Dashboard_Logout">
+<button onClick={handleLogout}>Logout</button>
+</div>
 
-      <div className="Buyer_Dashboard_Heading">
+</div>
 
-        <h1>
-          Welcome back, {buyerName}! 🛍️
-        </h1>
 
-        <p>
-          Browse shops and enjoy secure shopping
-        </p>
 
-      </div>
+{/* HEADING */}
 
+<div className="Buyer_Dashboard_Heading">
 
+<h1>Welcome back, {buyerName}! 🛍️</h1>
+<p>Browse shops and enjoy secure shopping.</p>
 
-      {/* SEARCH */}
+</div>
 
-      <div className="Buyer_Dashboard_search">
 
-        <input
-          type="text"
-          placeholder="Search sellers..."
-          value={searchQuery}
-          onChange={(e)=>setSearchQuery(e.target.value)}
-        />
 
-        <button>
-          <FontAwesomeIcon icon={faSearch}/>
-        </button>
+{/* SEARCH */}
 
-      </div>
+<div className="Buyer_Dashboard_search">
 
+<input
+type="text"
+placeholder="Search sellers by name, category, location..."
+value={searchQuery}
+onChange={(e)=>setSearchQuery(e.target.value)}
+/>
 
+<button>
+<FontAwesomeIcon icon={faSearch}/>
+</button>
 
-      {/* SELLERS */}
+</div>
 
-      <div className="shop-grid">
 
-        {filteredSellers.length>0 ?
 
-          filteredSellers.map(seller=>(
+{/* SELLERS */}
 
-            <div key={seller._id} className="shop-card">
+<div className="shop-grid">
 
+{filteredSellers.length>0 ?
 
-              {/* IMAGE */}
+filteredSellers.map(seller=>(
 
-              <div className="card-image-section">
+<div key={seller._id} className="shop-card">
 
-                {seller.files && seller.files.length>0 ?
+<div className="card-image-section">
 
-                  <div className="image-slider">
+{seller.files && seller.files.length>0 ? (
 
-                    <img
-                      src={getFileUrl(
-                        seller.files[currentImageIndex[seller._id] || 0]
-                      )}
-                      alt={seller.name}
-                      className="slider-image"
-                    />
+<div className="image-slider">
 
-                    <div className="slider-controls">
+{isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
 
-                      <FontAwesomeIcon
-                        icon={faChevronLeft}
-                        onClick={() =>
-                          handlePrev(seller._id, seller.files.length)
-                        }
-                      />
+<video
+src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+controls
+className="slider-image"
+onClick={()=>setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+/>
 
-                      <FontAwesomeIcon
-                        icon={faChevronRight}
-                        onClick={() =>
-                          handleNext(seller._id, seller.files.length)
-                        }
-                      />
+) : (
 
-                    </div>
+<img
+src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+alt={seller.name}
+className="slider-image"
+onClick={()=>setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+/>
 
-                  </div>
+)}
 
-                :
+<div className="slider-controls">
 
-                  <img src="/placeholder.png" alt="no"/>
+<FontAwesomeIcon
+icon={faChevronLeft}
+className="slider-icon"
+onClick={()=>handlePrev(seller._id,seller.files.length)}
+/>
 
-                }
+<FontAwesomeIcon
+icon={faChevronRight}
+className="slider-icon"
+onClick={()=>handleNext(seller._id,seller.files.length)}
+/>
 
-              </div>
+</div>
 
+</div>
 
+) : (
 
-              {/* INFO */}
+<img src="/placeholder.png" alt="no image" className="slider-image"/>
 
-              <div className="shop-card-info">
+)}
 
-                <h3>
-                  {seller.name} Shop
-                </h3>
 
-                <p>
-                  {seller.location}
-                </p>
+<Link to={`/view_profile/${seller._id}`} className="profile-avatar">
 
-                <p>
-                  {seller.category}
-                </p>
+<img
+src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"}
+alt={seller.name}
+className="avatar-image"
+/>
 
-                <div>
-                  {renderStars(seller.averageRating)}
-                  ({seller.numReviews})
-                </div>
+</Link>
 
-                <p>
-                  {seller.description}
-                </p>
+</div>
 
 
-                <div className="card-actions">
 
-                  <Link to={getSellerRoute(seller.category, seller._id)}>
-                    <button className="visit-btn">
-                      Visit Shop
-                    </button>
-                  </Link>
+<div className="shop-card-info">
 
-                  <Link to={`/buyer_chat/${seller._id}`}>
-                    <button className="chat-btn">
-                      Chat
-                    </button>
-                  </Link>
+<h3>{seller.name} Shop</h3>
 
-                </div>
+<p>{seller.location}</p>
 
-              </div>
+<p>{seller.category} Shop</p>
 
+<div className="rating">
 
-            </div>
+{renderStars(seller.averageRating)}
+<span>({seller.numReviews})</span>
 
-          ))
+</div>
 
-        :
+<p>{seller.description}</p>
 
-          <p>No sellers found</p>
 
-        }
+<div className="card-actions">
 
-      </div>
+<Link to={getSellerRoute(seller.category,seller._id)}>
+<button className="visit-btn">Visit Shop</button>
+</Link>
 
+<Link to={`/buyer_chat/${seller._id}`}>
+<button className="chat-btn">Chat</button>
+</Link>
 
-    </div>
+</div>
 
-  );
+</div>
+
+</div>
+
+))
+
+:
+
+<p>No sellers found</p>
+
+}
+
+</div>
+
+
+
+{/* MEDIA MODAL */}
+
+{selectedMedia && (
+
+<div className="media-modal" onClick={()=>setSelectedMedia(null)}>
+
+<span className="close-btn">&times;</span>
+
+{isVideoFile(selectedMedia) ? (
+
+<video src={getFileUrl(selectedMedia)} controls autoPlay/>
+
+) : (
+
+<img src={getFileUrl(selectedMedia)} alt="preview"/>
+
+)}
+
+</div>
+
+)}
+
+
+
+</div>
+
+);
 
 }
 
