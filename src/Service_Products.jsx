@@ -274,10 +274,8 @@ const getFileUrl = (path) => {
                 {/* Buttons */}
                 <div className="View_Products_btns">
                   <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
-                 <button
-  onClick={() => addToCart(product._id, product.name)}
->
-  Book Now 
+                 <button className="book-btn">
+  <Link to={`/book/${product._id}`}>Book Now</Link>
 </button>
                 </div>
               </div>

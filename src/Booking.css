@@ -1,0 +1,73 @@
+/* Booking.css */
+
+.booking-container {
+  max-width: 420px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.booking-container h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.2rem;
+  color: #333;
+}
+
+.booking-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.booking-container input,
+.booking-container textarea {
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-container input:focus,
+.booking-container textarea:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74,144,226,0.2);
+  outline: none;
+}
+
+.booking-container textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.booking-container button {
+  padding: 1rem;
+  background: #4a90e2;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.booking-container button:hover {
+  background: #357ABD;
+}
+
+@media (max-width: 480px) {
+  .booking-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .booking-container h2 {
+    font-size: 1.3rem;
+  }
+}
