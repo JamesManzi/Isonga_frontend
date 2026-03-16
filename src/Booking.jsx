@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import ".Booking.css";
+import "./Booking.css";
 function Booking() {
   const { productId } = useParams();
 
