@@ -46,8 +46,9 @@ function SellerBookings() {
                 <th>Service</th>
                 <th>Date & Time</th>
                 <th>Phone</th>
-                <th>Payment</th>
-                <th>Proof</th>
+                <th>Payment Method</th>
+                <th>Payment Proof</th>
+                <th>Message</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -60,27 +61,35 @@ function SellerBookings() {
                   <td>{b.phone}</td>
                   
                   {/* PAYMENT METHOD COLUMN */}
-                  <td className="payment-type">
-                    {b.paymentMethod === "cash" ? "💸 Cash" : 
-                     b.paymentMethod === "mobile" ? "📱 Mobile Money" : "💳 Card"}
+                  <td className="payment-method-cell">
+                    <span className={`payment-tag ${b.paymentMethod}`}>
+                      {b.paymentMethod === "mobile" ? "📱 MoMo" : 
+                       b.paymentMethod === "card" ? "💳 Card" : "💵 Cash"}
+                    </span>
                   </td>
 
                   {/* PAYMENT PROOF COLUMN */}
                   <td>
                     {b.paymentProof ? (
-                      <a 
-                        href={`https://isonga-backend.onrender.com/${b.paymentProof}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="view-proof-link"
-                      >
-                        View Image
-                      </a>
+                      <div className="proof-preview">
+                        <a 
+                          href={`https://isonga-backend.onrender.com/${b.paymentProof}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          <img 
+                            src={`https://isonga-backend.onrender.com/${b.paymentProof}`} 
+                            alt="Proof" 
+                            className="booking-thumbnail"
+                          />
+                        </a>
+                      </div>
                     ) : (
-                      <span className="no-proof">No Proof</span>
+                      <span className="no-proof-text">No Proof</span>
                     )}
                   </td>
 
+                  <td className="msg-cell">{b.message}</td>
                   <td>
                     <span className={`status-badge ${b.status.toLowerCase()}`}>
                       {b.status}
