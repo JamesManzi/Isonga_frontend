@@ -152,7 +152,7 @@ return(
 <div className="profile-header">
 
 <Link to="/buyer_dashboard" className="back-btn">
-<FontAwesomeIcon icon={faArrowLeft}/> Back
+<FontAwesomeIcon icon={faArrowLeft} style={{color:"black"}}/> Back
 </Link>
 
 <h1>Account Settings</h1>
