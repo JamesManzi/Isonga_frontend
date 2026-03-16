@@ -46,57 +46,49 @@ function SellerBookings() {
                 <input type="text" value={b.name} readOnly />
               </div>
 
-              <div className="form-group">
-                <label>Service Requested</label>
-                <input type="text" value={b.product?.name || "Deleted Service"} readOnly />
-              </div>
-
               <div className="form-row">
                 <div className="form-group">
-                  <label>Date & Time</label>
-                  <input type="text" value={`${b.date} at ${b.time}`} readOnly />
+                  <label>Service</label>
+                  <input type="text" value={b.product?.name || "Deleted Service"} readOnly />
                 </div>
                 <div className="form-group">
-                  <label>Phone Number</label>
+                  <label>Phone</label>
                   <input type="text" value={b.phone} readOnly />
                 </div>
               </div>
-               <h3>Payment Method</h3>
-        <select
-          name="paymentMethod"
-          value={form.paymentMethod}
-          onChange={handleChange}
-        >
-          <option value="cash">Cash on Delivery</option>
-          <option value="mobile">Mobile Money</option>
-          <option value="card">Card Payment</option>
-        </select>
 
-        {/* CONDITIONAL UPLOAD FIELD */}
-        {form.paymentMethod !== "cash" && (
-          <div className="payment-upload">
-            <h3>Upload Payment Screenshot</h3>
-            <p className="upload-hint">Please upload a screenshot of your transaction confirmation.</p>
-            <input 
-              type="file" 
-              accept="image/*" 
-              onChange={handleFileChange} 
-            />
-            {imagePreview && (
-              <div className="preview-container">
-                <p>Preview:</p>
-                <img src={imagePreview} alt="Payment Proof" className="payment-preview-img" />
+              {/* PAYMENT SECTION */}
+              <div className="payment-details-section">
+                <div className="form-group">
+                  <label>Payment Method</label>
+                  <input type="text" value={b.paymentMethod || "Not Specified"} readOnly className="payment-method-input" />
+                </div>
+
+                {/* SHOW SCREENSHOT IF IT EXISTS */}
+                {b.paymentScreenshot && (
+                  <div className="screenshot-display">
+                    <label>Payment Proof</label>
+                    <div className="image-container">
+                      <a href={b.paymentScreenshot} target="_blank" rel="noreferrer">
+                        <img 
+                          src={b.paymentScreenshot} 
+                          alt="Payment Screenshot" 
+                          className="view-payment-img" 
+                        />
+                      </a>
+                      <p className="zoom-hint">Click image to enlarge</p>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        )}
+
               <div className="form-group">
-                <label>Message/Notes</label>
-                <textarea value={b.message} readOnly rows="3" />
+                <label>Customer Message</label>
+                <textarea value={b.message} readOnly rows="2" />
               </div>
 
               <div className="form-status">
-                <label>Booking Status:</label>
+                <label>Status:</label>
                 <span className={`status-badge ${b.status.toLowerCase()}`}>
                   {b.status}
                 </span>
