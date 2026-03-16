@@ -49,9 +49,9 @@ function Buyer_Login(){
     </p>
 
     <ul>
-        <li>✔ Discover products near you</li>
-        <li>✔ Save your favorite items</li>
-        <li>✔ Shop with confidence</li>
+        <li> Discover products near you</li>
+        <li> Save your favorite items</li>
+        <li> Shop with confidence</li>
     </ul>
 </div>
 

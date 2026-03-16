@@ -90,9 +90,9 @@ function Buyer_Register(){
     </p>
 
     <ul>
-        <li>✔ Wide variety of categories</li>
-        <li>✔ Trusted sellers</li>
-        <li>✔ Fast and convenient experience</li>
+        <li> Wide variety of categories</li>
+        <li> Trusted sellers</li>
+        <li> Fast and convenient experience</li>
     </ul>
 </div>
 
