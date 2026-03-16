@@ -117,33 +117,7 @@ const [popupMessage, setPopupMessage] = useState("");
     );
   }
 
-  const addToCart = async (productId, productName) => {
-  try {
-    const res = await axios.post(
-      "https://isonga-backend.onrender.com/api/cart/add",
-      { productId, quantity: 1 },
-      { withCredentials: true }
-    );
-
-    if (res.data.success) {
-      // show popup
-      setPopupMessage(`${productName} added to cart!`);
-      setShowCartPopup(true);
-
-      // hide popup after 2s
-      setTimeout(() => setShowCartPopup(false), 2000);
-    } else {
-      setPopupMessage(res.data.message || "Failed to add to cart");
-      setShowCartPopup(true);
-      setTimeout(() => setShowCartPopup(false), 2000);
-    }
-  } catch (error) {
-    console.log(error);
-    setPopupMessage("Error adding to cart");
-    setShowCartPopup(true);
-    setTimeout(() => setShowCartPopup(false), 2000);
-  }
-};
+  
 const getFileUrl = (path) => {
   if (!path) return "/placeholder.png"; // Fallback if no image exists
   return path.startsWith("http") 
@@ -305,11 +279,6 @@ const getFileUrl = (path) => {
           )}
         </div>
       )}
-      {showCartPopup && (
-  <div className="cart-popup">
-    {popupMessage}
-  </div>
-)}
     </div>
   );
 }
