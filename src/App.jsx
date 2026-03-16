@@ -73,7 +73,7 @@ function App(){
         <Route path="/Service_products/:id" element={<Service_Products/>}/>
         <Route path="/Asset_products/:id" element={<Asset_Products/>}/>
         <Route path="/book/:productId" element={<Booking />} />
-        <Route path="/seller_orders" element={<SellerBookings />} />
+        <Route path="/seller_bookings" element={<SellerBookings />} />
       </Routes>
       </BrowserRouter>
     </div>
