@@ -61,7 +61,35 @@ function SellerBookings() {
                   <input type="text" value={b.phone} readOnly />
                 </div>
               </div>
+               <h3>Payment Method</h3>
+        <select
+          name="paymentMethod"
+          value={form.paymentMethod}
+          onChange={handleChange}
+        >
+          <option value="cash">Cash on Delivery</option>
+          <option value="mobile">Mobile Money</option>
+          <option value="card">Card Payment</option>
+        </select>
 
+        {/* CONDITIONAL UPLOAD FIELD */}
+        {form.paymentMethod !== "cash" && (
+          <div className="payment-upload">
+            <h3>Upload Payment Screenshot</h3>
+            <p className="upload-hint">Please upload a screenshot of your transaction confirmation.</p>
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleFileChange} 
+            />
+            {imagePreview && (
+              <div className="preview-container">
+                <p>Preview:</p>
+                <img src={imagePreview} alt="Payment Proof" className="payment-preview-img" />
+              </div>
+            )}
+          </div>
+        )}
               <div className="form-group">
                 <label>Message/Notes</label>
                 <textarea value={b.message} readOnly rows="3" />
