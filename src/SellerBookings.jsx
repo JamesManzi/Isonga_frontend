@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import "./SellerBookings.css";
 function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
