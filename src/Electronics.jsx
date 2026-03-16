@@ -237,7 +237,7 @@ const handleNext = (sellerId, totalImages) => {
           </Link>
 
            <Link to="#">
-                <button className="chat-btn">Chat</button>
+                <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
                 </Link>
         </div>
       </div>
