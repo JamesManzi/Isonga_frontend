@@ -12,34 +12,80 @@ function Booking() {
     phone: "",
     date: "",
     time: "",
-    message: ""
+    message: "",
+    paymentMethod: "cash"
   });
+
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // file upload
+  const [paymentImage, setPaymentImage] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPaymentImage(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    // validation
+    if (!form.name || !form.phone || !form.date || !form.time) {
+      setError("Please fill all required fields");
+      return;
+    }
+
+    if (form.paymentMethod !== "cash" && !paymentImage) {
+      setError("Please upload payment proof");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // use FormData for file upload
+      const formData = new FormData();
+      formData.append("productId", productId);
+      formData.append("name", form.name);
+      formData.append("phone", form.phone);
+      formData.append("date", form.date);
+      formData.append("time", form.time);
+      formData.append("message", form.message);
+      formData.append("paymentMethod", form.paymentMethod);
+
+      if (paymentImage) {
+        formData.append("paymentProof", paymentImage);
+      }
+
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/bookService",
-        { productId, ...form },
-        { withCredentials: true }
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" }
+        }
       );
 
       if (res.data.success) {
         alert("Booking Sent Successfully!");
-        setForm({ name: "", phone: "", date: "", time: "", message: "" });
+        navigate("/buyer_dashboard");
       } else {
-        alert(res.data.message || "Booking failed");
+        setError(res.data.message || "Booking failed");
       }
+
     } catch (err) {
       console.error(err);
-      alert("Error sending booking");
+      setError("Error sending booking");
     } finally {
       setLoading(false);
     }
@@ -55,22 +101,21 @@ function Booking() {
         </div>
       </div>
 
+      {error && <p className="booking-error">{error}</p>}
+
       <form onSubmit={handleSubmit} className="booking-form">
 
-        <label htmlFor="name">Your Name</label>
+        <label>Your Name</label>
         <input
-          id="name"
           type="text"
           name="name"
-          placeholder="Enter your name"
           value={form.name}
           onChange={handleChange}
           required
         />
 
-        <label htmlFor="phone">Phone Number</label>
+        <label>Phone Number</label>
         <input
-          id="phone"
           type="tel"
           name="phone"
           placeholder="07XXXXXXXX"
@@ -80,9 +125,8 @@ function Booking() {
           required
         />
 
-        <label htmlFor="date">Booking Date</label>
+        <label>Booking Date</label>
         <input
-          id="date"
           type="date"
           name="date"
           value={form.date}
@@ -90,9 +134,8 @@ function Booking() {
           required
         />
 
-        <label htmlFor="time">Booking Time</label>
+        <label>Booking Time</label>
         <input
-          id="time"
           type="time"
           name="time"
           value={form.time}
@@ -100,14 +143,43 @@ function Booking() {
           required
         />
 
-        <label htmlFor="message">Additional Details</label>
+        <label>Additional Details</label>
         <textarea
-          id="message"
           name="message"
-          placeholder="Write any additional information..."
           value={form.message}
           onChange={handleChange}
         />
+
+        {/* PAYMENT SECTION */}
+        <label>Payment Method</label>
+        <select
+          name="paymentMethod"
+          value={form.paymentMethod}
+          onChange={handleChange}
+        >
+          <option value="cash">Cash on Service</option>
+          <option value="mobile">Mobile Money</option>
+          <option value="card">Card</option>
+        </select>
+
+        {/* CONDITIONAL FILE UPLOAD */}
+        {form.paymentMethod !== "cash" && (
+          <div className="payment-upload">
+            <label>Upload Payment Screenshot</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+
+            {preview && (
+              <div className="preview">
+                <p>Preview:</p>
+                <img src={preview} alt="preview" width="120" />
+              </div>
+            )}
+          </div>
+        )}
 
         <button type="submit" disabled={loading} className="btn-submit">
           {loading ? "Sending..." : "Send Booking"}
