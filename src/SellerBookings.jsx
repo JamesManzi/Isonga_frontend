@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileInvoiceDollar, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import "./SellerBookings.css";
 
 function SellerBookings() {
@@ -17,7 +19,7 @@ function SellerBookings() {
       const res = await axios.get(
         "https://isonga-backend.onrender.com/api/seller/bookings",
         { withCredentials: true }
-      );
+      )
       if (res.data.success) {
         setBookings(res.data.bookings);
       }
@@ -44,12 +46,11 @@ function SellerBookings() {
 
   if (loading) return <p className="loading">Loading bookings...</p>;
 
-  // Updated empty state to match the new header look
   if (bookings.length === 0) {
     return (
       <div className="seller-bookings">
         <div className="booking-header">
-           <button className="back_btn" onClick={() => navigate(-1)}>←</button>
+           <button className="back-btn" onClick={() => navigate(-1)}>←</button>
            <h1>Service Bookings</h1>
         </div>
         <div className="empty">
@@ -64,43 +65,61 @@ function SellerBookings() {
 
   return (
     <div className="seller-bookings">
-      {/* --- NEW HEADER SECTION --- */}
       <div className="booking-header">
         <button className="back-btn" onClick={() => navigate(-1)}>←</button>
         <h1>Service Bookings</h1>
-        <div style={{ width: "40px" }}></div> {/* This balances the flexbox space */}
+        <div style={{ width: "40px" }}></div>
       </div>
 
       {bookings.map((booking) => (
         <div key={booking._id} className="booking-card">
           <div className="booking-info">
-            <h3>{booking.name}</h3>
+            <div className="status-row">
+                <h3>{booking.name}</h3>
+                <span className={`status-tag ${booking.status}`}>{booking.status}</span>
+            </div>
             <p><strong>Phone:</strong> {booking.phone}</p>
             <p><strong>Date:</strong> {booking.date}</p>
             <p><strong>Time:</strong> {booking.time}</p>
             <p><strong>Message:</strong> {booking.message || "None"}</p>
             <p><strong>Payment:</strong> {booking.paymentMethod}</p>
-            <p><strong>Status:</strong> {booking.status}</p>
+
+            {/* --- IMPROVED RECEIPT SECTION --- */}
+            {booking.paymentProof && (
+              <div className="payment-proof-container">
+                <p><strong>Payment Receipt:</strong></p>
+                <a 
+                  href={booking.paymentProof} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="receipt-link"
+                >
+                  <FontAwesomeIcon icon={faFileInvoiceDollar} /> View Screenshot 
+                  <FontAwesomeIcon icon={faExternalLinkAlt} style={{ fontSize: '10px', marginLeft: '5px' }} />
+                </a>
+                <div className="proof-preview">
+                    <img
+                      src={booking.paymentProof}
+                      alt="Payment Proof"
+                      className="proof-thumbnail"
+                      onClick={() => window.open(booking.paymentProof, '_blank')}
+                    />
+                </div>
+              </div>
+            )}
           </div>
 
-          {booking.paymentProof && (
-            <div className="payment-proof">
-              <p>Payment Proof:</p>
-              <img
-                src={`https://isonga-backend.onrender.com/uploads/${booking.paymentProof}`}
-                alt="proof"
-                className="proof-img"
-              />
-            </div>
-          )}
-
           <div className="booking-actions">
-            <button className="approve-btn" onClick={() => updateStatus(booking._id, "approved")}>
-              Approve
-            </button>
-            <button className="reject-btn" onClick={() => updateStatus(booking._id, "rejected")}>
-              Reject
-            </button>
+            {booking.status === "pending" && (
+              <>
+                <button className="approve-btn" onClick={() => updateStatus(booking._id, "approved")}>
+                  Approve
+                </button>
+                <button className="reject-btn" onClick={() => updateStatus(booking._id, "rejected")}>
+                  Reject
+                </button>
+              </>
+            )}
           </div>
         </div>
       ))}

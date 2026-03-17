@@ -156,3 +156,51 @@
   flex-grow: 1;
   text-align: center;
 }
+
+
+
+.payment-proof-container {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #ced4da;
+}
+
+.receipt-link {
+  display: inline-block;
+  color: #2c3e50;
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 8px;
+  transition: color 0.3s;
+}
+
+.receipt-link:hover {
+  color: #3498db;
+}
+
+.proof-thumbnail {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  transition: transform 0.2s;
+}
+
+.proof-thumbnail:hover {
+  transform: scale(1.05);
+}
+
+.status-tag {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.status-tag.approved { background: #d4edda; color: #155724; }
+.status-tag.pending { background: #fff3cd; color: #856404; }
+.status-tag.rejected { background: #f8d7da; color: #721c24; }
