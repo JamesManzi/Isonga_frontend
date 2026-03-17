@@ -248,49 +248,44 @@ const getFileUrl = (path) => {
         </div>
       )}
       {/* ================= PREMIUM FOOTER ================= */}
-
-<footer className="footer">
+      <footer className="footer">
 
   {/* Back To Top */}
   <div 
     className="back-to-top"
     onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
   >
-    Back to Top
+    ↑ Back to Top
   </div>
 
   <div className="footer-container">
 
-    {/* Column 1 */}
     <div className="footer-col">
       <h3>Get to Know Us</h3>
-      <Link to="#">About Isonga</Link>
+      <Link to="#">About</Link>
       <Link to="#">Careers</Link>
-      <Link to="#">Press Releases</Link>
-      <Link to="#">Our Mission</Link>
+      <Link to="#">Press</Link>
+      <Link to="#">Mission</Link>
     </div>
 
-    {/* Column 2 */}
     <div className="footer-col">
-      <h3>Make Money with Us</h3>
+      <h3>Make Money</h3>
       <Link to="/login">Sell on Isonga</Link>
       <Link to="#">Seller Guide</Link>
-      <Link to="#">Advertise Products</Link>
-      <Link to="#">Affiliate Program</Link>
+      <Link to="#">Advertise</Link>
+      <Link to="#">Affiliate</Link>
     </div>
 
-    {/* Column 3 */}
     <div className="footer-col">
-      <h3>Buyer Support</h3>
-      <Link to="/buyer_login">Your Account</Link>
+      <h3>Support</h3>
+      <Link to="/buyer_login">Account</Link>
       <Link to="/Help">Help Center</Link>
-      <Link to="#">Shipping Info</Link>
+      <Link to="#">Shipping</Link>
       <Link to="#">Returns</Link>
     </div>
 
-    {/* Column 4 */}
     <div className="footer-col">
-      <h3>Connect With Us</h3>
+      <h3>Stay Connected</h3>
 
       <div className="social-icons">
         <i className="fab fa-facebook"></i>
@@ -299,26 +294,26 @@ const getFileUrl = (path) => {
       </div>
 
       <div className="newsletter">
-        <p>Subscribe for offers & updates</p>
-        <input type="email" placeholder="Enter your email" />
-        <button>Subscribe</button>
+        <p>Get updates & offers</p>
+        <div className="newsletter-box">
+          <input type="email" placeholder="Your email" />
+          <button>Join</button>
+        </div>
       </div>
     </div>
 
   </div>
 
-  {/* Trust Section */}
+  {/* Trust badges */}
   <div className="trust-section">
-    <div>🔒 Secure Transactions</div>
-    <div>✔ Verified Sellers</div>
-    <div>⭐ Trusted by Buyers</div>
-    <div>💬 24/7 Support</div>
+    <span>🔒 Secure</span>
+    <span>✔ Verified</span>
+    <span>⭐ Trusted</span>
+    <span>💬 Support</span>
   </div>
 
-  {/* Payment Section */}
-
   <div className="footer-bottom">
-    © {new Date().getFullYear()} Isonga Market. All rights reserved.
+    © {new Date().getFullYear()} Isonga Market
   </div>
 
 </footer>
