@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faImage } from "@fortawesome/free-solid-svg-icons";
 
 function SellerOrders() {
   const [orders, setOrders] = useState([]);
@@ -29,124 +29,126 @@ function SellerOrders() {
       )
       .then((res) => {
         if (res.data.success) {
-          alert(`Order ${newStatus}`);
+          alert(`Order updated to: ${newStatus}`);
           getOrders();
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <Link to="/dashboard" style={{ textDecoration: "none", color: "#2c3e50" }}>
-        <FontAwesomeIcon icon={faArrowRight} style={{ marginRight: "8px" }} />
-        Back
+    <div style={{ padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
+      <Link to="/dashboard" style={{ textDecoration: "none", color: "#3498db", fontWeight: "600" }}>
+        <FontAwesomeIcon icon={faArrowLeft} /> Back to Dashboard
       </Link>
 
-      <h1 style={{ margin: "20px 0", fontSize: "1.8rem", color: "#2c3e50" }}>
-        Incoming Orders
-      </h1>
+      <h1 style={{ margin: "25px 0", color: "#2c3e50" }}>Incoming Orders</h1>
 
-      {orders.length === 0 && <p>No orders yet.</p>}
-
-      {orders.map((order) => (
-        <div
-          key={order._id}
-          style={{
-            border: "1px solid #ddd",
-            padding: "20px",
-            marginBottom: "20px",
-            borderRadius: "8px",
-            backgroundColor: "#fafafa",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-            transition: "box-shadow 0.2s ease-in-out",
-          }}
-        >
-          <h3 style={{ marginBottom: "10px", color: "#34495e" }}>
-            Order ID: {order._id}
-          </h3>
-          <p>
-            <strong>Status:</strong> {order.status}
-          </p>
-
-          <hr style={{ margin: "15px 0", border: "none", borderTop: "1px solid #eee" }} />
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-            <div>
-              <h4 style={{ marginBottom: "8px", color: "#2c3e50" }}>Customer Details</h4>
-              <p><strong>Name:</strong> {order.name}</p>
-              <p><strong>Phone:</strong> {order.phone}</p>
-              <p><strong>Address:</strong> {order.address}</p>
+      {orders.length === 0 ? (
+        <p style={{ color: "#7f8c8d" }}>You have no orders yet.</p>
+      ) : (
+        orders.map((order) => (
+          <div key={order._id} style={cardStyle}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <h3 style={{ margin: 0 }}>Order ID: ...{order._id.slice(-6)}</h3>
+              <span style={statusBadge(order.status)}>{order.status}</span>
             </div>
 
-            <div>
-              <h4 style={{ marginBottom: "8px", color: "#2c3e50" }}>Logistics</h4>
-              <p><strong>Delivery Method:</strong> {order.deliveryMethod}</p>
-              <p><strong>Payment Method:</strong> {order.paymentMethod}</p>
-              <p><strong>Delivery Date:</strong> {order.deliveryDate || "N/A"}</p>
+            <div style={gridStyle}>
+              <section>
+                <h4 style={sectionTitle}>Customer Information</h4>
+                <p><strong>Name:</strong> {order.name}</p>
+                <p><strong>Phone:</strong> {order.phone}</p>
+                <p><strong>Address:</strong> {order.address}</p>
+              </section>
+
+              <section>
+                <h4 style={sectionTitle}>Logistics & Payment</h4>
+                <p><strong>Delivery:</strong> {order.deliveryMethod}</p>
+                <p><strong>Payment:</strong> {order.paymentMethod}</p>
+                {order.paymentProof && (
+                  <a href={order.paymentProof} target="_blank" rel="noreferrer" style={receiptLink}>
+                    <FontAwesomeIcon icon={faImage} /> View Payment Receipt
+                  </a>
+                )}
+              </section>
             </div>
+
+            <div style={itemBox}>
+              <h4 style={{ marginTop: 0 }}>Items Ordered</h4>
+              {order.items.map((item, index) => (
+                <div key={index} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem" }}>
+                  <span>{item.product?.name || "Deleted Product"} × {item.quantity}</span>
+                  <span>{item.price * item.quantity} Rwf</span>
+                </div>
+              ))}
+              <div style={totalStyle}>Total: {order.totalPrice} Rwf</div>
+            </div>
+
+            {order.status === "Pending" && (
+              <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+                <button onClick={() => updateStatus(order._id, "Processing")} style={btnAccept}>
+                  Accept Order
+                </button>
+                <button onClick={() => updateStatus(order._id, "Cancelled")} style={btnDecline}>
+                  Decline Order
+                </button>
+              </div>
+            )}
           </div>
-
-          <div style={{ marginTop: "10px", fontStyle: "italic", color: "#777" }}>
-            <h4 style={{ marginBottom: "5px", color: "#2c3e50" }}>Order Notes:</h4>
-            <p>{order.notes || "No notes provided."}</p>
-          </div>
-
-          <hr style={{ margin: "15px 0", border: "none", borderTop: "1px solid #eee" }} />
-
-          <h4 style={{ marginBottom: "8px", color: "#2c3e50" }}>Items Ordered:</h4>
-          {order.items.map((item) => (
-            <p key={item.product._id}>
-              {item.product.name} × {item.quantity} ={" "}
-              <strong>{item.quantity * item.price} Rwf</strong>
-            </p>
-          ))}
-
-          <h3 style={{ marginTop: "10px", fontSize: "1.2rem", fontWeight: "bold", color: "#27ae60" }}>
-            Total Price: {order.totalPrice} Rwf
-          </h3>
-
-          {/* Action Buttons */}
-          <div style={{ marginTop: "20px", display: "flex", gap: "15px" }}>
-            <button
-              onClick={() => updateStatus(order._id, "accepted")}
-              style={{
-                backgroundColor: "#27ae60",
-                color: "white",
-                border: "none",
-                padding: "10px 25px",
-                cursor: "pointer",
-                borderRadius: "5px",
-                fontWeight: "bold",
-                transition: "background-color 0.2s ease-in-out",
-              }}
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#219150")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#27ae60")}
-            >
-              Accept Order
-            </button>
-            <button
-              onClick={() => updateStatus(order._id, "declined")}
-              style={{
-                backgroundColor: "#c0392b",
-                color: "white",
-                border: "none",
-                padding: "10px 25px",
-                cursor: "pointer",
-                borderRadius: "5px",
-                fontWeight: "bold",
-                transition: "background-color 0.2s ease-in-out",
-              }}
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#a93226")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#c0392b")}
-            >
-              Decline Order
-            </button>
-          </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }
+
+// --- Styles ---
+const cardStyle = {
+  background: "#fff",
+  padding: "20px",
+  borderRadius: "10px",
+  marginBottom: "20px",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+  border: "1px solid #eee"
+};
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "20px",
+  marginTop: "15px"
+};
+
+const sectionTitle = { borderBottom: "1px solid #eee", paddingBottom: "5px", color: "#34495e" };
+
+const itemBox = {
+  marginTop: "15px",
+  background: "#f9f9f9",
+  padding: "15px",
+  borderRadius: "8px"
+};
+
+const totalStyle = {
+  textAlign: "right",
+  fontWeight: "bold",
+  fontSize: "1.1rem",
+  color: "#27ae60",
+  marginTop: "10px",
+  borderTop: "1px solid #ddd",
+  paddingTop: "5px"
+};
+
+const statusBadge = (status) => ({
+  backgroundColor: status === "Pending" ? "#f1c40f" : status === "Cancelled" ? "#e74c3c" : "#2ecc71",
+  color: "white",
+  padding: "4px 12px",
+  borderRadius: "20px",
+  fontSize: "0.8rem",
+  height: "fit-content"
+});
+
+const receiptLink = { color: "#3498db", textDecoration: "none", fontWeight: "bold", display: "block", marginTop: "5px" };
+const btnAccept = { flex: 1, padding: "10px", background: "#27ae60", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" };
+const btnDecline = { flex: 1, padding: "10px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" };
 
 export default SellerOrders;
