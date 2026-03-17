@@ -85,11 +85,11 @@ function SellerBookings() {
             <p><strong>Payment:</strong> {booking.paymentMethod}</p>
 
             {/* --- IMPROVED RECEIPT SECTION --- */}
-            {booking.paymentProof && (
+            {booking.paymentScreenshot && (
               <div className="payment-proof-container">
                 <p><strong>Payment Receipt:</strong></p>
                 <a 
-                  href={booking.paymentProof} 
+                  href={booking.paymentScreenshot} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="receipt-link"
@@ -99,7 +99,7 @@ function SellerBookings() {
                 </a>
                 <div className="proof-preview">
                     <img
-                      src={booking.paymentProof}
+                      src={booking.paymentScreenshot}
                       alt="Payment Proof"
                       className="proof-thumbnail"
                       onClick={() => window.open(booking.paymentProof, '_blank')}
