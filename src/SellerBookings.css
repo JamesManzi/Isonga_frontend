@@ -128,7 +128,7 @@
   margin-bottom: 20px;
   position: sticky;
   top: 0;
-  background: #f9fafb; /* Matches your container background */
+  background: black; /* Matches your container background */
   z-index: 10;
 }
 
