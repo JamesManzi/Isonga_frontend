@@ -18,7 +18,6 @@ function SellerBookings() {
         "https://isonga-backend.onrender.com/api/seller/bookings",
         { withCredentials: true }
       );
-
       if (res.data.success) {
         setBookings(res.data.bookings);
       }
@@ -35,9 +34,8 @@ function SellerBookings() {
         { status },
         { withCredentials: true }
       );
-
       if (res.data.success) {
-        fetchBookings(); // refresh
+        fetchBookings(); 
       }
     } catch (err) {
       console.log(err);
@@ -46,24 +44,35 @@ function SellerBookings() {
 
   if (loading) return <p className="loading">Loading bookings...</p>;
 
+  // Updated empty state to match the new header look
   if (bookings.length === 0) {
     return (
-      <div className="empty">
-        <h2>No bookings yet</h2>
-        <button onClick={() => navigate("/seller_dashboard")}>
-          Back to Dashboard
-        </button>
+      <div className="seller-bookings">
+        <div className="booking-header">
+           <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+           <h1>Service Bookings</h1>
+        </div>
+        <div className="empty">
+          <h2>No bookings yet</h2>
+          <button className="dashboard-btn" onClick={() => navigate("/seller_dashboard")}>
+            Back to Dashboard
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="seller-bookings">
-      <h1>Service Bookings</h1>
+      {/* --- NEW HEADER SECTION --- */}
+      <div className="booking-header">
+        <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+        <h1>Service Bookings</h1>
+        <div style={{ width: "40px" }}></div> {/* This balances the flexbox space */}
+      </div>
 
       {bookings.map((booking) => (
         <div key={booking._id} className="booking-card">
-
           <div className="booking-info">
             <h3>{booking.name}</h3>
             <p><strong>Phone:</strong> {booking.phone}</p>
@@ -74,7 +83,6 @@ function SellerBookings() {
             <p><strong>Status:</strong> {booking.status}</p>
           </div>
 
-          {/* PAYMENT PROOF IMAGE */}
           {booking.paymentProof && (
             <div className="payment-proof">
               <p>Payment Proof:</p>
@@ -86,17 +94,14 @@ function SellerBookings() {
             </div>
           )}
 
-          {/* ACTION BUTTONS */}
           <div className="booking-actions">
-            <button onClick={() => updateStatus(booking._id, "approved")}>
+            <button className="approve-btn" onClick={() => updateStatus(booking._id, "approved")}>
               Approve
             </button>
-
-            <button onClick={() => updateStatus(booking._id, "rejected")}>
+            <button className="reject-btn" onClick={() => updateStatus(booking._id, "rejected")}>
               Reject
             </button>
           </div>
-
         </div>
       ))}
     </div>
