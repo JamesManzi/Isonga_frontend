@@ -38,7 +38,7 @@ function SellerOrders() {
 
   return (
     <div style={{ padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
-      <Link to="/seller_dashboard" style={{ textDecoration: "none", color: "#3498db", fontWeight: "600" }}>
+      <Link to="/dashboard" style={{ textDecoration: "none", color: "#3498db", fontWeight: "600" }}>
         <FontAwesomeIcon icon={faArrowLeft} /> Back to Dashboard
       </Link>
 
