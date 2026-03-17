@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./SellerBookings.css";
@@ -9,96 +9,100 @@ function SellerBookings() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const res = await axios.get("https://isonga-backend.onrender.com/api/seller/bookings", {
-          withCredentials: true,
-        });
-        if (res.data.success) {
-          setBookings(res.data.bookings);
-        }
-      } catch (err) {
-        console.error("Error fetching bookings", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchBookings();
   }, []);
 
-  return (
-    <div className="bookings-page">
-      <div className="bookings-header">
-        <button onClick={() => navigate(-1)} className="btn-back">← Back</button>
-        <h2>Service Bookings</h2>
+  const fetchBookings = async () => {
+    try {
+      const res = await axios.get(
+        "https://isonga-backend.onrender.com/api/seller/bookings",
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        setBookings(res.data.bookings);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    setLoading(false);
+  };
+
+  const updateStatus = async (id, status) => {
+    try {
+      const res = await axios.put(
+        `https://isonga-backend.onrender.com/api/bookings/${id}`,
+        { status },
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        fetchBookings(); // refresh
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  if (loading) return <p className="loading">Loading bookings...</p>;
+
+  if (bookings.length === 0) {
+    return (
+      <div className="empty">
+        <h2>No bookings yet</h2>
+        <button onClick={() => navigate("/seller_dashboard")}>
+          Back to Dashboard
+        </button>
       </div>
+    );
+  }
 
-      {loading ? (
-        <p className="loading-text">Loading bookings...</p>
-      ) : bookings.length === 0 ? (
-        <div className="no-bookings">No bookings found yet.</div>
-      ) : (
-        <div className="bookings-list">
-          {bookings.map((b) => (
-            <div key={b._id} className="booking-form-card">
-              {/* Customer Info Section */}
-              <div className="form-group">
-                <label>Customer Name</label>
-                <input type="text" value={b.name} readOnly />
-              </div>
+  return (
+    <div className="seller-bookings">
+      <h1>Service Bookings</h1>
 
-              <div className="form-group">
-                <label>Service</label>
-                <input type="text" value={b.product?.name || "Deleted Service"} readOnly />
-              </div>
+      {bookings.map((booking) => (
+        <div key={booking._id} className="booking-card">
 
-              {/* PAYMENT SECTION - Using your requested structure */}
-              <h3>Payment Method</h3>
-              <select
-                name="paymentMethod"
-                value={b.paymentMethod} // Uses the booking's data
-                disabled // Keep it disabled so the seller doesn't accidentally change it
-              >
-                <option value="cash">Cash on Delivery</option>
-                <option value="mobile">Mobile Money</option>
-                <option value="card">Card Payment</option>
-              </select>
+          <div className="booking-info">
+            <h3>{booking.name}</h3>
+            <p><strong>Phone:</strong> {booking.phone}</p>
+            <p><strong>Date:</strong> {booking.date}</p>
+            <p><strong>Time:</strong> {booking.time}</p>
+            <p><strong>Message:</strong> {booking.message || "None"}</p>
+            <p><strong>Payment:</strong> {booking.paymentMethod}</p>
+            <p><strong>Status:</strong> {booking.status}</p>
+          </div>
 
-              {/* CONDITIONAL UPLOAD FIELD - Shows the saved screenshot */}
-              {b.paymentMethod !== "cash" && (
-                <div className="payment-upload">
-                  <h3>Payment Screenshot</h3>
-                  {b.paymentScreenshot ? (
-                    <div className="preview-container">
-                      <p>Customer Uploaded Proof:</p>
-                      <a href={b.paymentScreenshot} target="_blank" rel="noreferrer">
-                        <img 
-                          src={b.paymentScreenshot} 
-                          alt="Payment Proof" 
-                          className="payment-preview-img" 
-                        />
-                      </a>
-                    </div>
-                  ) : (
-                    <p className="no-upload-error">⚠️ No screenshot was uploaded by the customer.</p>
-                  )}
-                </div>
-              )}
-
-              <div className="form-group" style={{ marginTop: '15px' }}>
-                <label>Message</label>
-                <textarea value={b.message} readOnly rows="2" />
-              </div>
-
-              <div className="form-status">
-                <span className={`status-badge ${b.status.toLowerCase()}`}>
-                  {b.status}
-                </span>
-              </div>
+          {/* PAYMENT PROOF IMAGE */}
+          {booking.paymentProof && (
+            <div className="payment-proof">
+              <p>Payment Proof:</p>
+              <img
+                src={`https://isonga-backend.onrender.com/uploads/${booking.paymentProof}`}
+                alt="proof"
+                className="proof-img"
+              />
             </div>
-          ))}
+          )}
+
+          {/* ACTION BUTTONS */}
+          <div className="booking-actions">
+            <button onClick={() => updateStatus(booking._id, "approved")}>
+              Approve
+            </button>
+
+            <button onClick={() => updateStatus(booking._id, "completed")}>
+              Complete
+            </button>
+
+            <button onClick={() => updateStatus(booking._id, "rejected")}>
+              Reject
+            </button>
+          </div>
+
         </div>
-      )}
+      ))}
     </div>
   );
 }
