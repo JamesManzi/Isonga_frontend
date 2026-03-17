@@ -49,7 +49,7 @@ function SellerBookings() {
     return (
       <div className="seller-bookings">
         <div className="booking-header">
-           <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+           <button className="back_btn" onClick={() => navigate(-1)}>←</button>
            <h1>Service Bookings</h1>
         </div>
         <div className="empty">

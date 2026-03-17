@@ -132,7 +132,7 @@
   z-index: 10;
 }
 
-.back-btn {
+.back_btn {
   background: black;
   border: 1px solid #ddd;
   border-radius: 50%;
@@ -146,7 +146,7 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.back-btn:active {
+.back_btn:active {
   background: #f0f0f0;
 }
 
