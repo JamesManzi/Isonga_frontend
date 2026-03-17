@@ -2,13 +2,17 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileInvoiceDollar, faTimes } from "@fortawesome/free-solid-svg-icons"; // Added faTimes
+import { 
+  faFileInvoiceDollar, 
+  faTimes, 
+  faArrowLeft 
+} from "@fortawesome/free-solid-svg-icons";
 import "./SellerBookings.css";
 
 function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedImg, setSelectedImg] = useState(null); // State for the modal
+  const [selectedImg, setSelectedImg] = useState(null); // State to handle the screenshot modal
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,9 +21,11 @@ function SellerBookings() {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get("https://isonga-backend.onrender.com/api/seller/bookings", {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        "https://isonga-backend.onrender.com/api/seller/bookings",
+        { withCredentials: true }
+      );
+
       if (res.data.success) {
         setBookings(res.data.bookings);
       }
@@ -37,8 +43,9 @@ function SellerBookings() {
         { status },
         { withCredentials: true }
       );
+
       if (res.data.success) {
-        fetchBookings();
+        fetchBookings(); // refresh list
       }
     } catch (err) {
       console.log("Error updating status:", err);
@@ -50,7 +57,9 @@ function SellerBookings() {
   return (
     <div className="seller-bookings">
       <div className="booking-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+        <button className="back_btn" onClick={() => navigate(-1)}>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </button>
         <h1>Service Bookings</h1>
         <div style={{ width: "40px" }}></div>
       </div>
@@ -58,7 +67,10 @@ function SellerBookings() {
       {bookings.length === 0 ? (
         <div className="empty">
           <h2>No bookings yet</h2>
-          <button className="dashboard-btn" onClick={() => navigate("/seller_dashboard")}>
+          <button
+            className="dashboard-btn"
+            onClick={() => navigate("/seller_dashboard")}
+          >
             Back to Dashboard
           </button>
         </div>
@@ -68,19 +80,23 @@ function SellerBookings() {
             <div className="booking-info">
               <div className="status-row">
                 <h3>{booking.name}</h3>
-                <span className={`status-tag ${booking.status}`}>{booking.status}</span>
+                <span className={`status-tag ${booking.status}`}>
+                  {booking.status}
+                </span>
               </div>
+
               <p><strong>Phone:</strong> {booking.phone}</p>
               <p><strong>Date:</strong> {booking.date}</p>
               <p><strong>Time:</strong> {booking.time}</p>
               <p><strong>Message:</strong> {booking.message || "None"}</p>
               <p><strong>Payment:</strong> {booking.paymentMethod}</p>
 
-              {/* ✅ UPDATED: Clicking this opens the modal instead of a new tab */}
+              {/* ✅ MODIFIED: View Screenshot only, no new tab */}
               {booking.paymentScreenshot && (
                 <div className="payment-proof-container">
+                  <p><strong>Payment Receipt:</strong></p>
                   <button 
-                    className="view-screenshot-btn" 
+                    className="view-screenshot-trigger"
                     onClick={() => setSelectedImg(booking.paymentScreenshot)}
                   >
                     <FontAwesomeIcon icon={faFileInvoiceDollar} /> View Screenshot
@@ -92,10 +108,17 @@ function SellerBookings() {
             <div className="booking-actions">
               {booking.status === "pending" && (
                 <>
-                  <button className="approve-btn" onClick={() => updateStatus(booking._id, "approved")}>
+                  <button
+                    className="approve-btn"
+                    onClick={() => updateStatus(booking._id, "approved")}
+                  >
                     Approve
                   </button>
-                  <button className="reject-btn" onClick={() => updateStatus(booking._id, "rejected")}>
+
+                  <button
+                    className="reject-btn"
+                    onClick={() => updateStatus(booking._id, "rejected")}
+                  >
                     Reject
                   </button>
                 </>
@@ -107,12 +130,12 @@ function SellerBookings() {
 
       {/* ✅ IMAGE MODAL OVERLAY */}
       {selectedImg && (
-        <div className="image-modal-overlay" onClick={() => setSelectedImg(null)}>
-          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-modal" onClick={() => setSelectedImg(null)}>
+        <div className="screenshot-modal-overlay" onClick={() => setSelectedImg(null)}>
+          <div className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal-x" onClick={() => setSelectedImg(null)}>
               <FontAwesomeIcon icon={faTimes} />
             </button>
-            <img src={selectedImg} alt="Payment Receipt" />
+            <img src={selectedImg} alt="Payment Receipt" className="full-proof-img" />
           </div>
         </div>
       )}
