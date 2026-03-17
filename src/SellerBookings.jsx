@@ -92,10 +92,6 @@ function SellerBookings() {
               Approve
             </button>
 
-            <button onClick={() => updateStatus(booking._id, "completed")}>
-              Complete
-            </button>
-
             <button onClick={() => updateStatus(booking._id, "rejected")}>
               Reject
             </button>
