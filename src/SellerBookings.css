@@ -1,6 +1,5 @@
 /* SellerBookings.css */
 
-/* General container */
 .seller-bookings {
   padding: 1rem;
   max-width: 600px;
@@ -15,13 +14,15 @@
   margin-bottom: 20px;
   position: sticky;
   top: 0;
-  background: white; /* Changed from black to see text, adjust if needed */
+  background: black; 
+  color: white;
   z-index: 10;
 }
 
 .back_btn {
-  background: white;
-  border: 1px solid #ddd;
+  background: #333;
+  color: white;
+  border: 1px solid #444;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -30,7 +31,6 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .booking-header h1 {
@@ -40,7 +40,6 @@
   text-align: center;
 }
 
-/* Booking card */
 .booking-card {
   background: #fff;
   border: 1px solid #ddd;
@@ -48,9 +47,9 @@
   margin-bottom: 1rem;
   padding: 1rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  color: #333;
 }
 
-/* Booking info */
 .status-row {
   display: flex;
   justify-content: space-between;
@@ -69,7 +68,6 @@
   word-wrap: break-word;
 }
 
-/* Payment Proof Container */
 .payment-proof-container {
   margin-top: 15px;
   padding: 10px;
@@ -89,102 +87,108 @@
   gap: 8px;
   padding: 5px 0;
   font-size: 0.95rem;
-  transition: color 0.3s;
 }
 
 .view-screenshot-trigger:hover {
   color: #3498db;
 }
 
-/* Status Tags */
 .status-tag {
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 12px;
   text-transform: uppercase;
+  font-weight: bold;
 }
 
 .status-tag.approved { background: #d4edda; color: #155724; }
 .status-tag.pending { background: #fff3cd; color: #856404; }
 .status-tag.rejected { background: #f8d7da; color: #721c24; }
 
-/* Action buttons */
 .booking-actions {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 10px;
+  margin-top: 15px;
 }
 
-.booking-actions button {
-  padding: 0.75rem;
-  font-size: 1rem;
+.approve-btn {
+  flex: 1;
+  padding: 12px;
+  background: #27ae60;
+  color: white;
   border: none;
   border-radius: 6px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: transform 0.1s;
 }
 
-.approve-btn { background: #4caf50; color: #fff; }
-.reject-btn { background: #f44336; color: #fff; }
+.reject-btn {
+  flex: 1;
+  padding: 12px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
 
-.booking-actions button:hover { opacity: 0.9; }
+.approve-btn:active, .reject-btn:active {
+  transform: scale(0.98);
+}
 
-/* Modal Styles */
+/* Modal Overlay */
 .screenshot-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .screenshot-modal-content {
   position: relative;
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
   max-width: 90%;
   max-height: 90%;
-  display: flex;
-  flex-direction: column;
 }
 
 .full-proof-img {
   max-width: 100%;
   max-height: 80vh;
+  border-radius: 8px;
   object-fit: contain;
-  border-radius: 4px;
 }
 
 .close-modal-x {
   position: absolute;
-  top: -40px;
+  top: -45px;
   right: 0;
   background: white;
   border: none;
-  width: 32px;
-  height: 32px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
 }
 
-/* Responsive tweaks */
-@media (min-width: 600px) {
+.loading, .empty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+@media (max-width: 480px) {
   .booking-actions {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-  .booking-actions button {
-    flex: 1;
+    flex-direction: column;
   }
 }

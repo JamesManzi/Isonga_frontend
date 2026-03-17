@@ -12,7 +12,7 @@ import "./SellerBookings.css";
 function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedImg, setSelectedImg] = useState(null); // State to handle the screenshot modal
+  const [selectedImg, setSelectedImg] = useState(null); // State for the screenshot modal
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ function SellerBookings() {
       );
 
       if (res.data.success) {
-        fetchBookings(); // refresh list
+        fetchBookings(); // Refresh list to show updated status
       }
     } catch (err) {
       console.log("Error updating status:", err);
@@ -91,7 +91,7 @@ function SellerBookings() {
               <p><strong>Message:</strong> {booking.message || "None"}</p>
               <p><strong>Payment:</strong> {booking.paymentMethod}</p>
 
-              {/* ✅ MODIFIED: View Screenshot only, no new tab */}
+              {/* View Screenshot Logic */}
               {booking.paymentScreenshot && (
                 <div className="payment-proof-container">
                   <p><strong>Payment Receipt:</strong></p>
@@ -105,30 +105,27 @@ function SellerBookings() {
               )}
             </div>
 
+            {/* Action Buttons (Always Visible) */}
             <div className="booking-actions">
-              {booking.status === "pending" && (
-                <>
-                  <button
-                    className="approve-btn"
-                    onClick={() => updateStatus(booking._id, "approved")}
-                  >
-                    Approve
-                  </button>
+              <button
+                className="approve-btn"
+                onClick={() => updateStatus(booking._id, "approved")}
+              >
+                Approve
+              </button>
 
-                  <button
-                    className="reject-btn"
-                    onClick={() => updateStatus(booking._id, "rejected")}
-                  >
-                    Reject
-                  </button>
-                </>
-              )}
+              <button
+                className="reject-btn"
+                onClick={() => updateStatus(booking._id, "rejected")}
+              >
+                Reject
+              </button>
             </div>
           </div>
         ))
       )}
 
-      {/* ✅ IMAGE MODAL OVERLAY */}
+      {/* Screenshot Modal Overlay */}
       {selectedImg && (
         <div className="screenshot-modal-overlay" onClick={() => setSelectedImg(null)}>
           <div className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
