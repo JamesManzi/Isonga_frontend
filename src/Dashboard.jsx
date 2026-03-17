@@ -201,7 +201,16 @@ const orderLink =
       setNewOrdersCount((prev) => prev + 1);
 
     });
+    socket.on("newBookingNotification", (data) => {
+  toast.success(data.message || "New Booking Received!", { icon: "📅" });
 
+  setSeller((prev) => ({
+    ...prev,
+    totalOrders: (prev.totalOrders || 0) + 1,
+  }));
+
+  setNewOrdersCount((prev) => prev + 1);
+});
     socket.on("newMessageNotification", () => {
 
       setUnreadCount((prev) => prev + 1);
@@ -233,6 +242,7 @@ const orderLink =
     return () => {
 
       socket.off("newOrderNotification");
+      socket.off("newBookingNotification");
       socket.off("newMessageNotification");
       socket.off("newView");
       socket.off("sellerRatingUpdated");
