@@ -451,14 +451,35 @@ const orderLink =
         </Link>
 
         {/* Updated Footer Item */}
-<Link to={orderLink} className="footer_item">
+<Link
+  to={orderLink}
+  className="footer_item"
+  onClick={async () => {
+
+    // ✅ 1. Reset UI instantly
+    setNewOrdersCount(0);
+
+    try {
+      // ✅ 2. Tell backend to mark as read
+      await axios.post(
+        "https://isonga-backend.onrender.com/api/seller/mark-activity-read",
+        {},
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.log("Mark read failed");
+    }
+
+  }}
+>
   <div style={{ position: "relative", display: "inline-block" }}>
     <FontAwesomeIcon icon={faBox} />
     {newOrdersCount > 0 && (
       <span className="order_badge">{newOrdersCount}</span>
     )}
   </div>
-  <h2>{orderTitle}</h2> {/* This will show "Orders", "Bookings", or "Rentals" */}
+
+  <h2>{orderTitle}</h2>
 </Link>
 
         <Link to="/SellerConversations" className="footer_item">
