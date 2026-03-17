@@ -135,11 +135,11 @@ if (!item.product) {
         <h3 style={{ color: "#ef4444" }}>Item Unavailable</h3>
         <p>This product was removed by the seller.</p>
         <button
-                    className="remove"
-                    onClick={() => removeItem(item.product._id)}
-                  >
-                    Remove
-                  </button>
+          className="remove"
+          onClick={() =>removeItem(item._id)}
+        >
+          Remove
+        </button>
       </div>
     </div>
   );
