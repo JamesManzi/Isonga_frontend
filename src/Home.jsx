@@ -248,72 +248,82 @@ const getFileUrl = (path) => {
         </div>
       )}
       {/* ================= PREMIUM FOOTER ================= */}
-      <footer className="footer">
+      <footer className="isonga-footer">
 
-  {/* Back To Top */}
-  <div 
-    className="back-to-top"
-    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-  >
-    ↑ Back to Top
+  {/* TOP CTA SECTION */}
+  <div className="footer-cta">
+    <h2>Start Buying & Selling Today</h2>
+    <p>Join Isonga Market and grow your business or find what you need fast.</p>
+
+    <div className="footer-cta-buttons">
+      <Link to="/buyer_login">
+        <button className="cta-btn buyer">Join as Buyer</button>
+      </Link>
+      <Link to="/login">
+        <button className="cta-btn seller">Start Selling</button>
+      </Link>
+    </div>
   </div>
 
-  <div className="footer-container">
+  {/* MAIN FOOTER */}
+  <div className="footer-main">
 
-    <div className="footer-col">
-      <h3>Get to Know Us</h3>
-      <Link to="#">About</Link>
-      <Link to="#">Careers</Link>
-      <Link to="#">Press</Link>
-      <Link to="#">Mission</Link>
+    {/* BRAND */}
+    <div className="footer-brand">
+      <img src="/logo.png" alt="logo" />
+      <h3>Isonga Market</h3>
+      <p>Connecting buyers and sellers across Rwanda easily and securely.</p>
     </div>
 
-    <div className="footer-col">
-      <h3>Make Money</h3>
-      <Link to="/login">Sell on Isonga</Link>
-      <Link to="#">Seller Guide</Link>
-      <Link to="#">Advertise</Link>
-      <Link to="#">Affiliate</Link>
+    {/* LINKS */}
+    <div className="footer-links">
+      <div>
+        <h4>Explore</h4>
+        <Link to="#">Home</Link>
+        <Link to="/Steps">How it Works</Link>
+        <Link to="/Help">Help</Link>
+      </div>
+
+      <div>
+        <h4>For Sellers</h4>
+        <Link to="/login">Sell Products</Link>
+        <Link to="#">Seller Tips</Link>
+        <Link to="#">Pricing</Link>
+      </div>
+
+      <div>
+        <h4>Company</h4>
+        <Link to="#">About</Link>
+        <Link to="#">Contact</Link>
+        <Link to="#">Privacy Policy</Link>
+      </div>
     </div>
 
-    <div className="footer-col">
-      <h3>Support</h3>
-      <Link to="/buyer_login">Account</Link>
-      <Link to="/Help">Help Center</Link>
-      <Link to="#">Shipping</Link>
-      <Link to="#">Returns</Link>
-    </div>
+    {/* CONTACT + SOCIAL */}
+    <div className="footer-contact">
+      <h4>Contact</h4>
+      <p>Email: support@isonga.com</p>
+      <p>Phone: +250 7XX XXX XXX</p>
 
-    <div className="footer-col">
-      <h3>Stay Connected</h3>
-
-      <div className="social-icons">
+      <div className="footer-socials">
         <i className="fab fa-facebook"></i>
         <i className="fab fa-twitter"></i>
         <i className="fab fa-instagram"></i>
       </div>
-
-      <div className="newsletter">
-        <p>Get updates & offers</p>
-        <div className="newsletter-box">
-          <input type="email" placeholder="Your email" />
-          <button>Join</button>
-        </div>
-      </div>
     </div>
 
   </div>
 
-  {/* Trust badges */}
-  <div className="trust-section">
-    <span>🔒 Secure</span>
-    <span>✔ Verified</span>
-    <span>⭐ Trusted</span>
-    <span>💬 Support</span>
-  </div>
+  {/* BOTTOM BAR */}
+  <div className="footer-bottom-bar">
+    <p>© {new Date().getFullYear()} Isonga Market • Built for growth 🚀</p>
 
-  <div className="footer-bottom">
-    © {new Date().getFullYear()} Isonga Market
+    <div 
+      className="scroll-top"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+    >
+      ↑ Top
+    </div>
   </div>
 
 </footer>
