@@ -127,22 +127,24 @@ function Cart() {
         <div className="cart-products">
           {cart.items.map((item) => {
             // SAFETY CHECK: If the product was deleted from the database
-            if (!item.product) {
-              return (
-                <div className="cart-item error-item" key={item._id}>
-                  <div className="cart-info">
-                    <h3 style={{ color: "#ef4444" }}>Item Unavailable</h3>
-                    <p>The seller has removed this product.</p>
-                    <button
-                      className="remove"
-                      onClick={() => removeItem(item._id)} // Remove using the cart item ID
-                    >
-                      Remove from Cart
-                    </button>
-                  </div>
-                </div>
-              );
-            }
+            // Find the error-item block inside your .map()
+if (!item.product) {
+  return (
+    <div className="cart-item error-item" key={item._id}>
+      <div className="cart-info">
+        <h3 style={{ color: "#ef4444" }}>Item Unavailable</h3>
+        <p>This product was removed by the seller.</p>
+        <button
+          className="remove"
+          /* CHANGE: Pass item._id instead of item.product._id */
+          onClick={() => removeItem(item._id)} 
+        >
+          Remove from Cart
+        </button>
+      </div>
+    </div>
+  );
+}
 
             // NORMAL RENDERING
             return (
