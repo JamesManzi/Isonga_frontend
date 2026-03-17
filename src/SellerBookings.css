@@ -1,0 +1,115 @@
+:root {
+  --primary: #2563eb;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --bg-gray: #f9fafb;
+  --text-main: #1f2937;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.seller-bookings {
+  padding: 15px;
+  background-color: var(--bg-gray);
+  min-height: 100vh;
+  max-width: 600px; /* Centers the content on larger screens */
+  margin: 0 auto;
+}
+
+.seller-bookings h1 {
+  font-size: 1.5rem;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.booking-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid #e5e7eb;
+}
+
+.booking-info h3 {
+  margin: 0 0 10px 0;
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+.booking-info p {
+  margin: 6px 0;
+  font-size: 0.95rem;
+  color: #4b5563;
+  display: flex;
+  justify-content: space-between; /* Creates a clean "Label : Value" look */
+}
+
+.booking-info strong {
+  color: var(--text-main);
+}
+
+/* Payment Proof Styles */
+.payment-proof {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed #d1d5db;
+}
+
+.proof-img {
+  width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-top: 8px;
+  border: 1px solid #eee;
+}
+
+/* Actions Section - Mobile Optimized Grid */
+.booking-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns for primary actions */
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.booking-actions button {
+  padding: 12px 8px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.booking-actions button:active {
+  opacity: 0.7;
+}
+
+/* Specific Button Colors */
+.booking-actions button:nth-child(1) { background-color: var(--success); color: white; } /* Approve */
+.booking-actions button:nth-child(2) { background-color: var(--primary); color: white; } /* Complete */
+.booking-actions button:nth-child(3) { 
+  background-color: #fee2e2; 
+  color: var(--danger); 
+  grid-column: span 2; /* Make Reject button full width on bottom */
+}
+
+/* Loading & Empty States */
+.loading, .empty {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.empty h2 { color: #9ca3af; }
+
+.empty button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
