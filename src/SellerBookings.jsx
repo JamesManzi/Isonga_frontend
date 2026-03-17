@@ -19,14 +19,16 @@ function SellerBookings() {
       const res = await axios.get(
         "https://isonga-backend.onrender.com/api/seller/bookings",
         { withCredentials: true }
-      )
+      );
+
       if (res.data.success) {
         setBookings(res.data.bookings);
       }
     } catch (err) {
-      console.log(err);
+      console.log("Error fetching bookings:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const updateStatus = async (id, status) => {
@@ -36,11 +38,12 @@ function SellerBookings() {
         { status },
         { withCredentials: true }
       );
+
       if (res.data.success) {
-        fetchBookings(); 
+        fetchBookings(); // refresh list
       }
     } catch (err) {
-      console.log(err);
+      console.log("Error updating status:", err);
     }
   };
 
@@ -50,12 +53,16 @@ function SellerBookings() {
     return (
       <div className="seller-bookings">
         <div className="booking-header">
-           <button className="back-btn" onClick={() => navigate(-1)}>←</button>
-           <h1>Service Bookings</h1>
+          <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+          <h1>Service Bookings</h1>
         </div>
+
         <div className="empty">
           <h2>No bookings yet</h2>
-          <button className="dashboard-btn" onClick={() => navigate("/seller_dashboard")}>
+          <button
+            className="dashboard-btn"
+            onClick={() => navigate("/seller_dashboard")}
+          >
             Back to Dashboard
           </button>
         </div>
@@ -74,48 +81,56 @@ function SellerBookings() {
       {bookings.map((booking) => (
         <div key={booking._id} className="booking-card">
           <div className="booking-info">
+
             <div className="status-row">
-                <h3>{booking.name}</h3>
-                <span className={`status-tag ${booking.status}`}>{booking.status}</span>
+              <h3>{booking.name}</h3>
+              <span className={`status-tag ${booking.status}`}>
+                {booking.status}
+              </span>
             </div>
+
             <p><strong>Phone:</strong> {booking.phone}</p>
             <p><strong>Date:</strong> {booking.date}</p>
             <p><strong>Time:</strong> {booking.time}</p>
             <p><strong>Message:</strong> {booking.message || "None"}</p>
             <p><strong>Payment:</strong> {booking.paymentMethod}</p>
 
-            {/* --- IMPROVED RECEIPT SECTION --- */}
+            {/* ✅ ONLY VIEW SCREENSHOT */}
             {booking.paymentScreenshot && (
               <div className="payment-proof-container">
                 <p><strong>Payment Receipt:</strong></p>
-                <a 
-                  href={booking.paymentScreenshot} 
-                  target="_blank" 
+
+                <a
+                  href={booking.paymentScreenshot}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="receipt-link"
                 >
-                  <FontAwesomeIcon icon={faFileInvoiceDollar} /> View Screenshot 
-                  <FontAwesomeIcon icon={faExternalLinkAlt} style={{ fontSize: '10px', marginLeft: '5px' }} />
+                  <FontAwesomeIcon icon={faFileInvoiceDollar} /> View Screenshot
+                  <FontAwesomeIcon
+                    icon={faExternalLinkAlt}
+                    style={{ fontSize: "10px", marginLeft: "5px" }}
+                  />
                 </a>
-                <div className="proof-preview">
-                    <img
-                      src={booking.paymentScreenshot}
-                      alt="Payment Proof"
-                      className="proof-thumbnail"
-                      onClick={() => window.open(booking.paymentProof, '_blank')}
-                    />
-                </div>
               </div>
             )}
+
           </div>
 
           <div className="booking-actions">
             {booking.status === "pending" && (
               <>
-                <button className="approve-btn" onClick={() => updateStatus(booking._id, "approved")}>
+                <button
+                  className="approve-btn"
+                  onClick={() => updateStatus(booking._id, "approved")}
+                >
                   Approve
                 </button>
-                <button className="reject-btn" onClick={() => updateStatus(booking._id, "rejected")}>
+
+                <button
+                  className="reject-btn"
+                  onClick={() => updateStatus(booking._id, "rejected")}
+                >
                   Reject
                 </button>
               </>
