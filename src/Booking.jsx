@@ -110,6 +110,7 @@ function Booking() {
           type="text"
           name="name"
           value={form.name}
+          placeholder="Enter Your Name"
           onChange={handleChange}
           required
         />
