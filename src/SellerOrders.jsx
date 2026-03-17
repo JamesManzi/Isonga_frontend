@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faImage } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 function SellerOrders() {
   const [orders, setOrders] = useState([]);
+  const [selectedImg, setSelectedImg] = useState(null); // State for the receipt modal
 
   const getOrders = () => {
     axios
@@ -29,16 +30,15 @@ function SellerOrders() {
       )
       .then((res) => {
         if (res.data.success) {
-          alert(`Order updated to: ${newStatus}`);
-          getOrders();
+          getOrders(); // Refresh list to update UI
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Error updating order status:", err));
   };
 
   return (
     <div style={{ padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
-      <Link to="/dashboard" style={{ textDecoration: "none", color: "#3498db", fontWeight: "600" }}>
+      <Link to="/seller_dashboard" style={{ textDecoration: "none", color: "#3498db", fontWeight: "600" }}>
         <FontAwesomeIcon icon={faArrowLeft} /> Back to Dashboard
       </Link>
 
@@ -66,10 +66,14 @@ function SellerOrders() {
                 <h4 style={sectionTitle}>Logistics & Payment</h4>
                 <p><strong>Delivery:</strong> {order.deliveryMethod}</p>
                 <p><strong>Payment:</strong> {order.paymentMethod}</p>
+                {/* Fixed: Opens modal instead of new tab */}
                 {order.paymentProof && (
-                  <a href={order.paymentProof} target="_blank" rel="noreferrer" style={receiptLink}>
+                  <button 
+                    onClick={() => setSelectedImg(order.paymentProof)} 
+                    style={receiptButtonStyle}
+                  >
                     <FontAwesomeIcon icon={faImage} /> View Payment Receipt
-                  </a>
+                  </button>
                 )}
               </section>
             </div>
@@ -77,7 +81,8 @@ function SellerOrders() {
             <div style={itemBox}>
               <h4 style={{ marginTop: 0 }}>Items Ordered</h4>
               {order.items.map((item, index) => (
-                <div key={index} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem" }}>
+                <div key={index} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem", marginBottom: "5px" }}>
+                  {/* Fixed: Optional chaining prevents crash if product was deleted */}
                   <span>{item.product?.name || "Deleted Product"} × {item.quantity}</span>
                   <span>{item.price * item.quantity} Rwf</span>
                 </div>
@@ -85,18 +90,29 @@ function SellerOrders() {
               <div style={totalStyle}>Total: {order.totalPrice} Rwf</div>
             </div>
 
-            {order.status === "Pending" && (
-              <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-                <button onClick={() => updateStatus(order._id, "Processing")} style={btnAccept}>
-                  Accept Order
-                </button>
-                <button onClick={() => updateStatus(order._id, "Cancelled")} style={btnDecline}>
-                  Decline Order
-                </button>
-              </div>
-            )}
+            {/* Always show actions so seller can manage orders regardless of status */}
+            <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+              <button onClick={() => updateStatus(order._id, "Processing")} style={btnAccept}>
+                Accept Order
+              </button>
+              <button onClick={() => updateStatus(order._id, "Cancelled")} style={btnDecline}>
+                Decline Order
+              </button>
+            </div>
           </div>
         ))
+      )}
+
+      {/* Modal Overlay Component */}
+      {selectedImg && (
+        <div style={modalOverlayStyle} onClick={() => setSelectedImg(null)}>
+          <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
+            <button style={closeButtonStyle} onClick={() => setSelectedImg(null)}>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+            <img src={selectedImg} alt="Receipt" style={modalImgStyle} />
+          </div>
+        </div>
       )}
     </div>
   );
@@ -147,8 +163,65 @@ const statusBadge = (status) => ({
   height: "fit-content"
 });
 
-const receiptLink = { color: "#3498db", textDecoration: "none", fontWeight: "bold", display: "block", marginTop: "5px" };
+const receiptButtonStyle = {
+  background: "none",
+  border: "none",
+  color: "#3498db",
+  fontWeight: "bold",
+  cursor: "pointer",
+  padding: 0,
+  fontSize: "0.95rem",
+  marginTop: "5px",
+  display: "block",
+  textAlign: "left"
+};
+
 const btnAccept = { flex: 1, padding: "10px", background: "#27ae60", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" };
 const btnDecline = { flex: 1, padding: "10px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" };
+
+// Modal Styles
+const modalOverlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  background: "rgba(0,0,0,0.85)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000,
+};
+
+const modalContentStyle = {
+  position: "relative",
+  background: "#fff",
+  padding: "10px",
+  borderRadius: "8px",
+  maxWidth: "90%",
+  maxHeight: "90%",
+};
+
+const modalImgStyle = {
+  maxWidth: "100%",
+  maxHeight: "80vh",
+  borderRadius: "4px",
+  display: "block"
+};
+
+const closeButtonStyle = {
+  position: "absolute",
+  top: "-40px",
+  right: "0",
+  background: "#fff",
+  border: "none",
+  borderRadius: "50%",
+  width: "30px",
+  height: "30px",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
 
 export default SellerOrders;
