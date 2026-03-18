@@ -78,10 +78,10 @@ function Dashboard() {
 
   const viewTitle =
     seller?.sellerType === "Product"
-      ? "Product Views"
+      ? "Total Views"
       : seller?.sellerType === "Service"
-      ? "Service Views"
-      : "Asset Views";
+      ? "Total Views"
+      : "Total Views";
 
       /* ---------------- SELLER TYPE LOGIC ---------------- */
 // ... your existing addLink, addText, orderTitle ...
@@ -379,9 +379,8 @@ const orderLink =
       <div className="Dashboard_body1">
 
         <div className="sales">
-          <FontAwesomeIcon icon={faBoxOpen} />
-          <p>Total Sales</p>
-          <h2>RWF {seller.totalSales.toLocaleString()}</h2>
+          <FontAwesomeIcon icon={faEye} />
+          <p>Daily Views</p>
         </div>
 
         <div className="orders">
