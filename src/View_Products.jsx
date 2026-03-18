@@ -52,17 +52,17 @@ const [popupMessage, setPopupMessage] = useState("");
       setFilteredProducts(fetchedProducts);
       setSeller(res.data.seller);
 
-      // ✅ 2. Only fire the view tracking requests ONCE per component mount.
-      // The Backend will then decide if this specific buyer counts for "today".
-      if (!hasTracked.current && fetchedProducts.length > 0) {
-  axios.get(
-    `https://isonga-backend.onrender.com/api/product/view/${fetchedProducts[0]._id}`,
-    { withCredentials: true }
-  ).catch(err => console.log("View fail"));
+      if (!hasTracked.current) {
+        axios.post(
+          `https://isonga-backend.onrender.com/api/seller/view/${id}`, 
+          {}, 
+          { withCredentials: true }
+        ).catch(err => console.log("Visit not tracked"));
 
-  hasTracked.current = true;
-}
-
+        hasTracked.current = true; 
+      }
+      
+      // Removed the extra } that was here
       const indexes = {};
       fetchedProducts.forEach((p) => {
         indexes[p._id] = 0;

@@ -25,6 +25,7 @@ function Dashboard() {
 
   const [seller, setSeller] = useState(null);
   const [totalViews, setTotalViews] = useState(0);
+  const [todayViews, setTodayViews] = useState(0); 
   const [unreadCount, setUnreadCount] = useState(0);
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -145,7 +146,7 @@ const orderLink =
 
         setTotalViews(res.data.totalViews || 0);
         setNewOrdersCount(s.newOrders || 0);
-
+        setTodayViews(res.data.todayViews || 0);
         const unreadRes = await axios.get(
           "https://isonga-backend.onrender.com/api/seller/conversations",
           { withCredentials: true }
@@ -226,7 +227,7 @@ const orderLink =
 
     socket.on("newView", (data) => {
   setTotalViews(data.totalViews);
-
+  setTodayViews(data.todayViews);
   // optional:
   console.log("Today views:", data.todayViews);
 });
@@ -385,7 +386,8 @@ const orderLink =
 
         <div className="sales">
           <FontAwesomeIcon icon={faEye} />
-          <p>Daily Views</p>
+          <p>Today Views</p>
+          <p className="order_count_main">{todayViews}</p>
         </div>
 
         <div className="orders">
