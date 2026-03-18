@@ -439,8 +439,13 @@ const orderLink =
 
         <div className="buyer_messages">
           <Link to="#">
-            <FontAwesomeIcon icon={faDollarSign} />
-            <h2>{AddType}</h2>
+            <FontAwesomeIcon icon={faBoxOpen} />
+      <h2>{AddType}</h2> {/* Displays "Total Products", "Total Services", etc. */}
+      
+      {/* Display the count from the backend */}
+      <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
+        {seller.totalItemsCount || 0}
+      </p>
           </Link>
         </div>
 
