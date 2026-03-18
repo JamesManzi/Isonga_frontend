@@ -54,16 +54,16 @@ const [popupMessage, setPopupMessage] = useState("");
 
       // 2. Only fire the view tracking requests ONCE per component mount.
       // The Backend will then decide if this specific buyer counts for "today".
-      if (!hasTracked.current && fetchedProducts.length > 0) {
-        fetchedProducts.forEach((product) => {
-          axios.post(
-            `https://isonga-backend.onrender.com/api/product/view/${product._id}`,
-            {},
-            { withCredentials: true }
-          ).catch(err => console.log("Silent view fail for:", product._id));
-        });
-        hasTracked.current = true; // Mark as done so re-renders don't trigger again
-      }
+      // Track store views only once per session
+if (!hasTracked.current && res.data.seller?._id) {
+  axios.post(
+    `https://isonga-backend.onrender.com/api/seller/view/${res.data.seller._id}`,
+    {},
+    { withCredentials: true }
+  ).catch(err => console.log("Silent seller view fail:", res.data.seller._id));
+
+  hasTracked.current = true;
+}
 
       const indexes = {};
       fetchedProducts.forEach((p) => {
