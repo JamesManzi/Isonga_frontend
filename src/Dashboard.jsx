@@ -433,7 +433,7 @@ const orderLink =
         <div className="buyer_messages">
           <Link to="#">
             <FontAwesomeIcon icon={faDollarSign} />
-            <h2>Today's Profit</h2>
+            <h2>Total Products</h2>
           </Link>
         </div>
 
