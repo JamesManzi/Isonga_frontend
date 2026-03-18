@@ -220,12 +220,11 @@ const orderLink =
     });
 
     socket.on("newView", (data) => {
+  setTotalViews(data.totalViews);
 
-      setTotalViews(data.totalViews);
-
-      toast.success("Someone is viewing your store!", { icon: "👁️" });
-
-    });
+  // optional:
+  console.log("Today views:", data.todayViews);
+});
 
     socket.on("sellerRatingUpdated", (data) => {
 
@@ -460,7 +459,7 @@ const orderLink =
     setNewOrdersCount(0);
 
     try {
-      // ✅ 2. Tell backend to mark as read
+      // Tell backend to mark as read
       await axios.post(
         "https://isonga-backend.onrender.com/api/seller/mark-activity-read",
         {},
