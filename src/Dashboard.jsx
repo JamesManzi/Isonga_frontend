@@ -93,7 +93,12 @@ const orderLink =
     ? "/seller_bookings" // Change this to your new bookings route
     : "/seller_rentals";
   /* ---------------- CLICK OUTSIDE MENU ---------------- */
-
+ const AddType=
+     seller?.sellerType==="Product"
+     ?"Total Products"
+     :seller?.sellerType==="Service"
+     ?"Total Services"
+     :"Total Assets"
   useEffect(() => {
 
     const handleClickOutside = (event) => {
@@ -433,7 +438,7 @@ const orderLink =
         <div className="buyer_messages">
           <Link to="#">
             <FontAwesomeIcon icon={faDollarSign} />
-            <h2>Total Products</h2>
+            <h2>{AddType}</h2>
           </Link>
         </div>
 
