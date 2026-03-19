@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Added Link
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faFileInvoiceDollar, 
   faTimes, 
-  faArrowLeft 
+  faArrowLeft,
+  faHistory // Added history icon
 } from "@fortawesome/free-solid-svg-icons";
 import "./SellerBookings.css";
 
 function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedImg, setSelectedImg] = useState(null); // State for the screenshot modal
+  const [selectedImg, setSelectedImg] = useState(null); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,7 +28,12 @@ function SellerBookings() {
       );
 
       if (res.data.success) {
-        setBookings(res.data.bookings);
+        // [CRITICAL UPDATE]: Filter out "approved" and "rejected"
+        // This makes them disappear from this list instantly after update
+        const activeBookings = res.data.bookings.filter(
+          (b) => b.status !== "approved" && b.status !== "rejected"
+        );
+        setBookings(activeBookings);
       }
     } catch (err) {
       console.log("Error fetching bookings:", err);
@@ -45,7 +51,8 @@ function SellerBookings() {
       );
 
       if (res.data.success) {
-        fetchBookings(); // Refresh list to show updated status
+        // This will re-run the fetch and the filter will hide the updated booking
+        fetchBookings(); 
       }
     } catch (err) {
       console.log("Error updating status:", err);
@@ -60,18 +67,22 @@ function SellerBookings() {
         <button className="back_btn" onClick={() => navigate(-1)}>
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
-        <h1>Service Bookings</h1>
-        <div style={{ width: "40px" }}></div>
+        <h1>Active Bookings</h1>
+        {/* Link to the History Page you just created */}
+        <Link to="/booking_history" className="history_link_btn">
+          <FontAwesomeIcon icon={faHistory} />
+        </Link>
       </div>
 
       {bookings.length === 0 ? (
         <div className="empty">
-          <h2>No bookings yet</h2>
+          <h2>No new bookings</h2>
+          <p>Check your history for processed requests.</p>
           <button
             className="dashboard-btn"
-            onClick={() => navigate("/seller_dashboard")}
+            onClick={() => navigate("/booking_history")}
           >
-            Back to Dashboard
+            View History
           </button>
         </div>
       ) : (
@@ -91,7 +102,6 @@ function SellerBookings() {
               <p><strong>Message:</strong> {booking.message || "None"}</p>
               <p><strong>Payment:</strong> {booking.paymentMethod}</p>
 
-              {/* View Screenshot Logic */}
               {booking.paymentScreenshot && (
                 <div className="payment-proof-container">
                   <p><strong>Payment Receipt:</strong></p>
@@ -105,7 +115,6 @@ function SellerBookings() {
               )}
             </div>
 
-            {/* Action Buttons (Always Visible) */}
             <div className="booking-actions">
               <button
                 className="approve-btn"
@@ -125,7 +134,7 @@ function SellerBookings() {
         ))
       )}
 
-      {/* Screenshot Modal Overlay */}
+      {/* Screenshot Modal remains the same */}
       {selectedImg && (
         <div className="screenshot-modal-overlay" onClick={() => setSelectedImg(null)}>
           <div className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
