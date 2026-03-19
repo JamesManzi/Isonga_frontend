@@ -400,7 +400,10 @@ const orderLink =
         <div className="orders">
           <FontAwesomeIcon icon={faBox} />
           <h2>{orderTitle}</h2>
-          <p className="order_count_main">{seller.totalOrders}</p>
+          <p className="order_count_main">
+            <p>Total: {seller.totalOrders}</p>
+<p>New: {newOrdersCount}</p>
+          </p>
         </div>
 
       </div>
