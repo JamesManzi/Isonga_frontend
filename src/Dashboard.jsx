@@ -437,7 +437,7 @@ const orderLink =
         </div>
 
         <div className="viewOrders">
-          <Link to="#">
+          <Link to="/SellerOrderHistory">
             <FontAwesomeIcon icon={faBox} />
             <h2>{orderHistory}</h2>
           </Link>

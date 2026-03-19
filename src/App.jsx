@@ -34,6 +34,7 @@ import Service_Products from "./Service_Products";
 import Asset_Products from "./Asset_Products";
 import Booking from "./Booking";
 import SellerBookings from "./SellerBookings";
+import SellerOrderHistory from "./SellerOrderHistory";
 function App(){
   return(
     <div>
@@ -74,6 +75,7 @@ function App(){
         <Route path="/Asset_products/:id" element={<Asset_Products/>}/>
         <Route path="/book/:productId" element={<Booking />} />
         <Route path="/seller_bookings" element={<SellerBookings />} />
+        <Route path="/SellerOrderHistory" element={<SellerOrderHistory/>}/>
       </Routes>
       </BrowserRouter>
     </div>
