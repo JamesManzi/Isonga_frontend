@@ -35,6 +35,7 @@ import Asset_Products from "./Asset_Products";
 import Booking from "./Booking";
 import SellerBookings from "./SellerBookings";
 import SellerOrderHistory from "./SellerOrderHistory";
+import BookingHistory from "./BookingHistory";
 function App(){
   return(
     <div>
