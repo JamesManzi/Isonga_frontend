@@ -107,6 +107,12 @@ const orderLink =
      :seller?.sellerType==="Service"
      ?"Total Services"
      :"Total Assets"
+  const historyLink=
+  seller?.sellerType==="Product"
+  ?"/SellerOrderHistory"
+  :seller?.sellerType==="Service"
+  ?"/BookingHistory"
+  :"none"
   useEffect(() => {
 
     const handleClickOutside = (event) => {
@@ -441,7 +447,7 @@ const orderLink =
         </div>
 
         <div className="viewOrders">
-          <Link to="/SellerOrderHistory">
+          <Link to={historyLink}>
             <FontAwesomeIcon icon={faBox} />
             <h2>{orderHistory}</h2>
           </Link>

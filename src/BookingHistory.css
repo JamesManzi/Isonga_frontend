@@ -1,0 +1,130 @@
+.history_container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fdfdfd;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.history_header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.back_circle_btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.history_header h1 {
+  font-size: 1.5rem;
+  flex: 1;
+}
+
+.history_count {
+  background: #000;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+/* Filter Styles */
+.filter_bar {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.filter_bar button {
+  padding: 8px 18px;
+  border-radius: 25px;
+  border: 1px solid #eee;
+  background: #fff;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.filter_bar button.active {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* Card Styles */
+.history_card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  border: 1px solid #f0f0f0;
+}
+
+.history_card_left {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.status_indicator {
+  width: 10px;
+  height: 40px;
+  border-radius: 5px;
+}
+
+.status_indicator.approved { background: #28a745; }
+.status_indicator.rejected { background: #dc3545; }
+.status_indicator.Pending, .status_indicator.Read { background: #ffc107; }
+
+.history_main_info h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
+.history_main_info p { margin: 2px 0; font-size: 0.85rem; color: #777; }
+
+.history_card_right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status_text {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.status_text.approved { color: #28a745; background: #e8f5e9; }
+.status_text.rejected { color: #dc3545; background: #ffebee; }
+.status_text.Pending { color: #856404; background: #fff3cd; }
+
+.view_details_btn {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.view_details_btn:hover { background: #eee; }
+
+.empty_history {
+  text-align: center;
+  padding: 50px;
+  color: #aaa;
+}

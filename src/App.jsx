@@ -76,6 +76,7 @@ function App(){
         <Route path="/book/:productId" element={<Booking />} />
         <Route path="/seller_bookings" element={<SellerBookings />} />
         <Route path="/SellerOrderHistory" element={<SellerOrderHistory/>}/>
+        <Route path="/BookingHistory" element={<BookingHistory/>}/>
       </Routes>
       </BrowserRouter>
     </div>
