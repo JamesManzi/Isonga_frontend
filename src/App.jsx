@@ -77,7 +77,6 @@ function App(){
         <Route path="/book/:productId" element={<Booking />} />
         <Route path="/seller_bookings" element={<SellerBookings />} />
         <Route path="/SellerOrderHistory" element={<SellerOrderHistory/>}/>
-        <Route path="/BookingHistory" element={<BookingHistory/>}/>
         <Route path="/SellerBookingHistory" element={<SellerBookingHistory/>}/>
       </Routes>
       </BrowserRouter>
