@@ -1,3 +1,5 @@
+
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -22,10 +24,6 @@ function SellerOrders() {
   }, []);
 
   const updateStatus = (orderId, newStatus) => {
-    // 1. Optimistic UI: Remove the order from local state immediately
-    // This makes it "vanish" from the incoming list before the server even responds
-    setOrders((prevOrders) => prevOrders.filter(order => order._id !== orderId));
-
     axios
       .put(
         `https://isonga-backend.onrender.com/api/order/status/${orderId}`,
@@ -33,20 +31,12 @@ function SellerOrders() {
         { withCredentials: true }
       )
       .then((res) => {
-        if (!res.data.success) {
-          // If the backend failed, refresh to bring the order back into the list
-          getOrders();
+        if (res.data.success) {
+          getOrders(); // Refresh list to update UI
         }
       })
-      .catch((err) => {
-        console.error("Error updating order status:", err);
-        // Bring back the order if there's a network error
-        getOrders();
-      });
+      .catch((err) => console.error("Error updating order status:", err));
   };
-
-  // 2. Filter orders to only show those that are "Pending"
-  const pendingOrders = orders.filter((order) => order.status === "Pending");
 
   return (
     <div style={{ padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
@@ -56,10 +46,10 @@ function SellerOrders() {
 
       <h1 style={{ margin: "25px 0", color: "#2c3e50" }}>Incoming Orders</h1>
 
-      {pendingOrders.length === 0 ? (
-        <p style={{ color: "#7f8c8d", textAlign: "center", marginTop: "50px" }}>You have no new incoming orders.</p>
+      {orders.length === 0 ? (
+        <p style={{ color: "#7f8c8d" }}>You have no orders yet.</p>
       ) : (
-        pendingOrders.map((order) => (
+        orders.map((order) => (
           <div key={order._id} style={cardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <h3 style={{ margin: 0 }}>Order ID: ...{order._id.slice(-6)}</h3>
@@ -78,6 +68,7 @@ function SellerOrders() {
                 <h4 style={sectionTitle}>Logistics & Payment</h4>
                 <p><strong>Delivery:</strong> {order.deliveryMethod}</p>
                 <p><strong>Payment:</strong> {order.paymentMethod}</p>
+                {/* Fixed: Opens modal instead of new tab */}
                 {order.paymentProof && (
                   <button 
                     onClick={() => setSelectedImg(order.paymentProof)} 
@@ -93,6 +84,7 @@ function SellerOrders() {
               <h4 style={{ marginTop: 0 }}>Items Ordered</h4>
               {order.items.map((item, index) => (
                 <div key={index} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem", marginBottom: "5px" }}>
+                  {/* Fixed: Optional chaining prevents crash if product was deleted */}
                   <span>{item.product?.name || "Deleted Product"} × {item.quantity}</span>
                   <span>{item.price * item.quantity} Rwf</span>
                 </div>
@@ -100,10 +92,11 @@ function SellerOrders() {
               <div style={totalStyle}>Total: {order.totalPrice} Rwf</div>
             </div>
 
+            {/* Always show actions so seller can manage orders regardless of status */}
             <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
               <button onClick={() => updateStatus(order._id, "Accepted")} style={btnAccept}>
-                Accept Order
-              </button>
+  Accept Order
+</button>
               <button onClick={() => updateStatus(order._id, "Cancelled")} style={btnDecline}>
                 Decline Order
               </button>
@@ -188,6 +181,7 @@ const receiptButtonStyle = {
 const btnAccept = { flex: 1, padding: "10px", background: "#27ae60", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" };
 const btnDecline = { flex: 1, padding: "10px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" };
 
+// Modal Styles
 const modalOverlayStyle = {
   position: "fixed",
   top: 0,
@@ -233,3 +227,4 @@ const closeButtonStyle = {
 };
 
 export default SellerOrders;
+
