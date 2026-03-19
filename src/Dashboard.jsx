@@ -84,6 +84,12 @@ function Dashboard() {
       ? "Total Views"
       : "Total Views";
 
+      const orderHistory=
+      seller?.sellerType==="Product"
+      ?"Order History"
+      :seller?.sellerType==="Service"
+      ?"Booking History"
+      :"Asset History"
       /* ---------------- SELLER TYPE LOGIC ---------------- */
 // ... your existing addLink, addText, orderTitle ...
 
@@ -432,8 +438,8 @@ const orderLink =
 
         <div className="viewOrders">
           <Link to="#">
-            <FontAwesomeIcon icon={faDigitalTachograph} />
-            <h2>Performance</h2>
+            <FontAwesomeIcon icon={faBox} />
+            <h2>{orderHistory}</h2>
           </Link>
         </div>
 
