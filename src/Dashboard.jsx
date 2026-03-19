@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { useState, useEffect, useRef } from "react";
@@ -77,46 +78,59 @@ function Dashboard() {
       ? "Bookings"
       : "Rentals";
 
-  const viewTitle = "Total Views";
-
-  const orderHistory =
+  const viewTitle =
     seller?.sellerType === "Product"
-      ? "Order History"
+      ? "Total Views"
       : seller?.sellerType === "Service"
-      ? "Booking History"
-      : "Asset History";
+      ? "Total Views"
+      : "Total Views";
 
-  const orderLink = 
-    seller?.sellerType === "Product" 
-      ? "/seller_orders" 
-      : seller?.sellerType === "Service" 
-      ? "/seller_bookings" 
-      : "/seller_rentals";
+      const orderHistory=
+      seller?.sellerType==="Product"
+      ?"Order History"
+      :seller?.sellerType==="Service"
+      ?"Booking History"
+      :"Asset History"
+      /* ---------------- SELLER TYPE LOGIC ---------------- */
+// ... your existing addLink, addText, orderTitle ...
 
-  const AddType =
-    seller?.sellerType === "Product"
-      ? "Total Products"
-      : seller?.sellerType === "Service"
-      ? "Total Services"
-      : "Total Assets";
-
+const orderLink = 
+  seller?.sellerType === "Product" 
+    ? "/seller_orders" 
+    : seller?.sellerType === "Service" 
+    ? "/seller_bookings" // Change this to your new bookings route
+    : "/seller_rentals";
   /* ---------------- CLICK OUTSIDE MENU ---------------- */
-
+ const AddType=
+     seller?.sellerType==="Product"
+     ?"Total Products"
+     :seller?.sellerType==="Service"
+     ?"Total Services"
+     :"Total Assets"
   useEffect(() => {
+
     const handleClickOutside = (event) => {
+
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
+
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
+
   }, []);
 
   /* ---------------- FETCH DASHBOARD DATA ---------------- */
 
   useEffect(() => {
+
     const fetchSellerData = async () => {
+
       try {
+
         const res = await axios.get(
           "https://isonga-backend.onrender.com/api/dashboard",
           { withCredentials: true }
@@ -140,37 +154,45 @@ function Dashboard() {
         setTotalViews(res.data.totalViews || 0);
         setNewOrdersCount(s.newOrders || 0);
         setTodayViews(res.data.todayViews || 0);
-
         const unreadRes = await axios.get(
           "https://isonga-backend.onrender.com/api/seller/conversations",
           { withCredentials: true }
         );
 
         if (unreadRes.data.success) {
+
           const count = unreadRes.data.conversations.reduce(
             (sum, conv) => sum + (conv.unreadCount || 0),
             0
           );
+
           setUnreadCount(count);
+
         }
+
       } catch (err) {
         console.error("Dashboard Fetch Error:", err);
       }
+
     };
 
     fetchSellerData();
+
   }, [navigate]);
 
   /* ---------------- SOCKET REALTIME ---------------- */
 
   useEffect(() => {
+
     if (!seller?._id) return;
 
     if (!socketRef.current) {
+
       socketRef.current = io("https://isonga-backend.onrender.com", {
         withCredentials: true,
         transports: ["websocket"],
       });
+
     }
 
     const socket = socketRef.current;
@@ -181,49 +203,64 @@ function Dashboard() {
     });
 
     socket.on("newOrderNotification", (data) => {
+
       toast.success(data.message || "New Order Received!", { icon: "🛍️" });
+
       setSeller((prev) => ({
         ...prev,
         totalOrders: (prev.totalOrders || 0) + 1,
       }));
-      setNewOrdersCount((prev) => prev + 1);
-    });
 
+      setNewOrdersCount((prev) => prev + 1);
+
+    });
     socket.on("newBookingNotification", (data) => {
-      toast.success(data.message || "New Booking Received!", { icon: "📅" });
-      setSeller((prev) => ({
-        ...prev,
-        totalOrders: (prev.totalOrders || 0) + 1,
-      }));
-      setNewOrdersCount((prev) => prev + 1);
-    });
+  toast.success(data.message || "New Booking Received!", { icon: "📅" });
 
+  setSeller((prev) => ({
+    ...prev,
+    totalOrders: (prev.totalOrders || 0) + 1,
+  }));
+
+  setNewOrdersCount((prev) => prev + 1);
+});
     socket.on("newMessageNotification", () => {
+
       setUnreadCount((prev) => prev + 1);
+
       toast("New message from buyer!", { icon: "💬" });
+
     });
 
     socket.on("newView", (data) => {
-      setTotalViews(data.totalViews);
-      setTodayViews(data.todayViews);
-    });
+  setTotalViews(data.totalViews);
+  setTodayViews(data.todayViews);
+  // optional:
+  console.log("Today views:", data.todayViews);
+});
 
     socket.on("sellerRatingUpdated", (data) => {
+
       toast.success("You received a new rating ⭐");
+
       setSeller((prev) => ({
         ...prev,
         averageRating: data.averageRating,
         numReviews: data.numReviews,
       }));
+
     });
 
     return () => {
+
       socket.off("newOrderNotification");
       socket.off("newBookingNotification");
       socket.off("newMessageNotification");
       socket.off("newView");
       socket.off("sellerRatingUpdated");
+
     };
+
   }, [seller?._id]);
 
   if (!seller) {
@@ -237,37 +274,73 @@ function Dashboard() {
   /* ---------------- HELPERS ---------------- */
 
   const renderStars = (avg = 0) => {
+
     const stars = [];
     const rating = Number(avg);
+
     for (let i = 1; i <= 5; i++) {
-      if (rating >= i) stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" />);
+
+      if (rating >= i) {
+        stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" />);
+      }
+
       else if (rating >= i - 0.5) {
-        stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" style={{ clipPath: "inset(0 50% 0 0)" }} />);
-      } else stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray" />);
+        stars.push(
+          <FontAwesomeIcon
+            key={i}
+            icon={faStar}
+            color="gold"
+            style={{ clipPath: "inset(0 50% 0 0)" }}
+          />
+        );
+      }
+
+      else {
+        stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray" />);
+      }
+
     }
+
     return stars;
+
   };
 
   const getFileUrl = (path) => {
+
     if (!path) return "/placeholder.png";
-    return path.startsWith("http") ? path : `https://isonga-backend.onrender.com/uploads/${path}`;
+
+    return path.startsWith("http")
+      ? path
+      : `https://isonga-backend.onrender.com/uploads/${path}`;
+
   };
 
+  /* ---------------- UI ---------------- */
+
   return (
+
     <div className="Dashboard">
+
       <Toaster position="top-center" />
 
       {/* Navbar */}
+
       <div className="Dashboard_navbar">
+
         <div className="Dashboard_bars" onClick={toggleMenu}>
+
           <FontAwesomeIcon icon={faBars} />
+
           {isMenuOpen && (
+
             <div className="dropdown_list" ref={dropdownRef}>
               <Link to="/settings">Settings</Link>
               <Link to="/inventory">Inventory</Link>
               <hr />
             </div>
+
           )}
+
         </div>
 
         <div className="Dashboard_text">
@@ -275,27 +348,49 @@ function Dashboard() {
         </div>
 
         <div className="Dashboard_rightside">
+
           <Link to="/seller_profile">
+
             <div className="dashboard_profile">
+
               {seller.profile ? (
-                <img src={getFileUrl(seller.profile)} alt="Seller" className="dashboard_seller-image" />
+                <img
+                  src={getFileUrl(seller.profile)}
+                  alt="Seller"
+                  className="dashboard_seller-image"
+                />
               ) : (
                 <div className="placeholder_profile">No Image</div>
               )}
+
             </div>
+
           </Link>
-          <button onClick={handleLogout} className="Dashboard_Logout">Logout</button>
+
+          <button onClick={handleLogout} className="Dashboard_Logout">
+            Logout
+          </button>
+
         </div>
+
       </div>
 
       {/* Welcome */}
+
       <div className="Dashboard_heading">
-        <h1>Welcome Back {seller.name} <FontAwesomeIcon icon={faHand} /></h1>
+
+        <h1>
+          Welcome Back {seller.name} <FontAwesomeIcon icon={faHand} />
+        </h1>
+
         <p>Grow Your Business Today</p>
+
       </div>
 
-      {/* Sales/Stats Row 1 */}
+      {/* Sales */}
+
       <div className="Dashboard_body1">
+
         <div className="sales">
           <FontAwesomeIcon icon={faEye} />
           <p>Today Views</p>
@@ -305,109 +400,132 @@ function Dashboard() {
         <div className="orders">
           <FontAwesomeIcon icon={faBox} />
           <h2>{orderTitle}</h2>
-          {/* ✅ Displays totalOrders which will reset to 0 upon clicking footer link */}
           <p className="order_count_main">{seller.totalOrders}</p>
         </div>
+
       </div>
 
       {/* Views + Ratings */}
+
       <div className="Dashboard_body2">
+
         <div className="views">
           <FontAwesomeIcon icon={faEye} />
           <h2>{viewTitle}</h2>
           <p>{totalViews}</p>
         </div>
+
         <div className="ratings">
           <FontAwesomeIcon icon={faStar} />
           <h2>Your Ratings</h2>
-          <p>{Number(seller.averageRating).toFixed(1)} ({seller.numReviews} reviews)</p>
+          <p>
+            {Number(seller.averageRating).toFixed(1)} ({seller.numReviews} reviews)
+          </p>
           <div className="stars">{renderStars(seller.averageRating)}</div>
         </div>
+
       </div>
 
       {/* Action Cards */}
+
       <div className="Dashboard_body3">
+
         <div className="add_product">
           <Link to={addLink}>
             <FontAwesomeIcon icon={faAdd} />
             <h2>{addText}</h2>
           </Link>
         </div>
+
         <div className="viewOrders">
           <Link to="/SellerOrderHistory">
             <FontAwesomeIcon icon={faBox} />
             <h2>{orderHistory}</h2>
           </Link>
         </div>
+
         <div className="buyer_messages">
           <Link to="#">
             <FontAwesomeIcon icon={faBoxOpen} />
-            <h2>{AddType}</h2>
-            <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
-              {seller.totalItemsCount || 0}
-            </p>
+      <h2>{AddType}</h2> {/* Displays "Total Products", "Total Services", etc. */}
+      
+      {/* Display the count from the backend */}
+      <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
+        {seller.totalItemsCount || 0}
+      </p>
           </Link>
         </div>
+
       </div>
 
       {/* Footer */}
+
       <div className="Dashboard_footer">
+
         <Link to="/dashboard" className="footer_item">
           <FontAwesomeIcon icon={faHome} />
           <h2>Dashboard</h2>
         </Link>
 
-        <Link
-          to={orderLink}
-          className="footer_item"
-          onClick={async () => {
-            // ✅ 1. Reset UI notification badge instantly
-            setNewOrdersCount(0);
-            
-            // ✅ 2. Reset the main totalOrders display instantly
-            setSeller(prev => ({
-              ...prev,
-              totalOrders: 0
-            }));
+        {/* Updated Footer Item */}
+<Link
+  to={orderLink}
+  className="footer_item"
+  onClick={async () => {
 
-            try {
-              // Tell backend to mark as read
-              await axios.post(
-                "https://isonga-backend.onrender.com/api/seller/mark-activity-read",
-                {},
-                { withCredentials: true }
-              );
-            } catch (err) {
-              console.log("Mark read failed");
-            }
-          }}
-        >
-          <div style={{ position: "relative", display: "inline-block" }}>
-            <FontAwesomeIcon icon={faBox} />
-            {newOrdersCount > 0 && (
-              <span className="order_badge">{newOrdersCount}</span>
-            )}
-          </div>
-          <h2>{orderTitle}</h2>
-        </Link>
+    // ✅ 1. Reset UI instantly
+    setNewOrdersCount(0);
+
+    try {
+      // Tell backend to mark as read
+      await axios.post(
+        "https://isonga-backend.onrender.com/api/seller/mark-activity-read",
+        {},
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.log("Mark read failed");
+    }
+
+  }}
+>
+  <div style={{ position: "relative", display: "inline-block" }}>
+    <FontAwesomeIcon icon={faBox} />
+    {newOrdersCount > 0 && (
+      <span className="order_badge">{newOrdersCount}</span>
+    )}
+  </div>
+
+  <h2>{orderTitle}</h2>
+</Link>
 
         <Link to="/SellerConversations" className="footer_item">
+
           <div style={{ position: "relative", display: "inline-block" }}>
+
             <FontAwesomeIcon icon={faCommentDots} />
+
             {unreadCount > 0 && (
               <span className="badge">{unreadCount}</span>
             )}
+
           </div>
+
           <h2>Messages</h2>
+
         </Link>
 
         <Link to="/my_store" className="footer_item">
           <FontAwesomeIcon icon={faStore} />
           <h2>My Store</h2>
         </Link>
+
       </div>
+
     </div>
+
   );
+
 }
 
 export default Dashboard;
