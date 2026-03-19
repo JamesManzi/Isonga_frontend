@@ -10,18 +10,22 @@ function SellerOrders() {
 
   // ✅ Fetch only once
   const getOrders = () => {
-    axios
-      .get("https://isonga-backend.onrender.com/api/seller/orders", {
-        withCredentials: true,
-      })
-      .then((res) => {
-        if (res.data.success) {
-          // Optional: show only pending orders
-         setOrders(res.data.orders);
-        }
-      })
-      .catch((err) => console.error("Error fetching orders:", err));
-  };
+  axios
+    .get("https://isonga-backend.onrender.com/api/seller/orders", {
+      withCredentials: true,
+    })
+    .then((res) => {
+      if (res.data.success) {
+        // ✅ ONLY show pending orders
+        const incoming = res.data.orders.filter(
+          (order) => order.status === "Pending"
+        );
+
+        setOrders(incoming);
+      }
+    })
+    .catch((err) => console.error("Error fetching orders:", err));
+};
 
   useEffect(() => {
     getOrders();
