@@ -92,9 +92,9 @@ function SellerOrders() {
 
             {/* Always show actions so seller can manage orders regardless of status */}
             <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-              <button onClick={() => updateStatus(order._id, "Processing")} style={btnAccept}>
-                Accept Order
-              </button>
+              <button onClick={() => updateStatus(order._id, "Accepted")} style={btnAccept}>
+  Accept Order
+</button>
               <button onClick={() => updateStatus(order._id, "Cancelled")} style={btnDecline}>
                 Decline Order
               </button>
