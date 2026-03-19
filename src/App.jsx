@@ -35,7 +35,7 @@ import Asset_Products from "./Asset_Products";
 import Booking from "./Booking";
 import SellerBookings from "./SellerBookings";
 import SellerOrderHistory from "./SellerOrderHistory";
-import BookingHistory from "./BookingHistory";
+import SellerBookingHistory from "./SellerBookingHistory";
 function App(){
   return(
     <div>
@@ -78,6 +78,7 @@ function App(){
         <Route path="/seller_bookings" element={<SellerBookings />} />
         <Route path="/SellerOrderHistory" element={<SellerOrderHistory/>}/>
         <Route path="/BookingHistory" element={<BookingHistory/>}/>
+        <Route path="/SellerBookingHistory" element={<SellerBookingHistory/>}/>
       </Routes>
       </BrowserRouter>
     </div>

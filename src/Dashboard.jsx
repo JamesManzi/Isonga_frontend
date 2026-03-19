@@ -111,7 +111,7 @@ const orderLink =
   seller?.sellerType==="Product"
   ?"/SellerOrderHistory"
   :seller?.sellerType==="Service"
-  ?"/BookingHistory"
+  ?"/SellerBookingHistory"
   :"none"
   useEffect(() => {
 
