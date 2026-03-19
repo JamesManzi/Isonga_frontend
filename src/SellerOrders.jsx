@@ -17,10 +17,7 @@ function SellerOrders() {
       .then((res) => {
         if (res.data.success) {
           // Optional: show only pending orders
-          const pendingOrders = res.data.orders.filter(
-            (order) => order.status === "Pending"
-          );
-          setOrders(pendingOrders);
+         setOrders(res.data.orders);
         }
       })
       .catch((err) => console.error("Error fetching orders:", err));
