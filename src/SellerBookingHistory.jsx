@@ -124,7 +124,7 @@ const totalStyle = {
 };
 
 const statusBadge = (status) => ({
-  backgroundColor: status === "Confirmed" ? "#27ae60" : "#95a5a6",
+  backgroundColor: status === "Accepted" ? "#27ae60" : "#95a5a6",
   color: "white",
   padding: "3px 10px",
   borderRadius: "4px",
