@@ -16,7 +16,7 @@ function SellerBookings() {
       })
       .then((res) => {
         if (res.data.success) {
-          // ✅ ONLY show pending and read bookings
+          // 🔥 FIX: Include "Read" so they don't disappear when you return to the page
           const incoming = res.data.bookings.filter(
             (booking) => booking.status === "Pending" || booking.status === "Read"
           );
@@ -41,7 +41,7 @@ function SellerBookings() {
       )
       .then((res) => {
         if (res.data.success) {
-          // 🔥 Remove booking immediately from state
+          // 🔥 Remove booking immediately from state so it "moves" to history
           setBookings((prevBookings) =>
             prevBookings.filter((booking) => booking._id !== bookingId)
           );
