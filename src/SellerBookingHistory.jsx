@@ -8,22 +8,22 @@ function SellerBookingHistory() {
   const [bookings, setBookings] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
 
-  const getBookings = () => {
-    axios
-      .get("https://isonga-backend.onrender.com/api/seller/bookings", { withCredentials: true })
-      .then((res) => {
-        if (res.data.success) {
-          // ✅ Filter for items that have been processed
-          const history = res.data.bookings.filter(
-            (b) => b.status === "Confirmed" || b.status === "Rejected"
-          );
-          setBookings(history);
-        }
-      })
-      .catch((err) => console.error("Error fetching history:", err));
-  };
-
-  useEffect(() => {
+  // Inside SellerBookingHistory.js
+const getBookings = () => {
+  axios
+    .get("https://isonga-backend.onrender.com/api/seller/bookings", { withCredentials: true })
+    .then((res) => {
+      if (res.data.success) {
+        // ✅ Filter for any status that is NOT 'Pending'
+        const history = res.data.bookings.filter(
+          (b) => b.status !== "Pending"
+        );
+        setBookings(history);
+      }
+    })
+    .catch((err) => console.error("Error fetching history:", err));
+};
+useEffect(() => {
     getBookings();
   }, []);
 
