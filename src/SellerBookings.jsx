@@ -99,12 +99,13 @@ function SellerBookings() {
 
             {/* ✅ ACTION BUTTONS */}
             <div style={btnContainer}>
-              <button
-                onClick={() => updateStatus(booking._id, "approved")}
-                style={btnAccept}
-              >
-                Approve
-              </button>
+             // Change "approved" to "Confirmed" to match your Schema
+<button
+  onClick={() => updateStatus(booking._id, "Confirmed")} 
+  style={btnAccept}
+>
+  Approve
+</button>
 
               <button
                 onClick={() => updateStatus(booking._id, "rejected")}
