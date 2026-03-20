@@ -13,11 +13,11 @@ function SellerBookingHistory() {
       .get("https://isonga-backend.onrender.com/api/seller/bookings", { withCredentials: true })
       .then((res) => {
         if (res.data.success) {
-          // ✅ Filter to show only Confirmed or Rejected bookings in history
-          const processed = res.data.bookings.filter(
+          // ✅ Filter for items that have been processed
+          const history = res.data.bookings.filter(
             (b) => b.status === "Confirmed" || b.status === "Rejected"
           );
-          setBookings(processed);
+          setBookings(history);
         }
       })
       .catch((err) => console.error("Error fetching history:", err));
@@ -45,7 +45,7 @@ function SellerBookingHistory() {
         bookings.map((booking) => (
           <div key={booking._id} style={historyCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ margin: 0, color: "#34495e" }}>Booking ...{booking._id.slice(-6).toUpperCase()}</h3>
+              <h3 style={{ margin: 0, color: "#34495e" }}>Booking ...{booking._id.slice(-6)}</h3>
               <span style={statusBadge(booking.status)}>{booking.status}</span>
             </div>
 
@@ -69,10 +69,8 @@ function SellerBookingHistory() {
             </div>
 
             <div style={itemBox}>
-              <h4 style={{ margin: "0 0 5px 0", fontSize: "0.9rem", color: "#7f8c8d" }}>Service Note</h4>
-              <p style={{ margin: 0, fontSize: "0.85rem", color: "#2c3e50" }}>
-                {booking.message || "No additional message provided."}
-              </p>
+              <h4 style={{ margin: "0 0 5px 0", fontSize: "0.9rem", color: "#7f8c8d" }}>Message:</h4>
+              <p style={{ fontSize: "0.9rem", margin: 0 }}>{booking.message || "No message provided."}</p>
               <div style={totalStyle}>Payment: {booking.paymentMethod}</div>
             </div>
           </div>
@@ -94,7 +92,7 @@ function SellerBookingHistory() {
   );
 }
 
-// --- Styles (Using your provided History Style) ---
+// --- Styles (Identical to your History reference) ---
 const historyCardStyle = {
   background: "#fff",
   padding: "20px",
@@ -122,12 +120,11 @@ const totalStyle = {
   color: "#2c3e50",
   marginTop: "8px",
   paddingTop: "5px",
-  borderTop: "1px solid #eee",
-  fontSize: "0.85rem"
+  borderTop: "1px solid #eee"
 };
 
 const statusBadge = (status) => ({
-  backgroundColor: status === "Confirmed" ? "#27ae60" : "#e74c3c", 
+  backgroundColor: status === "Confirmed" ? "#27ae60" : "#95a5a6",
   color: "white",
   padding: "3px 10px",
   borderRadius: "4px",

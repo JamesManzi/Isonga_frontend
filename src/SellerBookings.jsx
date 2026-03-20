@@ -8,7 +8,7 @@ function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
 
-  // ✅ Fetch only once
+  // ✅ Fetch and filter for Pending OR Read
   const getBookings = () => {
     axios
       .get("https://isonga-backend.onrender.com/api/seller/bookings", {
@@ -16,11 +16,10 @@ function SellerBookings() {
       })
       .then((res) => {
         if (res.data.success) {
-          // 🔥 FIX: Include "Read" so they don't disappear when you return to the page
+          // 🔥 FIX: Include "Read" so they stay visible after returning to the page
           const incoming = res.data.bookings.filter(
             (booking) => booking.status === "Pending" || booking.status === "Read"
           );
-
           setBookings(incoming);
         }
       })
@@ -31,7 +30,7 @@ function SellerBookings() {
     getBookings();
   }, []);
 
-  // ✅ Update + REMOVE from UI instantly
+  // ✅ Update status and remove from list instantly
   const updateStatus = (bookingId, newStatus) => {
     axios
       .put(
@@ -41,15 +40,10 @@ function SellerBookings() {
       )
       .then((res) => {
         if (res.data.success) {
-          // 🔥 Remove booking immediately from state so it "moves" to history
-          setBookings((prevBookings) =>
-            prevBookings.filter((booking) => booking._id !== bookingId)
-          );
+          setBookings((prev) => prev.filter((b) => b._id !== bookingId));
         }
       })
-      .catch((err) =>
-        console.error("Error updating booking status:", err)
-      );
+      .catch((err) => console.error("Error updating booking status:", err));
   };
 
   return (
@@ -191,7 +185,6 @@ const statusBadge = (status) => ({
   color: "#fff",
   padding: "4px 10px",
   borderRadius: "20px",
-  fontSize: "0.8rem",
 });
 
 const receiptButtonStyle = {
@@ -199,8 +192,6 @@ const receiptButtonStyle = {
   border: "none",
   color: "#3498db",
   cursor: "pointer",
-  padding: 0,
-  marginTop: "5px",
 };
 
 const btnContainer = {
@@ -239,7 +230,7 @@ const modalOverlayStyle = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  zIndex: 2000,
+  zIndex: 1000,
 };
 
 const modalContentStyle = {
