@@ -91,7 +91,9 @@ setLoading(true);
             })
             setMessage(res.data.message);
             if(res.data.success){
-                navigate("/login")
+                setTimeout(() => {
+            navigate("/login");
+        }, 6000);
             }
         } catch (error) {
             console.log(error);
@@ -236,9 +238,14 @@ uppercase, lowercase, number, special character.
                     <Link to="/">Home</Link>
                     <Link to="/login">Login</Link>
                 </div>
-                {message&&(
-                    <p className="error">{message}</p>
-                )}
+               {message && (
+    <p className={message.includes("Successfully") || message.includes("check your email") 
+        ? "success-message" 
+        : "error-message"}
+    >
+        {message}
+    </p>
+)}
                 </form>
                 </div>
                 </div>
