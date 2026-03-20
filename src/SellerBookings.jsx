@@ -32,20 +32,20 @@ function SellerBookings() {
 
   // ✅ Update status and remove from list instantly
   const updateStatus = (bookingId, newStatus) => {
-    axios
-      .put(
-        `https://isonga-backend.onrender.com/api/bookings/${bookingId}`,
-        { status: newStatus },
-        { withCredentials: true }
-      )
-      .then((res) => {
-        if (res.data.success) {
-          setBookings((prev) => prev.filter((b) => b._id !== bookingId));
-        }
-      })
-      .catch((err) => console.error("Error updating booking status:", err));
-  };
-
+  axios
+    .put(
+      `https://isonga-backend.onrender.com/api/bookings/${bookingId}`,
+      { status: newStatus }, // Use "Accepted" or "Cancelled"
+      { withCredentials: true }
+    )
+    .then((res) => {
+      if (res.data.success) {
+        // Remove from current "Incoming" list
+        setBookings((prev) => prev.filter((b) => b._id !== bookingId));
+      }
+    })
+    .catch((err) => console.error("Error updating booking status:", err));
+};
   return (
     <div style={containerStyle}>
       <Link to="/dashboard" style={backStyle}>
@@ -92,20 +92,20 @@ function SellerBookings() {
             </div>
 
             {/* ✅ ACTION BUTTONS */}
-            <div style={btnContainer}>
-              <button
-                onClick={() => updateStatus(booking._id, "Confirmed")}
-                style={btnAccept}
-              >
-                Approve
-              </button>
+              <div style={btnContainer}>
+  <button
+    onClick={() => updateStatus(booking._id, "Accepted")} // CHANGED: matches schema enum
+    style={btnAccept}
+  >
+    Approve
+  </button>
 
-              <button
-                onClick={() => updateStatus(booking._id, "Rejected")}
-                style={btnDecline}
-              >
-                Decline
-              </button>
+             <button
+    onClick={() => updateStatus(booking._id, "Cancelled")} // CHANGED: matches schema enum
+    style={btnDecline}
+  >
+    Decline
+  </button>
             </div>
           </div>
         ))
