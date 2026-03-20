@@ -10,21 +10,22 @@ function SellerBookings() {
 
   // ✅ Fetch and filter for Pending OR Read
   const getBookings = () => {
-    axios
-      .get("https://isonga-backend.onrender.com/api/seller/bookings", {
-        withCredentials: true,
-      })
-      .then((res) => {
-        if (res.data.success) {
-          // 🔥 FIX: Include "Read" so they stay visible after returning to the page
-          const incoming = res.data.bookings.filter(
-            (booking) => booking.status === "Pending" || booking.status === "Read"
-          );
-          setBookings(incoming);
-        }
-      })
-      .catch((err) => console.error("Error fetching bookings:", err));
-  };
+  axios
+    .get("https://isonga-backend.onrender.com/api/seller/bookings", {
+      withCredentials: true,
+    })
+    .then((res) => {
+      if (res.data.success) {
+        // ✅ NEW LOGIC: Show everything EXCEPT things already Accepted or Cancelled
+        // This keeps the "Incoming" list for items that need action.
+        const incoming = res.data.bookings.filter(
+          (booking) => booking.status !== "Accepted" && booking.status !== "Cancelled"
+        );
+        setBookings(incoming);
+      }
+    })
+    .catch((err) => console.error("Error fetching bookings:", err));
+};
 
   useEffect(() => {
     getBookings();
