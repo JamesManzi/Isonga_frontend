@@ -2,36 +2,29 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faArrowLeft, 
-  faImage, 
-  faTimes, 
-  faHistory, 
-  faCalendarAlt, 
-  faClock 
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faImage, faTimes, faHistory } from "@fortawesome/free-solid-svg-icons";
 
 function SellerBookingHistory() {
   const [bookings, setBookings] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
 
-  const getBookingHistory = () => {
+  const getBookings = () => {
     axios
       .get("https://isonga-backend.onrender.com/api/seller/bookings", { withCredentials: true })
       .then((res) => {
         if (res.data.success) {
-          // Filter to only show processed bookings (Approved or Rejected)
+          // ✅ Filter to show only Confirmed or Rejected bookings in history
           const processed = res.data.bookings.filter(
-            (b) => b.status === "approved" || b.status === "rejected"
+            (b) => b.status === "Confirmed" || b.status === "Rejected"
           );
           setBookings(processed);
         }
       })
-      .catch((err) => console.error("Error fetching booking history:", err));
+      .catch((err) => console.error("Error fetching history:", err));
   };
 
   useEffect(() => {
-    getBookingHistory();
+    getBookings();
   }, []);
 
   return (
@@ -57,22 +50,16 @@ function SellerBookingHistory() {
             </div>
 
             <div style={gridStyle}>
-              {/* Customer Column */}
               <section>
-                <h4 style={sectionTitle}>Client Details</h4>
+                <h4 style={sectionTitle}>Customer</h4>
                 <p style={textStyle}><strong>Name:</strong> {booking.name}</p>
                 <p style={textStyle}><strong>Phone:</strong> {booking.phone}</p>
               </section>
 
-              {/* Schedule Column */}
               <section>
                 <h4 style={sectionTitle}>Schedule & Payment</h4>
-                <p style={textStyle}>
-                  <FontAwesomeIcon icon={faCalendarAlt} /> {new Date(booking.date).toLocaleDateString()}
-                </p>
-                <p style={textStyle}>
-                  <FontAwesomeIcon icon={faClock} /> {booking.time}
-                </p>
+                <p style={textStyle}><strong>Date:</strong> {booking.date}</p>
+                <p style={textStyle}><strong>Time:</strong> {booking.time}</p>
                 {booking.paymentScreenshot && (
                   <button onClick={() => setSelectedImg(booking.paymentScreenshot)} style={receiptButtonStyle}>
                     <FontAwesomeIcon icon={faImage} /> View Receipt
@@ -81,12 +68,12 @@ function SellerBookingHistory() {
               </section>
             </div>
 
-            {/* Service Summary Box */}
             <div style={itemBox}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }}>
-                <span><strong>Service Request:</strong> {booking.message || "No additional notes provided."}</span>
-              </div>
-              <div style={totalStyle}>Payment Method: {booking.paymentMethod}</div>
+              <h4 style={{ margin: "0 0 5px 0", fontSize: "0.9rem", color: "#7f8c8d" }}>Service Note</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "#2c3e50" }}>
+                {booking.message || "No additional message provided."}
+              </p>
+              <div style={totalStyle}>Payment: {booking.paymentMethod}</div>
             </div>
           </div>
         ))
@@ -107,31 +94,18 @@ function SellerBookingHistory() {
   );
 }
 
-// --- Styles (Matching your Order History exactly) ---
+// --- Styles (Using your provided History Style) ---
 const historyCardStyle = {
   background: "#fff",
   padding: "20px",
   borderRadius: "10px",
   marginBottom: "15px",
-  borderLeft: "5px solid #bdc3c7", 
+  borderLeft: "5px solid #bdc3c7",
   boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
 };
 
-const gridStyle = { 
-  display: "grid", 
-  gridTemplateColumns: "1fr 1fr", 
-  gap: "20px", 
-  marginTop: "10px" 
-};
-
-const sectionTitle = { 
-  borderBottom: "1px solid #eee", 
-  paddingBottom: "5px", 
-  color: "#7f8c8d", 
-  fontSize: "0.9rem", 
-  textTransform: "uppercase" 
-};
-
+const gridStyle = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "10px" };
+const sectionTitle = { borderBottom: "1px solid #eee", paddingBottom: "5px", color: "#7f8c8d", fontSize: "0.9rem", textTransform: "uppercase" };
 const textStyle = { margin: "5px 0", fontSize: "0.9rem", color: "#2c3e50" };
 
 const itemBox = {
@@ -153,13 +127,12 @@ const totalStyle = {
 };
 
 const statusBadge = (status) => ({
-  backgroundColor: status === "approved" ? "#27ae60" : "#e74c3c", // Green for approved, Red for rejected
+  backgroundColor: status === "Confirmed" ? "#27ae60" : "#e74c3c", 
   color: "white",
   padding: "3px 10px",
   borderRadius: "4px",
   fontSize: "0.75rem",
-  fontWeight: "bold",
-  textTransform: "capitalize"
+  fontWeight: "bold"
 });
 
 const receiptButtonStyle = {

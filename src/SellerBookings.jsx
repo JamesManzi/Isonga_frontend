@@ -16,7 +16,7 @@ function SellerBookings() {
       })
       .then((res) => {
         if (res.data.success) {
-          // ✅ ONLY show pending bookings (and "Read" which is the new unread state)
+          // ✅ ONLY show pending and read bookings
           const incoming = res.data.bookings.filter(
             (booking) => booking.status === "Pending" || booking.status === "Read"
           );
@@ -99,16 +99,15 @@ function SellerBookings() {
 
             {/* ✅ ACTION BUTTONS */}
             <div style={btnContainer}>
-             // Change "approved" to "Confirmed" to match your Schema
-<button
-  onClick={() => updateStatus(booking._id, "Confirmed")} 
-  style={btnAccept}
->
-  Approve
-</button>
+              <button
+                onClick={() => updateStatus(booking._id, "Confirmed")}
+                style={btnAccept}
+              >
+                Approve
+              </button>
 
               <button
-                onClick={() => updateStatus(booking._id, "rejected")}
+                onClick={() => updateStatus(booking._id, "Rejected")}
                 style={btnDecline}
               >
                 Decline
@@ -180,7 +179,28 @@ const gridStyle = {
 const sectionTitle = {
   borderBottom: "1px solid #eee",
   paddingBottom: "5px",
-  marginBottom: "10px",
+};
+
+const statusBadge = (status) => ({
+  background:
+    status === "Pending" || status === "Read"
+      ? "#f1c40f"
+      : status === "Rejected"
+      ? "#e74c3c"
+      : "#2ecc71",
+  color: "#fff",
+  padding: "4px 10px",
+  borderRadius: "20px",
+  fontSize: "0.8rem",
+});
+
+const receiptButtonStyle = {
+  background: "none",
+  border: "none",
+  color: "#3498db",
+  cursor: "pointer",
+  padding: 0,
+  marginTop: "5px",
 };
 
 const btnContainer = {
@@ -207,28 +227,6 @@ const btnDecline = {
   border: "none",
   borderRadius: "5px",
   cursor: "pointer",
-};
-
-const statusBadge = (status) => ({
-  background:
-    status === "Pending" || status === "Read"
-      ? "#f1c40f"
-      : status === "rejected"
-      ? "#e74c3c"
-      : "#2ecc71",
-  color: "#fff",
-  padding: "4px 10px",
-  borderRadius: "20px",
-  fontSize: "0.8rem",
-});
-
-const receiptButtonStyle = {
-  background: "none",
-  border: "none",
-  color: "#3498db",
-  cursor: "pointer",
-  padding: 0,
-  marginTop: "5px",
 };
 
 const modalOverlayStyle = {
