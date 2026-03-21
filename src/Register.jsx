@@ -94,11 +94,6 @@ setLoading(true);
 } else {
   setMessage(res.data.message);
 }
-            if(res.data.success){
-                setTimeout(() => {
-            navigate("/login");
-        }, 6000);
-            }
         } catch (error) {
   console.log(error);
 
