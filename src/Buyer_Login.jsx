@@ -4,13 +4,14 @@ import { useState } from "react";
 import axios from "axios";
 function Buyer_Login(){
      const[email,setEmail]=useState("");
+     const [loading,setLoading]=useState(false);
     const[password,setPassword]=useState("");
     const[message,setMessage]=useState("");
     const navigate=useNavigate();
 
     const handleSubmit=async(e)=>{
         e.preventDefault();
-
+       setLoading(true);
         try {
             const res=await axios.post("https://isonga-backend.onrender.com/api/buyer_login",{
                 email,
@@ -26,8 +27,10 @@ function Buyer_Login(){
         } catch (error) {
             console.log(error.response?.data);
     setMessage(error.response?.data?.message || "Login Error");
+        } finally{
+            setLoading(false);
         }
-    }
+    } 
     return(
         <div className="Buyer_Login">
             <div className="Buyer_Login_navbar">
@@ -65,7 +68,8 @@ function Buyer_Login(){
                     <input type="password" name="password" className="buyer_login"
                     placeholder="Enter Password" onChange={(e)=>setPassword(e.target.value)} required/><br/>
                     <div className="Buyer_Login_btn">
-                        <button type="submit">Login</button>
+                        <button type="submit" disabled={loading}
+                        >{loading ? "Login...":"Login"}</button>
                     </div>
                     <div className="Buyer_Login_links">
                         <Link to="/buyer_register">Register</Link>

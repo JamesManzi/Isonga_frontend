@@ -4,13 +4,14 @@ import { useState } from "react";
 import axios from "axios";
 function Login(){
     const[email,setEmail]=useState("");
+    const [loading,setLoading]=useState(false);
     const[password,setPassword]=useState("");
     const[message,setMessage]=useState("");
     const navigate=useNavigate();
 
     const handleSubmit=async(e)=>{
         e.preventDefault();
-
+        setLoading(true)
         try {
             const res=await axios.post("https://isonga-backend.onrender.com/api/login",{
                 email,
@@ -26,6 +27,8 @@ function Login(){
         } catch (error) {
             console.log(error);
             setMessage("Login Error")
+        } finally{
+            setLoading(false)
         }
     }
     return(
@@ -58,7 +61,9 @@ function Login(){
                     <input type="password" name="password" className="login"
                     placeholder="Enter Password" onChange={(e)=>setPassword(e.target.value)} required/><br/>
                     <div className="Login_btn">
-                        <button type="submit">Login</button>
+                        <button type="submit" disabled={loading}>
+                            {loading ? "Login....":"Login"}
+                        </button>
                     </div>
                     <div className="Login_links">
                         <Link to="/register">Register</Link>

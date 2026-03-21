@@ -4,7 +4,7 @@ import axios from "axios";
 import "./Buyer_Register.css";
 function Buyer_Register(){
     const fileInputRef = useRef(null);
-     const [loading,setLoading]=useState(false);
+    const [loading,setLoading]=useState(false);
     const[name,setName]=useState("");
     const[profile,setProfile]=useState("");
     const[previewProfile,setPreviewProfile]=useState(null);
