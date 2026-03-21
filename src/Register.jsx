@@ -89,16 +89,25 @@ setLoading(true);
             const res=await axios.post("https://isonga-backend.onrender.com/api/register",formData,{
                 withCredentials:true
             })
-            setMessage(res.data.message);
+            if (res.data.success) {
+  setMessage("Registration successful! Please check your email to verify your account.");
+} else {
+  setMessage(res.data.message);
+}
             if(res.data.success){
                 setTimeout(() => {
             navigate("/login");
         }, 6000);
             }
         } catch (error) {
-            console.log(error);
-            setMessage("Register Error");
-        }finally{
+  console.log(error);
+
+  if (error.response && error.response.data) {
+    setMessage(error.response.data.message || "Registration failed");
+  } else {
+    setMessage("Network error. Please try again.");
+  }
+}finally{
             setLoading(false);
         }
 };
@@ -239,12 +248,15 @@ uppercase, lowercase, number, special character.
                     <Link to="/login">Login</Link>
                 </div>
                {message && (
-    <p className={message.includes("Successfully") || message.includes("check your email") 
-        ? "success-message" 
-        : "error-message"}
-    >
-        {message}
-    </p>
+  <div className={message.includes("check your email") ? "success-message" : "error-message"}>
+    <p>{message}</p>
+
+    {message.includes("check your email") && (
+      <p style={{ marginTop: "10px", fontSize: "14px" }}>
+        ⚠️ If you don’t see the email, check your spam folder.
+      </p>
+    )}
+  </div>
 )}
                 </form>
                 </div>
