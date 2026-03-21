@@ -35,7 +35,7 @@ const categoryOptions = {
 function Add_Product() {
 
   const navigate = useNavigate();
-
+  const [loading,setLoading]=useState(false)
   const [type, setType] = useState("");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -116,7 +116,7 @@ function Add_Product() {
     files.forEach((file) => {
       formData.append("files", file);
     });
-
+    setLoading(true)
     try {
 
       const res = await axios.post(
@@ -144,6 +144,8 @@ function Add_Product() {
       console.log(error);
       setMessage("Add item error");
 
+    } finally{
+      setLoading(false);
     }
 
   };
@@ -336,8 +338,8 @@ function Add_Product() {
               Cancel
             </button>
 
-            <button type="submit" className="bt2">
-              Add {type || "Item"}
+            <button type="submit" className="bt2" disabled={loading}>
+              {loading ? "Add Item ...":"Add Item"}
             </button>
 
           </div>
