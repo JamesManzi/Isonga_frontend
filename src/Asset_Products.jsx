@@ -319,6 +319,62 @@ const getFileUrl = (path) => {
     {popupMessage}
   </div>
 )}
+{/* FOOTER SECTION */}
+<footer className="Buyer_Footer">
+  <div className="Footer_Container">
+    
+    {/* Brand Section */}
+    <div className="Footer_Section">
+      <div className="Footer_Logo">
+        <img src="/logo.png" alt="Isonga Logo"/>
+        <h3>Isonga Market</h3>
+      </div>
+      <p>The leading digital marketplace in Rwanda. Connecting local sellers with happy buyers.</p>
+      <div className="Social_Icons">
+        {/* Add your social links here */}
+      </div>
+    </div>
+
+    {/* Quick Links */}
+    <div className="Footer_Section">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><Link to="/fashion">All Products</Link></li>
+        <li><Link to="/services">Services</Link></li>
+        <li><Link to="/RealEstate">Assets</Link></li>
+        <li><Link to="/cart">My Cart</Link></li>
+      </ul>
+    </div>
+
+    {/* Support */}
+    <div className="Footer_Section">
+      <h4>Support</h4>
+      <ul>
+        <li><Link to="/help">Help Center</Link></li>
+        <li><Link to="/terms">Terms & Conditions</Link></li>
+        <li><Link to="/privacy">Privacy Policy</Link></li>
+      </ul>
+    </div>
+
+    {/* Payment & Trust Section (CRUCIAL) */}
+    <div className="Footer_Section">
+      <h4>Secure Payments</h4>
+      <p>We support local payment methods:</p>
+      <div className="Payment_Methods">
+        {/* Replace these with your MoMo/Airtel logos */}
+        <span className="Payment_Badge momo">MTN MoMo</span>
+        <span className="Payment_Badge airtel">Airtel Money</span>
+      </div>
+      <p className="Secure_Note">🔒 SSL Secure Transactions</p>
+    </div>
+
+  </div>
+
+  <div className="Footer_Bottom">
+    <p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved.</p>
+    <p>Designed for Rwanda 🇷🇼</p>
+  </div>
+</footer>
     </div>
   );
 }
