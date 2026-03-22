@@ -138,8 +138,16 @@ return path.startsWith("http")
 // LOADING
 //////////////////////////////////////////////////
 
-if(!buyer){
-return <p>Loading...</p>;
+if (loading || !buyer) {
+  return (
+    <div className="profile-loading">
+      <div className="loading-card">
+        <div className="spinner"></div>
+        <h2>Loading your profile...</h2>
+        <p>Please wait a moment</p>
+      </div>
+    </div>
+  );
 }
 
 //////////////////////////////////////////////////
