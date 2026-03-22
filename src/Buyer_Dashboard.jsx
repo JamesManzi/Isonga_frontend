@@ -257,17 +257,13 @@ setCurrentImageIndex(prev=>({
 
 const isVideoFile=(filename)=>/\.(mp4|webm|ogg|mov)$/i.test(filename);
 
-
-
 const getFileUrl = (path) => {
   if (!path) return "/placeholder.png";
 
+  // ✅ Cloudinary or external URLs
   if (path.startsWith("http")) return path;
 
-  if (path.startsWith("/uploads")) {
-    return `https://isonga-backend.onrender.com${path}`;
-  }
-
+  // ✅ fallback (if you ever use local storage)
   return `https://isonga-backend.onrender.com/uploads/${path}`;
 };
 //////////////////////////////////////////////////
