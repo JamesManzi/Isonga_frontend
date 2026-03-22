@@ -1,352 +1,122 @@
-/* IMPORT FONT */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Inter',sans-serif;
+:root {
+  --primary: #2563eb;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --radius: 12px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-body{
-  background: linear-gradient(135deg,#eef2ff,#f8fafc);
+body {
+  margin: 0;
+  background-color: var(--bg);
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
 }
 
 /* NAVBAR */
-.Buyer_Dashboard_navbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:15px 40px;
-  backdrop-filter: blur(15px);
-  background: rgba(15,23,42,0.75);
-  color:white;
-  position:sticky;
-  top:0;
-  z-index:1000;
-  border-bottom:1px solid rgba(255,255,255,0.1);
+.App_Navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 5%;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-/* LOGO */
-.Buyer_Dashboard_logos img{
-  width:42px;
+.Nav_Brand { display: flex; align-items: center; gap: 10px; }
+.Nav_Brand img { height: 35px; }
+.Brand_Text h1 { font-size: 1.1rem; margin: 0; color: var(--primary); }
+.Brand_Text h2 { font-size: 0.9rem; margin: 0; font-weight: 300; }
+
+.Nav_Search {
+  background: #f1f5f9;
+  padding: 8px 15px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 40%;
 }
 
-.Buyer_Dashboard_heads h1{
-  font-size:20px;
-  font-weight:600;
+.Nav_Search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
 }
 
-.Buyer_Dashboard_heads h2{
-  font-size:12px;
-  color:#60a5fa;
+.Nav_Actions { display: flex; align-items: center; gap: 20px; }
+.Cart_Wrapper { position: relative; font-size: 1.2rem; color: var(--text); }
+.Cart_Badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 50%;
 }
 
-/* NAV LINKS */
-.Buyer_Dashboard_nav ul{
-  display:flex;
-  gap:25px;
-  list-style:none;
+.User_Avatar img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary);
 }
 
-.Buyer_Dashboard_nav a{
-  text-decoration:none;
-  color:#e2e8f0;
-  font-weight:500;
-  transition:0.3s;
-}
+.Logout_Icon { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1.1rem; }
 
-.Buyer_Dashboard_nav a:hover{
-  color:#60a5fa;
-}
+/* HEADER */
+.App_Header { padding: 30px 5%; text-align: center; }
+.App_Header h1 { margin-bottom: 15px; font-size: 1.8rem; }
+.Quick_Links { display: flex; justify-content: center; gap: 15px; }
+.Quick_Links a { text-decoration: none; color: var(--muted); padding: 5px 15px; border: 1px solid #cbd5e1; border-radius: 20px; transition: 0.2s; }
+.Quick_Links a:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
-/* USER */
-.Buyer_Dashboard_user{
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
+/* GRID & CARDS */
+.App_Content { padding: 0 5% 50px; }
+.Shop_Grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
 
-.Buyer_Dashboard_user img{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  border:2px solid #60a5fa;
-  transition:0.3s;
-}
+.Shop_Card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: 0.3s; }
+.Shop_Card:hover { transform: translateY(-5px); }
 
-.Buyer_Dashboard_user img:hover{
-  transform:scale(1.1);
-}
+.Card_Media { position: relative; height: 180px; }
+.Slider_Content { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+.Slider_Nav { position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; padding: 0 10px; transform: translateY(-50%); opacity: 0; transition: 0.3s; }
+.Shop_Card:hover .Slider_Nav { opacity: 1; }
+.Slider_Nav button { background: rgba(255,255,255,0.8); border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; }
 
-/* CART */
-.fa-cart-shopping{
-  cursor:pointer;
-  transition:0.3s;
-}
+.Seller_Avatar { position: absolute; bottom: -15px; right: 15px; }
+.Seller_Avatar img { width: 45px; height: 45px; border-radius: 50%; border: 3px solid white; box-shadow: var(--shadow); }
 
-.fa-cart-shopping:hover{
-  transform:scale(1.15);
-}
+.Card_Details { padding: 20px; }
+.Card_Main { display: flex; justify-content: space-between; align-items: flex-start; }
+.Card_Rating { font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
+.Card_Meta { color: var(--muted); font-size: 0.8rem; margin: 5px 0; }
+.Card_Desc { font-size: 0.85rem; color: var(--text); margin: 15px 0; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
-/* LOGOUT */
-.Buyer_Dashboard_Logout button{
-  background:linear-gradient(135deg,#ef4444,#dc2626);
-  border:none;
-  padding:8px 14px;
-  border-radius:10px;
-  color:white;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.Buyer_Dashboard_Logout button:hover{
-  transform:translateY(-2px);
-}
-
-/* HERO */
-.Buyer_Dashboard_Heading{
-  text-align:center;
-  padding:40px 20px;
-}
-
-.Buyer_Dashboard_Heading h1{
-  font-size:32px;
-  font-weight:600;
-  color:#0f172a;
-}
-
-.Buyer_Dashboard_Heading p{
-  color:#64748b;
-  margin-top:10px;
-}
-
-/* SEARCH */
-.Buyer_Dashboard_search{
-  display:flex;
-  justify-content:center;
-  margin-bottom:40px;
-}
-
-.Buyer_Dashboard_search input{
-  width:50%;
-  padding:14px 18px;
-  border:none;
-  border-radius:50px 0 0 50px;
-  outline:none;
-  background:white;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
-}
-
-.Buyer_Dashboard_search button{
-  padding:14px 20px;
-  border:none;
-  border-radius:0 50px 50px 0;
-  background:linear-gradient(135deg,#3b82f6,#60a5fa);
-  color:white;
-  cursor:pointer;
-}
-
-/* GRID */
-.shop-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:30px;
-  padding:40px;
-}
-
-/* CARD */
-.shop-card{
-  border-radius:20px;
-  overflow:hidden;
-  background:rgba(255,255,255,0.7);
-  backdrop-filter: blur(20px);
-  box-shadow:0 15px 40px rgba(0,0,0,0.08);
-  transition:0.4s ease;
-}
-
-.shop-card:hover{
-  transform:translateY(-10px) scale(1.02);
-  box-shadow:0 20px 60px rgba(0,0,0,0.12);
-}
-
-/* IMAGE */
-.card-image-section{
-  position:relative;
-}
-
-.slider-image{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-}
-
-/* SLIDER BUTTONS */
-.slider-controls{
-  position:absolute;
-  top:50%;
-  width:100%;
-  display:flex;
-  justify-content:space-between;
-  transform:translateY(-50%);
-  padding:0 10px;
-}
-
-.slider-icon{
-  background:rgba(0,0,0,0.4);
-  color:white;
-  padding:8px;
-  border-radius:50%;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.slider-icon:hover{
-  background:#3b82f6;
-}
-
-/* AVATAR */
-.profile-avatar{
-  position:absolute;
-  bottom:-25px;
-  left:15px;
-}
-
-.avatar-image{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  border:4px solid white;
-}
-
-/* INFO */
-.shop-card-info{
-  padding:25px 20px;
-}
-
-.shop-card-info h3{
-  font-size:18px;
-  color:#0f172a;
-}
-
-.shop-card-info p{
-  font-size:14px;
-  color:#64748b;
-}
-
-/* RATING */
-.rating{
-  display:flex;
-  align-items:center;
-  gap:5px;
-  margin:5px 0;
-}
-
-/* BUTTONS */
-.card-actions{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
-}
-
-.visit-btn{
-  flex:1;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#0f172a;
-  color:white;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.visit-btn:hover{
-  background:#1e293b;
-}
-
-.chat-btn{
-  flex:1;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:linear-gradient(135deg,#3b82f6,#60a5fa);
-  color:white;
-  cursor:pointer;
-}
+.Card_Buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.Visit_Btn { background: var(--primary); color: white; text-align: center; text-decoration: none; padding: 8px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; }
+.Chat_Btn { background: #f1f5f9; color: var(--text); text-align: center; text-decoration: none; padding: 8px; border-radius: 8px; font-size: 0.9rem; }
 
 /* MODAL */
-.media-modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.85);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:2000;
-}
-
-.media-modal img,
-.media-modal video{
-  max-width:85%;
-  max-height:85%;
-  border-radius:12px;
-}
-
-.close-btn{
-  position:absolute;
-  top:20px;
-  right:30px;
-  font-size:40px;
-  color:white;
-}
+.App_Modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.Modal_Content img, .Modal_Content video { max-width: 90vw; max-height: 80vh; border-radius: 10px; }
 
 /* FOOTER */
-.Buyer_Footer{
-  background:#0f172a;
-  color:white;
-  padding:50px 30px;
-  margin-top:40px;
-}
-
-.Footer_Container{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:30px;
-}
-
-.Footer_Section h4{
-  margin-bottom:10px;
-}
-
-.Footer_Section a{
-  color:#94a3b8;
-  text-decoration:none;
-}
-
-.Footer_Section a:hover{
-  color:#60a5fa;
-}
-
-.Footer_Bottom{
-  text-align:center;
-  margin-top:20px;
-  color:#64748b;
-}
-
-/* MOBILE */
-@media(max-width:768px){
-
-.Buyer_Dashboard_navbar{
-flex-direction:column;
-gap:10px;
-}
-
-.Buyer_Dashboard_search input{
-width:70%;
-}
-
-.shop-grid{
-padding:20px;
-}
-
-}
+.App_Footer { background: #1e293b; color: white; padding: 50px 5% 20px; margin-top: 50px; }
+.Footer_Grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; }
+.Footer_Brand img { height: 30px; margin-bottom: 10px; }
+.Footer_Col h4 { margin-bottom: 15px; }
+.Footer_Col a { color: #cbd5e1; text-decoration: none; display: block; margin-bottom: 8px; font-size: 0.9rem; }
+.Payment_Tags { display: flex; gap: 10px; margin: 10px 0; }
+.Tag_Momo { background: #ffcc00; color: black; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; }
+.Tag_Airtel { background: #ed1c24; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; }
+.Footer_Bottom { border-top: 1px solid #334155; margin-top: 40px; padding-top: 20px; text-align: center; font-size: 0.8rem; color: #94a3b8; }
