@@ -25,7 +25,9 @@ function Login(){
       type: res.data.success ? "success" : "error",
     });
         if(res.data.success){
-            navigate("/dashboard");
+            setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000); 
         }
         } catch (error) {
             console.log(error);
