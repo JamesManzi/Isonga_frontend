@@ -259,14 +259,16 @@ const isVideoFile=(filename)=>/\.(mp4|webm|ogg|mov)$/i.test(filename);
 
 
 
-const getFileUrl = (path)=>{
+const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png";
 
-if(!path) return "/placeholder.png";
+  if (path.startsWith("http")) return path;
 
-return path.startsWith("http")
-? path
-: `https://isonga-backend.onrender.com/uploads/${path}`;
+  if (path.startsWith("/uploads")) {
+    return `https://isonga-backend.onrender.com${path}`;
+  }
 
+  return `https://isonga-backend.onrender.com/uploads/${path}`;
 };
 //////////////////////////////////////////////////
 // COMPONENT UI
