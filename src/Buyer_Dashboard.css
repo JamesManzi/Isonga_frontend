@@ -1,267 +1,244 @@
-/* --- 1. Global Reset & Base Styles --- */
+/* --- 1. Global Variables & Reset --- */
 :root {
-    --primary-color: #2ecc71;
-    --secondary-color: #27ae60;
-    --text-dark: #333;
-    --text-light: #777;
-    --bg-gray: #f9f9f9;
+    --primary: #2ecc71;      /* Isonga Green */
+    --primary-hover: #27ae60;
+    --accent: #f39c12;       /* Warning/Action Orange */
+    --text-main: #1a1a1a;
+    --text-muted: #7f8c8d;
+    --bg-light: #f4f7f6;
     --white: #ffffff;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-soft: 0 2px 15px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.1);
+    --radius: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 .Buyer_Dashboard {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-gray);
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--bg-light);
     min-height: 100vh;
-    padding-bottom: 50px;
+    color: var(--text-main);
+    padding-bottom: 80px; /* Space for Mobile Bottom Nav */
 }
 
-/* --- 2. Navbar Layout --- */
+/* --- 2. Fantastic Navbar (Glassmorphism) --- */
 .Buyer_Dashboard_navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px 5%;
-    background: var(--white);
-    box-shadow: var(--shadow);
+    padding: 12px 5%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-soft);
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
-.Buyer_Dashboard_logos img {
-    height: 45px;
-    width: auto;
-}
+.Buyer_Dashboard_logos img { height: 40px; }
 
-.Buyer_Dashboard_heads {
-    display: flex;
-    gap: 5px;
-}
+.Buyer_Dashboard_heads { display: flex; gap: 4px; align-items: center; }
+.Buyer_Dashboard_heads h1 { color: var(--primary); font-size: 1.4rem; font-weight: 800; }
+.Buyer_Dashboard_heads h2 { color: var(--text-main); font-size: 1.4rem; font-weight: 300; }
 
-.Buyer_Dashboard_heads h1 { color: var(--primary-color); font-size: 1.5rem; }
-.Buyer_Dashboard_heads h2 { color: var(--text-dark); font-size: 1.5rem; }
-
-.Buyer_Dashboard_nav ul {
-    display: flex;
-    list-style: none;
-    gap: 20px;
-}
-
+.Buyer_Dashboard_nav ul { display: flex; list-style: none; gap: 24px; }
 .Buyer_Dashboard_nav a {
     text-decoration: none;
-    color: var(--text-dark);
-    font-weight: 600;
-    transition: color 0.3s;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: 0.3s;
 }
+.Buyer_Dashboard_nav a:hover { color: var(--primary); }
 
-.Buyer_Dashboard_nav a:hover { color: var(--primary-color); }
-
-.Buyer_Dashboard_user {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
+.Buyer_Dashboard_user { display: flex; align-items: center; gap: 15px; }
 .Buyer_Dashboard_user img {
-    width: 40px;
-    height: 40px;
+    width: 38px; height: 38px;
     border-radius: 50%;
+    border: 2px solid var(--primary);
     object-fit: cover;
-    border: 2px solid var(--primary-color);
 }
 
-.cart-badge {
-    position: absolute;
-    top: -8px;
-    right: -10px;
-    background: #e74c3c;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-weight: bold;
+.Buyer_Dashboard_Logout button {
+    background: transparent;
+    border: 1px solid #ddd;
+    padding: 6px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.3s;
 }
+.Buyer_Dashboard_Logout button:hover { background: #fee; color: #e74c3c; border-color: #fcc; }
 
 /* --- 3. Hero & Search --- */
 .Buyer_Dashboard_Heading {
     text-align: center;
-    padding: 40px 20px;
+    padding: 40px 20px 20px;
 }
 
 .Buyer_Dashboard_search {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 40px;
+    max-width: 600px;
+    margin: 0 auto 40px;
+    position: relative;
+    padding: 0 20px;
 }
 
 .Buyer_Dashboard_search input {
-    width: 400px;
-    padding: 12px 20px;
-    border: 1px solid #ddd;
-    border-radius: 25px;
+    width: 100%;
+    padding: 14px 25px;
+    border: 1px solid #e0e0e0;
+    border-radius: 30px;
+    box-shadow: var(--shadow-soft);
     outline: none;
+    font-size: 1rem;
 }
 
 .Buyer_Dashboard_search button {
-    padding: 12px 25px;
-    background: var(--primary-color);
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary);
     color: white;
     border: none;
-    border-radius: 25px;
+    width: 35px; height: 35px;
+    border-radius: 50%;
     cursor: pointer;
 }
 
-/* --- 4. Shop Cards & Grid --- */
+/* --- 4. The Shop Grid (Bento Style) --- */
 .shop-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
     padding: 0 5%;
 }
 
 .shop-card {
     background: var(--white);
-    border-radius: 15px;
+    border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: transform 0.3s;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
 }
 
-.shop-card:hover { transform: translateY(-5px); }
-
-.card-image-section {
-    position: relative;
-    height: 200px;
+.shop-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
 }
 
-.slider-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.card-image-section { position: relative; height: 180px; background: #eee; }
+.slider-image { width: 100%; height: 100%; object-fit: cover; }
 
 .slider-controls {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    transform: translateY(-50%);
-    padding: 0 10px;
+    position: absolute; top: 50%; width: 100%;
+    display: flex; justify-content: space-between;
+    transform: translateY(-50%); padding: 0 8px;
     pointer-events: none;
 }
 
 .slider-icon {
-    background: rgba(255, 255, 255, 0.7);
-    padding: 8px;
-    border-radius: 50%;
-    cursor: pointer;
-    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.8);
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; cursor: pointer; pointer-events: auto;
+    font-size: 12px;
 }
 
 .profile-avatar {
-    position: absolute;
-    bottom: -20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 3px solid white;
-    overflow: hidden;
-    background: white;
+    position: absolute; bottom: -15px; right: 15px;
+    width: 50px; height: 50px;
+    border-radius: 50%; border: 3px solid white;
+    box-shadow: var(--shadow-soft); overflow: hidden;
 }
 
-.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.shop-card-info { padding: 20px; flex-grow: 1; }
+.shop-card-info h3 { font-size: 1.1rem; margin-bottom: 4px; }
+.shop-card-info p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
 
-.shop-card-info { padding: 25px 20px 20px; }
+.rating { color: #f1c40f; font-size: 0.8rem; margin: 8px 0; display: flex; align-items: center; gap: 5px; }
 
-.seller-name { font-size: 1.2rem; margin-bottom: 5px; }
-.seller-location { color: var(--text-light); font-size: 0.9rem; margin-bottom: 5px; }
-.seller-category { color: var(--primary-color); font-weight: bold; font-size: 0.85rem; text-transform: uppercase; }
-
-.card-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
+.card-actions { display: flex; gap: 10px; margin-top: 15px; }
 .visit-btn, .chat-btn {
-    flex: 1;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
+    flex: 1; padding: 10px; border-radius: 8px;
+    font-weight: 600; cursor: pointer; transition: 0.2s; border: none;
 }
+.visit-btn { background: var(--primary); color: white; }
+.visit-btn:hover { background: var(--primary-hover); }
+.chat-btn { background: #f0f0f0; color: var(--text-main); }
 
-.visit-btn { background: var(--primary-color); color: white; }
-.chat-btn { background: #eee; color: var(--text-dark); }
-
-/* --- 5. Media Modal --- */
-.media-modal {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.media-modal img, .media-modal video { max-width: 90%; max-height: 80%; }
-
-/* --- 6. MOBILE RESPONSIVE STYLES --- */
+/* --- 5. Mobile & Responsive --- */
 @media (max-width: 768px) {
-    .Buyer_Dashboard_navbar {
-        flex-direction: column;
-        padding: 15px;
-        gap: 15px;
-    }
-
-    .Buyer_Dashboard_nav ul {
-        gap: 15px;
-        font-size: 0.85rem;
-    }
-
-    .Buyer_Dashboard_search {
-        flex-direction: column;
-        align-items: center;
-        padding: 0 20px;
-    }
-
-    .Buyer_Dashboard_search input {
-        width: 100%;
-    }
-
-    .Buyer_Dashboard_search button {
-        width: 100%;
-    }
-
+    .Buyer_Dashboard_navbar { padding: 10px 15px; }
+    .Buyer_Dashboard_nav, .Buyer_Dashboard_Logout { display: none; }
+    
     .shop-grid {
-        grid-template-columns: 1fr; /* Single column on mobile */
-        padding: 0 15px;
+        grid-template-columns: repeat(2, 1fr); /* 2 Columns like Alibaba */
+        gap: 12px;
+        padding: 0 12px;
     }
 
-    .Buyer_Dashboard_Heading h1 {
-        font-size: 1.4rem;
+    .card-image-section { height: 130px; }
+    .shop-card-info { padding: 10px; }
+    .shop-card-info h3 { font-size: 0.9rem; }
+    .card-actions { flex-direction: column; }
+    
+    /* Sticky Bottom Nav Bar */
+    .Mobile_Bottom_Nav {
+        display: flex;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        height: 65px; background: white;
+        border-top: 1px solid #eee;
+        justify-content: space-around; align-items: center;
+        z-index: 1001;
     }
 
-    .card-image-section {
-        height: 250px; /* Larger images for mobile scrolling */
+    .nav-item {
+        display: flex; flex-direction: column; align-items: center;
+        text-decoration: none; color: #777; font-size: 10px; gap: 4px;
     }
-
-    .card-actions {
-        flex-direction: row; /* Keep buttons side by side */
-    }
+    .nav-item.active { color: var(--primary); }
 }
 
-@media (max-width: 480px) {
-    .Buyer_Dashboard_heads h2 { display: none; } /* Hide 'Market' on very small screens */
-    
-    .Buyer_Dashboard_nav ul {
-        width: 100%;
-        justify-content: space-around;
-    }
+/* --- 6. The Footer (Amazon Style) --- */
+.Buyer_Footer {
+    background: #1a1a1a; color: white;
+    padding: 60px 5% 40px; margin-top: 80px;
+}
+
+.Footer_Container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px; max-width: 1200px; margin: 0 auto;
+}
+
+.Footer_Section h4 { color: var(--accent); margin-bottom: 20px; }
+.Footer_Section ul { list-style: none; }
+.Footer_Section li { margin-bottom: 10px; }
+.Footer_Section a { color: #bbb; text-decoration: none; font-size: 0.9rem; }
+.Footer_Section a:hover { color: white; }
+
+.Payment_Methods { display: flex; gap: 10px; margin-top: 15px; }
+.Payment_Badge {
+    padding: 4px 10px; border-radius: 4px;
+    font-size: 0.7rem; font-weight: bold;
+}
+.momo { background: #ffcc00; color: black; }
+.airtel { background: #ff0000; color: white; }
+
+.Footer_Bottom {
+    text-align: center; margin-top: 50px;
+    padding-top: 20px; border-top: 1px solid #333;
+    font-size: 0.8rem; color: #666;
 }
