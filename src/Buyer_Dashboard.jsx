@@ -258,15 +258,16 @@ setCurrentImageIndex(prev=>({
 const isVideoFile=(filename)=>/\.(mp4|webm|ogg|mov)$/i.test(filename);
 
 
-
-const getFileUrl=(path)=>{
-
-if(!path) return "/placeholder.png";
-
-return path.startsWith("http")
-? path
-: `https://isonga-backend.onrender.com/uploads/${path}`;
-
+const getFileUrl = (path) => {
+  if (!path) return "/placeholder.png";
+  
+  // If the database has the full Cloudinary URL, use it directly
+  if (path.startsWith("http")) return path;
+  
+  // If it's a relative path from your chat or old uploads, 
+  // ensure we don't double up on the "uploads/" folder name
+  const cleanPath = path.replace(/^uploads\//, ''); 
+  return `https://isonga-backend.onrender.com/uploads/${cleanPath}`;
 };
 
 
