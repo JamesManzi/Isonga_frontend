@@ -355,3 +355,83 @@
   color: #bdc3c7;
   max-width: 300px; /* Prevents the text from stretching too far */
 }
+
+
+
+/* --- SKELETON LOADING ANIMATION --- */
+.skeleton-card {
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  height: 350px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 200px;
+  background: #eee;
+}
+
+.skeleton-content {
+  padding: 20px;
+}
+
+.skeleton-line {
+  width: 100%;
+  height: 15px;
+  background: #eee;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.skeleton-line.short { width: 60%; }
+.skeleton-button { width: 40%; height: 35px; background: #eee; border-radius: 5px; }
+
+/* The "Shine" Animation */
+.shine {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* --- NO RESULTS ANIMATION --- */
+.no-results-container {
+  grid-column: 1 / -1; /* Stretch across all columns */
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-gray);
+}
+
+.bouncing-icon {
+  font-size: 4rem;
+  color: var(--accent-color);
+  margin-bottom: 20px;
+  animation: bounce 2s infinite ease-in-out;
+  opacity: 0.5;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.reset-btn {
+  margin-top: 15px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.reset-btn:hover {
+  background: var(--accent-color);
+}

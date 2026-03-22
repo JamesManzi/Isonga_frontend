@@ -28,7 +28,7 @@ const [searchQuery,setSearchQuery]=useState("");
 const [buyerId,setBuyerId]=useState("");
 const [cartCount,setCartCount]=useState(0);
 const [message,setMessage]=useState("");
-
+const [loading, setLoading] = useState(true);
 //////////////////////////////////////////////////
 // CATEGORY CLASSIFICATION
 //////////////////////////////////////////////////
@@ -152,7 +152,7 @@ return stars;
 useEffect(()=>{
 
 const fetchData=async()=>{
-
+setLoading(true);
 try{
 
 const res=await axios.get(
@@ -192,6 +192,8 @@ setCurrentImageIndex(indexes);
 
 }catch(err){
 console.log(err);
+} finally{
+  setLoading(false);
 }
 
 };
@@ -473,7 +475,40 @@ className="avatar-image"
 
 :
 
-<p>No sellers found</p>
+<div className="shop-grid">
+  {loading ? (
+    // 1. SHOW SKELETONS WHILE LOADING
+    Array.from({ length: 6 }).map((_, i) => (
+      <div key={i} className="skeleton-card">
+        <div className="skeleton-image shine"></div>
+        <div className="skeleton-content">
+          <div className="skeleton-line shine"></div>
+          <div className="skeleton-line short shine"></div>
+          <div className="skeleton-button shine"></div>
+        </div>
+      </div>
+    ))
+  ) : filteredSellers.length > 0 ? (
+    // 2. SHOW ACTUAL SELLERS
+    filteredSellers.map(seller => (
+      <div key={seller._id} className="shop-card">
+        {/* ... your existing shop card code ... */}
+      </div>
+    ))
+  ) : (
+    // 3. SHOW "FANTASTIC" NO RESULTS ANIMATION
+    <div className="no-results-container">
+      <div className="search-animation">
+        <FontAwesomeIcon icon={faSearch} className="bouncing-icon" />
+      </div>
+      <h3>Oops! No sellers found</h3>
+      <p>Try adjusting your search or category filters.</p>
+      <button onClick={() => setSearchQuery("")} className="reset-btn">
+        Clear Search
+      </button>
+    </div>
+  )}
+</div>
 
 }
 
