@@ -19,11 +19,13 @@ function My_Store() {
   const [currentIndex, setCurrentIndex] = useState({});
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+   const [pageLoading, setPageLoading] = useState(true);
 
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
 
   useEffect(() => {
     const fetchProducts = async () => {
+       setPageLoading(true);
       try {
         const res = await axios.get("https://isonga-backend.onrender.com/api/my_store", {
           withCredentials: true,
@@ -44,6 +46,8 @@ function My_Store() {
       } catch (error) {
         console.log(error);
         setMessage("My Store Error");
+      } finally{
+        setPageLoading(false);
       }
     };
     fetchProducts();
@@ -118,7 +122,7 @@ function My_Store() {
         formData.append("files", editingProduct.newFiles[i]);
       }
     }
-    setLoading(false)
+    setLoading(true)
     try {
       const res = await axios.put(
         `https://isonga-backend.onrender.com/api/products/update/${editingProduct._id}`,
@@ -141,7 +145,7 @@ function My_Store() {
       console.log(error);
       setMessage("Updating Product Error");
     } finally{
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -151,6 +155,17 @@ function My_Store() {
     ? path 
     : `https://isonga-backend.onrender.com/uploads/${path}`;
 };
+if (pageLoading) {
+  return (
+    <div className="store-loading">
+      <div className="loading-card">
+        <div className="spinner"></div>
+        <h2>Loading your store...</h2>
+        <p>Please wait</p>
+      </div>
+    </div>
+  );
+}
   return (
     <div className="My_Store">
       {/* Navbar */}

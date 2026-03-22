@@ -252,3 +252,11 @@
   cursor: pointer;
   filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
 }
+
+.store-loading {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+}
