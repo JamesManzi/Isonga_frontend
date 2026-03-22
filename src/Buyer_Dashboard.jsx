@@ -266,6 +266,21 @@ const isVideoFile=(filename)=>/\.(mp4|webm|ogg|mov)$/i.test(filename);
   return `https://isonga-backend.onrender.com/uploads/${path}`;
 };
 
+if (loading) {
+  return (
+    <div className="beautiful-loading">
+      <div className="text-center bg-white/20 backdrop-blur-lg p-10 rounded-3xl border border-white/30 shadow-2xl">
+        <div className="loader-dots flex space-x-2 justify-center mb-4">
+           <div className="w-4 h-4 bg-white rounded-full animate-bounce"></div>
+           <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+           <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+        </div>
+        <h2 className="text-white font-bold text-xl tracking-widest">ISONGA MARKET</h2>
+        <p className="text-white/80 text-sm">Preparing your dashboard...</p>
+      </div>
+    </div>
+  );
+}
 return(
 
 <div className="Buyer_Dashboard">
@@ -379,13 +394,10 @@ onChange={(e)=>setSearchQuery(e.target.value)}
 {/* SELLERS */}
 
 <div className="shop-grid">
+{filteredSellers.length > 0 ? (
 
-{filteredSellers.length>0 ?
-
-filteredSellers.map(seller=>(
-
-<div key={seller._id} className="shop-card">
-
+  filteredSellers.map((seller) => (
+    <div key={seller._id} className="shop-card">
 <div className="card-image-section">
 
 {seller.files && seller.files.length > 0 ? (
@@ -454,67 +466,17 @@ className="avatar-image"
 
 <p>{seller.description}</p>
 
-
 <div className="card-actions">
-
-<Link to={getSellerRoute(seller.category,seller._id)}>
-<button className="visit-btn">Visit Shop</button>
-</Link>
-
-<Link to={`/buyer_chat/${seller._id}`}>
-<button className="chat-btn">Chat</button>
-</Link>
-
-</div>
-
-</div>
-
-</div>
-
-))
-
-:
-
-<div className="shop-grid">
-  {loading ? (
-    // 1. SHOW SKELETONS WHILE LOADING
-    Array.from({ length: 6 }).map((_, i) => (
-      <div key={i} className="skeleton-card">
-        <div className="skeleton-image shine"></div>
-        <div className="skeleton-content">
-          <div className="skeleton-line shine"></div>
-          <div className="skeleton-line short shine"></div>
-          <div className="skeleton-button shine"></div>
-        </div>
+                  <Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">Visit</button></Link>
+                  <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="no-sellers-msg">No sellers found</p>
+        )}
       </div>
-    ))
-  ) : filteredSellers.length > 0 ? (
-    // 2. SHOW ACTUAL SELLERS
-    filteredSellers.map(seller => (
-      <div key={seller._id} className="shop-card">
-        {/* ... your existing shop card code ... */}
-      </div>
-    ))
-  ) : (
-    // 3. SHOW "FANTASTIC" NO RESULTS ANIMATION
-    <div className="no-results-container">
-      <div className="search-animation">
-        <FontAwesomeIcon icon={faSearch} className="bouncing-icon" />
-      </div>
-      <h3>Oops! No sellers found</h3>
-      <p>Try adjusting your search or category filters.</p>
-      <button onClick={() => setSearchQuery("")} className="reset-btn">
-        Clear Search
-      </button>
-    </div>
-  )}
-</div>
-
-}
-
-</div>
-
-
 
 {/* MEDIA MODAL */}
 
@@ -603,9 +565,7 @@ className="avatar-image"
   </div>
 </footer>
 </div>
-
 );
-
 }
 
 export default Buyer_Dashboard;
