@@ -312,14 +312,19 @@ const orderLink =
   };
 
   const getFileUrl = (path) => {
+  // 1. If path is missing, return the placeholder
+  if (!path) return "/placeholder.png";
 
-    if (!path) return "/placeholder.png";
+  // 2. If it's already a full URL (starts with http) 
+  // This covers Cloudinary links and external links automatically.
+  if (path.startsWith("http")) {
+    return path;
+  }
 
-    return path.startsWith("http")
-      ? path
-      : `https://isonga-backend.onrender.com/uploads/${path}`;
-
-  };
+  // 3. Fallback for old data: 
+  // If it's just a filename, point it to your old Render upload folder.
+  return `https://isonga-backend.onrender.com/uploads/${path}`;
+};
 
   /* ---------------- UI ---------------- */
 
