@@ -7,9 +7,11 @@ import { faArrowLeft, faImage, faTimes, faHistory } from "@fortawesome/free-soli
 function SellerBookingHistory() {
   const [bookings, setBookings] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
-
+  const [loading, setLoading] = useState(true); 
   // Inside SellerBookingHistory.js
 const getBookings = () => {
+  setLoading(true);
+  try{
   axios
     .get("https://isonga-backend.onrender.com/api/seller/bookings", { withCredentials: true })
     .then((res) => {
@@ -22,11 +24,24 @@ const getBookings = () => {
       }
     })
     .catch((err) => console.error("Error fetching history:", err));
+  } catch{
+    console.error("Error fetching history:", err);
+      setError("Error fetching booking history");
+  } finally{
+    setLoading(false);
+  }
 };
 useEffect(() => {
     getBookings();
   }, []);
-
+if (loading) {
+  return (
+    <div style={spinnerOverlay}>
+      <div style={spinner}></div>
+      <p style={{ marginTop: "15px", color: "#7f8c8d", fontFamily: "sans-serif" }}>Loading booking history...</p>
+    </div>
+  );
+}
   return (
     <div style={{ padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
       <Link to="/dashboard" style={{ textDecoration: "none", color: "#3498db", fontWeight: "600" }}>
@@ -146,5 +161,30 @@ const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", h
 const modalContentStyle = { position: "relative", background: "#fff", padding: "10px", borderRadius: "8px", maxWidth: "90%" };
 const modalImgStyle = { maxWidth: "100%", maxHeight: "80vh", display: "block" };
 const closeButtonStyle = { position: "absolute", top: "-35px", right: "0", background: "none", border: "none", color: "#fff", fontSize: "20px", cursor: "pointer" };
+
+const spinnerOverlay = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "80vh",
+};
+
+const spinner = {
+  width: "50px",
+  height: "50px",
+  border: "6px solid #f3f3f3",
+  borderTop: "6px solid #3498db",
+  borderRadius: "50%",
+  animation: "spin 1s linear infinite",
+};
+
+// CSS keyframes (add globally or in a CSS file)
+const styleSheet = document.styleSheets[0];
+styleSheet.insertRule(`
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}`, styleSheet.cssRules.length);
 
 export default SellerBookingHistory;
