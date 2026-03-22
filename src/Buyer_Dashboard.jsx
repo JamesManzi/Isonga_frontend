@@ -518,7 +518,7 @@ className="avatar-image"
     {/* Brand Section */}
     <div className="Footer_Section">
       <div className="Footer_Logo">
-        <img src="/logo.png" alt="Isonga Logo" />
+        <img src="/logo.png" alt="Isonga Logo"  style={{fontSize:"60px"}}/>
         <h3>Isonga Market</h3>
       </div>
       <p>The leading digital marketplace in Rwanda. Connecting local sellers with happy buyers.</p>
