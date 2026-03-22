@@ -12,6 +12,7 @@ import {
 
 function My_Store() {
   const [products, setProducts] = useState([]);
+  const [loading,setLoading]=useState(false)
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [message, setMessage] = useState("");
   const [sellerName, setSellerName] = useState("");
@@ -117,7 +118,7 @@ function My_Store() {
         formData.append("files", editingProduct.newFiles[i]);
       }
     }
-
+    setLoading(false)
     try {
       const res = await axios.put(
         `https://isonga-backend.onrender.com/api/products/update/${editingProduct._id}`,
@@ -139,6 +140,8 @@ function My_Store() {
     } catch (error) {
       console.log(error);
       setMessage("Updating Product Error");
+    } finally{
+      setLoading(true);
     }
   };
 
@@ -300,7 +303,9 @@ function My_Store() {
               onChange={(e) => setEditingProduct({ ...editingProduct, newFiles: e.target.files })}
             />
             <div className="edit-buttons">
-              <button onClick={handleUpdate}>Save</button>
+              <button onClick={handleUpdate} disabled={loading}>
+                {loading ?"Saving...":"Save"}
+              </button>
               <button onClick={() => setEditingProduct(null)}>Cancel</button>
             </div>
           </div>

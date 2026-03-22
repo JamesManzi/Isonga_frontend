@@ -7,9 +7,11 @@ import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons
 function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
-
+  const [loading,setLoading]=useState(false);
   // ✅ Fetch and filter for Pending OR Read
-  const getBookings = () => {
+  setLoading(true)
+ try {
+   const getBookings = () => {
   axios
     .get("https://isonga-backend.onrender.com/api/seller/bookings", {
       withCredentials: true,
@@ -47,6 +49,11 @@ function SellerBookings() {
     })
     .catch((err) => console.error("Error updating booking status:", err));
 };
+ } catch (error) {
+  console.log(error)
+ } finally{
+  setLoading(false)
+ }
   return (
     <div style={containerStyle}>
       <Link to="/dashboard" style={backStyle}>

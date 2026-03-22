@@ -7,9 +7,11 @@ import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons
 function SellerOrders() {
   const [orders, setOrders] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
-
+  const [loading,setLoading]=useState(false);
   // ✅ Fetch only once
-  const getOrders = () => {
+  setLoading(true)
+ try {
+   const getOrders = () => {
   axios
     .get("https://isonga-backend.onrender.com/api/seller/orders", {
       withCredentials: true,
@@ -51,6 +53,11 @@ function SellerOrders() {
         console.error("Error updating order status:", err)
       );
   };
+ } catch (error) {
+  console.log(error);
+ } finally{
+  setLoading(false);
+ }
 
   return (
     <div style={containerStyle}>
@@ -117,15 +124,16 @@ function SellerOrders() {
               <button
                 onClick={() => updateStatus(order._id, "Accepted")}
                 style={btnAccept}
-              >
-                Accept
+              disabled={loading}>
+               {loading ? "Accepted...":"Accept"}
               </button>
 
               <button
                 onClick={() => updateStatus(order._id, "Cancelled")}
                 style={btnDecline}
+                disabled={loading}
               >
-                Decline
+                {loading?"Declined...":"Decline"}
               </button>
             </div>
           </div>

@@ -275,8 +275,8 @@ const getFileUrl = (path) => {
                   <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
                  <button
   onClick={() => addToCart(product._id, product.name)}
->
-  Add to Cart <FontAwesomeIcon icon={faCartShopping} />
+ disabled={loading}>
+  {loading ? "Adding To Cart ...":"Add To Cart"} <FontAwesomeIcon icon={faCartShopping} />
 </button>
                 </div>
               </div>
