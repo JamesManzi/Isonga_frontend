@@ -1,122 +1,113 @@
 :root {
   --primary: #2563eb;
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --text: #1e293b;
-  --muted: #64748b;
+  --bg-gray: #f8fafc;
+  --white: #ffffff;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
   --radius: 12px;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-body {
-  margin: 0;
-  background-color: var(--bg);
-  font-family: 'Inter', sans-serif;
-  color: var(--text);
+.Buyer_Dashboard {
+  background-color: var(--bg-gray);
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text-dark);
 }
 
-/* NAVBAR */
-.App_Navbar {
+/* NAVBAR - Glassmorphism */
+.Buyer_Dashboard_navbar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 12px 5%;
-  background: white;
-  border-bottom: 1px solid #e2e8f0;
+  align-items: center;
+  padding: 1rem 5%;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   z-index: 1000;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.Nav_Brand { display: flex; align-items: center; gap: 10px; }
-.Nav_Brand img { height: 35px; }
-.Brand_Text h1 { font-size: 1.1rem; margin: 0; color: var(--primary); }
-.Brand_Text h2 { font-size: 0.9rem; margin: 0; font-weight: 300; }
+.Nav_Left { display: flex; align-items: center; gap: 15px; }
+.Buyer_Dashboard_logos img { height: 40px; }
+.Buyer_Dashboard_heads h1 { font-size: 1.25rem; margin: 0; color: var(--primary); }
+.Buyer_Dashboard_heads h2 { font-size: 0.85rem; margin: 0; font-weight: 400; color: var(--text-light); }
 
-.Nav_Search {
-  background: #f1f5f9;
-  padding: 8px 15px;
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 40%;
+.Buyer_Dashboard_nav { display: flex; gap: 2rem; }
+.Buyer_Dashboard_nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; }
+.Buyer_Dashboard_nav a:hover { color: var(--primary); }
+
+.Nav_Right .Buyer_Dashboard_user { display: flex; align-items: center; gap: 1.5rem; }
+
+.cart-link { position: relative; font-size: 1.5rem; color: var(--text-dark); }
+.cart-badge {
+  position: absolute; top: -5px; right: -8px; background: #ef4444; color: white;
+  font-size: 0.7rem; padding: 2px 6px; border-radius: 50px; font-weight: bold;
 }
 
-.Nav_Search input {
-  border: none;
-  background: transparent;
-  outline: none;
-  width: 100%;
+.profile-img-link img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+.logout-btn { background: #fee2e2; color: #b91c1c; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+
+/* HERO & SEARCH */
+.Hero_Section { padding: 3rem 5%; text-align: center; background: white; margin-bottom: 2rem; }
+.Buyer_Dashboard_Heading h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.Buyer_Dashboard_Heading p { color: var(--text-light); margin-bottom: 2rem; }
+
+.Buyer_Dashboard_search {
+  max-width: 600px; margin: 0 auto; position: relative;
+  display: flex; align-items: center; background: var(--bg-gray); padding: 12px 20px; border-radius: 50px; border: 1px solid #e2e8f0;
 }
-
-.Nav_Actions { display: flex; align-items: center; gap: 20px; }
-.Cart_Wrapper { position: relative; font-size: 1.2rem; color: var(--text); }
-.Cart_Badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: #ef4444;
-  color: white;
-  font-size: 10px;
-  padding: 2px 5px;
-  border-radius: 50%;
-}
-
-.User_Avatar img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--primary);
-}
-
-.Logout_Icon { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1.1rem; }
-
-/* HEADER */
-.App_Header { padding: 30px 5%; text-align: center; }
-.App_Header h1 { margin-bottom: 15px; font-size: 1.8rem; }
-.Quick_Links { display: flex; justify-content: center; gap: 15px; }
-.Quick_Links a { text-decoration: none; color: var(--muted); padding: 5px 15px; border: 1px solid #cbd5e1; border-radius: 20px; transition: 0.2s; }
-.Quick_Links a:hover { background: var(--primary); color: white; border-color: var(--primary); }
+.search-icon { color: var(--text-light); margin-right: 10px; }
+.Buyer_Dashboard_search input { border: none; background: transparent; width: 100%; outline: none; font-size: 1rem; }
 
 /* GRID & CARDS */
-.App_Content { padding: 0 5% 50px; }
-.Shop_Grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; padding: 0 5% 5rem; }
 
-.Shop_Card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: 0.3s; }
-.Shop_Card:hover { transform: translateY(-5px); }
+.shop-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; }
+.shop-card:hover { transform: translateY(-5px); }
 
-.Card_Media { position: relative; height: 180px; }
-.Slider_Content { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
-.Slider_Nav { position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; padding: 0 10px; transform: translateY(-50%); opacity: 0; transition: 0.3s; }
-.Shop_Card:hover .Slider_Nav { opacity: 1; }
-.Slider_Nav button { background: rgba(255,255,255,0.8); border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; }
+.card-image-section { position: relative; height: 200px; }
+.slider-image { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
 
-.Seller_Avatar { position: absolute; bottom: -15px; right: 15px; }
-.Seller_Avatar img { width: 45px; height: 45px; border-radius: 50%; border: 3px solid white; box-shadow: var(--shadow); }
+.slider-controls {
+  position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%); padding: 0 10px;
+  opacity: 0; transition: opacity 0.3s;
+}
+.shop-card:hover .slider-controls { opacity: 1; }
+.slider-controls button { background: rgba(255,255,255,0.8); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; }
 
-.Card_Details { padding: 20px; }
-.Card_Main { display: flex; justify-content: space-between; align-items: flex-start; }
-.Card_Rating { font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
-.Card_Meta { color: var(--muted); font-size: 0.8rem; margin: 5px 0; }
-.Card_Desc { font-size: 0.85rem; color: var(--text); margin: 15px 0; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.profile-avatar { position: absolute; bottom: -20px; right: 20px; }
+.avatar-image { width: 50px; height: 50px; border-radius: 50%; border: 3px solid white; box-shadow: var(--shadow); }
 
-.Card_Buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.Visit_Btn { background: var(--primary); color: white; text-align: center; text-decoration: none; padding: 8px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; }
-.Chat_Btn { background: #f1f5f9; color: var(--text); text-align: center; text-decoration: none; padding: 8px; border-radius: 8px; font-size: 0.9rem; }
+.shop-card-info { padding: 1.5rem; }
+.meta-text { color: var(--text-light); font-size: 0.85rem; margin-top: 4px; }
+.description-text { font-size: 0.9rem; margin: 1rem 0; color: #4b5563; line-height: 1.5; }
 
-/* MODAL */
-.App_Modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-.Modal_Content img, .Modal_Content video { max-width: 90vw; max-height: 80vh; border-radius: 10px; }
+.card-actions { display: flex; gap: 10px; }
+.card-actions a { flex: 1; text-decoration: none; }
+.card-actions button, .visit-btn, .chat-btn {
+  width: 100%; padding: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-align: center; display: block;
+}
+.visit-btn { background: var(--primary); color: white; }
+.chat-btn { background: #f1f5f9; color: var(--text-dark); }
 
 /* FOOTER */
-.App_Footer { background: #1e293b; color: white; padding: 50px 5% 20px; margin-top: 50px; }
-.Footer_Grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; }
-.Footer_Brand img { height: 30px; margin-bottom: 10px; }
-.Footer_Col h4 { margin-bottom: 15px; }
-.Footer_Col a { color: #cbd5e1; text-decoration: none; display: block; margin-bottom: 8px; font-size: 0.9rem; }
-.Payment_Tags { display: flex; gap: 10px; margin: 10px 0; }
-.Tag_Momo { background: #ffcc00; color: black; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; }
-.Tag_Airtel { background: #ed1c24; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; }
-.Footer_Bottom { border-top: 1px solid #334155; margin-top: 40px; padding-top: 20px; text-align: center; font-size: 0.8rem; color: #94a3b8; }
+.Buyer_Footer { background: #0f172a; color: white; padding: 4rem 5% 2rem; margin-top: 4rem; }
+.Footer_Container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem; }
+.Footer_Logo { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+.Footer_Logo img { height: 30px; }
+.Footer_Section h4 { margin-bottom: 1.5rem; font-size: 1.1rem; }
+.Footer_Section ul { list-style: none; padding: 0; }
+.Footer_Section li { margin-bottom: 0.75rem; }
+.Footer_Section a { color: #94a3b8; text-decoration: none; }
+.Payment_Badge { padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+.momo { background: #fbbf24; color: black; }
+.airtel { background: #ef4444; color: white; }
+.Footer_Bottom { text-align: center; border-top: 1px solid #1e293b; margin-top: 3rem; padding-top: 2rem; color: #64748b; }
+
+/* MODAL */
+.media-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+.modal-content { max-width: 90%; max-height: 90%; }
+.modal-content img, .modal-content video { max-width: 100%; max-height: 80vh; border-radius: 8px; }
+.close-btn { position: absolute; top: 20px; right: 30px; color: white; font-size: 3rem; cursor: pointer; }
