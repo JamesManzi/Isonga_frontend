@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes, faHistory } from "@fortawesome/free-solid-svg-icons";
-
+import "./SellerBookingHistory.css";
 function SellerBookingHistory() {
   const [bookings, setBookings] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
@@ -36,9 +36,9 @@ useEffect(() => {
   }, []);
 if (loading) {
   return (
-    <div style={spinnerOverlay}>
-      <div style={spinner}></div>
-      <p style={{ marginTop: "15px", color: "#7f8c8d", fontFamily: "sans-serif" }}>Loading booking history...</p>
+    <div className="spinner-overlay">
+      <div className="spinner"></div>
+      <p className="spinner-text">Loading booking history...</p>
     </div>
   );
 }
@@ -161,30 +161,5 @@ const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", h
 const modalContentStyle = { position: "relative", background: "#fff", padding: "10px", borderRadius: "8px", maxWidth: "90%" };
 const modalImgStyle = { maxWidth: "100%", maxHeight: "80vh", display: "block" };
 const closeButtonStyle = { position: "absolute", top: "-35px", right: "0", background: "none", border: "none", color: "#fff", fontSize: "20px", cursor: "pointer" };
-
-const spinnerOverlay = {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "80vh",
-};
-
-const spinner = {
-  width: "50px",
-  height: "50px",
-  border: "6px solid #f3f3f3",
-  borderTop: "6px solid #3498db",
-  borderRadius: "50%",
-  animation: "spin 1s linear infinite",
-};
-
-// CSS keyframes (add globally or in a CSS file)
-const styleSheet = document.styleSheets[0];
-styleSheet.insertRule(`
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}`, styleSheet.cssRules.length);
 
 export default SellerBookingHistory;
