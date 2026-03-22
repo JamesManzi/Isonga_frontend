@@ -397,54 +397,40 @@ filteredSellers.map(seller=>(
 
 <div className="card-image-section">
 
-{seller.files && seller.files.length>0 ? (
+{seller.files && seller.files.length > 0 ? (
+  <div className="image-slider">
+    {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
+      <video
+        src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+        controls
+        className="slider-image"
+        onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+      />
+    ) : (
+      <img
+        src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+        alt={seller.name}
+        className="slider-image"
+        onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+      />
+    )}
 
-<div className="image-slider">
-
-{isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
-
-<video
-src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-controls
-className="slider-image"
-onClick={()=>setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-/>
-
+    <div className="slider-controls">
+      <FontAwesomeIcon
+        icon={faChevronLeft}
+        className="slider-icon"
+        onClick={() => handlePrev(seller._id, seller.files.length)}
+      />
+      <FontAwesomeIcon
+        icon={faChevronRight}
+        className="slider-icon"
+        onClick={() => handleNext(seller._id, seller.files.length)}
+      />
+    </div>
+  </div>
 ) : (
-
-<img
-src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-alt={seller.name}
-className="slider-image"
-onClick={()=>setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-/>
-
+  <img src="/placeholder.png" alt="no image" className="slider-image" />
 )}
-
-<div className="slider-controls">
-
-<FontAwesomeIcon
-icon={faChevronLeft}
-className="slider-icon"
-onClick={()=>handlePrev(seller._id,seller.files.length)}
-/>
-
-<FontAwesomeIcon
-icon={faChevronRight}
-className="slider-icon"
-onClick={()=>handleNext(seller._id,seller.files.length)}
-/>
-
-</div>
-
-</div>
-
-) : (
-
-<img src="/placeholder.png" alt="no image" className="slider-image"/>
-
-)}
-
 
 <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
 
