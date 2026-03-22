@@ -326,3 +326,32 @@
     width: 70%;
   }
 }
+
+
+/* Footer Logo Adjustments */
+.Footer_Logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.Footer_Logo img {
+  height: 40px;      /* Restricts the height */
+  width: auto;       /* Keeps the aspect ratio perfect */
+  object-fit: contain;
+}
+
+.Footer_Logo h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--white);
+}
+
+/* Optional: If the brand section text feels too wide */
+.Footer_Section p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #bdc3c7;
+  max-width: 300px; /* Prevents the text from stretching too far */
+}
