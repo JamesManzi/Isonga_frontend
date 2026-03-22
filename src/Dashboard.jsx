@@ -269,14 +269,38 @@ const orderLink =
 
   }, [seller?._id]);
 
-  if (!seller) {
-    return (
-      <div className="Dashboard">
-        <h2>Loading...</h2>
+ if (!seller) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
+      {/* Visual Animation */}
+      <div className="relative">
+        {/* Main Floating Icon */}
+        <div className="animate-bounce">
+          <svg className="w-24 h-24 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+        </div>
+        {/* Shadow Pulse */}
+        <div className="w-16 h-2 bg-gray-200 rounded-full mx-auto mt-2 blur-sm animate-pulse"></div>
       </div>
-    );
-  }
 
+      {/* Progress Bar Style */}
+      <div className="mt-8 w-48 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+        <div className="h-full bg-orange-500 animate-[loading_2s_ease-in-out_infinite] origin-left"></div>
+      </div>
+      
+      <p className="mt-4 text-gray-500 font-medium animate-pulse">Setting up your shop...</p>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes loading {
+          0% { transform: scaleX(0); }
+          50% { transform: scaleX(0.5); }
+          100% { transform: scaleX(1); }
+        }
+      `}} />
+    </div>
+  );
+}
   /* ---------------- HELPERS ---------------- */
 
   const renderStars = (avg = 0) => {
