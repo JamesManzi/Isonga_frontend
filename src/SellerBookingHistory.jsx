@@ -31,14 +31,14 @@ const getBookings = async () => {
 useEffect(() => {
     getBookings();
   }, []);
-if (loading) {
-  return (
-    <div className="spinner-overlay">
-      <div className="spinner"></div>
-      <p className="spinner-text">Loading booking history...</p>
-    </div>
-  );
-}
+ if (loading) {
+    return (
+      <div className="spinner-overlay">
+        <div className="spinner"></div>
+        <p className="spinner-text">Loading booking history...</p>
+      </div>
+    );
+  }
   return (
     <div style={{ padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
       <Link to="/dashboard" style={{ textDecoration: "none", color: "#3498db", fontWeight: "600" }}>
