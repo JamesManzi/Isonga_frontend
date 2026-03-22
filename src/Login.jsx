@@ -20,13 +20,19 @@ function Login(){
             {withCredentials:true}
         )
 
-        setMessage(res.data.message);
+         setMessage({
+      text: res.data.message,
+      type: res.data.success ? "success" : "error",
+    });
         if(res.data.success){
             navigate("/dashboard");
         }
         } catch (error) {
             console.log(error);
-            setMessage("Login Error")
+            setMessage({
+      text: "Login failed. Please try again.",
+      type: "error",
+    });
         } finally{
             setLoading(false)
         }
@@ -70,9 +76,14 @@ function Login(){
                         <Link to="/">Home</Link>
                     </div>
                 </div>
-                {message&&(
-                    <p className="error">{message}</p>
-                )}
+                {message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
+  </div>
+)}
             </form>
             </div>
         </div>
