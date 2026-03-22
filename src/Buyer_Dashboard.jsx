@@ -528,7 +528,14 @@ className="avatar-image"
 
 )}
 
-
+{message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
+  </div>
+)}
 
 </div>
 

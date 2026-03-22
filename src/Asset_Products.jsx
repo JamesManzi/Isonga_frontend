@@ -72,7 +72,10 @@ if (!hasTracked.current && res.data.seller?._id) {
       setCurrentFileIndex(indexes);
     } catch (error) {
       console.log(error);
-      setMessage("Error loading products");
+      setMessage({
+        text:"Error Loading Products",
+        type:"error"
+      });
     } finally {
       setLoading(false);
     }
@@ -283,7 +286,15 @@ const getFileUrl = (path) => {
         )}
       </div>
 
-      {message && <p style={{ color: "red" }}>{message}</p>}
+      {message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
+  </div>
+)}
+
 
       {/* MEDIA MODAL */}
       {selectedMedia && (

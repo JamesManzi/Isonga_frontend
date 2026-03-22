@@ -11,7 +11,7 @@ const [buyer,setBuyer] = useState(null);
 const [name,setName] = useState("");
 const [password,setPassword] = useState("");
 const [confirmPassword,setConfirmPassword] = useState("");
-
+const [loading,setLoading]=useState(false);
 const [profile,setProfile] = useState(null);
 const [preview,setPreview] = useState("");
 
@@ -24,7 +24,7 @@ const [message,setMessage] = useState("");
 useEffect(()=>{
 
 const fetchBuyer = async()=>{
-
+setLoading(true)
 try{
 
 const res = await axios.get(
@@ -44,6 +44,8 @@ setPreview(b.profile);
 
 }catch(err){
 console.log(err);
+} finally{
+    setLoading(false)
 }
 
 };
@@ -81,7 +83,7 @@ if(password !== confirmPassword){
 setMessage("Passwords do not match");
 return;
 }
-
+setLoading(true)
 try{
 
 const formData = new FormData();
@@ -112,6 +114,8 @@ setMessage("Profile updated successfully");
 }catch(err){
 console.log(err);
 setMessage("Update failed");
+} finally{
+    setLoading(false)
 }
 
 };
@@ -231,7 +235,14 @@ Update Profile
 
 </form>
 
-{message && <p className="profile-message">{message}</p>}
+{message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
+  </div>
+)}
 
 </div>
 

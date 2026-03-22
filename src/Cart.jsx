@@ -16,6 +16,7 @@ function Cart() {
   }, []);
 
   const fetchCart = async () => {
+    setLoading(true)
     try {
       const res = await axios.get(
         "https://isonga-backend.onrender.com/api/cart",
@@ -34,6 +35,7 @@ function Cart() {
   };
 
   const removeItem = async (productId) => {
+    setLoading(true)
     try {
       await axios.delete(
         `https://isonga-backend.onrender.com/api/cart/remove/${productId}`,
@@ -42,11 +44,14 @@ function Cart() {
       fetchCart();
     } catch (error) {
       console.log("Remove Item Error:", error);
+    } finally{
+      setLoading(false)
     }
   };
 
   const updateQuantity = async (productId, quantity) => {
     if (quantity < 1) return;
+    setLoading(true)
     try {
       await axios.put(
         "https://isonga-backend.onrender.com/api/cart/update",
@@ -56,10 +61,13 @@ function Cart() {
       fetchCart();
     } catch (error) {
       console.log("Update Quantity Error:", error);
+    } finally{
+      setLoading(true)
     }
   };
 
   const logout = async () => {
+    setLoading(true)
     try {
       await axios.post(
         "https://isonga-backend.onrender.com/api/logout",
@@ -69,6 +77,8 @@ function Cart() {
       navigate("/buyer_login");
     } catch (error) {
       console.log("Logout Error:", error);
+    } finally{
+      setLoading(false)
     }
   };
 

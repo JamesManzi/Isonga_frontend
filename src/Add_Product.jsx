@@ -133,16 +133,24 @@ function Add_Product() {
         return;
       }
 
-      setMessage(res.data.message);
+       setMessage({
+      text: res.data.message,
+      type: res.data.success ? "success" : "error",
+    });
 
       if (res.data.success) {
+        setTimeout(() => {
         navigate("/my_store");
+      }, 1000); 
       }
 
     } catch (error) {
 
       console.log(error);
-      setMessage("Add item error");
+ setMessage({
+      text: "Adding Item Failed.",
+      type: "error",
+    });
 
     } finally{
       setLoading(false);
@@ -344,7 +352,14 @@ function Add_Product() {
 
           </div>
 
-          {message && <p>{message}</p>}
+{message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
+  </div>
+)}
 
         </form>
 

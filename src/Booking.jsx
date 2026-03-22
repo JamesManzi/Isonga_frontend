@@ -6,7 +6,7 @@ import "./Booking.css";
 function Booking() {
   const { productId } = useParams();
   const navigate = useNavigate();
-
+  const [message,setMessage]=useState("");
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -17,8 +17,7 @@ function Booking() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
+  
   // file upload
   const [paymentImage, setPaymentImage] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -37,7 +36,7 @@ function Booking() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+   setMessage("");
 
     // validation
     if (!form.name || !form.phone || !form.date || !form.time) {
@@ -77,15 +76,22 @@ function Booking() {
       );
 
       if (res.data.success) {
-        alert("Booking Sent Successfully!");
-        navigate("/buyer_dashboard");
+        setTimeout(()=>{
+          navigate("/buyer_dashboard")
+        },1000)
       } else {
-        setError(res.data.message || "Booking failed");
+        setMessage({
+          text:"Booking Failed",
+          type:"error"
+        })
       }
 
     } catch (err) {
       console.error(err);
-      setError("Error sending booking");
+      setMessage({
+        text:"Booking Failed",
+        type:"error"
+      })
     } finally {
       setLoading(false);
     }
@@ -186,6 +192,15 @@ function Booking() {
           {loading ? "Sending..." : "Send Booking"}
         </button>
       </form>
+      {message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
+  </div>
+)}
+
     </div>
   );
 }

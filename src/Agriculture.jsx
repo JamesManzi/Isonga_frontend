@@ -94,7 +94,10 @@ function Agriculture() {
         setProfile(res.data.buyer.profile);
       } catch (error) {
         console.error("Error fetching shops:", error);
-        setMessage("Error fetching shops");
+        setMessage({
+          Text:"Fetching Shops Error",
+          type:"error"
+        });
       }
     };
     fetchSellers();
@@ -210,6 +213,15 @@ function Agriculture() {
           )}
         </div>
       )}
+      {message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
+  </div>
+)}
+
     </div>
   );
 }
