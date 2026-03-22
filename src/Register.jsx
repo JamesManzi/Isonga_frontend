@@ -89,23 +89,21 @@ setLoading(true);
             const res=await axios.post("https://isonga-backend.onrender.com/api/register",formData,{
                 withCredentials:true
             })
+           setMessage({
+      text: res.data.message,
+      type: res.data.success ? "success" : "error",
+    });
             if (res.data.success) {
-  setMessage("Registration successful! Please check your email to verify your account.");
-} else {
-  setMessage(res.data.message);
-}
+              setTimeout(()=>{
+                navigate("/login")
+              },1000)
+            }
         } catch (error) {
   console.log(error);
-
-  if (error.response && error.response.data) {
-    setMessage(error.response.data.message || "Registration failed");
-  } else {
-    setMessage("Network error. Please try again.");
-  }
 }finally{
             setLoading(false);
         }
-};
+    }
 const removeImage = (index) => {
   setFiles(files.filter((_, i) => i !== index));
   setPreviewFiles(previewFiles.filter((_, i) => i !== index));
@@ -170,7 +168,7 @@ const removeImage = (index) => {
 >
   <option value="">-- Select Category --</option>
   <option value="Fashion">Fashion</option>
-  <option value="RealEstate">RealEstate</option>
+  <option value="Real Estate">Real Estate</option>
   <option value="Vehicles">Vehicles</option>
   <option value="Agriculture">Agriculture</option>
   <option value="services">services</option>
@@ -242,17 +240,16 @@ uppercase, lowercase, number, special character.
                     <Link to="/">Home</Link>
                     <Link to="/login">Login</Link>
                 </div>
-               {message && (
-  <div className={message.includes("check your email") ? "success-message" : "error-message"}>
-    <p>{message}</p>
-
-    {message.includes("check your email") && (
-      <p style={{ marginTop: "10px", fontSize: "14px" }}>
-        ⚠️ If you don’t see the email, check your spam folder.
-      </p>
-    )}
+                
+{message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
   </div>
 )}
+
                 </form>
                 </div>
                 </div>

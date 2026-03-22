@@ -52,9 +52,14 @@ function Buyer_Register(){
             const res=await axios.post("https://isonga-backend.onrender.com/api/buyer_register",formData,{
                 withCredentials:true
             })
-            setMessage(res.data.message);
+            setMessage({
+      text: res.data.message,
+      type: res.data.success ? "success" : "error",
+    });
             if(res.data.success){
-                navigate("/buyer_login")
+                setTimeout(()=>{
+                    navigate("/buyer_login")
+                },1000)
             }
          } catch (error) {
     console.error("REGISTRATION ERROR:", error);
@@ -147,9 +152,15 @@ function Buyer_Register(){
                     <Link to="/">Home</Link>
                     <Link to="/buyer_login">Login</Link>
                 </div>
-                {message&&(
-                    <p className="error">{message}</p>
-                )}
+                     
+{message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
+  </div>
+)}
                 </form>
                 </div>
                 </div>
