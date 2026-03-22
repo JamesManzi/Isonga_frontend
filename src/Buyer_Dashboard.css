@@ -1,113 +1,318 @@
+/* General Layout */
 :root {
-  --primary: #2563eb;
-  --bg-gray: #f8fafc;
-  --white: #ffffff;
-  --text-dark: #1e293b;
-  --text-light: #64748b;
-  --radius: 12px;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --primary-color: #2c3e50;
+  --accent-color: #27ae60; /* Rwanda Green inspired */
+  --bg-light: #f8f9fa;
+  --text-dark: #333;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
 }
 
 .Buyer_Dashboard {
-  background-color: var(--bg-gray);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-light);
   min-height: 100vh;
-  font-family: 'Inter', system-ui, sans-serif;
   color: var(--text-dark);
 }
 
-/* NAVBAR - Glassmorphism */
+/* NAVBAR */
 .Buyer_Dashboard_navbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 1rem 5%;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
+  justify-content: space-between;
+  padding: 10px 5%;
+  background: white;
+  box-shadow: var(--shadow);
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid #e2e8f0;
 }
 
-.Nav_Left { display: flex; align-items: center; gap: 15px; }
-.Buyer_Dashboard_logos img { height: 40px; }
-.Buyer_Dashboard_heads h1 { font-size: 1.25rem; margin: 0; color: var(--primary); }
-.Buyer_Dashboard_heads h2 { font-size: 0.85rem; margin: 0; font-weight: 400; color: var(--text-light); }
-
-.Buyer_Dashboard_nav { display: flex; gap: 2rem; }
-.Buyer_Dashboard_nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; }
-.Buyer_Dashboard_nav a:hover { color: var(--primary); }
-
-.Nav_Right .Buyer_Dashboard_user { display: flex; align-items: center; gap: 1.5rem; }
-
-.cart-link { position: relative; font-size: 1.5rem; color: var(--text-dark); }
-.cart-badge {
-  position: absolute; top: -5px; right: -8px; background: #ef4444; color: white;
-  font-size: 0.7rem; padding: 2px 6px; border-radius: 50px; font-weight: bold;
+.Buyer_Dashboard_logos img {
+  height: 50px;
 }
 
-.profile-img-link img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
-.logout-btn { background: #fee2e2; color: #b91c1c; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.Buyer_Dashboard_heads h1 {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin: 0;
+}
 
-/* HERO & SEARCH */
-.Hero_Section { padding: 3rem 5%; text-align: center; background: white; margin-bottom: 2rem; }
-.Buyer_Dashboard_Heading h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-.Buyer_Dashboard_Heading p { color: var(--text-light); margin-bottom: 2rem; }
+.Buyer_Dashboard_heads h2 {
+  font-size: 0.9rem;
+  color: var(--accent-color);
+  margin: 0;
+  text-transform: uppercase;
+}
 
+.Buyer_Dashboard_nav ul {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+}
+
+.Buyer_Dashboard_nav a {
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--text-dark);
+  transition: var(--transition);
+}
+
+.Buyer_Dashboard_nav a:hover {
+  color: var(--accent-color);
+}
+
+.Buyer_Dashboard_user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-color);
+}
+
+.Buyer_Dashboard_Logout button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.Buyer_Dashboard_Logout button:hover {
+  background: #c0392b;
+}
+
+/* SEARCH SECTION */
 .Buyer_Dashboard_search {
-  max-width: 600px; margin: 0 auto; position: relative;
-  display: flex; align-items: center; background: var(--bg-gray); padding: 12px 20px; border-radius: 50px; border: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: center;
+  margin: 30px auto;
+  max-width: 600px;
+  padding: 0 20px;
 }
-.search-icon { color: var(--text-light); margin-right: 10px; }
-.Buyer_Dashboard_search input { border: none; background: transparent; width: 100%; outline: none; font-size: 1rem; }
 
-/* GRID & CARDS */
-.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; padding: 0 5% 5rem; }
+.Buyer_Dashboard_search input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 1px solid #ddd;
+  border-radius: 25px 0 0 25px;
+  outline: none;
+}
 
-.shop-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; }
-.shop-card:hover { transform: translateY(-5px); }
+.Buyer_Dashboard_search button {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 0 20px;
+  border-radius: 0 25px 25px 0;
+  cursor: pointer;
+}
 
-.card-image-section { position: relative; height: 200px; }
-.slider-image { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+/* HEADING */
+.Buyer_Dashboard_Heading {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+/* SHOP GRID */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 20px 5%;
+}
+
+.shop-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  position: relative;
+}
+
+.shop-card:hover {
+  transform: translateY(-5px);
+}
+
+/* IMAGE SLIDER */
+.card-image-section {
+  position: relative;
+  height: 200px;
+  background: #eee;
+}
+
+.slider-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
 
 .slider-controls {
-  position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%); padding: 0 10px;
-  opacity: 0; transition: opacity 0.3s;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  padding: 0 10px;
+  pointer-events: none;
 }
-.shop-card:hover .slider-controls { opacity: 1; }
-.slider-controls button { background: rgba(255,255,255,0.8); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; }
 
-.profile-avatar { position: absolute; bottom: -20px; right: 20px; }
-.avatar-image { width: 50px; height: 50px; border-radius: 50%; border: 3px solid white; box-shadow: var(--shadow); }
-
-.shop-card-info { padding: 1.5rem; }
-.meta-text { color: var(--text-light); font-size: 0.85rem; margin-top: 4px; }
-.description-text { font-size: 0.9rem; margin: 1rem 0; color: #4b5563; line-height: 1.5; }
-
-.card-actions { display: flex; gap: 10px; }
-.card-actions a { flex: 1; text-decoration: none; }
-.card-actions button, .visit-btn, .chat-btn {
-  width: 100%; padding: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-align: center; display: block;
+.slider-icon {
+  background: rgba(255, 255, 255, 0.7);
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: var(--transition);
 }
-.visit-btn { background: var(--primary); color: white; }
-.chat-btn { background: #f1f5f9; color: var(--text-dark); }
 
-/* FOOTER */
-.Buyer_Footer { background: #0f172a; color: white; padding: 4rem 5% 2rem; margin-top: 4rem; }
-.Footer_Container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem; }
-.Footer_Logo { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
-.Footer_Logo img { height: 30px; }
-.Footer_Section h4 { margin-bottom: 1.5rem; font-size: 1.1rem; }
-.Footer_Section ul { list-style: none; padding: 0; }
-.Footer_Section li { margin-bottom: 0.75rem; }
-.Footer_Section a { color: #94a3b8; text-decoration: none; }
-.Payment_Badge { padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
-.momo { background: #fbbf24; color: black; }
-.airtel { background: #ef4444; color: white; }
-.Footer_Bottom { text-align: center; border-top: 1px solid #1e293b; margin-top: 3rem; padding-top: 2rem; color: #64748b; }
+.slider-icon:hover {
+  background: white;
+}
+
+/* PROFILE AVATAR ON CARD */
+.profile-avatar {
+  position: absolute;
+  bottom: -20px;
+  right: 20px;
+  z-index: 2;
+}
+
+.avatar-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: var(--shadow);
+}
+
+/* SHOP INFO */
+.shop-card-info {
+  padding: 25px 20px 20px;
+}
+
+.shop-card-info h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+}
+
+.rating {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.visit-btn, .chat-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.visit-btn {
+  background: var(--accent-color);
+  color: white;
+}
+
+.chat-btn {
+  background: #f1f1f1;
+  color: var(--primary-color);
+}
 
 /* MODAL */
-.media-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-.modal-content { max-width: 90%; max-height: 90%; }
-.modal-content img, .modal-content video { max-width: 100%; max-height: 80vh; border-radius: 8px; }
-.close-btn { position: absolute; top: 20px; right: 30px; color: white; font-size: 3rem; cursor: pointer; }
+.media-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.media-modal img, .media-modal video {
+  max-width: 90%;
+  max-height: 80vh;
+}
+
+/* FOOTER */
+.Buyer_Footer {
+  background: var(--primary-color);
+  color: white;
+  padding: 50px 5% 20px;
+  margin-top: 50px;
+}
+
+.Footer_Container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.Footer_Section h4 {
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--accent-color);
+  display: inline-block;
+}
+
+.Footer_Section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.Footer_Section ul li {
+  margin-bottom: 10px;
+}
+
+.Footer_Section a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+.Payment_Badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.momo { background: #ffcc00; color: #000; }
+.airtel { background: #ed1c24; color: #fff; }
+
+.Footer_Bottom {
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 20px;
+  font-size: 0.9rem;
+}
+
+/* RESPONSIVENESS */
+@media (max-width: 768px) {
+  .Buyer_Dashboard_navbar {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .Buyer_Dashboard_nav ul {
+    gap: 10px;
+    font-size: 0.9rem;
+  }
+}
