@@ -26,7 +26,7 @@ const [selectedMedia,setSelectedMedia]=useState(null);
 const [searchQuery,setSearchQuery]=useState("");
 const [buyerId,setBuyerId]=useState("");
 const [cartCount,setCartCount]=useState(0);
-
+const [message,setMessage]=useState("");
 
 //////////////////////////////////////////////////
 // CATEGORY CLASSIFICATION
