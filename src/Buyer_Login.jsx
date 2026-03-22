@@ -20,13 +20,21 @@ function Buyer_Login(){
             {withCredentials:true}
         )
 
-        setMessage(res.data.message);
+        setMessage({
+      text: res.data.message,
+      type: res.data.success ? "success" : "error",
+    });
         if(res.data.success){
-            navigate("/buyer_dashboard");
+             setTimeout(() => {
+        navigate("/buyer_dashboard");
+      }, 1000); 
         }
         } catch (error) {
             console.log(error.response?.data);
-    setMessage(error.response?.data?.message || "Login Error");
+ setMessage({
+      text: "Login failed. Please try again.",
+      type: "error",
+    });
         } finally{
             setLoading(false);
         }
@@ -76,10 +84,12 @@ function Buyer_Login(){
                         <Link to="/">Home</Link>
                     </div>
                 </div>
-                {message && (
-  <div className={`status-message ${message.toLowerCase().includes("error") || message.toLowerCase().includes("failed") ? "error" : "success"}`}>
-    <p>{message}</p>
-    <button onClick={() => setMessage("")} className="close-msg">&times;</button>
+ {message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
   </div>
 )}
             </form>
