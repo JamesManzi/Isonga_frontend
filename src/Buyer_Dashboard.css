@@ -1,244 +1,267 @@
-/* --- 1. Global Variables & Reset --- */
+/* --- Global Reset & Variables --- */
 :root {
-    --primary: #2ecc71;      /* Isonga Green */
-    --primary-hover: #27ae60;
-    --accent: #f39c12;       /* Warning/Action Orange */
-    --text-main: #1a1a1a;
-    --text-muted: #7f8c8d;
-    --bg-light: #f4f7f6;
-    --white: #ffffff;
-    --shadow-soft: 0 2px 15px rgba(0, 0, 0, 0.05);
-    --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.1);
-    --radius: 12px;
+  --amazon-blue: #131921;
+  --amazon-light-blue: #232f3e;
+  --amazon-orange: #febd69;
+  --amazon-orange-dark: #f3a847;
+  --text-color: #0f1111;
+  --light-gray: #f3f3f3;
+  --border-color: #ddd;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #eaeded;
 }
 
-.Buyer_Dashboard {
-    font-family: 'Inter', -apple-system, sans-serif;
-    background-color: var(--bg-light);
-    min-height: 100vh;
-    color: var(--text-main);
-    padding-bottom: 80px; /* Space for Mobile Bottom Nav */
-}
-
-/* --- 2. Fantastic Navbar (Glassmorphism) --- */
+/* --- Navbar (Amazon Style) --- */
 .Buyer_Dashboard_navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 5%;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: var(--shadow-soft);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+  background-color: var(--amazon-blue);
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  gap: 20px;
+  color: white;
+  flex-wrap: wrap; /* Allows wrapping on mobile */
 }
 
-.Buyer_Dashboard_logos img { height: 40px; }
-
-.Buyer_Dashboard_heads { display: flex; gap: 4px; align-items: center; }
-.Buyer_Dashboard_heads h1 { color: var(--primary); font-size: 1.4rem; font-weight: 800; }
-.Buyer_Dashboard_heads h2 { color: var(--text-main); font-size: 1.4rem; font-weight: 300; }
-
-.Buyer_Dashboard_nav ul { display: flex; list-style: none; gap: 24px; }
-.Buyer_Dashboard_nav a {
-    text-decoration: none;
-    color: var(--text-main);
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: 0.3s;
-}
-.Buyer_Dashboard_nav a:hover { color: var(--primary); }
-
-.Buyer_Dashboard_user { display: flex; align-items: center; gap: 15px; }
-.Buyer_Dashboard_user img {
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    border: 2px solid var(--primary);
-    object-fit: cover;
+.Buyer_Dashboard_logos img {
+  height: 40px;
+  cursor: pointer;
 }
 
-.Buyer_Dashboard_Logout button {
-    background: transparent;
-    border: 1px solid #ddd;
-    padding: 6px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: 0.3s;
-}
-.Buyer_Dashboard_Logout button:hover { background: #fee; color: #e74c3c; border-color: #fcc; }
-
-/* --- 3. Hero & Search --- */
-.Buyer_Dashboard_Heading {
-    text-align: center;
-    padding: 40px 20px 20px;
+.Buyer_Dashboard_heads h1 {
+  font-size: 1.2rem;
+  margin: 0;
+  color: var(--amazon-orange);
 }
 
+.Buyer_Dashboard_heads h2 {
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: normal;
+}
+
+/* Search Bar Styling */
 .Buyer_Dashboard_search {
-    display: flex;
-    justify-content: center;
-    max-width: 600px;
-    margin: 0 auto 40px;
-    position: relative;
-    padding: 0 20px;
+  flex-grow: 1;
+  display: flex;
+  max-width: 800px;
+  min-width: 300px;
 }
 
 .Buyer_Dashboard_search input {
-    width: 100%;
-    padding: 14px 25px;
-    border: 1px solid #e0e0e0;
-    border-radius: 30px;
-    box-shadow: var(--shadow-soft);
-    outline: none;
-    font-size: 1rem;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  outline: none;
 }
 
 .Buyer_Dashboard_search button {
-    position: absolute;
-    right: 35px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--primary);
-    color: white;
-    border: none;
-    width: 35px; height: 35px;
-    border-radius: 50%;
-    cursor: pointer;
+  background-color: var(--amazon-orange);
+  border: none;
+  padding: 0 15px;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-/* --- 4. The Shop Grid (Bento Style) --- */
+.Buyer_Dashboard_search button:hover {
+  background-color: var(--amazon-orange-dark);
+}
+
+/* Nav Links & Icons */
+.Buyer_Dashboard_nav ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+}
+
+.Buyer_Dashboard_nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.Buyer_Dashboard_user img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid var(--amazon-orange);
+}
+
+/* --- Hero Section --- */
+.Buyer_Dashboard_Heading {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* --- Shop Grid (Responsive) --- */
 .shop-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
-    padding: 0 5%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .shop-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-soft);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 
 .shop-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-hover);
+  transform: translateY(-5px);
 }
 
-.card-image-section { position: relative; height: 180px; background: #eee; }
-.slider-image { width: 100%; height: 100%; object-fit: cover; }
+.card-image-section {
+  position: relative;
+  height: 200px;
+  background: #f9f9f9;
+}
+
+.slider-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 .slider-controls {
-    position: absolute; top: 50%; width: 100%;
-    display: flex; justify-content: space-between;
-    transform: translateY(-50%); padding: 0 8px;
-    pointer-events: none;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .slider-icon {
-    background: rgba(255, 255, 255, 0.8);
-    width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 50%; cursor: pointer; pointer-events: auto;
-    font-size: 12px;
+  background: rgba(255,255,255,0.7);
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .profile-avatar {
-    position: absolute; bottom: -15px; right: 15px;
-    width: 50px; height: 50px;
-    border-radius: 50%; border: 3px solid white;
-    box-shadow: var(--shadow-soft); overflow: hidden;
+  position: absolute;
+  bottom: -20px;
+  right: 15px;
 }
 
-.shop-card-info { padding: 20px; flex-grow: 1; }
-.shop-card-info h3 { font-size: 1.1rem; margin-bottom: 4px; }
-.shop-card-info p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+.avatar-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
 
-.rating { color: #f1c40f; font-size: 0.8rem; margin: 8px 0; display: flex; align-items: center; gap: 5px; }
+.shop-card-info {
+  padding: 25px 15px 15px;
+}
 
-.card-actions { display: flex; gap: 10px; margin-top: 15px; }
+.shop-card-info h3 { margin: 0 0 5px; font-size: 1.1rem; }
+.shop-card-info p { margin: 5px 0; font-size: 0.9rem; color: #555; }
+
+.rating { color: #ffa41c; margin: 10px 0; font-size: 0.85rem; }
+.rating span { color: #007185; margin-left: 5px; }
+
+/* Buttons */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
 .visit-btn, .chat-btn {
-    flex: 1; padding: 10px; border-radius: 8px;
-    font-weight: 600; cursor: pointer; transition: 0.2s; border: none;
-}
-.visit-btn { background: var(--primary); color: white; }
-.visit-btn:hover { background: var(--primary-hover); }
-.chat-btn { background: #f0f0f0; color: var(--text-main); }
-
-/* --- 5. Mobile & Responsive --- */
-@media (max-width: 768px) {
-    .Buyer_Dashboard_navbar { padding: 10px 15px; }
-    .Buyer_Dashboard_nav, .Buyer_Dashboard_Logout { display: none; }
-    
-    .shop-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 Columns like Alibaba */
-        gap: 12px;
-        padding: 0 12px;
-    }
-
-    .card-image-section { height: 130px; }
-    .shop-card-info { padding: 10px; }
-    .shop-card-info h3 { font-size: 0.9rem; }
-    .card-actions { flex-direction: column; }
-    
-    /* Sticky Bottom Nav Bar */
-    .Mobile_Bottom_Nav {
-        display: flex;
-        position: fixed;
-        bottom: 0; left: 0; right: 0;
-        height: 65px; background: white;
-        border-top: 1px solid #eee;
-        justify-content: space-around; align-items: center;
-        z-index: 1001;
-    }
-
-    .nav-item {
-        display: flex; flex-direction: column; align-items: center;
-        text-decoration: none; color: #777; font-size: 10px; gap: 4px;
-    }
-    .nav-item.active { color: var(--primary); }
+  flex: 1;
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid #a88734;
+  cursor: pointer;
+  font-weight: 500;
 }
 
-/* --- 6. The Footer (Amazon Style) --- */
+.visit-btn { background: #ffd814; border-color: #fcd200; }
+.chat-btn { background: #f0f2f2; border-color: #d5d9d9; }
+
+/* --- Footer --- */
 .Buyer_Footer {
-    background: #1a1a1a; color: white;
-    padding: 60px 5% 40px; margin-top: 80px;
+  background-color: var(--amazon-light-blue);
+  color: white;
+  padding: 40px 20px 20px;
+  margin-top: 50px;
 }
 
 .Footer_Container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 40px; max-width: 1200px; margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.Footer_Section h4 { color: var(--accent); margin-bottom: 20px; }
-.Footer_Section ul { list-style: none; }
-.Footer_Section li { margin-bottom: 10px; }
-.Footer_Section a { color: #bbb; text-decoration: none; font-size: 0.9rem; }
-.Footer_Section a:hover { color: white; }
+.Footer_Section h4 { color: var(--amazon-orange); margin-bottom: 15px; }
+.Footer_Section ul { list-style: none; padding: 0; }
+.Footer_Section ul li { margin-bottom: 8px; }
+.Footer_Section a { color: #ccc; text-decoration: none; font-size: 0.85rem; }
 
-.Payment_Methods { display: flex; gap: 10px; margin-top: 15px; }
 .Payment_Badge {
-    padding: 4px 10px; border-radius: 4px;
-    font-size: 0.7rem; font-weight: bold;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-right: 5px;
 }
 .momo { background: #ffcc00; color: black; }
-.airtel { background: #ff0000; color: white; }
+.airtel { background: #ed1c24; color: white; }
 
 .Footer_Bottom {
-    text-align: center; margin-top: 50px;
-    padding-top: 20px; border-top: 1px solid #333;
-    font-size: 0.8rem; color: #666;
+  text-align: center;
+  border-top: 1px solid #3a4553;
+  margin-top: 30px;
+  padding-top: 20px;
+  font-size: 0.8rem;
+  color: #999;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  .Buyer_Dashboard_navbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .Buyer_Dashboard_search {
+    order: 3; /* Move search below logos on mobile */
+    margin-top: 10px;
+    min-width: 100%;
+  }
+
+  .Buyer_Dashboard_nav ul {
+    justify-content: space-between;
+    font-size: 0.8rem;
+  }
+
+  .shop-grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    padding: 10px;
+  }
 }
