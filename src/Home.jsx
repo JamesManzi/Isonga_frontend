@@ -12,7 +12,7 @@ function Home() {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState("");
-
+ const [loading, setLoading] = useState(true);
   // State for alert popup
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -54,6 +54,7 @@ function Home() {
   // Fetch sellers
   useEffect(() => {
     const fetchSellers = async () => {
+      setLoading(true);
       try {
         const res = await axios.get("https://isonga-backend.onrender.com/api/home_sellers");
         if (res.data.success) {
@@ -76,6 +77,8 @@ function Home() {
       } catch (error) {
         console.error(error);
         setMessage("Error loading sellers");
+      } finally{
+        setLoading(false);
       }
     };
     fetchSellers();
@@ -118,6 +121,17 @@ const getFileUrl = (path) => {
     : `https://isonga-backend.onrender.com/uploads/${path}`;
 };
 
+if (loading) {
+  return (
+    <div className="home-loading">
+      <div className="loading-card">
+        <div className="spinner"></div>
+        <h2>Loading marketplace...</h2>
+        <p>Please wait</p>
+      </div>
+    </div>
+  );
+}
   return (
     <div className="Home">
       {/* Navbar */}
