@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -14,344 +15,562 @@ import ChatNotification from "./ChatNotification";
 import "./Buyer_Dashboard.css";
 
 function Buyer_Dashboard() {
-  const navigate = useNavigate();
 
-  // ------------------- STATES -------------------
-  const [buyerName, setBuyerName] = useState("");
-  const [profile, setProfile] = useState("");
-  const [sellers, setSellers] = useState([]);
-  const [filteredSellers, setFilteredSellers] = useState([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState({});
-  const [selectedMedia, setSelectedMedia] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [buyerId, setBuyerId] = useState("");
-  const [cartCount, setCartCount] = useState(0);
-  const [message, setMessage] = useState("");
+const navigate = useNavigate();
 
-  // ------------------- CATEGORIES -------------------
-  const productCategories = ["Fashion", "Electronics", "Furniture", "Construction"];
-  const serviceCategories = ["services", "Hospitality"];
-  const assetCategories = ["RealEstate", "Vehicles", "Agriculture"];
+const [buyerName,setBuyerName]=useState("");
+const [profile,setProfile]=useState("");
+const [sellers,setSellers]=useState([]);
+const [filteredSellers,setFilteredSellers]=useState([]);
+const [currentImageIndex,setCurrentImageIndex]=useState({});
+const [selectedMedia,setSelectedMedia]=useState(null);
+const [searchQuery,setSearchQuery]=useState("");
+const [buyerId,setBuyerId]=useState("");
+const [cartCount,setCartCount]=useState(0);
+const [message,setMessage]=useState("");
 
-  const getSellerRoute = (category, id) => {
-    if (productCategories.includes(category)) return `/view_products/${id}`;
-    if (serviceCategories.includes(category)) return `/Service_Products/${id}`;
-    if (assetCategories.includes(category)) return `/Asset_products/${id}`;
-    return `/view_products/${id}`;
-  };
+//////////////////////////////////////////////////
+// CATEGORY CLASSIFICATION
+//////////////////////////////////////////////////
 
-  // ------------------- FETCH CART COUNT -------------------
-  const fetchCartCount = async () => {
-    try {
-      const res = await axios.get(
-        "https://isonga-backend.onrender.com/api/cart/count",
-        { withCredentials: true }
-      );
-      if (res.data.success) setCartCount(res.data.count);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+const productCategories=["Fashion","Electronics","Furniture","Construction"];
+const serviceCategories=["services","Hospitality"];
+const assetCategories=["RealEstate","Vehicles","Agriculture"];
 
-  useEffect(() => {
-    fetchCartCount();
-  }, []);
+const getSellerRoute=(category,id)=>{
 
-  // ------------------- LOGOUT -------------------
-  const handleLogout = async () => {
-    try {
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/logout",
-        {},
-        { withCredentials: true }
-      );
-      if (res.data.success) navigate("/buyer_login");
-    } catch (err) {
-      console.log(err);
-    }
-  };
+if(productCategories.includes(category)){
+return `/view_products/${id}`;
+}
 
-  // ------------------- STAR RENDER -------------------
-  const renderStars = (avg = 0) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      if (avg >= i) stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" />);
-      else if (avg >= i - 0.5)
-        stars.push(
-          <FontAwesomeIcon
-            key={i}
-            icon={faStar}
-            color="gold"
-            style={{ clipPath: "inset(0 50% 0 0)" }}
-          />
-        );
-      else stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray" />);
-    }
-    return stars;
-  };
+if(serviceCategories.includes(category)){
+return `/Service_Products/${id}`;
+}
 
-  // ------------------- FETCH DASHBOARD DATA -------------------
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(
-          "https://isonga-backend.onrender.com/api/buyer_dashboard",
-          { withCredentials: true }
-        );
+if(assetCategories.includes(category)){
+return `/Asset_products/${id}`;
+}
 
-        if (!res.data.success) {
-          navigate("/buyer_login");
-          return;
-        }
+return `/view_products/${id}`;
+};
 
-        const buyer = res.data.buyer;
-        setBuyerName(buyer.name);
-        setProfile(buyer.profile);
-        setBuyerId(buyer._id);
 
-        const sellersWithRatings = res.data.sellers.map(s => ({
-          ...s,
-          averageRating: s.averageRating || 0,
-          numReviews: s.numReviews || 0
-        }));
 
-        setSellers(sellersWithRatings);
-        setFilteredSellers(sellersWithRatings);
+//////////////////////////////////////////////////
+// FETCH CART COUNT
+//////////////////////////////////////////////////
 
-        const indexes = {};
-        sellersWithRatings.forEach(s => { indexes[s._id] = 0; });
-        setCurrentImageIndex(indexes);
+const fetchCartCount=async()=>{
+try{
 
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchData();
-  }, [navigate]);
+const res=await axios.get(
+"https://isonga-backend.onrender.com/api/cart/count",
+{withCredentials:true}
+);
 
-  // ------------------- SEARCH FILTER -------------------
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredSellers(sellers);
-      return;
-    }
-    const q = searchQuery.toLowerCase();
-    setFilteredSellers(
-      sellers.filter(s =>
-        (s.name && s.name.toLowerCase().includes(q)) ||
-        (s.category && s.category.toLowerCase().includes(q)) ||
-        (s.location && s.location.toLowerCase().includes(q)) ||
-        (s.description && s.description.toLowerCase().includes(q))
-      )
-    );
-  }, [searchQuery, sellers]);
+if(res.data.success){
+setCartCount(res.data.count);
+}
 
-  // ------------------- IMAGE SLIDER -------------------
-  const handleNext = (sellerId, total) =>
-    setCurrentImageIndex(prev => ({ ...prev, [sellerId]: (prev[sellerId] + 1) % total }));
-  const handlePrev = (sellerId, total) =>
-    setCurrentImageIndex(prev => ({ ...prev, [sellerId]: (prev[sellerId] - 1 + total) % total }));
+}catch(err){
+console.log(err);
+}
+};
 
-  // ------------------- MEDIA HELPERS -------------------
-  const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
+useEffect(()=>{
+fetchCartCount();
+},[]);
+
+
+
+//////////////////////////////////////////////////
+// LOGOUT
+//////////////////////////////////////////////////
+
+const handleLogout=async()=>{
+
+try{
+
+const res=await axios.post(
+"https://isonga-backend.onrender.com/api/logout",
+{},
+{withCredentials:true}
+);
+
+if(res.data.success){
+navigate("/buyer_login");
+}
+
+}catch(err){
+console.log(err);
+}
+
+};
+
+
+
+//////////////////////////////////////////////////
+// STAR RENDER
+//////////////////////////////////////////////////
+
+const renderStars=(avg=0)=>{
+
+const stars=[];
+
+for(let i=1;i<=5;i++){
+
+if(avg>=i){
+stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold"/>);
+}
+
+else if(avg>=i-0.5){
+stars.push(
+<FontAwesomeIcon
+key={i}
+icon={faStar}
+color="gold"
+style={{clipPath:"inset(0 50% 0 0)"}}
+/>
+);
+}
+
+else{
+stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray"/>);
+}
+
+}
+
+return stars;
+};
+
+
+
+//////////////////////////////////////////////////
+// FETCH DASHBOARD DATA
+//////////////////////////////////////////////////
+
+useEffect(()=>{
+
+const fetchData=async()=>{
+
+try{
+
+const res=await axios.get(
+"https://isonga-backend.onrender.com/api/buyer_dashboard",
+{withCredentials:true}
+);
+
+if(!res.data.success){
+navigate("/buyer_login");
+return;
+}
+
+const buyer=res.data.buyer;
+
+setBuyerName(buyer.name);
+setProfile(buyer.profile);
+setBuyerId(buyer._id);
+
+
+const sellersWithRatings=res.data.sellers.map(s=>({
+...s,
+averageRating:s.averageRating || 0,
+numReviews:s.numReviews || 0
+}));
+
+setSellers(sellersWithRatings);
+setFilteredSellers(sellersWithRatings);
+
+
+const indexes={};
+
+sellersWithRatings.forEach(s=>{
+indexes[s._id]=0;
+});
+
+setCurrentImageIndex(indexes);
+
+}catch(err){
+console.log(err);
+}
+
+};
+
+fetchData();
+
+},[navigate]);
+
+
+
+//////////////////////////////////////////////////
+// SEARCH FILTER
+//////////////////////////////////////////////////
+
+useEffect(()=>{
+
+if(!searchQuery.trim()){
+setFilteredSellers(sellers);
+return;
+}
+
+const q=searchQuery.toLowerCase();
+
+setFilteredSellers(
+
+sellers.filter(s=>
+
+(s.name && s.name.toLowerCase().includes(q)) ||
+(s.category && s.category.toLowerCase().includes(q)) ||
+(s.location && s.location.toLowerCase().includes(q)) ||
+(s.description && s.description.toLowerCase().includes(q))
+
+)
+
+);
+
+},[searchQuery,sellers]);
+
+
+
+//////////////////////////////////////////////////
+// SLIDER
+//////////////////////////////////////////////////
+
+const handleNext=(sellerId,total)=>{
+setCurrentImageIndex(prev=>({
+...prev,
+[sellerId]:(prev[sellerId]+1)%total
+}));
+};
+
+const handlePrev=(sellerId,total)=>{
+setCurrentImageIndex(prev=>({
+...prev,
+[sellerId]:(prev[sellerId]-1+total)%total
+}));
+};
+
+
+
+//////////////////////////////////////////////////
+// FILE TYPE DETECTION
+//////////////////////////////////////////////////
+
+const isVideoFile=(filename)=>/\.(mp4|webm|ogg|mov)$/i.test(filename);
+
   const getFileUrl = (path) => {
-    if (!path) return "/placeholder.png";
-    if (path.startsWith("http")) return path;
-    return `https://isonga-backend.onrender.com/uploads/${path}`;
-  };
+  if (!path) return "/placeholder.png";
+  if (path.startsWith("http")) return path;
+  return `https://isonga-backend.onrender.com/uploads/${path}`;
+};
 
-  // ------------------- RENDER -------------------
-  return (
-    <div className="Buyer_Dashboard">
+return(
 
-      {/* NAVBAR */}
-      <header className="navbar flex justify-between items-center p-4 bg-white shadow-md sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Logo" className="h-10 w-10" />
-          <div>
-            <h1 className="text-xl font-bold">Isonga</h1>
-            <h2 className="text-sm text-gray-500">Market</h2>
-          </div>
-        </div>
+<div className="Buyer_Dashboard">
 
-        <nav className="flex gap-4">
-          <Link to="/fashion" className="hover:text-blue-600">Products</Link>
-          <Link to="/services" className="hover:text-blue-600">Services</Link>
-          <Link to="/RealEstate" className="hover:text-blue-600">Assets</Link>
-        </nav>
 
-        <div className="flex items-center gap-4">
-          <Link to="/buyer_profile">
-            <img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="profile" className="h-10 w-10 rounded-full" />
-          </Link>
-          <ChatNotification />
+{/* NAVBAR */}
 
-          <Link to="/cart" className="relative">
-            <FontAwesomeIcon icon={faCartShopping} size="2x" />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">{cartCount}</span>
-            )}
-          </Link>
+<div className="Buyer_Dashboard_navbar">
 
-          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Logout</button>
-        </div>
-      </header>
+<div className="Buyer_Dashboard_logos">
+<img src="/logo.png" alt="Logo"/>
+</div>
 
-      {/* HEADING */}
-      <section className="text-center my-6">
-        <h1 className="text-2xl font-bold">Welcome back, {buyerName}! 🛍️</h1>
-        <p className="text-gray-600">Browse shops and enjoy secure shopping.</p>
-      </section>
+<div className="Buyer_Dashboard_heads">
+<h1>Isonga</h1>
+<h2>Market</h2>
+</div>
 
-      {/* SEARCH */}
-      <section className="flex justify-center mb-6 gap-2">
-        <input
-          type="text"
-          placeholder="Search sellers by name, category, location..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="border rounded px-3 py-2 w-1/2 focus:outline-blue-500"
-        />
-        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          <FontAwesomeIcon icon={faSearch} />
-        </button>
-      </section>
+<div className="Buyer_Dashboard_user">
 
-      {/* SELLERS */}
-      <section className="shop-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-        {filteredSellers.length > 0 ? filteredSellers.map(seller => (
-          <div key={seller._id} className="shop-card border rounded shadow hover:shadow-lg transition p-3 bg-white">
-            {/* IMAGE SECTION */}
-            <div className="relative">
-              {seller.files && seller.files.length > 0 ? (
-                <div className="image-slider relative">
-                  {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
-                    <video
-                      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-                      controls
-                      className="w-full h-48 object-cover rounded cursor-pointer"
-                      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-                    />
-                  ) : (
-                    <img
-                      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-                      alt={seller.name}
-                      className="w-full h-48 object-cover rounded cursor-pointer"
-                      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-                    />
-                  )}
+<Link to="/buyer_profile">
+<img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="profile"/>
+</Link>
 
-                  <div className="absolute top-1/2 left-0 right-0 flex justify-between px-2">
-                    <FontAwesomeIcon icon={faChevronLeft} className="cursor-pointer text-white" onClick={() => handlePrev(seller._id, seller.files.length)} />
-                    <FontAwesomeIcon icon={faChevronRight} className="cursor-pointer text-white" onClick={() => handleNext(seller._id, seller.files.length)} />
-                  </div>
-                </div>
-              ) : (
-                <img src="/placeholder.png" alt="no image" className="w-full h-48 object-cover rounded" />
-              )}
+<ChatNotification/>
 
-              <Link to={`/view_profile/${seller._id}`} className="absolute -bottom-4 left-4">
-                <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="h-10 w-10 rounded-full border-2 border-white" />
-              </Link>
-            </div>
+</div>
 
-            {/* INFO */}
-            <div className="mt-6">
-              <h3 className="font-bold text-lg">{seller.name} Shop</h3>
-              <p className="text-gray-500">{seller.location}</p>
-              <p className="text-gray-500">{seller.category} Shop</p>
 
-              <div className="flex items-center gap-1 my-1">
-                {renderStars(seller.averageRating)}
-                <span className="text-gray-500 text-sm">({seller.numReviews})</span>
-              </div>
+<div className="Buyer_Dashboard_nav">
 
-              <p className="text-gray-700">{seller.description}</p>
+<nav>
+<ul>
 
-              <div className="flex gap-2 mt-2">
-                <Link to={getSellerRoute(seller.category, seller._id)}>
-                  <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 w-full">Visit Shop</button>
-                </Link>
-                <Link to={`/buyer_chat/${seller._id}`}>
-                  <button className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 w-full">Chat</button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        )) : <p className="text-center col-span-full">No sellers found</p>}
-      </section>
+<li><Link to="/fashion">Products</Link></li>
+<li><Link to="/services">Services</Link></li>
+<li><Link to="/RealEstate">Assets</Link></li>
 
-      {/* MEDIA MODAL */}
-      {selectedMedia && (
-        <div className="media-modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setSelectedMedia(null)}>
-          <span className="absolute top-4 right-6 text-white text-2xl cursor-pointer">&times;</span>
-          {isVideoFile(selectedMedia) ? (
-            <video src={getFileUrl(selectedMedia)} controls autoPlay className="max-h-[80vh] max-w-[80vw]" />
-          ) : (
-            <img src={getFileUrl(selectedMedia)} alt="preview" className="max-h-[80vh] max-w-[80vw]" />
-          )}
-        </div>
-      )}
+</ul>
+</nav>
 
-      {/* ALERT MESSAGE */}
-      {message && (
-        <div className={`alert fixed top-20 left-1/2 transform -translate-x-1/2 p-4 rounded shadow ${message.type === "success" ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}>
-          <span className="mr-2">{message.type === "success" ? "✓" : "⚠"}</span>
-          {message.text}
-        </div>
-      )}
+</div>
 
-      {/* FOOTER */}
-      <footer className="Buyer_Footer bg-gray-100 mt-8 pt-8">
-        <div className="Footer_Container max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Brand */}
-          <div>
-            <img src="/logo.png" alt="Isonga Logo" className="h-12 mb-2" />
-            <h3 className="font-bold">Isonga Market</h3>
-            <p className="text-gray-600">The leading digital marketplace in Rwanda. Connecting local sellers with happy buyers.</p>
-          </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-semibold mb-2">Quick Links</h4>
-            <ul className="text-gray-600">
-              <li><Link to="/fashion" className="hover:text-blue-600">All Products</Link></li>
-              <li><Link to="/services" className="hover:text-blue-600">Services</Link></li>
-              <li><Link to="/RealEstate" className="hover:text-blue-600">Assets</Link></li>
-              <li><Link to="/cart" className="hover:text-blue-600">My Cart</Link></li>
-            </ul>
-          </div>
 
-          {/* Support */}
-          <div>
-            <h4 className="font-semibold mb-2">Support</h4>
-            <ul className="text-gray-600">
-              <li><Link to="/help" className="hover:text-blue-600">Help Center</Link></li>
-              <li><Link to="/terms" className="hover:text-blue-600">Terms & Conditions</Link></li>
-              <li><Link to="/privacy" className="hover:text-blue-600">Privacy Policy</Link></li>
-            </ul>
-          </div>
+<Link to="/cart" style={{position:"relative"}}>
 
-          {/* Payments */}
-          <div>
-            <h4 className="font-semibold mb-2">Secure Payments</h4>
-            <p className="text-gray-600">We support local payment methods:</p>
-            <div className="flex gap-2 mt-2">
-              <span className="bg-yellow-300 px-2 py-1 rounded font-semibold">MTN MoMo</span>
-              <span className="bg-blue-300 px-2 py-1 rounded font-semibold">Airtel Money</span>
-            </div>
-            <p className="mt-2 text-gray-500">🔒 SSL Secure Transactions</p>
-          </div>
-        </div>
+<FontAwesomeIcon icon={faCartShopping} size="2x"/>
 
-        <div className="Footer_Bottom text-center mt-6 py-4 text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved.</p>
-          <p>Designed for Rwanda 🇷🇼</p>
-        </div>
-      </footer>
+{cartCount>0 &&(
 
+<span
+style={{
+position:"absolute",
+top:"-5px",
+right:"-5px",
+background:"red",
+color:"white",
+borderRadius:"50%",
+padding:"2px 6px",
+fontSize:"12px",
+fontWeight:"bold"
+}}
+>
+{cartCount}
+</span>
+
+)}
+
+</Link>
+
+
+<div className="Buyer_Dashboard_Logout">
+<button onClick={handleLogout}>Logout</button>
+</div>
+
+</div>
+
+
+
+{/* HEADING */}
+
+<div className="Buyer_Dashboard_Heading">
+
+<h1>Welcome back, {buyerName}! 🛍️</h1>
+<p>Browse shops and enjoy secure shopping.</p>
+
+</div>
+
+
+
+{/* SEARCH */}
+
+<div className="Buyer_Dashboard_search">
+
+<input
+type="text"
+placeholder="Search sellers by name, category, location..."
+value={searchQuery}
+onChange={(e)=>setSearchQuery(e.target.value)}
+/>
+
+<button>
+<FontAwesomeIcon icon={faSearch}/>
+</button>
+
+</div>
+
+
+
+{/* SELLERS */}
+
+<div className="shop-grid">
+
+{filteredSellers.length>0 ?
+
+filteredSellers.map(seller=>(
+
+<div key={seller._id} className="shop-card">
+
+<div className="card-image-section">
+
+{seller.files && seller.files.length > 0 ? (
+  <div className="image-slider">
+    {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
+      <video
+        src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+        controls
+        className="slider-image"
+        onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+      />
+    ) : (
+      <img
+        src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+        alt={seller.name}
+        className="slider-image"
+        onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+      />
+    )}
+
+    <div className="slider-controls">
+      <FontAwesomeIcon
+        icon={faChevronLeft}
+        className="slider-icon"
+        onClick={() => handlePrev(seller._id, seller.files.length)}
+      />
+      <FontAwesomeIcon
+        icon={faChevronRight}
+        className="slider-icon"
+        onClick={() => handleNext(seller._id, seller.files.length)}
+      />
     </div>
-  );
+  </div>
+) : (
+  <img src="/placeholder.png" alt="no image" className="slider-image" />
+)}
+
+<Link to={`/view_profile/${seller._id}`} className="profile-avatar">
+
+<img
+src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"}
+alt={seller.name}
+className="avatar-image"
+/>
+
+</Link>
+
+</div>
+
+
+
+<div className="shop-card-info">
+
+<h3>{seller.name} Shop</h3>
+
+<p>{seller.location}</p>
+
+<p>{seller.category} Shop</p>
+
+<div className="rating">
+
+{renderStars(seller.averageRating)}
+<span>({seller.numReviews})</span>
+
+</div>
+
+<p>{seller.description}</p>
+
+
+<div className="card-actions">
+
+<Link to={getSellerRoute(seller.category,seller._id)}>
+<button className="visit-btn">Visit Shop</button>
+</Link>
+
+<Link to={`/buyer_chat/${seller._id}`}>
+<button className="chat-btn">Chat</button>
+</Link>
+
+</div>
+
+</div>
+
+</div>
+
+))
+
+:
+
+<p>No sellers found</p>
+
+}
+
+</div>
+
+
+
+{/* MEDIA MODAL */}
+
+{selectedMedia && (
+
+<div className="media-modal" onClick={()=>setSelectedMedia(null)}>
+
+<span className="close-btn">&times;</span>
+
+{isVideoFile(selectedMedia) ? (
+
+<video src={getFileUrl(selectedMedia)} controls autoPlay/>
+
+) : (
+
+<img src={getFileUrl(selectedMedia)} alt="preview"/>
+
+)}
+
+</div>
+
+)}
+
+{message && (
+  <div className={`alert ${message.type}`}>
+    <span className="alert-icon">
+      {message.type === "success" ? "✓" : "⚠"}
+    </span>
+    <span>{message.text}</span>
+  </div>
+)}
+{/* FOOTER SECTION */}
+<footer className="Buyer_Footer">
+  <div className="Footer_Container">
+    
+    {/* Brand Section */}
+    <div className="Footer_Section">
+      <div className="Footer_Logo">
+        <img src="/logo.png" alt="Isonga Logo" />
+        <h3>Isonga Market</h3>
+      </div>
+      <p>The leading digital marketplace in Rwanda. Connecting local sellers with happy buyers.</p>
+      <div className="Social_Icons">
+        {/* Add your social links here */}
+      </div>
+    </div>
+
+    {/* Quick Links */}
+    <div className="Footer_Section">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><Link to="/fashion">All Products</Link></li>
+        <li><Link to="/services">Services</Link></li>
+        <li><Link to="/RealEstate">Assets</Link></li>
+        <li><Link to="/cart">My Cart</Link></li>
+      </ul>
+    </div>
+
+    {/* Support */}
+    <div className="Footer_Section">
+      <h4>Support</h4>
+      <ul>
+        <li><Link to="/help">Help Center</Link></li>
+        <li><Link to="/terms">Terms & Conditions</Link></li>
+        <li><Link to="/privacy">Privacy Policy</Link></li>
+      </ul>
+    </div>
+
+    {/* Payment & Trust Section (CRUCIAL) */}
+    <div className="Footer_Section">
+      <h4>Secure Payments</h4>
+      <p>We support local payment methods:</p>
+      <div className="Payment_Methods">
+        {/* Replace these with your MoMo/Airtel logos */}
+        <span className="Payment_Badge momo">MTN MoMo</span>
+        <span className="Payment_Badge airtel">Airtel Money</span>
+      </div>
+      <p className="Secure_Note">🔒 SSL Secure Transactions</p>
+    </div>
+
+  </div>
+
+  <div className="Footer_Bottom">
+    <p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved.</p>
+    <p>Designed for Rwanda 🇷🇼</p>
+  </div>
+</footer>
+</div>
+
+);
+
 }
 
 export default Buyer_Dashboard;
