@@ -76,9 +76,12 @@ function Buyer_Login(){
                         <Link to="/">Home</Link>
                     </div>
                 </div>
-                {message&&(
-                    <p className="error">{message}</p>
-                )}
+                {message && (
+  <div className={`status-message ${message.toLowerCase().includes("error") || message.toLowerCase().includes("failed") ? "error" : "success"}`}>
+    <p>{message}</p>
+    <button onClick={() => setMessage("")} className="close-msg">&times;</button>
+  </div>
+)}
             </form>
              </div>
         </div>

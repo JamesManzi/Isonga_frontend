@@ -165,3 +165,66 @@ form {
         width: 100%;
     }
 }
+
+
+/* Container for the message */
+.status-message {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 300px;
+  max-width: 90%;
+  padding: 15px 20px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 3000;
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Success Style */
+.status-message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 5px solid #28a745;
+}
+
+/* Error Style */
+.status-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-left: 5px solid #dc3545;
+}
+
+.status-message p {
+  margin: 0;
+  font-weight: 500;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+/* Close button */
+.close-msg {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: inherit;
+  margin-left: 15px;
+  line-height: 1;
+}
+
+/* Entry Animation */
+@keyframes slideUp {
+  from {
+    bottom: -50px;
+    opacity: 0;
+  }
+  to {
+    bottom: 20px;
+    opacity: 1;
+  }
+}
