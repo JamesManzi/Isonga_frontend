@@ -16,12 +16,13 @@ function My_Store() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [message, setMessage] = useState("");
   const [sellerName, setSellerName] = useState("");
-  const [currentIndex, setCurrentIndex] = useState({}); // Stores the active slide for each product
+  const [currentIndex, setCurrentIndex] = useState({}); 
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
-  const [productToDelete, setProductToDelete] = useState(null); // Stores the product ID to delete
+  const [productToDelete, setProductToDelete] = useState(null); 
+
   // 1. Fetch Store Data
   useEffect(() => {
     const fetchProducts = async () => {
@@ -35,7 +36,6 @@ function My_Store() {
           setFilteredProducts(res.data.products);
           setSellerName(res.data.seller.name);
 
-          // Initialize slider indexes for each product
           const initIndex = {};
           res.data.products.forEach((p) => {
             initIndex[p._id] = 0;
@@ -70,23 +70,22 @@ function My_Store() {
     }
   }, [searchQuery, products]);
 
- // 3. Auto-Slider Logic (Optimized for Search)
-useEffect(() => {
-  const interval = setInterval(() => {
-    setCurrentIndex((prev) => {
-      const newIndexes = { ...prev };
-      // Only loop through visible products to save memory
-      filteredProducts.forEach((product) => {
-        if (product.files && product.files.length > 1) {
-          const currentIdx = prev[product._id] || 0;
-          newIndexes[product._id] = (currentIdx + 1) % product.files.length;
-        }
+  // 3. Auto-Slider Logic
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const newIndexes = { ...prev };
+        filteredProducts.forEach((product) => {
+          if (product.files && product.files.length > 1) {
+            const currentIdx = prev[product._id] || 0;
+            newIndexes[product._id] = (currentIdx + 1) % product.files.length;
+          }
+        });
+        return newIndexes;
       });
-      return newIndexes;
-    });
-  }, 5000); 
-  return () => clearInterval(interval);
-}, [filteredProducts]); // Changed from products to filteredProducts
+    }, 5000); 
+    return () => clearInterval(interval);
+  }, [filteredProducts]);
 
   // --- Helpers ---
   const isVideoFile = (filename) => {
@@ -102,34 +101,31 @@ useEffect(() => {
   };
 
   // --- Actions ---
-  const handleDelete = async (productId) => {
-    // Step A: Open the confirmation UI
-const confirmDelete = (productId) => {
-  setProductToDelete(productId);
-};
 
-// Step B: The actual API call
-const executeDelete = async () => {
-  if (!productToDelete) return;
-  
-  setLoading(true);
-  try {
-    const res = await axios.delete(
-      `https://isonga-backend.onrender.com/api/products/delete/${productToDelete}`,
-      { withCredentials: true }
-    );
-    if (res.data.success) {
-      setProducts((prev) => prev.filter((p) => p._id !== productToDelete));
-      setProductToDelete(null); // Close modal
-    } else {
-      alert(res.data.message);
+  // MOVED OUTSIDE: So the buttons can find them
+  const confirmDelete = (productId) => {
+    setProductToDelete(productId);
+  };
+
+  const executeDelete = async () => {
+    if (!productToDelete) return;
+    setLoading(true);
+    try {
+      const res = await axios.delete(
+        `https://isonga-backend.onrender.com/api/products/delete/${productToDelete}`,
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        setProducts((prev) => prev.filter((p) => p._id !== productToDelete));
+        setProductToDelete(null); 
+      } else {
+        alert(res.data.message);
+      }
+    } catch (error) {
+      alert("Delete failed");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    alert("Delete failed");
-  } finally {
-    setLoading(false);
-  }
-};
   };
 
   const handleUpdate = async (e) => {
@@ -181,6 +177,7 @@ const executeDelete = async () => {
       </div>
     );
   }
+
   return (
     <div className="My_Store">
       {/* Navbar */}
@@ -204,7 +201,6 @@ const executeDelete = async () => {
         <p>Manage Your Inventory Here</p>
       </div>
 
-      {/* Search */}
       <div className="Buyer_Dashboard_search">
         <input
           type="search"
@@ -215,7 +211,6 @@ const executeDelete = async () => {
         <button><FontAwesomeIcon icon={faSearch} /> Search</button>
       </div>
 
-      {/* Products Grid */}
       <div className="store_container">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => {
@@ -245,7 +240,6 @@ const executeDelete = async () => {
                     <img src="/placeholder.png" alt="No media" className="product-media" />
                   )}
 
-                  {/* Slider Dots */}
                   {product.files?.length > 1 && (
                     <div className="slider-dots">
                       {product.files.map((_, idx) => (
@@ -267,12 +261,7 @@ const executeDelete = async () => {
                   <p className="price">{product.price} Rwf</p>
                   <p>Qty: {product.quantity}</p>
                   <div className="My_Store_btns">
-                    <button 
-  className="delete" 
-  onClick={() => confirmDelete(product._id)} // Changed from handleDelete
->
-  Delete
-</button>
+                    <button className="delete" onClick={() => confirmDelete(product._id)}>Delete</button>
                     <button className="update" onClick={() => setEditingProduct(product)}>Update</button>
                   </div>
                 </div>
@@ -304,62 +293,48 @@ const executeDelete = async () => {
           </div>
         </div>
       )}
-{/* Custom Delete Confirmation Modal */}
-{productToDelete && (
-  <div className="delete-modal-overlay">
-    <div className="delete-modal-content">
-      <div className="delete-icon">⚠️</div>
-      <h2>Are you sure?</h2>
-      <p>This action cannot be undone. This product will be permanently removed from your store.</p>
-      <div className="delete-modal-actions">
-        <button 
-          className="cancel-btn" 
-          onClick={() => setProductToDelete(null)}
-          disabled={loading}
-        >
-          No, Keep it
-        </button>
-        <button 
-          className="confirm-btn" 
-          onClick={executeDelete}
-          disabled={loading}
-        >
-          {loading ? "Deleting..." : "Yes, Delete"}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-     {/* Media Zoom Modal */}
-{modalMedia.productId && (() => {
-  const product = products.find((p) => p._id === modalMedia.productId);
-  
-  // ADD THIS LINE: If product is not found, don't try to render
-  if (!product) return null; 
 
-  const file = product.files[modalMedia.index];
-  
-  return (
-    <div className="media-modal" onClick={() => setModalMedia({ productId: null, index: 0 })}>
-      <span className="close-btn">&times;</span>
-      {isVideoFile(file) ? (
-        <video src={getFileUrl(file)} controls autoPlay className="full-media" />
-      ) : (
-        <img src={getFileUrl(file)} alt="Full view" className="full-media" />
+      {/* Delete Confirmation Modal */}
+      {productToDelete && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal-content">
+            <div className="delete-icon">⚠️</div>
+            <h2>Are you sure?</h2>
+            <p>This action cannot be undone.</p>
+            <div className="delete-modal-actions">
+              <button className="cancel-btn" onClick={() => setProductToDelete(null)} disabled={loading}>No, Keep it</button>
+              <button className="confirm-btn" onClick={executeDelete} disabled={loading}>{loading ? "Deleting..." : "Yes, Delete"}</button>
+            </div>
+          </div>
+        </div>
       )}
-      <div className="modal-controls">
-        <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
-          e.stopPropagation();
-          setModalMedia(p => ({ ...p, index: (p.index - 1 + product.files.length) % product.files.length }));
-        }} />
-        <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
-          e.stopPropagation();
-          setModalMedia(p => ({ ...p, index: (p.index + 1) % product.files.length }));
-        }} />
-      </div>
-    </div>
-  );
-})()}
+
+      {/* Media Zoom Modal */}
+      {modalMedia.productId && (() => {
+        const product = products.find((p) => p._id === modalMedia.productId);
+        if (!product) return null; 
+        const file = product.files[modalMedia.index];
+        return (
+          <div className="media-modal" onClick={() => setModalMedia({ productId: null, index: 0 })}>
+            <span className="close-btn">&times;</span>
+            {isVideoFile(file) ? (
+              <video src={getFileUrl(file)} controls autoPlay className="full-media" />
+            ) : (
+              <img src={getFileUrl(file)} alt="Full view" className="full-media" />
+            )}
+            <div className="modal-controls">
+              <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
+                e.stopPropagation();
+                setModalMedia(p => ({ ...p, index: (p.index - 1 + product.files.length) % product.files.length }));
+              }} />
+              <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
+                e.stopPropagation();
+                setModalMedia(p => ({ ...p, index: (p.index + 1) % product.files.length }));
+              }} />
+            </div>
+          </div>
+        );
+      })()}
 
       {message && <div className="error-message">{message}</div>}
     </div>
