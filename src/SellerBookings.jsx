@@ -3,58 +3,56 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
-
 function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
-  const [loading,setLoading]=useState(false);
-  // ✅ Fetch and filter for Pending OR Read
-  setLoading(true)
- try {
-   const getBookings = () => {
-  axios
-    .get("https://isonga-backend.onrender.com/api/seller/bookings", {
-      withCredentials: true,
-    })
-    .then((res) => {
+  const [loading, setLoading] = useState(false);
+
+  // 1. Move fetch logic into a function usable by useEffect
+  const getBookings = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get("https://isonga-backend.onrender.com/api/seller/bookings", {
+        withCredentials: true,
+      });
       if (res.data.success) {
-        // ✅ NEW LOGIC: Show everything EXCEPT things already Accepted or Cancelled
-        // This keeps the "Incoming" list for items that need action.
         const incoming = res.data.bookings.filter(
           (booking) => booking.status !== "Accepted" && booking.status !== "Cancelled"
         );
         setBookings(incoming);
       }
-    })
-    .catch((err) => console.error("Error fetching bookings:", err));
-};
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     getBookings();
   }, []);
 
-  // ✅ Update status and remove from list instantly
+  // 2. Define updateStatus clearly
   const updateStatus = (bookingId, newStatus) => {
-  axios
-    .put(
-      `https://isonga-backend.onrender.com/api/bookings/${bookingId}`,
-      { status: newStatus }, // Use "Accepted" or "Cancelled"
-      { withCredentials: true }
-    )
-    .then((res) => {
-      if (res.data.success) {
-        // Remove from current "Incoming" list
-        setBookings((prev) => prev.filter((b) => b._id !== bookingId));
-      }
-    })
-    .catch((err) => console.error("Error updating booking status:", err));
-};
- } catch (error) {
-  console.log(error)
- } finally{
-  setLoading(false)
- }
+    axios
+      .put(
+        `https://isonga-backend.onrender.com/api/bookings/${bookingId}`,
+        { status: newStatus },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        if (res.data.success) {
+          setBookings((prev) => prev.filter((b) => b._id !== bookingId));
+        }
+      })
+      .catch((err) => console.error("Error updating booking status:", err));
+  };
+
+  // 3. Handle the loading state in your UI
+  if (loading) return <div style={containerStyle}>Loading bookings...</div>;
+
   return (
+    // ... rest of your JSX remains the same
     <div style={containerStyle}>
       <Link to="/dashboard" style={backStyle}>
         <FontAwesomeIcon icon={faArrowLeft} /> Back to Dashboard
