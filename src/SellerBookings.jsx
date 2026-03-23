@@ -9,25 +9,28 @@ function SellerBookings() {
   const [loading, setLoading] = useState(false);
  const [actionLoading, setActionLoading] = useState(null);
   // 1. Move fetch logic into a function usable by useEffect
-  const getBookings = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get("https://isonga-backend.onrender.com/api/seller/bookings", {
-        withCredentials: true,
-      });
-      // Inside SellerBookings.js -> getBookings function
-if (res.data.success) {
-  const incoming = res.data.bookings.filter(
-    (booking) => booking.status === "Pending" // Change this line
-  );
-  setBookings(incoming);
-}
-    } catch (err) {
-      console.error("Error fetching bookings:", err);
-    } finally {
-      setLoading(false);
+  // ✅ SellerBookings.js - Filter update
+const getBookings = async () => {
+  setLoading(true);
+  try {
+    const res = await axios.get("https://isonga-backend.onrender.com/api/seller/bookings", {
+      withCredentials: true,
+    });
+
+    if (res.data.success) {
+      // Show everything that isn't Accepted or Cancelled.
+      // This ensures "Pending" and "Read" items stay visible!
+      const incoming = res.data.bookings.filter(
+        (b) => b.status !== "Accepted" && b.status !== "Cancelled"
+      );
+      setBookings(incoming);
     }
-  };
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     getBookings();

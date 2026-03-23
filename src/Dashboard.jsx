@@ -470,70 +470,41 @@ if (!seller) {
 
       </div>
 
-      {/* Footer */}
+      {/* --- Footer (Updated Version) --- */}
+<div className="Dashboard_footer">
 
-      <div className="Dashboard_footer">
+  <Link to="/dashboard" className="footer_item">
+    <FontAwesomeIcon icon={faHome} />
+    <h2>Dashboard</h2>
+  </Link>
 
-        <Link to="/dashboard" className="footer_item">
-          <FontAwesomeIcon icon={faHome} />
-          <h2>Dashboard</h2>
-        </Link>
+  {/* ✅ Clean Link: No onClick here! The badge stays visible until you open the page */}
+  <Link to={orderLink} className="footer_item">
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <FontAwesomeIcon icon={faBox} />
+      {newOrdersCount > 0 && (
+        <span className="order_badge">{newOrdersCount}</span>
+      )}
+    </div>
+    <h2>{orderTitle}</h2>
+  </Link>
 
-        {/* Updated Footer Item */}
-<Link
-  to={orderLink}
-  className="footer_item"
-  onClick={async () => {
+  <Link to="/SellerConversations" className="footer_item">
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <FontAwesomeIcon icon={faCommentDots} />
+      {unreadCount > 0 && (
+        <span className="badge">{unreadCount}</span>
+      )}
+    </div>
+    <h2>Messages</h2>
+  </Link>
 
-    // ✅ 1. Reset UI instantly
-    setNewOrdersCount(0);
+  <Link to="/my_store" className="footer_item">
+    <FontAwesomeIcon icon={faStore} />
+    <h2>My Store</h2>
+  </Link>
 
-    try {
-      // Tell backend to mark as read
-      await axios.post(
-        "https://isonga-backend.onrender.com/api/seller/mark-activity-read",
-        {},
-        { withCredentials: true }
-      );
-    } catch (err) {
-      console.log("Mark read failed");
-    }
-
-  }}
->
-  <div style={{ position: "relative", display: "inline-block" }}>
-    <FontAwesomeIcon icon={faBox} />
-    {newOrdersCount > 0 && (
-      <span className="order_badge">{newOrdersCount}</span>
-    )}
-  </div>
-
-  <h2>{orderTitle}</h2>
-</Link>
-
-        <Link to="/SellerConversations" className="footer_item">
-
-          <div style={{ position: "relative", display: "inline-block" }}>
-
-            <FontAwesomeIcon icon={faCommentDots} />
-
-            {unreadCount > 0 && (
-              <span className="badge">{unreadCount}</span>
-            )}
-
-          </div>
-
-          <h2>Messages</h2>
-
-        </Link>
-
-        <Link to="/my_store" className="footer_item">
-          <FontAwesomeIcon icon={faStore} />
-          <h2>My Store</h2>
-        </Link>
-
-      </div>
-
+</div>
     </div>
 
   );
