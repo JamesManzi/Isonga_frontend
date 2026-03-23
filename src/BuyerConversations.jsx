@@ -85,7 +85,7 @@ function BuyerConversations() {
   return (
     <div className="chat-container">
       <div className="chat-header">
-        <Link to="/dashboard" className="back-button">←</Link>
+        <Link to="/buyer_dashboard" className="back-button">←</Link>
         <h2>Messages</h2>
       </div>
 
