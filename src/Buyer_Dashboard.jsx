@@ -22,7 +22,10 @@ const [profile,setProfile]=useState("");
 const [sellers,setSellers]=useState([]);
 const [filteredSellers,setFilteredSellers]=useState([]);
 const [currentImageIndex,setCurrentImageIndex]=useState({});
-const [selectedMedia,setSelectedMedia]=useState(null);
+
+// Updated state to track which seller and which index is zoomed
+const [selectedMedia,setSelectedMedia]=useState(null); 
+
 const [searchQuery,setSearchQuery]=useState("");
 const [buyerId,setBuyerId]=useState("");
 const [cartCount,setCartCount]=useState(0);
@@ -187,7 +190,7 @@ useEffect(() => {
 
 const isVideoFile=(filename)=>/\.(mp4|webm|ogg|mov)$/i.test(filename);
 
-  const getFileUrl = (path) => {
+const getFileUrl = (path) => {
   if (!path) return "/placeholder.png";
   if (path.startsWith("http")) return path;
   return `https://isonga-backend.onrender.com/uploads/${path}`;
@@ -252,13 +255,20 @@ return(
       <video
         src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
         muted autoPlay loop className="slider-image"
-        onClick={(e) => { e.stopPropagation(); setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0]); }}
+        onClick={(e) => { 
+          e.stopPropagation(); 
+          // Open modal with seller info and current index
+          setSelectedMedia({ files: seller.files, index: currentImageIndex[seller._id] || 0 }); 
+        }}
       />
     ) : (
       <img
         src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
         alt={seller.name} className="slider-image"
-        onClick={(e) => { e.stopPropagation(); setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0]); }}
+        onClick={(e) => { 
+          e.stopPropagation(); 
+          setSelectedMedia({ files: seller.files, index: currentImageIndex[seller._id] || 0 }); 
+        }}
       />
     )}
     {seller.files.length > 1 && (
@@ -295,14 +305,35 @@ return(
 )}
 </div>
 
+{/* ZOOM MODAL WITH ARROWS */}
 {selectedMedia && (
 <div className="media-modal" onClick={()=>setSelectedMedia(null)}>
-<span className="close-btn">&times;</span>
-{isVideoFile(selectedMedia) ? (
-<video src={getFileUrl(selectedMedia)} controls autoPlay/>
+<span className="close-btn" onClick={()=>setSelectedMedia(null)}>&times;</span>
+
+{/* Left Arrow */}
+<button className="modal-arrow left" onClick={(e) => {
+  e.stopPropagation();
+  const newIdx = (selectedMedia.index - 1 + selectedMedia.files.length) % selectedMedia.files.length;
+  setSelectedMedia({...selectedMedia, index: newIdx});
+}}>
+  <FontAwesomeIcon icon={faChevronLeft} />
+</button>
+
+{isVideoFile(selectedMedia.files[selectedMedia.index]) ? (
+<video src={getFileUrl(selectedMedia.files[selectedMedia.index])} controls autoPlay onClick={(e)=>e.stopPropagation()}/>
 ) : (
-<img src={getFileUrl(selectedMedia)} alt="preview"/>
+<img src={getFileUrl(selectedMedia.files[selectedMedia.index])} alt="preview" onClick={(e)=>e.stopPropagation()}/>
 )}
+
+{/* Right Arrow */}
+<button className="modal-arrow right" onClick={(e) => {
+  e.stopPropagation();
+  const newIdx = (selectedMedia.index + 1) % selectedMedia.files.length;
+  setSelectedMedia({...selectedMedia, index: newIdx});
+}}>
+  <FontAwesomeIcon icon={faChevronRight} />
+</button>
+
 </div>
 )}
 
