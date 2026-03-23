@@ -10,14 +10,15 @@ import { Link, useNavigate } from "react-router-dom";
 import ChatNotification from "./ChatNotification";
 
 function Construction() {
-  const navigate = useNavigate();
   const [sellers, setSellers] = useState([]);
-  const [message, setMessage] = useState("");
-  const [buyerName, setBuyerName] = useState("");
-  const [profile, setProfile] = useState("");
-  const [currentImageIndex, setCurrentImageIndex] = useState({});
-  const [selectedMedia, setSelectedMedia] = useState(null);
-  const [cartCount, setCartCount] = useState(0);
+    const [message, setMessage] = useState("");
+    const [buyerName, setBuyerName] = useState("");
+    const [profile, setProfile] = useState("");
+    const [currentImageIndex, setCurrentImageIndex] = useState({});
+    const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
+    const navigate = useNavigate(); // FIX: Added missing navigate initialization
+  
+    const [cartCount, setCartCount] = useState(0);
 
   // --- Helpers ---
   // Matches the Agriculture logic for identifying video files
@@ -178,38 +179,38 @@ function Construction() {
             <div className="card-image-section">
               {seller.files && seller.files.length > 0 ? (
                 <div className="image-slider">
-                  {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
-                    <video
-                      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-                      muted autoPlay loop
-                      className="slider-image"
-                      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-                    />
-                  ) : (
-                    <img
-                      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-                      className="slider-image"
-                      alt="Construction Media"
-                      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-                    />
-                  )}
-
-                  {/* Dot Indicators */}
-                  {seller.files.length > 1 && (
-                    <div className="slider-dots">
-                      {seller.files.map((_, idx) => (
-                        <span 
-                          key={idx} 
-                          className={`dot ${idx === (currentImageIndex[seller._id] || 0) ? "active" : ""}`}
-                          onClick={(e) => {
-                            e.stopPropagation(); 
-                            setCurrentImageIndex(prev => ({...prev, [seller._id]: idx}));
-                          }}
-                        ></span>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                    {isVideoFile(seller.files[activeIdx]) ? (
+                      <video
+                        src={getFileUrl(seller.files[activeIdx])}
+                        muted autoPlay loop className="slider-image"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setModalMedia({ sellerId: seller._id, index: activeIdx });
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={getFileUrl(seller.files[activeIdx])}
+                        alt={seller.name} className="slider-image"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setModalMedia({ sellerId: seller._id, index: activeIdx });
+                        }}
+                      />
+                    )}
+                    {seller.files.length > 1 && (
+                      <div className="slider-dots">
+                        {seller.files.map((_, idx) => (
+                          <span key={idx} className={`dot ${idx === activeIdx ? "active" : ""}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCurrentImageIndex(prev => ({ ...prev, [seller._id]: idx }));
+                            }}
+                          ></span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
               ) : (
                 <img src="/placeholder.png" alt="No Images" className="slider-image" />
               )}
@@ -251,17 +252,33 @@ function Construction() {
         ))}
       </div>
 
-      {/* Media Modal (Full View) */}
-      {selectedMedia && (
-        <div className="media-modal" onClick={() => setSelectedMedia(null)}>
-          <span className="close-btn">&times;</span>
-          {isVideoFile(selectedMedia) ? (
-            <video src={getFileUrl(selectedMedia)} controls autoPlay />
-          ) : (
-            <img src={getFileUrl(selectedMedia)} alt="Full view" />
-          )}
-        </div>
-      )}
+      
+            {/* Media Zoom Modal */}
+            {modalMedia.sellerId && (() => {
+              const seller = sellers.find((s) => s._id === modalMedia.sellerId);
+              if (!seller) return null;
+              const file = seller.files[modalMedia.index];
+              return (
+                <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
+                  <span className="close-btn">&times;</span>
+                  {isVideoFile(file) ? (
+                    <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
+                  ) : (
+                    <img src={getFileUrl(file)} alt="Full view" className="full-media" onClick={(e) => e.stopPropagation()} />
+                  )}
+                  <div className="modal-controls">
+                    <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
+                      e.stopPropagation();
+                      setModalMedia(p => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length }));
+                    }} />
+                    <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
+                      e.stopPropagation();
+                      setModalMedia(p => ({ ...p, index: (p.index + 1) % seller.files.length }));
+                    }} />
+                  </div>
+                </div>
+              );
+            })()}
 
       {/* Footer Section */}
       <footer className="Buyer_Footer">
