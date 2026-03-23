@@ -51,6 +51,8 @@
   display: flex;
   list-style: none;
   gap: 20px;
+  margin: 0;
+  padding: 0;
 }
 
 .Buyer_Dashboard_nav a {
@@ -85,6 +87,7 @@
   padding: 8px 15px;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: 600;
 }
 
 /* HEADING SECTION */
@@ -138,10 +141,17 @@
   transform: translateY(-5px);
 }
 
-/* SLIDER */
+/* SLIDER SECTION (Instagram Style) */
 .card-image-section {
   position: relative;
-  height: 200px;
+  height: 220px; /* Slightly taller for better visual impact */
+  overflow: hidden;
+}
+
+.image-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .slider-image {
@@ -149,51 +159,70 @@
   height: 100%;
   object-fit: cover;
   cursor: pointer;
+  display: block;
 }
 
-.slider-controls {
+/* DOTS INDICATOR */
+.slider-dots {
   position: absolute;
-  top: 50%;
-  width: 100%;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-  padding: 0 10px;
-  z-index: 5; /* ADD THIS */
+  gap: 6px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.3); /* Subtle dark background for visibility */
+  padding: 4px 10px;
+  border-radius: 15px;
+  backdrop-filter: blur(4px);
 }
 
-.slider-icon {
-  background: rgba(255, 255, 255, 0.7);
-  padding: 8px;
+.dot {
+  width: 7px;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   cursor: pointer;
-  color: var(--text-dark);
-  z-index: 6; /* ensure above everything */
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: white;
+  transform: scale(1.3);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .profile-avatar {
   position: absolute;
   bottom: -20px;
   right: 20px;
-  z-index: 10;
+  z-index: 15;
 }
 
 .avatar-image {
-  width: 50px;
-  height: 50px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
   border: 3px solid white;
   box-shadow: var(--shadow);
+  object-fit: cover;
 }
 
 /* SHOP INFO */
 .shop-card-info {
-  padding: 25px 20px 20px;
+  padding: 30px 20px 20px; /* Top padding increased to clear avatar */
 }
 
 .shop-card-info h3 {
   margin: 0;
   color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+.shop-card-info p {
+  margin: 5px 0;
+  color: var(--text-gray);
+  font-size: 0.9rem;
 }
 
 .rating {
@@ -201,6 +230,12 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  font-size: 0.9rem;
+  color: #f1c40f; /* Gold for stars */
+}
+
+.rating span {
+  color: var(--text-gray);
 }
 
 .card-actions {
@@ -212,11 +247,14 @@
 .visit-btn, .chat-btn {
   flex: 1;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.9rem;
   transition: var(--transition);
+  text-align: center;
+  text-decoration: none;
 }
 
 .visit-btn {
@@ -224,13 +262,18 @@
   color: white;
 }
 
+.visit-btn:hover {
+  background: #219150;
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.2);
+}
+
 .chat-btn {
-  background: #eee;
+  background: #f0f2f5;
   color: var(--text-dark);
 }
 
 .chat-btn:hover {
-  background: #ddd;
+  background: #e4e6e9;
 }
 
 /* MEDIA MODAL */
@@ -240,7 +283,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0, 0, 0, 0.95);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -249,8 +292,9 @@
 
 .media-modal img, .media-modal video {
   max-width: 90%;
-  max-height: 80%;
-  border-radius: 8px;
+  max-height: 85%;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
 }
 
 .close-btn {
@@ -258,29 +302,36 @@
   top: 30px;
   right: 40px;
   color: white;
-  font-size: 40px;
+  font-size: 45px;
   cursor: pointer;
+  line-height: 1;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: var(--accent-color);
 }
 
 /* FOOTER */
 .Buyer_Footer {
   background: var(--primary-color);
   color: white;
-  padding: 50px 5% 20px;
-  margin-top: 50px;
+  padding: 60px 5% 20px;
+  margin-top: 60px;
 }
 
 .Footer_Container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 40px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 40px;
 }
 
 .Footer_Section h4 {
   margin-bottom: 20px;
   color: var(--accent-color);
+  font-size: 1.1rem;
 }
 
 .Footer_Section ul {
@@ -289,21 +340,30 @@
 }
 
 .Footer_Section ul li {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .Footer_Section a {
   color: #bdc3c7;
   text-decoration: none;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.Footer_Section a:hover {
+  color: var(--accent-color);
+  padding-left: 5px;
 }
 
 .Payment_Badge {
   display: inline-block;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
   margin-right: 10px;
   font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .momo { background: #ffcc00; color: #000; }
@@ -311,62 +371,20 @@
 
 .Footer_Bottom {
   text-align: center;
-  padding-top: 20px;
-  font-size: 0.9rem;
-  color: #bdc3c7;
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .Buyer_Dashboard_navbar {
-    flex-direction: column;
-    gap: 15px;
-  }
-  .Buyer_Dashboard_search input {
-    width: 70%;
-  }
-}
-
-
-/* Footer Logo Adjustments */
-.Footer_Logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.Footer_Logo img {
-  height: 40px;      /* Restricts the height */
-  width: auto;       /* Keeps the aspect ratio perfect */
-  object-fit: contain;
-}
-
-.Footer_Logo h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  color: var(--white);
-}
-
-/* Optional: If the brand section text feels too wide */
-.Footer_Section p {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: #bdc3c7;
-  max-width: 300px; /* Prevents the text from stretching too far */
+  padding-top: 30px;
+  font-size: 0.85rem;
+  color: #7f8c8d;
 }
 
 /* --- SELLER-STYLE LOADING ANIMATION --- */
-
 .beautiful-loading {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  /* Darker gradient for better glass effect */
   background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); 
   background-size: 400% 400%;
-  animation: gradientBG 10s ease infinite;
+  animation: gradientBG 12s ease infinite;
 }
 
 @keyframes gradientBG {
@@ -377,12 +395,12 @@
 
 .beautiful-loading .text-center {
   text-align: center;
-  background: rgba(255, 255, 255, 0.15); /* bg-white/20 */
-  backdrop-filter: blur(16px);           /* backdrop-blur-lg */
-  padding: 2.5rem;                       /* p-10 */
-  border-radius: 1.5rem;                 /* rounded-3xl */
-  border: 1px solid rgba(255, 255, 255, 0.3); /* border-white/30 */
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* shadow-2xl */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  padding: 3rem;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   max-width: 400px;
   width: 90%;
 }
@@ -390,70 +408,38 @@
 .loader-dots {
   display: flex;
   justify-content: center;
-  gap: 0.5rem; /* space-x-2 */
-  margin-bottom: 1rem; /* mb-4 */
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
 }
 
-/* The bouncing circles */
 .loader-dots div {
-  width: 1rem;      /* w-4 */
-  height: 1rem;     /* h-4 */
+  width: 1rem;
+  height: 1rem;
   background-color: white;
-  border-radius: 9999px; /* rounded-full */
+  border-radius: 50%;
   animation: sellerBounce 0.6s infinite alternate;
 }
 
-/* Exact timing delays from your seller code */
 .loader-dots div:nth-child(2) { animation-delay: -0.15s; }
 .loader-dots div:nth-child(3) { animation-delay: -0.3s; }
 
 @keyframes sellerBounce {
   from { transform: translateY(0); }
-  to { transform: translateY(-10px); }
+  to { transform: translateY(-12px); }
 }
 
-.beautiful-loading h2 {
-  color: white;
-  font-weight: 700;
-  font-size: 1.25rem; /* text-xl */
-  letter-spacing: 0.1em; /* tracking-widest */
-  margin: 0;
-}
-
-.beautiful-loading p {
-  color: rgba(255, 255, 255, 0.8); /* text-white/80 */
-  font-size: 0.875rem; /* text-sm */
-  margin-top: 0.5rem;
-}
-
-
-.image-slider {
-  position: relative;
-}
-
-.slider-dots {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 6px;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 4px 10px;
-  border-radius: 15px;
-}
-
-.dot {
-  width: 7px;
-  height: 7px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.dot.active {
-  background: white;
-  transform: scale(1.3);
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .Buyer_Dashboard_navbar {
+    flex-direction: column;
+    padding: 1rem 20px;
+    gap: 15px;
+  }
+  .Buyer_Dashboard_search input {
+    width: 80%;
+  }
+  .shop-grid {
+    grid-template-columns: 1fr;
+    padding: 0 20px 50px;
+  }
 }
