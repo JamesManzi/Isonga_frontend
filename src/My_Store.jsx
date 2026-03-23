@@ -21,7 +21,7 @@ function My_Store() {
   const [searchQuery, setSearchQuery] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
-
+  const [productToDelete, setProductToDelete] = useState(null); // Stores the product ID to delete
   // 1. Fetch Store Data
   useEffect(() => {
     const fetchProducts = async () => {
@@ -103,20 +103,33 @@ useEffect(() => {
 
   // --- Actions ---
   const handleDelete = async (productId) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-    try {
-      const res = await axios.delete(
-        `https://isonga-backend.onrender.com/api/products/delete/${productId}`,
-        { withCredentials: true }
-      );
-      if (res.data.success) {
-        setProducts((prev) => prev.filter((p) => p._id !== productId));
-      } else {
-        alert(res.data.message);
-      }
-    } catch (error) {
-      alert("Delete failed");
+    // Step A: Open the confirmation UI
+const confirmDelete = (productId) => {
+  setProductToDelete(productId);
+};
+
+// Step B: The actual API call
+const executeDelete = async () => {
+  if (!productToDelete) return;
+  
+  setLoading(true);
+  try {
+    const res = await axios.delete(
+      `https://isonga-backend.onrender.com/api/products/delete/${productToDelete}`,
+      { withCredentials: true }
+    );
+    if (res.data.success) {
+      setProducts((prev) => prev.filter((p) => p._id !== productToDelete));
+      setProductToDelete(null); // Close modal
+    } else {
+      alert(res.data.message);
     }
+  } catch (error) {
+    alert("Delete failed");
+  } finally {
+    setLoading(false);
+  }
+};
   };
 
   const handleUpdate = async (e) => {
@@ -254,7 +267,12 @@ useEffect(() => {
                   <p className="price">{product.price} Rwf</p>
                   <p>Qty: {product.quantity}</p>
                   <div className="My_Store_btns">
-                    <button className="delete" onClick={() => handleDelete(product._id)}>Delete</button>
+                    <button 
+  className="delete" 
+  onClick={() => confirmDelete(product._id)} // Changed from handleDelete
+>
+  Delete
+</button>
                     <button className="update" onClick={() => setEditingProduct(product)}>Update</button>
                   </div>
                 </div>
@@ -286,7 +304,32 @@ useEffect(() => {
           </div>
         </div>
       )}
-
+{/* Custom Delete Confirmation Modal */}
+{productToDelete && (
+  <div className="delete-modal-overlay">
+    <div className="delete-modal-content">
+      <div className="delete-icon">⚠️</div>
+      <h2>Are you sure?</h2>
+      <p>This action cannot be undone. This product will be permanently removed from your store.</p>
+      <div className="delete-modal-actions">
+        <button 
+          className="cancel-btn" 
+          onClick={() => setProductToDelete(null)}
+          disabled={loading}
+        >
+          No, Keep it
+        </button>
+        <button 
+          className="confirm-btn" 
+          onClick={executeDelete}
+          disabled={loading}
+        >
+          {loading ? "Deleting..." : "Yes, Delete"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
      {/* Media Zoom Modal */}
 {modalMedia.productId && (() => {
   const product = products.find((p) => p._id === modalMedia.productId);
