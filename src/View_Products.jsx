@@ -132,7 +132,16 @@ function View_Products() {
     }
   };
 
-  if (loading) return <div className="products-loading"><h2>ISONGA MARKET</h2><p>Loading...</p></div>;
+  if (loading) {
+    return (
+      <div className="products-loading">
+        <div className="products-loader-card">
+          <h2>ISONGA MARKET</h2>
+          <p>Loading products...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="View_Products">
