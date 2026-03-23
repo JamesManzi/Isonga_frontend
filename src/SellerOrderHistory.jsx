@@ -3,29 +3,58 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes, faHistory } from "@fortawesome/free-solid-svg-icons";
-
+import "./SellerOrderHistory.css"
 function SellerOrderHistory() {
   const [orders, setOrders] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
-
+  const [loading, setLoading] = useState(true);
+   
   const getOrders = () => {
-    axios
-      .get("https://isonga-backend.onrender.com/api/seller/orders", { withCredentials: true })
-      .then((res) => {
-        if (res.data.success) {
-          // Filter to only show Accepted or Cancelled orders
-          const processed = res.data.orders.filter(
-            (o) => o.status === "Accepted" || o.status === "Cancelled"
-          );
-          setOrders(processed);
-        }
-      })
-      .catch((err) => console.error("Error fetching history:", err));
-  };
+  setLoading(true);
+
+  axios
+    .get("https://isonga-backend.onrender.com/api/seller/orders", { withCredentials: true })
+    .then((res) => {
+      if (res.data.success) {
+        const processed = res.data.orders.filter(
+          (o) => o.status === "Accepted" || o.status === "Cancelled"
+        );
+        setOrders(processed);
+      }
+    })
+    .catch((err) => console.error("Error fetching history:", err))
+    .finally(() => setLoading(false));
+};
 
   useEffect(() => {
     getOrders();
   }, []);
+
+  if (loading) {
+  return (
+    <div className="history-loading">
+      <div className="history-card">
+
+        {/* Animated bars */}
+        <div className="line-loader">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+
+        {/* Fake order skeleton */}
+        <div className="fake-order">
+          <div className="fake-title shimmer"></div>
+          <div className="fake-row shimmer"></div>
+          <div className="fake-row shimmer"></div>
+          <div className="fake-row small shimmer"></div>
+        </div>
+
+        <p>Loading order history...</p>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div style={{ padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
