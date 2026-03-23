@@ -420,15 +420,22 @@ onChange={(e)=>setSearchQuery(e.target.value)}
 
     <div className="slider-controls">
       <FontAwesomeIcon
-        icon={faChevronLeft}
-        className="slider-icon"
-        onClick={() => handlePrev(seller._id, seller.files.length)}
-      />
-      <FontAwesomeIcon
-        icon={faChevronRight}
-        className="slider-icon"
-        onClick={() => handleNext(seller._id, seller.files.length)}
-      />
+  icon={faChevronLeft}
+  className="slider-icon"
+  onClick={(e) => {
+    e.stopPropagation();   // ✅ STOP redirect
+    handlePrev(seller._id, seller.files.length);
+  }}
+/>
+
+<FontAwesomeIcon
+  icon={faChevronRight}
+  className="slider-icon"
+  onClick={(e) => {
+    e.stopPropagation();   // ✅ STOP redirect
+    handleNext(seller._id, seller.files.length);
+  }}
+/>
     </div>
   </div>
 ) : (
