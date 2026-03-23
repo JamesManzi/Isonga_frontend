@@ -81,7 +81,33 @@ function View_Profile() {
     return stars;
   };
 
-  if (!seller) return <p>Loading seller profile...</p>;
+  if (!seller) {
+  return (
+    <div className="profile-loading">
+      <div className="loader-header shimmer"></div>
+
+      <div className="loader-profile">
+        <div className="loader-avatar shimmer"></div>
+        <div className="loader-text">
+          <div className="loader-line shimmer"></div>
+          <div className="loader-line small shimmer"></div>
+        </div>
+      </div>
+
+      <div className="loader-details">
+        <div className="loader-line shimmer"></div>
+        <div className="loader-line shimmer"></div>
+        <div className="loader-line shimmer"></div>
+      </div>
+
+      <div className="loader-gallery">
+        <div className="loader-box shimmer"></div>
+        <div className="loader-box shimmer"></div>
+        <div className="loader-box shimmer"></div>
+      </div>
+    </div>
+  );
+}
 
   const getFileUrl = (path) => {
   if (!path) return "/placeholder.png"; // Fallback if no image exists
