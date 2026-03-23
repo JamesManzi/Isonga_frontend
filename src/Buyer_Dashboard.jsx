@@ -22,15 +22,14 @@ const [profile,setProfile]=useState("");
 const [sellers,setSellers]=useState([]);
 const [filteredSellers,setFilteredSellers]=useState([]);
 const [currentImageIndex,setCurrentImageIndex]=useState({});
-
-// Updated state to track which seller and which index is zoomed
-const [selectedMedia,setSelectedMedia]=useState(null); 
-
 const [searchQuery,setSearchQuery]=useState("");
 const [buyerId,setBuyerId]=useState("");
 const [cartCount,setCartCount]=useState(0);
 const [message,setMessage]=useState("");
 const [loading, setLoading] = useState(true);
+
+// Use the same modal state style as My_Store
+const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
 const productCategories=["Fashion","Electronics","Furniture","Construction"];
 const serviceCategories=["services","Hospitality"];
@@ -158,20 +157,6 @@ sellers.filter(s=>
 );
 },[searchQuery,sellers]);
 
-const handleNext=(sellerId,total)=>{
-setCurrentImageIndex(prev=>({
-...prev,
-[sellerId]:(prev[sellerId]+1)%total
-}));
-};
-
-const handlePrev=(sellerId,total)=>{
-setCurrentImageIndex(prev=>({
-...prev,
-[sellerId]:(prev[sellerId]-1+total)%total
-}));
-};
-
 useEffect(() => {
   const interval = setInterval(() => {
     setCurrentImageIndex((prev) => {
@@ -246,35 +231,30 @@ return(
 
 <div className="shop-grid">
 {filteredSellers.length > 0 ? (
-  filteredSellers.map((seller) => (
+  filteredSellers.map((seller) => {
+    const activeIdx = currentImageIndex[seller._id] || 0;
+    return (
     <div key={seller._id} className="shop-card">
 <div className="card-image-section">
 {seller.files && seller.files.length > 0 ? (
   <div className="image-slider">
-    {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
+    {isVideoFile(seller.files[activeIdx]) ? (
       <video
-        src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+        src={getFileUrl(seller.files[activeIdx])}
         muted autoPlay loop className="slider-image"
-        onClick={(e) => { 
-          e.stopPropagation(); 
-          // Open modal with seller info and current index
-          setSelectedMedia({ files: seller.files, index: currentImageIndex[seller._id] || 0 }); 
-        }}
+        onClick={(e) => { e.stopPropagation(); setModalMedia({ sellerId: seller._id, index: activeIdx }); }}
       />
     ) : (
       <img
-        src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+        src={getFileUrl(seller.files[activeIdx])}
         alt={seller.name} className="slider-image"
-        onClick={(e) => { 
-          e.stopPropagation(); 
-          setSelectedMedia({ files: seller.files, index: currentImageIndex[seller._id] || 0 }); 
-        }}
+        onClick={(e) => { e.stopPropagation(); setModalMedia({ sellerId: seller._id, index: activeIdx }); }}
       />
     )}
     {seller.files.length > 1 && (
       <div className="slider-dots">
         {seller.files.map((_, idx) => (
-          <span key={idx} className={`dot ${idx === (currentImageIndex[seller._id] || 0) ? "active" : ""}`}
+          <span key={idx} className={`dot ${idx === activeIdx ? "active" : ""}`}
             onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => ({...prev, [seller._id]: idx})); }}
           ></span>
         ))}
@@ -299,43 +279,38 @@ return(
 </div>
 </div>
 </div>
-))
+)})
 ) : (
 <p className="no-sellers-msg">No sellers found</p>
 )}
 </div>
 
-{/* ZOOM MODAL WITH ARROWS */}
-{selectedMedia && (
-<div className="media-modal" onClick={()=>setSelectedMedia(null)}>
-<span className="close-btn" onClick={()=>setSelectedMedia(null)}>&times;</span>
-
-{/* Left Arrow */}
-<button className="modal-arrow left" onClick={(e) => {
-  e.stopPropagation();
-  const newIdx = (selectedMedia.index - 1 + selectedMedia.files.length) % selectedMedia.files.length;
-  setSelectedMedia({...selectedMedia, index: newIdx});
-}}>
-  <FontAwesomeIcon icon={faChevronLeft} />
-</button>
-
-{isVideoFile(selectedMedia.files[selectedMedia.index]) ? (
-<video src={getFileUrl(selectedMedia.files[selectedMedia.index])} controls autoPlay onClick={(e)=>e.stopPropagation()}/>
-) : (
-<img src={getFileUrl(selectedMedia.files[selectedMedia.index])} alt="preview" onClick={(e)=>e.stopPropagation()}/>
-)}
-
-{/* Right Arrow */}
-<button className="modal-arrow right" onClick={(e) => {
-  e.stopPropagation();
-  const newIdx = (selectedMedia.index + 1) % selectedMedia.files.length;
-  setSelectedMedia({...selectedMedia, index: newIdx});
-}}>
-  <FontAwesomeIcon icon={faChevronRight} />
-</button>
-
-</div>
-)}
+{/* MEDIA ZOOM MODAL - SAME STYLE AS MY_STORE */}
+{modalMedia.sellerId && (() => {
+  const seller = sellers.find(s => s._id === modalMedia.sellerId);
+  if (!seller) return null;
+  const file = seller.files[modalMedia.index];
+  return (
+    <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
+      <span className="close-btn">&times;</span>
+      {isVideoFile(file) ? (
+        <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
+      ) : (
+        <img src={getFileUrl(file)} alt="Full view" className="full-media" onClick={(e) => e.stopPropagation()} />
+      )}
+      <div className="modal-controls">
+        <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
+          e.stopPropagation();
+          setModalMedia(p => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length }));
+        }} />
+        <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
+          e.stopPropagation();
+          setModalMedia(p => ({ ...p, index: (p.index + 1) % seller.files.length }));
+        }} />
+      </div>
+    </div>
+  );
+})()}
 
 {message && (
   <div className={`alert ${message.type}`}><span className="alert-icon">{message.type === "success" ? "✓" : "⚠"}</span><span>{message.text}</span></div>
