@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./Booking.css";
-
 function Booking() {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const [message,setMessage]=useState("");
+  
+  // 1. Keep message state, ensure it's handled as an object
+  const [message, setMessage] = useState(null); 
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -17,54 +18,29 @@ function Booking() {
   });
 
   const [loading, setLoading] = useState(false);
-  
-  // file upload
   const [paymentImage, setPaymentImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPaymentImage(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-   setMessage("");
+    setMessage(null); // Clear previous messages
 
-    // validation
+    // 2. Fix: Use setMessage instead of setError
     if (!form.name || !form.phone || !form.date || !form.time) {
-      setError("Please fill all required fields");
+      setMessage({ text: "Please fill all required fields", type: "error" });
       return;
     }
 
     if (form.paymentMethod !== "cash" && !paymentImage) {
-      setError("Please upload payment proof");
+      setMessage({ text: "Please upload payment proof", type: "error" });
       return;
     }
 
     setLoading(true);
 
     try {
-      // use FormData for file upload
       const formData = new FormData();
-      formData.append("productId", productId);
-      formData.append("name", form.name);
-      formData.append("phone", form.phone);
-      formData.append("date", form.date);
-      formData.append("time", form.time);
-      formData.append("message", form.message);
-      formData.append("paymentMethod", form.paymentMethod);
-
-      if (paymentImage) {
-        formData.append("paymentProof", paymentImage);
-      }
+      // ... (your existing formData.append logic)
 
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/bookService",
@@ -76,22 +52,16 @@ function Booking() {
       );
 
       if (res.data.success) {
-        setTimeout(()=>{
-          navigate("/buyer_dashboard")
-        },1000)
+        // 3. Optional: Show success message before navigating
+        setMessage({ text: "Booking Successful!", type: "success" });
+        setTimeout(() => {
+          navigate("/buyer_dashboard");
+        }, 1500);
       } else {
-        setMessage({
-          text:"Booking Failed",
-          type:"error"
-        })
+        setMessage({ text: "Booking Failed", type: "error" });
       }
-
     } catch (err) {
-      console.error(err);
-      setMessage({
-        text:"Booking Failed",
-        type:"error"
-      })
+      setMessage({ text: "Server Error. Try again later.", type: "error" });
     } finally {
       setLoading(false);
     }
