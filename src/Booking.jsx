@@ -1,31 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./Booking.css";
+
 function Booking() {
   const { productId } = useParams();
   const navigate = useNavigate();
-  
-  // 1. Keep message state, ensure it's handled as an object
-  const [message, setMessage] = useState(null); 
+
+  // State for messages (Success/Error)
+  const [message, setMessage] = useState(null);
+
+  // Form Data State
   const [form, setForm] = useState({
     name: "",
     phone: "",
     date: "",
     time: "",
     message: "",
-    paymentMethod: "cash"
+    paymentMethod: "cash",
   });
 
   const [loading, setLoading] = useState(false);
   const [paymentImage, setPaymentImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
+  // ✅ Fix 1: Added missing handleChange function
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // ✅ Fix 2: Added missing handleFileChange function
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPaymentImage(file);
+      // Create a local URL for the image preview
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null); // Clear previous messages
 
-    // 2. Fix: Use setMessage instead of setError
+    // Validation
     if (!form.name || !form.phone || !form.date || !form.time) {
       setMessage({ text: "Please fill all required fields", type: "error" });
       return;
@@ -40,27 +61,38 @@ function Booking() {
 
     try {
       const formData = new FormData();
-      // ... (your existing formData.append logic)
+      formData.append("productId", productId);
+      formData.append("name", form.name);
+      formData.append("phone", form.phone);
+      formData.append("date", form.date);
+      formData.append("time", form.time);
+      formData.append("message", form.message);
+      formData.append("paymentMethod", form.paymentMethod);
+      
+      if (paymentImage) {
+        formData.append("paymentImage", paymentImage);
+      }
 
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/bookService",
         formData,
         {
           withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" }
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
 
       if (res.data.success) {
-        // 3. Optional: Show success message before navigating
         setMessage({ text: "Booking Successful!", type: "success" });
+        // Redirect after a short delay so user sees the success message
         setTimeout(() => {
           navigate("/buyer_dashboard");
         }, 1500);
       } else {
-        setMessage({ text: "Booking Failed", type: "error" });
+        setMessage({ text: res.data.message || "Booking Failed", type: "error" });
       }
     } catch (err) {
+      console.error(err);
       setMessage({ text: "Server Error. Try again later.", type: "error" });
     } finally {
       setLoading(false);
@@ -69,18 +101,22 @@ function Booking() {
 
   return (
     <div className="booking-container">
+      {/* Header Section */}
       <div className="booking-header">
         <h2>Book Service</h2>
         <div className="booking-actions">
-          <button onClick={() => navigate(-1)} className="btn-back">Back</button>
-          <Link to="/login" className="btn-logout">Logout</Link>
+          {/* ✅ Fix 3: Updated to navigate(-1) for dynamic back behavior */}
+          <button onClick={() => navigate(-1)} className="btn-back">
+            Back
+          </button>
+          <Link to="/login" className="btn-logout">
+            Logout
+          </Link>
         </div>
       </div>
 
-      {error && <p className="booking-error">{error}</p>}
-
+      {/* Main Form */}
       <form onSubmit={handleSubmit} className="booking-form">
-
         <label>Your Name</label>
         <input
           type="text"
@@ -124,6 +160,7 @@ function Booking() {
         <textarea
           name="message"
           value={form.message}
+          placeholder="Any specific requests?"
           onChange={handleChange}
         />
 
@@ -152,7 +189,7 @@ function Booking() {
             {preview && (
               <div className="preview">
                 <p>Preview:</p>
-                <img src={preview} alt="preview" width="120" />
+                <img src={preview} alt="preview" width="120" style={{ borderRadius: "8px" }} />
               </div>
             )}
           </div>
@@ -162,15 +199,16 @@ function Booking() {
           {loading ? "Sending..." : "Send Booking"}
         </button>
       </form>
-      {message && (
-  <div className={`alert ${message.type}`}>
-    <span className="alert-icon">
-      {message.type === "success" ? "✓" : "⚠"}
-    </span>
-    <span>{message.text}</span>
-  </div>
-)}
 
+      {/* Alert Message Overlay */}
+      {message && (
+        <div className={`alert ${message.type}`}>
+          <span className="alert-icon">
+            {message.type === "success" ? "✓" : "⚠"}
+          </span>
+          <span>{message.text}</span>
+        </div>
+      )}
     </div>
   );
 }
