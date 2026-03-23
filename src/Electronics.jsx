@@ -3,26 +3,18 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faChevronLeft, 
-  faChevronRight, 
-  faSearch, 
-  faCartShopping, 
-  faStar 
-} from "@fortawesome/free-solid-svg-icons";
-
-import "./Buyer_Dashboard.css"; // Ensure this is imported for the styles
+import { faChevronLeft, faChevronRight, faSearch, faCartShopping, faStar } from "@fortawesome/free-solid-svg-icons";
 
 function Electronics() {
-  const navigate = useNavigate();
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
   const [buyerName, setBuyerName] = useState("");
   const [profile, setProfile] = useState("");
+  const [selectedMedia, setSelectedMedia] = useState(null);
+  const navigate = useNavigate(); // FIX: Initialized navigate
   const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
   const [cartCount, setCartCount] = useState(0);
-  const [loading, setLoading] = useState(true);
 
   const fetchCartCount = async () => {
     try {
@@ -60,7 +52,6 @@ function Electronics() {
     return stars;
   };
 
-  // Auto-slider for the images
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => {
@@ -79,7 +70,6 @@ function Electronics() {
 
   useEffect(() => {
     const fetchSellers = async () => {
-      setLoading(true);
       try {
         const res = await axios.get(
           "https://isonga-backend.onrender.com/api/sellers/Electronics",
@@ -95,8 +85,6 @@ function Electronics() {
       } catch (error) {
         console.log(error);
         setMessage("Error fetching shops");
-      } finally {
-        setLoading(false);
       }
     };
     fetchSellers();
@@ -109,29 +97,21 @@ function Electronics() {
 
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
 
-  if (loading) {
-    return (
-      <div className="beautiful-loading">
-        <div className="text-center bg-white/20 backdrop-blur-lg p-10 rounded-3xl border border-white/30 shadow-2xl">
-          <div className="loader-dots flex space-x-2 justify-center mb-4">
-            <div className="w-4 h-4 bg-white rounded-full animate-bounce"></div>
-            <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          </div>
-          <h2 className="text-white font-bold text-xl tracking-widest">ISONGA MARKET</h2>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="Buyer_Dashboard">
+    <div>
       {/* Navbar */}
       <div className="Buyer_Dashboard_navbar">
-        <div className="Buyer_Dashboard_logos"><img src="/logo.png" alt="Logo" /></div>
-        <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
+        <div className="Buyer_Dashboard_logos">
+          <img src="/logo.png" alt="Logo" />
+        </div>
+        <div className="Buyer_Dashboard_heads">
+          <h1>Isonga</h1>
+          <h2>Market</h2>
+        </div>
         <div className="Buyer_Dashboard_user">
-          <Link to="/buyer_profile"><img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="Profile" /></Link>
+          <Link to="/buyer_profile">
+            <img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="Profile" />
+          </Link>
           <ChatNotification />
         </div>
         <div className="Buyer_Dashboard_nav">
@@ -153,24 +133,27 @@ function Electronics() {
           )}
         </Link>
         <div className="Buyer_Dashboard_logout">
-          <Link to="/buyer_dashboard"><button>Dashboard</button></Link>
+          <Link to="/buyer_dashboard">
+            <button>Dashboard</button>
+          </Link>
         </div>
       </div>
 
+      {/* Welcome Message */}
       <div className="Buyer_Dashboard_Heading">
         <h1>Welcome back, {buyerName}! 🛍️</h1>
-        <p>Browse the best Electronics Shops and enjoy secure shopping.</p>
+        <p>Browse thousands of better Shops and enjoy secure, fast shopping.</p>
       </div>
 
       <div className="Buyer_Dashboard_search">
-        <input type="search" className="searching" placeholder="Search Electronics" />
+        <input type="search" className="searching" placeholder="Search" />
         <button><FontAwesomeIcon icon={faSearch} />Search</button>
       </div>
 
       {/* Sellers Grid */}
       <div className="shop-grid">
         {sellers.map((seller) => {
-          const activeIdx = currentImageIndex[seller._id] || 0;
+          const activeIdx = currentImageIndex[seller._id] || 0; // FIX: Defined activeIdx inside map
           return (
             <div key={seller._id} className="shop-card">
               <div className="card-image-section">
@@ -179,34 +162,29 @@ function Electronics() {
                     {isVideoFile(seller.files[activeIdx]) ? (
                       <video
                         src={getFileUrl(seller.files[activeIdx])}
-                        muted autoPlay loop
-                        className="slider-image"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setModalMedia({ sellerId: seller._id, index: activeIdx });
+                        muted autoPlay loop className="slider-image"
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          setModalMedia({ sellerId: seller._id, index: activeIdx }); 
                         }}
                       />
                     ) : (
                       <img
                         src={getFileUrl(seller.files[activeIdx])}
-                        className="slider-image"
-                        alt="media"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setModalMedia({ sellerId: seller._id, index: activeIdx });
+                        alt={seller.name} className="slider-image"
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          setModalMedia({ sellerId: seller._id, index: activeIdx }); 
                         }}
                       />
                     )}
-
                     {seller.files.length > 1 && (
                       <div className="slider-dots">
                         {seller.files.map((_, idx) => (
-                          <span
-                            key={idx}
-                            className={`dot ${idx === activeIdx ? "active" : ""}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCurrentImageIndex(prev => ({ ...prev, [seller._id]: idx }));
+                          <span key={idx} className={`dot ${idx === activeIdx ? "active" : ""}`}
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              setCurrentImageIndex(prev => ({...prev, [seller._id]: idx})); 
                             }}
                           ></span>
                         ))}
@@ -217,20 +195,29 @@ function Electronics() {
                   <img src="/placeholder.png" alt="No Images" className="slider-image" />
                 )}
                 <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
-                  <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt="Avatar" className="avatar-image" />
+                  <img
+                    src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"}
+                    alt={seller.name}
+                    className="avatar-image"
+                  />
                 </Link>
               </div>
 
               <div className="shop-card-info">
                 <h3 className="seller-name">{seller.name} Shop</h3>
                 <p className="seller-location">{seller.location}</p>
+                <p className="seller-category">{seller.category} Shop</p>
                 <div className="rating">
-                  {renderStars(seller.averageRating || 0)} ({seller.numReviews || 0})
+                  <p>{renderStars(seller.averageRating || 0)} ({seller.numReviews || 0})</p>
                 </div>
                 <p className="seller-description">{seller.description}</p>
                 <div className="card-actions">
-                  <Link to={`/view_products/${seller._id}`}><button className="visit-btn">Visit Shop</button></Link>
-                  <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
+                  <Link to={`/view_products/${seller._id}`}>
+                    <button className="visit-btn">Visit Shop</button>
+                  </Link>
+                  <Link to={`/buyer_chat/${seller._id}`}>
+                    <button className="chat-btn">Chat</button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -238,7 +225,7 @@ function Electronics() {
         })}
       </div>
 
-      {/* Media Zoom Modal with Arrows */}
+      {/* Media Zoom Modal */}
       {modalMedia.sellerId && (() => {
         const seller = sellers.find((s) => s._id === modalMedia.sellerId);
         if (!seller) return null;
@@ -268,19 +255,16 @@ function Electronics() {
       <footer className="Buyer_Footer">
         <div className="Footer_Container">
           <div className="Footer_Section">
-            <div className="Footer_Logo"><img src="/logo.png" alt="Logo" /><h3>Isonga Market</h3></div>
-            <p>The leading digital marketplace in Rwanda.</p>
-          </div>
-          <div className="Footer_Section">
-            <h4>Secure Payments</h4>
-            <div className="Payment_Methods">
-              <span className="Payment_Badge momo">MTN MoMo</span>
-              <span className="Payment_Badge airtel">Airtel Money</span>
+            <div className="Footer_Logo">
+              <img src="/logo.png" alt="Logo"/>
+              <h3>Isonga Market</h3>
             </div>
+            <p>The leading digital marketplace in Rwanda.</p>
           </div>
         </div>
         <div className="Footer_Bottom">
-          <p>&copy; {new Date().getFullYear()} Isonga Market. Designed for Rwanda 🇷🇼</p>
+          <p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved.</p>
+          <p>Designed for Rwanda 🇷🇼</p>
         </div>
       </footer>
     </div>
