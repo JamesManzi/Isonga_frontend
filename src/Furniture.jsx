@@ -7,11 +7,12 @@ import {faChevronLeft, faChevronRight, faSearch,faStar,faCartShopping } from "@f
 function Furniture(){
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
-  const [buyerName,setBuyerName]=useState("");
-  const[profile,setProfile]=useState("");
-  const navigate=useNavigate();
+  const [buyerName, setBuyerName] = useState("");
+  const [profile, setProfile] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState({});
-  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
+  const navigate = useNavigate(); // FIX: Added missing navigate initialization
+
 
   const [cartCount, setCartCount] = useState(0); // rename from cartItems
 const fetchCartCount = async () => {
@@ -179,39 +180,38 @@ const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
       <div className="card-image-section">
         {seller.files && seller.files.length > 0 ? (
           <div className="image-slider">
-  {/* Logic to choose between Video or Image - CHANGED 'item' to 'seller' */}
-  {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
-    <video
-      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-      muted autoPlay loop
-      className="slider-image"
-      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-    />
-  ) : (
-    <img
-      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-      className="slider-image"
-      alt="media"
-      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-    />
-  )}
-
-  {/* The Instagram Dots - CHANGED 'item' to 'seller' */}
-  {seller.files.length > 1 && (
-    <div className="slider-dots">
-      {seller.files.map((_, idx) => (
-        <span 
-          key={idx} 
-          className={`dot ${idx === (currentImageIndex[seller._id] || 0) ? "active" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation(); 
-            setCurrentImageIndex(prev => ({...prev, [seller._id]: idx}));
-          }}
-        ></span>
-      ))}
-    </div>
-  )}
-</div>
+                    {isVideoFile(seller.files[activeIdx]) ? (
+                      <video
+                        src={getFileUrl(seller.files[activeIdx])}
+                        muted autoPlay loop className="slider-image"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setModalMedia({ sellerId: seller._id, index: activeIdx });
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={getFileUrl(seller.files[activeIdx])}
+                        alt={seller.name} className="slider-image"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setModalMedia({ sellerId: seller._id, index: activeIdx });
+                        }}
+                      />
+                    )}
+                    {seller.files.length > 1 && (
+                      <div className="slider-dots">
+                        {seller.files.map((_, idx) => (
+                          <span key={idx} className={`dot ${idx === activeIdx ? "active" : ""}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCurrentImageIndex(prev => ({ ...prev, [seller._id]: idx }));
+                            }}
+                          ></span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
         ) : (
           <img src="/placeholder.png" alt="No Images" className="slider-image" />
         )}
@@ -254,16 +254,34 @@ const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
     </div>
   ))}
     </div>
-    {selectedMedia && (
-  <div className="media-modal" onClick={() => setSelectedMedia(null)}>
-    <span className="close-btn">&times;</span>
-    {selectedMedia.endsWith(".mp4") ? (
-      <video src={getFileUrl(selectedMedia)} controls autoPlay />
-    ) : (
-      <img src={getFileUrl(selectedMedia)} alt="Full view" />
-    )}
-  </div>
-)}
+    
+          {/* Media Zoom Modal */}
+          {modalMedia.sellerId && (() => {
+            const seller = sellers.find((s) => s._id === modalMedia.sellerId);
+            if (!seller) return null;
+            const file = seller.files[modalMedia.index];
+            return (
+              <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
+                <span className="close-btn">&times;</span>
+                {isVideoFile(file) ? (
+                  <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
+                ) : (
+                  <img src={getFileUrl(file)} alt="Full view" className="full-media" onClick={(e) => e.stopPropagation()} />
+                )}
+                <div className="modal-controls">
+                  <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
+                    e.stopPropagation();
+                    setModalMedia(p => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length }));
+                  }} />
+                  <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
+                    e.stopPropagation();
+                    setModalMedia(p => ({ ...p, index: (p.index + 1) % seller.files.length }));
+                  }} />
+                </div>
+              </div>
+            );
+          })()}
+    
 {/* FOOTER SECTION */}
 <footer className="Buyer_Footer">
   <div className="Footer_Container">
