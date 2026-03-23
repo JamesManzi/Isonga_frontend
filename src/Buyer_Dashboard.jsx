@@ -28,7 +28,7 @@ const [cartCount,setCartCount]=useState(0);
 const [message,setMessage]=useState("");
 const [loading, setLoading] = useState(true);
 
-// Use the same modal state style as My_Store
+// State for Media Zoom Modal (Matches My_Store style)
 const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
 const productCategories=["Fashion","Electronics","Furniture","Construction"];
@@ -242,20 +242,29 @@ return(
       <video
         src={getFileUrl(seller.files[activeIdx])}
         muted autoPlay loop className="slider-image"
-        onClick={(e) => { e.stopPropagation(); setModalMedia({ sellerId: seller._id, index: activeIdx }); }}
+        onClick={(e) => { 
+          e.stopPropagation(); 
+          setModalMedia({ sellerId: seller._id, index: activeIdx }); 
+        }}
       />
     ) : (
       <img
         src={getFileUrl(seller.files[activeIdx])}
         alt={seller.name} className="slider-image"
-        onClick={(e) => { e.stopPropagation(); setModalMedia({ sellerId: seller._id, index: activeIdx }); }}
+        onClick={(e) => { 
+          e.stopPropagation(); 
+          setModalMedia({ sellerId: seller._id, index: activeIdx }); 
+        }}
       />
     )}
     {seller.files.length > 1 && (
       <div className="slider-dots">
         {seller.files.map((_, idx) => (
           <span key={idx} className={`dot ${idx === activeIdx ? "active" : ""}`}
-            onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => ({...prev, [seller._id]: idx})); }}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              setCurrentImageIndex(prev => ({...prev, [seller._id]: idx})); 
+            }}
           ></span>
         ))}
       </div>
@@ -265,7 +274,11 @@ return(
   <img src="/placeholder.png" alt="no image" className="slider-image" />
 )}
 </div>
-<Link to={`/view_profile/${seller._id}`} className="profile-avatar"><img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image"/></Link>
+{/* Link is kept only on the small avatar icon area */}
+<Link to={`/view_profile/${seller._id}`} className="profile-avatar">
+  <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image"/>
+</Link>
+
 <div className="shop-card-info">
 <h3>{seller.name} Shop</h3>
 <p>{seller.location}</p>
@@ -284,14 +297,14 @@ return(
 )}
 </div>
 
-{/* MEDIA ZOOM MODAL - SAME STYLE AS MY_STORE */}
+{/* MEDIA ZOOM MODAL - MATCHES MY_STORE STYLE */}
 {modalMedia.sellerId && (() => {
   const seller = sellers.find(s => s._id === modalMedia.sellerId);
   if (!seller) return null;
   const file = seller.files[modalMedia.index];
   return (
     <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
-      <span className="close-btn">&times;</span>
+      <span className="close-btn" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>&times;</span>
       {isVideoFile(file) ? (
         <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
       ) : (
