@@ -31,14 +31,34 @@ const getBookings = async () => {
 useEffect(() => {
     getBookings();
   }, []);
- if (loading) {
-    return (
-      <div className="spinner-overlay">
-        <div className="spinner"></div>
-        <p className="spinner-text">Loading booking history...</p>
+ 
+  
+  if (loading) {
+  return (
+    <div className="history-loading">
+      <div className="history-card">
+
+        {/* Animated bars */}
+        <div className="line-loader">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+
+        {/* Fake order skeleton */}
+        <div className="fake-order">
+          <div className="fake-title shimmer"></div>
+          <div className="fake-row shimmer"></div>
+          <div className="fake-row shimmer"></div>
+          <div className="fake-row small shimmer"></div>
+        </div>
+
+        <p>Loading Booking history...</p>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
   return (
     <div style={{ padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
       <Link to="/dashboard" style={{ textDecoration: "none", color: "#3498db", fontWeight: "600" }}>

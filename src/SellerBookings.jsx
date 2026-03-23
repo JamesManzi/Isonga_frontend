@@ -48,8 +48,22 @@ function SellerBookings() {
       .catch((err) => console.error("Error updating booking status:", err));
   };
 
-  // 3. Handle the loading state in your UI
-  if (loading) return <div style={containerStyle}>Loading bookings...</div>;
+  
+ if (loading) {
+  return (
+    <div className="orders-loading">
+      <div className="orders-loader-card">
+
+        <div className="ring-loader"></div>
+
+        <h2>ISONGA MARKET</h2>
+        <p>Fetching incoming Bookings...</p>
+
+      </div>
+    </div>
+  );
+}
+
 
   return (
     // ... rest of your JSX remains the same
