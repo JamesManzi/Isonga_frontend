@@ -112,11 +112,25 @@ function Checkout() {
     } catch (error) {
       console.log(error);
       setError("Server error while placing order");
+    } finally{
+      setPlacingOrder(false);
     }
-    setPlacingOrder(false);
   };
 
-  if (loading) return <p className="checkout-loading">Loading checkout...</p>;
+  if (loading) {
+  return (
+    <div className="checkout-loading-modern">
+      <div className="checkout-loader-card">
+
+        <div className="checkout-pulse"></div>
+
+        <h2>ISONGA MARKET</h2>
+        <p>Preparing checkout...</p>
+
+      </div>
+    </div>
+  );
+}
 
   if (!cart || cart.items.length === 0) {
     return (
