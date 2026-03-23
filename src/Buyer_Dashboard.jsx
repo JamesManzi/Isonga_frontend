@@ -264,9 +264,8 @@ return(
 ) : (
   <img src="/placeholder.png" alt="no image" className="slider-image" />
 )}
-<Link to={`/view_profile/${seller._id}`} className="profile-avatar"><img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image"/></Link>
 </div>
-
+<Link to={`/view_profile/${seller._id}`} className="profile-avatar"><img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image"/></Link>
 <div className="shop-card-info">
 <h3>{seller.name} Shop</h3>
 <p>{seller.location}</p>
