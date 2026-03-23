@@ -110,8 +110,12 @@ const [popupMessage, setPopupMessage] = useState("");
 
   if (loading) {
     return (
-      <div className="View_Products">
-        <p>Loading Services.....</p>
+      <div className="loader-container">
+        <div className="loader-spinner"></div>
+        <div className="loader-heads">
+          <h1>Isonga</h1>
+          <p>Fetching  services...</p>
+        </div>
       </div>
     );
   }
