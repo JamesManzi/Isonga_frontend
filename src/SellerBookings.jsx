@@ -7,7 +7,7 @@ function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
   const [loading, setLoading] = useState(false);
-
+ const [actionLoading, setActionLoading] = useState(null);
   // 1. Move fetch logic into a function usable by useEffect
   const getBookings = async () => {
     setLoading(true);
@@ -33,21 +33,25 @@ function SellerBookings() {
   }, []);
 
   // 2. Define updateStatus clearly
-  const updateStatus = (bookingId, newStatus) => {
-    axios
-      .put(
-        `https://isonga-backend.onrender.com/api/bookings/${bookingId}`,
-        { status: newStatus },
-        { withCredentials: true }
-      )
-      .then((res) => {
-        if (res.data.success) {
-          setBookings((prev) => prev.filter((b) => b._id !== bookingId));
-        }
-      })
-      .catch((err) => console.error("Error updating booking status:", err));
-  };
+ const updateStatus = async (bookingId, newStatus) => {
+  try {
+    setActionLoading(bookingId); // Start loading for this specific ID
 
+    const res = await axios.put(
+      `https://isonga-backend.onrender.com/api/bookings/${bookingId}`,
+      { status: newStatus },
+      { withCredentials: true }
+    );
+
+    if (res.data.success) {
+      setBookings((prev) => prev.filter((b) => b._id !== bookingId));
+    }
+  } catch (err) {
+    console.error("Error updating booking status:", err);
+  } finally {
+    setActionLoading(null); // Stop loading
+  }
+};
   
  if (loading) {
   return (
@@ -114,19 +118,21 @@ function SellerBookings() {
             {/* ✅ ACTION BUTTONS */}
               <div style={btnContainer}>
   <button
-    onClick={() => updateStatus(booking._id, "Accepted")} // CHANGED: matches schema enum
+    onClick={() => updateStatus(booking._id, "Accepted")}
     style={btnAccept}
+    disabled={actionLoading === booking._id}
   >
-    Approve
+    {actionLoading === booking._id ? "Processing..." : "Approve"}
   </button>
 
-             <button
-    onClick={() => updateStatus(booking._id, "Cancelled")} // CHANGED: matches schema enum
+  <button
+    onClick={() => updateStatus(booking._id, "Cancelled")}
     style={btnDecline}
+    disabled={actionLoading === booking._id}
   >
-    Decline
+    {actionLoading === booking._id ? "Processing..." : "Decline"}
   </button>
-            </div>
+</div>
           </div>
         ))
       )}
