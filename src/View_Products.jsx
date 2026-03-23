@@ -20,18 +20,16 @@ function View_Products() {
   const [seller, setSeller] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  const [currentIndex, setCurrentIndex] = useState({}); // Matches My_Store state
+  const [currentIndex, setCurrentIndex] = useState({}); 
   const [searchQuery, setSearchQuery] = useState("");
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [cartLoading, setCartLoading] = useState(null);
   
-  // Zoom Modal State (Matches My_Store)
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
 
   const hasTracked = useRef(false);
 
-  // 1. Fetch Products Logic
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -51,7 +49,6 @@ function View_Products() {
         setFilteredProducts(fetchedProducts);
         setSeller(res.data.seller);
 
-        // Initialize slider indexes
         const indexes = {};
         fetchedProducts.forEach((p) => {
           indexes[p._id] = 0;
@@ -76,7 +73,6 @@ function View_Products() {
     fetchProducts();
   }, [id, navigate]);
 
-  // 2. Auto-Slider Logic (Matches My_Store)
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => {
@@ -93,7 +89,6 @@ function View_Products() {
     return () => clearInterval(interval);
   }, [products]);
 
-  // Search Logic
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredProducts(products);
@@ -107,20 +102,6 @@ function View_Products() {
       setFilteredProducts(filtered);
     }
   }, [searchQuery, products]);
-
-  const handleNext = (productId, totalFiles) => {
-    setCurrentIndex((prev) => ({
-      ...prev,
-      [productId]: (prev[productId] + 1) % totalFiles,
-    }));
-  };
-
-  const handlePrev = (productId, totalFiles) => {
-    setCurrentIndex((prev) => ({
-      ...prev,
-      [productId]: (prev[productId] - 1 + totalFiles) % totalFiles,
-    }));
-  };
 
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
 
@@ -198,15 +179,7 @@ function View_Products() {
                   )
                 ) : <img src="/placeholder.png" className="slider-media" />}
 
-                {/* Slider Arrows */}
-                {files.length > 1 && (
-                  <div className="slider-controls">
-                    <FontAwesomeIcon icon={faChevronLeft} className="slider-icon" onClick={(e) => { e.stopPropagation(); handlePrev(product._id, files.length); }} />
-                    <FontAwesomeIcon icon={faChevronRight} className="slider-icon" onClick={(e) => { e.stopPropagation(); handleNext(product._id, files.length); }} />
-                  </div>
-                )}
-
-                {/* Slider Dots (Matches My_Store) */}
+                {/* Slider Dots (No icons here) */}
                 {files.length > 1 && (
                   <div className="slider-dots">
                     {files.map((_, idx) => (
@@ -237,7 +210,7 @@ function View_Products() {
         })}
       </div>
 
-      {/* Media Zoom Modal (Matches My_Store) */}
+      {/* Media Zoom Modal - ICONS ONLY APPEAR HERE */}
       {modalMedia.productId && (() => {
         const product = products.find((p) => p._id === modalMedia.productId);
         if (!product) return null; 
