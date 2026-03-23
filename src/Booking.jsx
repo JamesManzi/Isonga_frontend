@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./Booking.css";
@@ -6,47 +6,43 @@ import "./Booking.css";
 function Booking() {
   const { productId } = useParams();
   const navigate = useNavigate();
-
-  // State for messages (Success/Error)
-  const [message, setMessage] = useState(null);
-
-  // Form Data State
+  
+  const [message, setMessage] = useState(null); 
   const [form, setForm] = useState({
     name: "",
     phone: "",
     date: "",
     time: "",
     message: "",
-    paymentMethod: "cash",
+    paymentMethod: "cash"
   });
 
   const [loading, setLoading] = useState(false);
   const [paymentImage, setPaymentImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  // ✅ Fix 1: Added missing handleChange function
+  // ✅ ADDED: Function to handle text input changes
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  // ✅ Fix 2: Added missing handleFileChange function
+  // ✅ ADDED: Function to handle file uploads and image preview
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setPaymentImage(file);
-      // Create a local URL for the image preview
-      setPreview(URL.createObjectURL(file));
+      setPreview(URL.createObjectURL(file)); // Creates a temporary URL for the preview <img>
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage(null); // Clear previous messages
+    setMessage(null); 
 
-    // Validation
     if (!form.name || !form.phone || !form.date || !form.time) {
       setMessage({ text: "Please fill all required fields", type: "error" });
       return;
@@ -78,21 +74,19 @@ function Booking() {
         formData,
         {
           withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: { "Content-Type": "multipart/form-data" }
         }
       );
 
       if (res.data.success) {
         setMessage({ text: "Booking Successful!", type: "success" });
-        // Redirect after a short delay so user sees the success message
         setTimeout(() => {
           navigate("/buyer_dashboard");
         }, 1500);
       } else {
-        setMessage({ text: res.data.message || "Booking Failed", type: "error" });
+        setMessage({ text: "Booking Failed", type: "error" });
       }
     } catch (err) {
-      console.error(err);
       setMessage({ text: "Server Error. Try again later.", type: "error" });
     } finally {
       setLoading(false);
@@ -101,21 +95,20 @@ function Booking() {
 
   return (
     <div className="booking-container">
-      {/* Header Section */}
       <div className="booking-header">
         <h2>Book Service</h2>
         <div className="booking-actions">
-          {/* ✅ Fix 3: Updated to navigate(-1) for dynamic back behavior */}
-          <button onClick={() => navigate(-1)} className="btn-back">
-            Back
-          </button>
-          <Link to="/login" className="btn-logout">
-            Logout
-          </Link>
+          {/* ✅ Updated to return to previous page */}
+          <button onClick={() => navigate(-1)} className="btn-back">Back</button>
+          <Link to="/login" className="btn-logout">Logout</Link>
         </div>
       </div>
 
-      {/* Main Form */}
+      {/* ✅ Fixed: Changed 'error' to 'message' to match your state */}
+      {message && message.type === "error" && (
+        <p className="booking-error">{message.text}</p>
+      )}
+
       <form onSubmit={handleSubmit} className="booking-form">
         <label>Your Name</label>
         <input
@@ -160,11 +153,9 @@ function Booking() {
         <textarea
           name="message"
           value={form.message}
-          placeholder="Any specific requests?"
           onChange={handleChange}
         />
 
-        {/* PAYMENT SECTION */}
         <label>Payment Method</label>
         <select
           name="paymentMethod"
@@ -176,7 +167,6 @@ function Booking() {
           <option value="card">Card</option>
         </select>
 
-        {/* CONDITIONAL FILE UPLOAD */}
         {form.paymentMethod !== "cash" && (
           <div className="payment-upload">
             <label>Upload Payment Screenshot</label>
@@ -189,7 +179,7 @@ function Booking() {
             {preview && (
               <div className="preview">
                 <p>Preview:</p>
-                <img src={preview} alt="preview" width="120" style={{ borderRadius: "8px" }} />
+                <img src={preview} alt="preview" width="120" />
               </div>
             )}
           </div>
@@ -200,7 +190,6 @@ function Booking() {
         </button>
       </form>
 
-      {/* Alert Message Overlay */}
       {message && (
         <div className={`alert ${message.type}`}>
           <span className="alert-icon">
