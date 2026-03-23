@@ -161,31 +161,33 @@ const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
             <div className="card-image-section">
               {seller.files && seller.files.length > 0 ? (
                 <div className="image-slider">
-  {/* Logic to choose between Video or Image */}
-  {isVideoFile(item.files[currentImageIndex[item._id] || 0]) ? (
+  {/* Logic to choose between Video or Image - CHANGED 'item' to 'seller' */}
+  {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
     <video
-      src={getFileUrl(item.files[currentImageIndex[item._id] || 0])}
+      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
       muted autoPlay loop
       className="slider-image"
+      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
     />
   ) : (
     <img
-      src={getFileUrl(item.files[currentImageIndex[item._id] || 0])}
+      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
       className="slider-image"
       alt="media"
+      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
     />
   )}
 
-  {/* The Instagram Dots */}
-  {item.files.length > 1 && (
+  {/* The Instagram Dots - CHANGED 'item' to 'seller' */}
+  {seller.files.length > 1 && (
     <div className="slider-dots">
-      {item.files.map((_, idx) => (
+      {seller.files.map((_, idx) => (
         <span 
           key={idx} 
-          className={`dot ${idx === (currentImageIndex[item._id] || 0) ? "active" : ""}`}
+          className={`dot ${idx === (currentImageIndex[seller._id] || 0) ? "active" : ""}`}
           onClick={(e) => {
-            e.stopPropagation(); // Prevents clicking the dot from triggering card clicks
-            setCurrentImageIndex(prev => ({...prev, [item._id]: idx}));
+            e.stopPropagation(); 
+            setCurrentImageIndex(prev => ({...prev, [seller._id]: idx}));
           }}
         ></span>
       ))}
