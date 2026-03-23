@@ -195,9 +195,13 @@ function View_Products() {
                 )}
               </div>
 
-              <h1>{product.name}</h1>
-              <p><strong>{product.price} Rwf</strong></p>
-              <p>{product.description}</p>
+              {/* PRODUCT INFO */}
+                <h1>{product.name}</h1>
+                <p><strong>Price:</strong> {product.price} Rwf</p>
+                <p><strong>Location:</strong> {product.location}</p>
+                <p><strong>Quantity:</strong> {product.quantity}</p>
+                <p>{product.description}</p>
+
 
               <div className="View_Products_btns">
                 <Link to={`/buyer_chat/${seller?._id}`}><button className="chat-btn">Chat</button></Link>
