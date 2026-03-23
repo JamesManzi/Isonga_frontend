@@ -12,7 +12,7 @@ function Electronics(){
   const [selectedMedia, setSelectedMedia] = useState(null);
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState({});
-
+   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
   const [cartCount, setCartCount] = useState(0); // rename from cartItems
 const fetchCartCount = async () => {
     try {
