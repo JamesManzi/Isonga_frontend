@@ -443,3 +443,38 @@
     padding: 0 20px 50px;
   }
 }
+
+
+/* Footer Logo Fix */
+.Footer_Logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;           /* Space between logo and text */
+  margin-bottom: 20px;
+  justify-content: flex-start;
+}
+
+.Footer_Logo img {
+  height: 40px;        /* Fixed height to keep it consistent */
+  width: auto;         /* Maintains aspect ratio */
+  max-width: 120px;    /* Prevents it from getting too wide */
+  object-fit: contain; /* Ensures the image isn't cropped */
+  display: block;
+}
+
+.Footer_Logo h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;      /* Aligns text vertically with the logo */
+}
+
+/* Adjust the brand description to align under the logo */
+.Footer_Section p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #bdc3c7;
+  max-width: 280px; 
+  margin-top: 10px;
+}
