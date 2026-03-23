@@ -51,25 +51,22 @@ const fetchCartCount = async () => {
     return stars;
   };
 
-const handlePrev = (sellerId, totalImages) => {
-  setCurrentImageIndex(prev => ({
-    ...prev,
-    [sellerId]:
-      (prev[sellerId] || 0) === 0
-        ? totalImages - 1
-        : (prev[sellerId] || 0) - 1
-  }));
-};
-
-const handleNext = (sellerId, totalImages) => {
-  setCurrentImageIndex(prev => ({
-    ...prev,
-    [sellerId]:
-      (prev[sellerId] || 0) === totalImages - 1
-        ? 0
-        : (prev[sellerId] || 0) + 1
-  }));
-};
+  useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentImageIndex((prev) => {
+      const newIndexes = { ...prev };
+      // Change 'sellers' to your data array name
+      sellers.forEach((item) => {
+        if (item.files && item.files.length > 1) {
+          const currentIndex = prev[item._id] || 0;
+          newIndexes[item._id] = (currentIndex + 1) % item.files.length;
+        }
+      });
+      return newIndexes;
+    });
+  }, 5000); 
+  return () => clearInterval(interval);
+}, [sellers]); // Update dependency to match your data
 
   useEffect(() => {
     const fetchSellers = async () => {
@@ -160,25 +157,39 @@ const handleNext = (sellerId, totalImages) => {
       <div className="card-image-section">
         {seller.files && seller.files.length > 0 ? (
           <div className="image-slider">
-            <img
-              src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-              alt={seller.name}
-              className="slider-image"
-              onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-            />
-            <div className="slider-controls">
-              <FontAwesomeIcon
-                icon={faChevronLeft}
-                className="slider-icon"
-                onClick={() => handlePrev(seller._id, seller.files.length)}
-              />
-              <FontAwesomeIcon
-                icon={faChevronRight}
-                className="slider-icon"
-                onClick={() => handleNext(seller._id, seller.files.length)}
-              />
-            </div>
-          </div>
+  {/* Logic to choose between Video or Image - CHANGED 'item' to 'seller' */}
+  {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
+    <video
+      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+      muted autoPlay loop
+      className="slider-image"
+      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+    />
+  ) : (
+    <img
+      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+      className="slider-image"
+      alt="media"
+      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+    />
+  )}
+
+  {/* The Instagram Dots - CHANGED 'item' to 'seller' */}
+  {seller.files.length > 1 && (
+    <div className="slider-dots">
+      {seller.files.map((_, idx) => (
+        <span 
+          key={idx} 
+          className={`dot ${idx === (currentImageIndex[seller._id] || 0) ? "active" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation(); 
+            setCurrentImageIndex(prev => ({...prev, [seller._id]: idx}));
+          }}
+        ></span>
+      ))}
+    </div>
+  )}
+</div>
         ) : (
           <img src="/placeholder.png" alt="No Images" className="slider-image" />
         )}

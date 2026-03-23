@@ -99,21 +99,22 @@ function Home() {
     }
   }, [searchQuery, sellers]);
 
-  // Slider next
-  const handleNext = (sellerId, totalImages) => {
-    setCurrentImageIndex((prev) => ({
-      ...prev,
-      [sellerId]: (prev[sellerId] + 1) % totalImages,
-    }));
-  };
-
-  // Slider prev
-  const handlePrev = (sellerId, totalImages) => {
-    setCurrentImageIndex((prev) => ({
-      ...prev,
-      [sellerId]: (prev[sellerId] - 1 + totalImages) % totalImages,
-    }));
-  };
+  useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentImageIndex((prev) => {
+      const newIndexes = { ...prev };
+      // Change 'sellers' to your data array name
+      sellers.forEach((item) => {
+        if (item.files && item.files.length > 1) {
+          const currentIndex = prev[item._id] || 0;
+          newIndexes[item._id] = (currentIndex + 1) % item.files.length;
+        }
+      });
+      return newIndexes;
+    });
+  }, 5000); 
+  return () => clearInterval(interval);
+}, [sellers]); // Update dependency to match your data
 const getFileUrl = (path) => {
   if (!path) return "/placeholder.png"; // Fallback if no image exists
   return path.startsWith("http") 
@@ -190,15 +191,39 @@ if (loading) {
               <div className="card-image-section">
   {seller.files && seller.files.length > 0 ? (
     <div className="image-slider">
-      <img
+  {/* Logic to choose between Video or Image - CHANGED 'item' to 'seller' */}
+  {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
+    <video
       src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-        alt={seller.name}
-        className="slider-image"
-        onError={(e) => { e.target.src = "/placeholder.png"; }} // Add this to catch broken links
-        onClick={() => showAlert("Please login first!")}
-      />
-      {/* ... slider controls ... */}
+      muted autoPlay loop
+      className="slider-image"
+      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+    />
+  ) : (
+    <img
+      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+      className="slider-image"
+      alt="media"
+      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
+    />
+  )}
+
+  {/* The Instagram Dots - CHANGED 'item' to 'seller' */}
+  {seller.files.length > 1 && (
+    <div className="slider-dots">
+      {seller.files.map((_, idx) => (
+        <span 
+          key={idx} 
+          className={`dot ${idx === (currentImageIndex[seller._id] || 0) ? "active" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation(); 
+            setCurrentImageIndex(prev => ({...prev, [seller._id]: idx}));
+          }}
+        ></span>
+      ))}
     </div>
+  )}
+</div>
   ) : (
     <img src="/placeholder.png" alt="Placeholder" className="slider-image" />
   )}
