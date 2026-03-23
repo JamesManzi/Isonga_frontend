@@ -109,17 +109,24 @@ const [popupMessage, setPopupMessage] = useState("");
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
 
   if (loading) {
-    return (
-      <div className="loader-container">
-        <div className="loader-spinner"></div>
-        <div className="loader-heads">
-          <h1>Isonga</h1>
-          <p>Fetching  services...</p>
-        </div>
-      </div>
-    );
-  }
+  return (
+    <div className="products-loading">
+      <div className="products-loader-card">
 
+        <div className="cube-loader">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+
+        <h2>ISONGA MARKET</h2>
+        <p>Loading Sercices...</p>
+
+      </div>
+    </div>
+  );
+} 
   
 const getFileUrl = (path) => {
   if (!path) return "/placeholder.png"; // Fallback if no image exists

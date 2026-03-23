@@ -114,12 +114,24 @@ if (!hasTracked.current && res.data.seller?._id) {
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
 
   if (loading) {
-    return (
-      <div className="View_Products">
+  return (
+    <div className="products-loading">
+      <div className="products-loader-card">
+
+        <div className="cube-loader">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+
+        <h2>ISONGA MARKET</h2>
         <p>Loading Assets...</p>
+
       </div>
-    );
-  }
+    </div>
+  );
+} 
 
   const addToCart = async (productId, productName) => {
   try {
