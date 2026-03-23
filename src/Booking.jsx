@@ -65,9 +65,10 @@ function Booking() {
       formData.append("message", form.message);
       formData.append("paymentMethod", form.paymentMethod);
       
-      if (paymentImage) {
-        formData.append("paymentImage", paymentImage);
-      }
+     if (paymentImage) {
+  // CHANGE "paymentImage" TO "paymentProof"
+  formData.append("paymentProof", paymentImage); 
+}
 
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/bookService",
