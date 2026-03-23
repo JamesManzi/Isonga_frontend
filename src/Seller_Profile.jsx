@@ -92,8 +92,28 @@ function Seller_Profile() {
         color={i < Math.round(rating) ? "gold" : "lightgray"}
       />
     ));
+if (!seller) {
+  return (
+    <div className="profile-beautiful-loading">
+      <div className="loading-card">
+        
+        {/* Animated wave bars */}
+        <div className="wave-loader">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
 
-  if (!seller) return <p>Loading seller profile...</p>;
+        {/* Branding */}
+        <h2>ISONGA MARKET</h2>
+        <p>Loading Your profile...</p>
+
+      </div>
+    </div>
+  );
+}
 
   // ================= UPDATE PROFILE =================
   const handleUpdate = async (e) => {
