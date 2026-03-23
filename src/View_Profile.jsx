@@ -80,30 +80,24 @@ function View_Profile() {
     }
     return stars;
   };
-
-  if (!seller) {
+if (!seller) {
   return (
-    <div className="profile-loading">
-      <div className="loader-header shimmer"></div>
-
-      <div className="loader-profile">
-        <div className="loader-avatar shimmer"></div>
-        <div className="loader-text">
-          <div className="loader-line shimmer"></div>
-          <div className="loader-line small shimmer"></div>
+    <div className="profile-beautiful-loading">
+      <div className="loading-card">
+        
+        {/* Animated wave bars */}
+        <div className="wave-loader">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
-      </div>
 
-      <div className="loader-details">
-        <div className="loader-line shimmer"></div>
-        <div className="loader-line shimmer"></div>
-        <div className="loader-line shimmer"></div>
-      </div>
+        {/* Branding */}
+        <h2>ISONGA MARKET</h2>
+        <p>Loading seller profile...</p>
 
-      <div className="loader-gallery">
-        <div className="loader-box shimmer"></div>
-        <div className="loader-box shimmer"></div>
-        <div className="loader-box shimmer"></div>
       </div>
     </div>
   );
