@@ -100,6 +100,7 @@ const fetchCartCount = async () => {
     ? path 
     : `https://isonga-backend.onrender.com/uploads/${path}`;
 };
+const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
     return(
         <div>
           {/* Navbar */}
