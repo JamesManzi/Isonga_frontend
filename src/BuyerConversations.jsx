@@ -85,9 +85,15 @@ function BuyerConversations() {
   return (
     <div className="chat-container">
       <div className="chat-header">
-        <Link to="/buyer_dashboard" className="back-button">←</Link>
-        <h2>Messages</h2>
-      </div>
+  <span 
+    className="back-button" 
+    onClick={() => navigate(-1)} 
+    style={{ cursor: 'pointer' }}
+  >
+    ←
+  </span>
+  <h2>Messages</h2>
+</div>
 
       <div className="chat-search">
         <input type="text" placeholder="Search sellers..." value={search} onChange={(e) => setSearch(e.target.value)} />

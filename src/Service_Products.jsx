@@ -146,11 +146,10 @@ const getFileUrl = (path) => {
           </div>
         </div>
 
-        <div className="View_Products_back">
-          <Link to="/buyer_dashboard">
-            <FontAwesomeIcon icon={faArrowRight} />
-          </Link>
-        </div>
+        <div className="View_Products_back" onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>
+  <FontAwesomeIcon icon={faArrowRight} />
+</div>
+        
       </div>
 
       {/* Header */}
