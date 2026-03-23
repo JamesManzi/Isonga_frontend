@@ -25,7 +25,7 @@ function View_Products() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCartPopup, setShowCartPopup] = useState(false);
 const [popupMessage, setPopupMessage] = useState("");
-
+const [cartLoading, setCartLoading] = useState(null);
   // ✅ 1. Ref to track if we've already sent view requests for this session
   const hasTracked = useRef(false);
 
@@ -109,15 +109,28 @@ const [popupMessage, setPopupMessage] = useState("");
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
 
   if (loading) {
-    return (
-      <div className="View_Products">
-        <p>Loading products...</p>
-      </div>
-    );
-  }
+  return (
+    <div className="products-loading">
+      <div className="products-loader-card">
 
-  const addToCart = async (productId, productName) => {
+        <div className="cube-loader">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+
+        <h2>ISONGA MARKET</h2>
+        <p>Loading products...</p>
+
+      </div>
+    </div>
+  );
+} 
+const addToCart = async (productId, productName) => {
   try {
+    setCartLoading(productId);
+
     const res = await axios.post(
       "https://isonga-backend.onrender.com/api/cart/add",
       { productId, quantity: 1 },
@@ -125,22 +138,21 @@ const [popupMessage, setPopupMessage] = useState("");
     );
 
     if (res.data.success) {
-      // show popup
       setPopupMessage(`${productName} added to cart!`);
-      setShowCartPopup(true);
-
-      // hide popup after 2s
-      setTimeout(() => setShowCartPopup(false), 2000);
     } else {
       setPopupMessage(res.data.message || "Failed to add to cart");
-      setShowCartPopup(true);
-      setTimeout(() => setShowCartPopup(false), 2000);
     }
+
+    setShowCartPopup(true);
+    setTimeout(() => setShowCartPopup(false), 2000);
+
   } catch (error) {
     console.log(error);
     setPopupMessage("Error adding to cart");
     setShowCartPopup(true);
     setTimeout(() => setShowCartPopup(false), 2000);
+  } finally {
+    setCartLoading(null);
   }
 };
 const getFileUrl = (path) => {
@@ -273,10 +285,12 @@ const getFileUrl = (path) => {
                 {/* Buttons */}
                 <div className="View_Products_btns">
                   <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
-                 <button
+                <button
   onClick={() => addToCart(product._id, product.name)}
- disabled={loading}>
-  {loading ? "Adding To Cart ...":"Add To Cart"} <FontAwesomeIcon icon={faCartShopping} />
+  disabled={cartLoading === product._id}
+>
+  {cartLoading === product._id ? "Adding..." : "Add To Cart"} 
+  <FontAwesomeIcon icon={faCartShopping} />
 </button>
                 </div>
               </div>
@@ -307,6 +321,7 @@ const getFileUrl = (path) => {
           )}
         </div>
       )}
+      
       {showCartPopup && (
   <div className="cart-popup">
     {popupMessage}
