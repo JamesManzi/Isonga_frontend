@@ -35,36 +35,61 @@ function Cart() {
   };
 
   const removeItem = async (productId) => {
-    setLoading(true)
-    try {
-      await axios.delete(
-        `https://isonga-backend.onrender.com/api/cart/remove/${productId}`,
-        { withCredentials: true }
+  try {
+    // Instant UI removal
+    setCart((prev) => {
+      const updatedItems = prev.items.filter(
+        (item) => item.product?._id !== productId
       );
-      fetchCart();
-    } catch (error) {
-      console.log("Remove Item Error:", error);
-    } finally{
-      setLoading(false)
-    }
-  };
 
-  const updateQuantity = async (productId, quantity) => {
-    if (quantity < 1) return;
-    setLoading(true)
-    try {
-      await axios.put(
-        "https://isonga-backend.onrender.com/api/cart/update",
-        { productId, quantity },
-        { withCredentials: true }
+      const newTotal = updatedItems.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
       );
-      fetchCart();
-    } catch (error) {
-      console.log("Update Quantity Error:", error);
-    } finally{
-      setLoading(true)
-    }
-  };
+
+      return { ...prev, items: updatedItems, totalPrice: newTotal };
+    });
+
+    await axios.delete(
+      `https://isonga-backend.onrender.com/api/cart/remove/${productId}`,
+      { withCredentials: true }
+    );
+  } catch (error) {
+    console.log("Remove Item Error:", error);
+    fetchCart(); // fallback
+  }
+};
+
+const updateQuantity = async (productId, quantity) => {
+  if (quantity < 1) return;
+
+  try {
+    // Optimistic UI update (instant)
+    setCart((prev) => ({
+      ...prev,
+      items: prev.items.map((item) =>
+        item.product?._id === productId
+          ? { ...item, quantity }
+          : item
+      ),
+      totalPrice: prev.items.reduce((acc, item) => {
+        if (item.product?._id === productId) {
+          return acc + item.price * quantity;
+        }
+        return acc + item.price * item.quantity;
+      }, 0),
+    }));
+
+    await axios.put(
+      "https://isonga-backend.onrender.com/api/cart/update",
+      { productId, quantity },
+      { withCredentials: true }
+    );
+  } catch (error) {
+    console.log("Update Quantity Error:", error);
+    fetchCart(); // fallback if error
+  }
+};
 
   const logout = async () => {
     setLoading(true)
@@ -89,7 +114,20 @@ function Cart() {
       : `https://isonga-backend.onrender.com/uploads/${path}`;
   };
 
-  if (loading) return <div className="cart-loading"><p>Loading cart...</p></div>;
+  if (loading) {
+  return (
+    <div className="cart-loading-modern">
+      <div className="cart-loader-card">
+
+        <div className="cart-spinner"></div>
+
+        <h2>ISONGA MARKET</h2>
+        <p>Preparing your cart...</p>
+
+      </div>
+    </div>
+  );
+}
 
   // Render empty state if no cart exists or items array is empty
   if (!cart || cart.items.length === 0) {
