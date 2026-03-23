@@ -70,22 +70,23 @@ function My_Store() {
     }
   }, [searchQuery, products]);
 
-  // 3. Auto-Slider Logic (Corrected to use 'products' and 'setCurrentIndex')
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        const newIndexes = { ...prev };
-        products.forEach((product) => {
-          if (product.files && product.files.length > 1) {
-            const currentIdx = prev[product._id] || 0;
-            newIndexes[product._id] = (currentIdx + 1) % product.files.length;
-          }
-        });
-        return newIndexes;
+ // 3. Auto-Slider Logic (Optimized for Search)
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentIndex((prev) => {
+      const newIndexes = { ...prev };
+      // Only loop through visible products to save memory
+      filteredProducts.forEach((product) => {
+        if (product.files && product.files.length > 1) {
+          const currentIdx = prev[product._id] || 0;
+          newIndexes[product._id] = (currentIdx + 1) % product.files.length;
+        }
       });
-    }, 5000); 
-    return () => clearInterval(interval);
-  }, [products]);
+      return newIndexes;
+    });
+  }, 5000); 
+  return () => clearInterval(interval);
+}, [filteredProducts]); // Changed from products to filteredProducts
 
   // --- Helpers ---
   const isVideoFile = (filename) => {
@@ -167,7 +168,6 @@ function My_Store() {
       </div>
     );
   }
-
   return (
     <div className="My_Store">
       {/* Navbar */}
@@ -287,32 +287,36 @@ function My_Store() {
         </div>
       )}
 
-      {/* Media Zoom Modal */}
-      {modalMedia.productId && (() => {
-        const product = products.find((p) => p._id === modalMedia.productId);
-        const file = product.files[modalMedia.index];
-        
-        return (
-          <div className="media-modal" onClick={() => setModalMedia({ productId: null, index: 0 })}>
-            <span className="close-btn">&times;</span>
-            {isVideoFile(file) ? (
-              <video src={getFileUrl(file)} controls autoPlay className="full-media" />
-            ) : (
-              <img src={getFileUrl(file)} alt="Full view" className="full-media" />
-            )}
-            <div className="modal-controls">
-              <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
-                e.stopPropagation();
-                setModalMedia(p => ({ ...p, index: (p.index - 1 + product.files.length) % product.files.length }));
-              }} />
-              <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
-                e.stopPropagation();
-                setModalMedia(p => ({ ...p, index: (p.index + 1) % product.files.length }));
-              }} />
-            </div>
-          </div>
-        );
-      })()}
+     {/* Media Zoom Modal */}
+{modalMedia.productId && (() => {
+  const product = products.find((p) => p._id === modalMedia.productId);
+  
+  // ADD THIS LINE: If product is not found, don't try to render
+  if (!product) return null; 
+
+  const file = product.files[modalMedia.index];
+  
+  return (
+    <div className="media-modal" onClick={() => setModalMedia({ productId: null, index: 0 })}>
+      <span className="close-btn">&times;</span>
+      {isVideoFile(file) ? (
+        <video src={getFileUrl(file)} controls autoPlay className="full-media" />
+      ) : (
+        <img src={getFileUrl(file)} alt="Full view" className="full-media" />
+      )}
+      <div className="modal-controls">
+        <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
+          e.stopPropagation();
+          setModalMedia(p => ({ ...p, index: (p.index - 1 + product.files.length) % product.files.length }));
+        }} />
+        <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
+          e.stopPropagation();
+          setModalMedia(p => ({ ...p, index: (p.index + 1) % product.files.length }));
+        }} />
+      </div>
+    </div>
+  );
+})()}
 
       {message && <div className="error-message">{message}</div>}
     </div>
