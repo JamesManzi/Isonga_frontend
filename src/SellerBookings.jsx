@@ -15,12 +15,13 @@ function SellerBookings() {
       const res = await axios.get("https://isonga-backend.onrender.com/api/seller/bookings", {
         withCredentials: true,
       });
-      if (res.data.success) {
-        const incoming = res.data.bookings.filter(
-          (booking) => booking.status !== "Accepted" && booking.status !== "Cancelled"
-        );
-        setBookings(incoming);
-      }
+      // Inside SellerBookings.js -> getBookings function
+if (res.data.success) {
+  const incoming = res.data.bookings.filter(
+    (booking) => booking.status === "Pending" // Change this line
+  );
+  setBookings(incoming);
+}
     } catch (err) {
       console.error("Error fetching bookings:", err);
     } finally {
