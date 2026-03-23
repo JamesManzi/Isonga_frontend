@@ -362,11 +362,10 @@ height:30px;
   50% { transform: scale(0.5); opacity: 0.5; }
 }
 
-
 .cart-popup {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  top: 20px;     /* ✅ now at top */
+  right: 20px;
 
   background: #111;
   color: white;
@@ -376,17 +375,27 @@ height:30px;
 
   box-shadow: 0 5px 20px rgba(0,0,0,0.3);
 
-  animation: slideIn 0.4s ease, fadeOut 0.4s ease 1.6s;
+  z-index: 9999; /* 🔥 important to stay above everything */
+
+  animation: slideDown 0.4s ease, fadeOut 0.4s ease 1.6s;
 }
 
-/* animations */
-@keyframes slideIn {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+@keyframes slideDown {
+  from { 
+    transform: translateY(-50px);  /* ⬆ comes from top */
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
 }
 
 @keyframes fadeOut {
-  to { opacity: 0; transform: translateY(20px); }
+  to { 
+    opacity: 0; 
+    transform: translateY(-20px); /* goes back up */
+  }
 }
 
 .productcard {
