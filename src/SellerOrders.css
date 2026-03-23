@@ -1,0 +1,59 @@
+/* FULL SCREEN */
+.orders-loading {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+
+/* CARD */
+.orders-loader-card {
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  color: white;
+
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+
+  animation: fadeIn 0.6s ease;
+}
+
+/* RING LOADER */
+.ring-loader {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+
+  border: 5px solid rgba(255,255,255,0.2);
+  border-top: 5px solid #00f2fe;
+  border-radius: 50%;
+
+  animation: spin 1s linear infinite, glow 1.5s ease-in-out infinite alternate;
+}
+
+/* ANIMATIONS */
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10px #00f2fe;
+  }
+  to {
+    box-shadow: 0 0 25px #00f2fe;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

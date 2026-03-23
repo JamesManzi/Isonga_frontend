@@ -3,61 +3,75 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
-
+import "./SellerOrders.css";
 function SellerOrders() {
   const [orders, setOrders] = useState([]);
-  const [selectedImg, setSelectedImg] = useState(null);
-  const [loading,setLoading]=useState(false);
-  // ✅ Fetch only once
-  setLoading(true)
- try {
-   const getOrders = () => {
-  axios
-    .get("https://isonga-backend.onrender.com/api/seller/orders", {
-      withCredentials: true,
-    })
-    .then((res) => {
+const [selectedImg, setSelectedImg] = useState(null);
+const [loading, setLoading] = useState(true);
+const [actionLoading, setActionLoading] = useState(null); // for buttons
+
+useEffect(() => {
+  const getOrders = async () => {
+    try {
+      setLoading(true);
+
+      const res = await axios.get(
+        "https://isonga-backend.onrender.com/api/seller/orders",
+        { withCredentials: true }
+      );
+
       if (res.data.success) {
-        // ✅ ONLY show pending orders
         const incoming = res.data.orders.filter(
           (order) => order.status === "Pending"
         );
-
         setOrders(incoming);
       }
-    })
-    .catch((err) => console.error("Error fetching orders:", err));
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  getOrders();
+}, []);
+
+  const updateStatus = async (orderId, newStatus) => {
+  try {
+    setActionLoading(orderId);
+
+    const res = await axios.put(
+      `https://isonga-backend.onrender.com/api/order/status/${orderId}`,
+      { status: newStatus },
+      { withCredentials: true }
+    );
+
+    if (res.data.success) {
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== orderId)
+      );
+    }
+  } catch (err) {
+    console.error("Error updating order status:", err);
+  } finally {
+    setActionLoading(null);
+  }
 };
 
-  useEffect(() => {
-    getOrders();
-  }, []);
+ if (loading) {
+  return (
+    <div className="orders-loading">
+      <div className="orders-loader-card">
 
-  // ✅ Update + REMOVE from UI instantly
-  const updateStatus = (orderId, newStatus) => {
-    axios
-      .put(
-        `https://isonga-backend.onrender.com/api/order/status/${orderId}`,
-        { status: newStatus },
-        { withCredentials: true }
-      )
-      .then((res) => {
-        if (res.data.success) {
-          // 🔥 Remove order immediately from state
-          setOrders((prevOrders) =>
-            prevOrders.filter((order) => order._id !== orderId)
-          );
-        }
-      })
-      .catch((err) =>
-        console.error("Error updating order status:", err)
-      );
-  };
- } catch (error) {
-  console.log(error);
- } finally{
-  setLoading(false);
- }
+        <div className="ring-loader"></div>
+
+        <h2>ISONGA MARKET</h2>
+        <p>Fetching incoming orders...</p>
+
+      </div>
+    </div>
+  );
+}
 
   return (
     <div style={containerStyle}>
@@ -122,19 +136,20 @@ function SellerOrders() {
             {/* ✅ ACTION BUTTONS */}
             <div style={btnContainer}>
               <button
-                onClick={() => updateStatus(order._id, "Accepted")}
-                style={btnAccept}
-              disabled={loading}>
-               {loading ? "Accepted...":"Accept"}
-              </button>
+  onClick={() => updateStatus(order._id, "Accepted")}
+  style={btnAccept}
+  disabled={actionLoading === order._id}
+>
+  {actionLoading === order._id ? "Processing..." : "Accept"}
+</button>
 
-              <button
-                onClick={() => updateStatus(order._id, "Cancelled")}
-                style={btnDecline}
-                disabled={loading}
-              >
-                {loading?"Declined...":"Decline"}
-              </button>
+<button
+  onClick={() => updateStatus(order._id, "Cancelled")}
+  style={btnDecline}
+  disabled={actionLoading === order._id}
+>
+  {actionLoading === order._id ? "Processing..." : "Decline"}
+</button>
             </div>
           </div>
         ))
