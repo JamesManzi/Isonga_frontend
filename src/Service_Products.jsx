@@ -287,7 +287,7 @@ const getFileUrl = (path) => {
                 {/* Buttons */}
                 <div className="View_Products_btns">
                   <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat Seller</button></Link>
-                  <Link to="/book/:productId"><button>Book Now</button></Link>
+                  <Link to="/book/:productId" className="booking-btn"><button>Book Now</button></Link>
                 </div>
               </div>
             );
