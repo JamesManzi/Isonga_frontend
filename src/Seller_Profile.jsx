@@ -10,6 +10,7 @@ function Seller_Profile() {
   const [seller, setSeller] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -34,6 +35,7 @@ function Seller_Profile() {
   // ================= FETCH SELLER =================
   const fetchSeller = async () => {
     try {
+      setLoading(true)
       const res = await axios.get("https://isonga-backend.onrender.com/api/seller_profile", {
         withCredentials: true,
       });
@@ -58,6 +60,8 @@ function Seller_Profile() {
       }
     } catch (err) {
       console.log(err);
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -299,7 +303,9 @@ if (!seller) {
               }}
             />
             <div className="form-actions">
-              <button type="submit">Save</button>
+              <button type="submit" disabled={loading}>
+                {loading?"Saving...":"Save"}
+              </button>
               <button type="button" onClick={() => setShowEdit(false)}>
                 Cancel
               </button>
