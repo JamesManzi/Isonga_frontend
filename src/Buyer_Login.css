@@ -1,139 +1,131 @@
-/* Unique Viewport for Buyer Login */
-.bl-viewport {
+/* Container */
+.buyer_login_page_container {
     min-height: 100vh;
-    background-color: #f8fafc;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #f3f4f6;
     padding: 20px;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
-/* Container Wrapper */
-.bl-main-wrapper {
+/* Card */
+.buyer_login_card {
     display: flex;
-    width: 100%;
-    max-width: 1050px;
+    width: 1000px;
+    max-width: 100%;
     background: #ffffff;
-    border-radius: 24px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* Blue Info Panel (Left) */
-.bl-info-panel {
-    flex: 1.1;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    padding: 60px;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-}
-
-.bl-brand-logo { width: 60px; margin-bottom: 24px; }
-.bl-hero-title { font-size: 2.8rem; font-weight: 800; margin-bottom: 12px; }
-.bl-hero-subtitle { font-size: 1.1rem; opacity: 0.9; line-height: 1.6; }
-
-.bl-feature-list { margin-top: 40px; }
-.bl-feature-item { 
-    display: flex; 
-    align-items: center; 
-    gap: 15px; 
-    margin-bottom: 20px;
-    font-size: 1rem;
-}
-.bl-f-icon { color: #93c5fd; font-size: 1.2rem; }
-
-/* White Form Panel (Right) */
-.bl-form-panel {
+/* Left Panel */
+.buyer_login_info_panel {
     flex: 1;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: white;
     padding: 60px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.bl-form-header { margin-bottom: 35px; }
-.bl-title { font-size: 1.8rem; font-weight: 700; color: #1e293b; }
-.bl-subtitle { color: #64748b; margin-top: 5px; }
+.buyer_login_logo_img { width: 60px; margin-bottom: 20px; }
+.buyer_login_hero_title { font-size: 2.5rem; margin-bottom: 15px; }
+.buyer_login_hero_text { font-size: 1.1rem; line-height: 1.6; opacity: 0.9; }
 
-/* Inputs */
-.bl-input-field { margin-bottom: 24px; }
-.bl-label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 8px; }
-.bl-control {
+.buyer_login_feature_badge {
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+}
+
+/* Right Panel */
+.buyer_login_form_panel {
+    flex: 1;
+    padding: 60px;
+}
+
+.buyer_login_title { font-size: 1.8rem; color: #111827; }
+.buyer_login_subtitle { color: #6b7280; margin-bottom: 30px; }
+
+/* Form Elements */
+.buyer_login_input_group { margin-bottom: 20px; }
+.buyer_login_input_label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; }
+.buyer_login_input_field {
     width: 100%;
-    padding: 14px 16px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 12px;
+    padding: 12px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
     font-size: 1rem;
-    transition: all 0.2s ease;
-}
-.bl-control:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-/* Password Toggle */
-.bl-pass-box { position: relative; }
-.bl-eye-toggle {
+.buyer_login_password_wrapper { position: relative; }
+.buyer_login_password_toggle {
     position: absolute;
-    right: 16px;
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #94a3b8;
+    color: #9ca3af;
 }
 
-/* Submit Button */
-.bl-action-btn {
+/* Button */
+.buyer_login_submit_btn {
     width: 100%;
-    padding: 16px;
+    padding: 14px;
     background: #2563eb;
     color: white;
     border: none;
-    border-radius: 12px;
-    font-size: 1.05rem;
+    border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
+    transition: 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
-.bl-action-btn:hover { background: #1d4ed8; }
-.bl-action-btn:active { transform: scale(0.98); }
+
+.buyer_login_submit_btn:hover { background: #1d4ed8; }
 
 /* Alerts */
-.bl-feedback-msg {
+.buyer_login_alert {
     margin-top: 20px;
-    padding: 14px;
-    border-radius: 10px;
+    padding: 12px;
+    border-radius: 8px;
     text-align: center;
-    font-weight: 500;
 }
-.bl-feedback-msg.success { background: #f0fdf4; color: #166534; }
-.bl-feedback-msg.error { background: #fef2f2; color: #991b1b; }
+.buyer_login_alert.success { background: #dcfce7; color: #166534; }
+.buyer_login_alert.error { background: #fee2e2; color: #991b1b; }
 
-/* Switch & Links */
-.bl-account-switch { text-align: center; margin-top: 30px; color: #64748b; font-size: 0.95rem; }
-.bl-link-highlight { color: #2563eb; font-weight: 600; text-decoration: none; }
-.bl-back-home { color: #94a3b8; text-decoration: none; font-size: 0.85rem; }
+.buyer_login_footer_links { margin-top: 20px; text-align: center; font-size: 0.9rem; }
+.buyer_login_link_reg { color: #2563eb; font-weight: 700; text-decoration: none; margin-left: 5px; }
 
-/* Top Loader Animation */
-.bl-top-loader {
+.buyer_login_back_home { margin-top: 40px; }
+.buyer_login_back_home a { color: #9ca3af; text-decoration: none; font-size: 0.85rem; }
+
+/* Loading Animation */
+.buyer_login_loading_bar {
     position: fixed;
-    top: 0; left: 0; height: 5px; width: 100%;
+    top: 0; left: 0; height: 4px; width: 100%;
     background: #2563eb;
+    animation: buyer_load 2s infinite linear;
     z-index: 1000;
-    animation: bl-progress 2s infinite ease-in-out;
 }
 
-@keyframes bl-progress {
+@keyframes buyer_load {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-    .bl-main-wrapper { flex-direction: column; max-width: 450px; }
-    .bl-info-panel { display: none; }
-    .bl-form-panel { padding: 40px; }
+@media (max-width: 850px) {
+    .buyer_login_card { flex-direction: column; }
+    .buyer_login_info_panel { display: none; }
 }

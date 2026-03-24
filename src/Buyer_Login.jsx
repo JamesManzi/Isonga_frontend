@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faShoppingBag, faShieldCheck, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faArrowRight, faShoppingBasket } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Login.css";
 
 function Buyer_Login() {
@@ -26,103 +26,98 @@ function Buyer_Login() {
       );
 
       if (res.data.success) {
-        setMessage({ text: "Welcome back! Heading to shop...", type: "success" });
+        setMessage({ text: "Success! Redirecting to shop...", type: "success" });
         setTimeout(() => navigate("/buyer_dashboard"), 1500);
       } else {
         setMessage({ text: res.data.message, type: "error" });
         setLoading(false);
       }
     } catch (error) {
-      setMessage({ text: "Login failed. Please try again.", type: "error" });
+      setMessage({ text: "Login failed. Please check your credentials.", type: "error" });
       setLoading(false);
     }
   };
 
   return (
-    <div className="bl-viewport">
-      {loading && <div className="bl-top-loader"></div>}
+    <div className="buyer_login_page_container">
+      {/* Loading Progress Bar */}
+      {loading && <div className="buyer_login_loading_bar"></div>}
 
-      <div className="bl-main-wrapper">
-        {/* INFO SIDE (Blue/Indigo) */}
-        <div className="bl-info-panel">
-          <div className="bl-info-inner">
-            <img src="/logo.png" alt="Logo" className="bl-brand-logo" />
-            <h1 className="bl-hero-title">Shop Smarter.</h1>
-            <p className="bl-hero-subtitle">Access the best local vendors in Rwanda from one secure account.</p>
-            
-            <div className="bl-feature-list">
-              <div className="bl-feature-item">
-                <FontAwesomeIcon icon={faMapMarkerAlt} className="bl-f-icon" />
-                <span>Find shops in your neighborhood</span>
-              </div>
-              <div className="bl-feature-item">
-                <FontAwesomeIcon icon={faShieldCheck} className="bl-f-icon" />
-                <span>Secure payments & verified sellers</span>
-              </div>
-              <div className="bl-feature-item">
-                <FontAwesomeIcon icon={faShoppingBag} className="bl-f-icon" />
-                <span>Track your orders in real-time</span>
-              </div>
+      <div className="buyer_login_card">
+        {/* Left Side: Information */}
+        <div className="buyer_login_info_panel">
+          <div className="buyer_login_info_content">
+            <img src="/logo.png" alt="Logo" className="buyer_login_logo_img" />
+            <h1 className="buyer_login_hero_title">Isonga Market</h1>
+            <p className="buyer_login_hero_text">
+              Join thousands of shoppers finding the best deals from local Rwandan sellers.
+            </p>
+            <div className="buyer_login_feature_badge">
+              <FontAwesomeIcon icon={faShoppingBasket} />
+              <span>Fast & Secure Shopping</span>
             </div>
           </div>
         </div>
 
-        {/* LOGIN SIDE */}
-        <div className="bl-form-panel">
-          <div className="bl-form-container">
-            <header className="bl-form-header">
-              <h2 className="bl-title">Buyer Sign In</h2>
-              <p className="bl-subtitle">Welcome back to Isonga Market</p>
-            </header>
+        {/* Right Side: Form */}
+        <div className="buyer_login_form_panel">
+          <div className="buyer_login_form_header">
+            <h2 className="buyer_login_title">Buyer Login</h2>
+            <p className="buyer_login_subtitle">Welcome back! Please enter your details.</p>
+          </div>
 
-            <form onSubmit={handleSubmit} className="bl-auth-form">
-              <div className="bl-input-field">
-                <label className="bl-label">Email Address</label>
+          <form onSubmit={handleSubmit} className="buyer_login_main_form">
+            <div className="buyer_login_input_group">
+              <label className="buyer_login_input_label">Email Address</label>
+              <input
+                type="email"
+                className="buyer_login_input_field"
+                placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="buyer_login_input_group">
+              <label className="buyer_login_input_label">Password</label>
+              <div className="buyer_login_password_wrapper">
                 <input
-                  type="email"
-                  className="bl-control"
-                  placeholder="name@email.com"
-                  onChange={(e) => setEmail(e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  className="buyer_login_input_field"
+                  placeholder="••••••••"
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                <FontAwesomeIcon
+                  icon={showPassword ? faEyeSlash : faEye}
+                  className="buyer_login_password_toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
               </div>
+            </div>
 
-              <div className="bl-input-field">
-                <label className="bl-label">Password</label>
-                <div className="bl-pass-box">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    className="bl-control"
-                    placeholder="Enter password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <FontAwesomeIcon
-                    icon={showPassword ? faEyeSlash : faEye}
-                    className="bl-eye-toggle"
-                    onClick={() => setShowPassword(!showPassword)}
-                  />
-                </div>
-              </div>
-
-              <button type="submit" className="bl-action-btn" disabled={loading}>
-                {loading ? "Verifying..." : "Sign In to Shop"}
-              </button>
-
-              {message && (
-                <div className={`bl-feedback-msg ${message.type}`}>
-                  {message.text}
-                </div>
+            <button type="submit" className="buyer_login_submit_btn" disabled={loading}>
+              {loading ? "Processing..." : (
+                <>
+                  Sign In <FontAwesomeIcon icon={faArrowRight} />
+                </>
               )}
+            </button>
 
-              <div className="bl-account-switch">
-                New shopper? <Link to="/buyer_register" className="bl-link-highlight">Create Account</Link>
+            {message && (
+              <div className={`buyer_login_alert ${message.type}`}>
+                {message.text}
               </div>
-            </form>
+            )}
 
-            <footer className="bl-form-footer">
-              <Link to="/" className="bl-back-home">← Return Home</Link>
-            </footer>
+            <div className="buyer_login_footer_links">
+              <span>New here?</span>
+              <Link to="/buyer_register" className="buyer_login_link_reg">Create Account</Link>
+            </div>
+          </form>
+
+          <div className="buyer_login_back_home">
+            <Link to="/">← Back to Home</Link>
           </div>
         </div>
       </div>
