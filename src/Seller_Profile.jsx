@@ -153,6 +153,7 @@ if (!seller) {
 
   // ================= DELETE LOCATION IMAGE =================
   const deleteImage = async (filename) => {
+    setLoading(true)
     try {
       await axios.delete(
   `https://isonga-backend.onrender.com/api/delete_location_image/${encodeURIComponent(filename)}`,
@@ -165,6 +166,8 @@ if (!seller) {
     } catch (err) {
       console.log(err);
       alert("Delete failed");
+    } finally{
+      setLoading(false)
     }
   };
 
