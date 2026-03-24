@@ -1,19 +1,22 @@
 import { Link, useNavigate } from "react-router-dom";
-import "./Login.css";
 import { useState } from "react";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import "./Login.css";
 
 function Login() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(""); // Clear old messages
+    setMessage(null);
 
     try {
       const res = await axios.post(
@@ -23,94 +26,99 @@ function Login() {
       );
 
       if (res.data.success) {
-        setMessage({ text: "Login Successful! Redirecting...", type: "success" });
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 2000);
+        setMessage({ text: "Success! Welcome back.", type: "success" });
+        setTimeout(() => navigate("/dashboard"), 1500);
       } else {
         setMessage({ text: res.data.message, type: "error" });
         setLoading(false);
       }
     } catch (error) {
-      setMessage({ text: "Login failed. Please check your connection.", type: "error" });
+      setMessage({ text: "Server error. Try again later.", type: "error" });
       setLoading(false);
     }
   };
 
   return (
-    <div className="Login">
-      {/* MODERN LOADING OVERLAY */}
-      {loading && (
-        <div className="modern-loader-overlay">
-          <div className="loader-content">
-            <div className="spinner-modern"></div>
-            <p>Authenticating...</p>
+    <div className="login-page">
+      {/* Top Loading Bar */}
+      {loading && <div className="top-loading-bar"></div>}
+
+      <div className="login-card-container">
+        {/* Left Side: Branding/Hero */}
+        <div className="login-hero-side">
+          <div className="hero-overlay"></div>
+          <div className="hero-content">
+            <img src="/logo.png" alt="Logo" className="hero-logo" />
+            <h1>Isonga Market</h1>
+            <p>Empowering Rwandan entrepreneurs to reach more customers, faster.</p>
+            <div className="hero-footer">
+              <span>Trusted by 500+ Local Shops 🇷🇼</span>
+            </div>
           </div>
         </div>
-      )}
 
-      <div className="Login_navbar">
-        <div className="Login_logo">
-          <img src="/logo.png" alt="logo" />
-        </div>
-        <div className="Login_heads">
-          <h1>Isonga</h1>
-          <h2>Market</h2>
-        </div>
-      </div>
-
-      <div className="Login_Container">
-        <div className="Login_Hero">
-          <h1>Welcome Back to Isonga Market</h1>
-          <p>
-            Your business journey continues here. Manage your inventory, respond
-            to customers, and track your performance.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="Login_form">
+        {/* Right Side: Form */}
+        <div className="login-form-side">
+          <div className="form-header">
             <h2>Seller Login</h2>
-            
-            <label>Email</label>
-            <input
-              type="email"
-              className="login-input"
-              placeholder="Enter Email"
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-
-            <label>Password</label>
-            <input
-              type="password"
-              className="login-input"
-              placeholder="Enter Password"
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-
-            <div className="Login_btn">
-              <button type="submit" disabled={loading} className={loading ? "btn-dim" : ""}>
-                {loading ? "Please Wait..." : "Login"}
-              </button>
-            </div>
-
-            <div className="Login_links">
-              <Link to="/register">Register</Link>
-              <Link to="/">Home</Link>
-            </div>
+            <p>Enter your credentials to manage your store</p>
           </div>
 
-          {message && (
-            <div className={`alert-modern ${message.type}`}>
-              <span className="alert-icon">
-                {message.type === "success" ? "✓" : "✕"}
-              </span>
-              {message.text}
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <label>Email Address</label>
+              <input
+                type="email"
+                placeholder="name@company.com"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
-          )}
-        </form>
+
+            <div className="input-group">
+              <label>Password</label>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <FontAwesomeIcon
+                  icon={showPassword ? faEyeSlash : faEye}
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              </div>
+            </div>
+
+            <div className="form-options">
+              <Link to="/forgot-password">Forgot password?</Link>
+            </div>
+
+            <button type="submit" className="main-login-btn" disabled={loading}>
+              {loading ? <span className="loader-dots">Authenticating...</span> : (
+                <>
+                  Sign In <FontAwesomeIcon icon={faArrowRight} />
+                </>
+              )}
+            </button>
+
+            {message && (
+              <div className={`modern-alert ${message.type}`}>
+                {message.text}
+              </div>
+            )}
+
+            <div className="register-redirect">
+              Don't have a shop yet? <Link to="/register">Create Account</Link>
+            </div>
+          </form>
+
+          <div className="form-footer">
+            <Link to="/">← Back to Home</Link>
+          </div>
+        </div>
       </div>
     </div>
   );
