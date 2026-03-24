@@ -8,6 +8,13 @@ import {
   faChevronLeft,
   faChevronRight,
   faSearch,
+  faStore,
+  faMapPin,
+  faInfoCircle,
+  faCheckCircle,
+  faImages,
+  faTrash,
+  faEdit
 } from "@fortawesome/free-solid-svg-icons";
 
 function My_Store() {
@@ -101,8 +108,6 @@ function My_Store() {
   };
 
   // --- Actions ---
-
-  // MOVED OUTSIDE: So the buttons can find them
   const confirmDelete = (productId) => {
     setProductToDelete(productId);
   };
@@ -202,13 +207,15 @@ function My_Store() {
       </div>
 
       <div className="Buyer_Dashboard_search">
-        <input
-          type="search"
-          placeholder="Search items..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button><FontAwesomeIcon icon={faSearch} /> Search</button>
+        <div className="search-input-wrapper">
+          <input
+            type="search"
+            placeholder="Search items..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button><FontAwesomeIcon icon={faSearch} /> Search</button>
+        </div>
       </div>
 
       <div className="store_container">
@@ -258,13 +265,17 @@ function My_Store() {
 
                 <div className="product-details">
                   <h1>{product.name}</h1>
-              <p>Price: {product.price} Rwf</p>
-              <p>Location: {product.location}</p>
-              <p>Quantity: {product.quantity}</p>
-              <p>{product.description}</p>
+                  <p className="price-tag">Price: <strong>{product.price} Rwf</strong></p>
+                  <p><FontAwesomeIcon icon={faMapPin} /> {product.location}</p>
+                  <p><FontAwesomeIcon icon={faInfoCircle} /> Quantity: {product.quantity}</p>
+                  <p className="desc">{product.description}</p>
                   <div className="My_Store_btns">
-                    <button className="delete" onClick={() => confirmDelete(product._id)}>Delete</button>
-                    <button className="update" onClick={() => setEditingProduct(product)}>Update</button>
+                    <button className="delete" onClick={() => confirmDelete(product._id)}>
+                       <FontAwesomeIcon icon={faTrash} /> Delete
+                    </button>
+                    <button className="update" onClick={() => setEditingProduct(product)}>
+                       <FontAwesomeIcon icon={faEdit} /> Update
+                    </button>
                   </div>
                 </div>
               </div>
@@ -275,24 +286,122 @@ function My_Store() {
         )}
       </div>
 
-      {/* Edit Product Modal */}
+      {/* MODERN UPDATE MODAL */}
       {editingProduct && (
-        <div className="edit-modal">
-          <div className="edit-modal-content">
-            <h2>Edit Product</h2>
-            <input type="text" value={editingProduct.name} onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })} placeholder="Name" />
-            <input type="number" value={editingProduct.price} onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })} placeholder="Price" />
-            <input type="text" value={editingProduct.location} onChange={(e) => setEditingProduct({ ...editingProduct, location: e.target.value })} placeholder="Location" />
-            <input type="text" value={editingProduct.category} onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })} placeholder="Category" />
-            <input type="number" value={editingProduct.quantity} onChange={(e) => setEditingProduct({ ...editingProduct, quantity: e.target.value })} placeholder="Quantity" />
-            <textarea value={editingProduct.description} onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })} placeholder="Description" />
-            <input type="file" multiple accept="image/*,video/*" onChange={(e) => setEditingProduct({ ...editingProduct, newFiles: e.target.files })} />
-            
-            <div className="edit-buttons">
-              <button onClick={handleUpdate} disabled={loading}>{loading ? "Saving..." : "Save Changes"}</button>
-              <button onClick={() => setEditingProduct(null)}>Cancel</button>
+        <div className="modern-reg-wrapper" style={{position: 'fixed', top: 0, left: 0, zIndex: 1000, width: '100%', height: '100vh', overflowY: 'auto', background: 'rgba(0,0,0,0.85)', display:'flex', alignItems:'flex-start', justifyContent:'center'}}>
+            <div className="modern-reg-container" style={{maxWidth: '800px', width: '95%', margin: '40px auto'}}>
+                <div className="modern-reg-main">
+                    <div className="form-content-wrap">
+                        <div className="form-header">
+                            <h1>Update Product</h1>
+                            <p>Refine your product details for better visibility.</p>
+                        </div>
+
+                        <form onSubmit={handleUpdate} className="modern-form">
+                            <div className="modern-grid">
+                                <div className="modern-input-group">
+                                    <label>Product Name</label>
+                                    <div className="input-with-icon">
+                                        <FontAwesomeIcon icon={faStore} />
+                                        <input 
+                                          type="text" 
+                                          value={editingProduct.name} 
+                                          onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })} 
+                                          required 
+                                        />
+                                    </div>
+                                </div>
+                                <div className="modern-input-group">
+                                    <label>Price (Rwf)</label>
+                                    <div className="input-with-icon">
+                                        <FontAwesomeIcon icon={faCheckCircle} />
+                                        <input 
+                                          type="number" 
+                                          value={editingProduct.price} 
+                                          onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })} 
+                                          required 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="modern-grid">
+                                <div className="modern-input-group">
+                                    <label>Location</label>
+                                    <div className="input-with-icon">
+                                        <FontAwesomeIcon icon={faMapPin} />
+                                        <input 
+                                          type="text" 
+                                          value={editingProduct.location} 
+                                          onChange={(e) => setEditingProduct({ ...editingProduct, location: e.target.value })} 
+                                          required 
+                                        />
+                                    </div>
+                                </div>
+                                <div className="modern-input-group">
+                                    <label>Category</label>
+                                    <div className="input-with-icon">
+                                        <FontAwesomeIcon icon={faSearch} />
+                                        <input 
+                                          type="text" 
+                                          value={editingProduct.category} 
+                                          onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })} 
+                                          required 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="modern-input-group">
+                                <label>Quantity</label>
+                                <div className="input-with-icon">
+                                    <FontAwesomeIcon icon={faInfoCircle} />
+                                    <input 
+                                      type="number" 
+                                      value={editingProduct.quantity} 
+                                      onChange={(e) => setEditingProduct({ ...editingProduct, quantity: e.target.value })} 
+                                      required 
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="modern-input-group">
+                                <label>Description</label>
+                                <textarea 
+                                  value={editingProduct.description} 
+                                  onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })} 
+                                  required
+                                ></textarea>
+                            </div>
+
+                            <div className="modern-multi-upload">
+                                <label>Replace Media (Images/Videos)</label>
+                                <div className="multi-upload-trigger" onClick={() => document.getElementById('prodMedia').click()}>
+                                    <FontAwesomeIcon icon={faImages} />
+                                    <span>{editingProduct.newFiles ? `${editingProduct.newFiles.length} files selected` : "Browse to Upload"}</span>
+                                </div>
+                                <input 
+                                  id="prodMedia"
+                                  type="file" 
+                                  hidden 
+                                  multiple 
+                                  accept="image/*,video/*" 
+                                  onChange={(e) => setEditingProduct({ ...editingProduct, newFiles: e.target.files })} 
+                                />
+                            </div>
+
+                            <div className="form-actions" style={{display: 'flex', gap: '15px', marginTop: '25px'}}>
+                                <button type="submit" className="modern-submit-btn" disabled={loading} style={{flex: 2}}>
+                                    {loading ? "Saving Changes..." : <>Save Changes <FontAwesomeIcon icon={faCheckCircle} /></>}
+                                </button>
+                                <button type="button" className="modern-submit-btn" onClick={() => setEditingProduct(null)} style={{flex: 1, background: '#e74c3c'}}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
       )}
 
@@ -302,7 +411,7 @@ function My_Store() {
           <div className="delete-modal-content">
             <div className="delete-icon">⚠️</div>
             <h2>Are you sure?</h2>
-            <p>This action cannot be undone.</p>
+            <p>This product will be removed from your store permanently.</p>
             <div className="delete-modal-actions">
               <button className="cancel-btn" onClick={() => setProductToDelete(null)} disabled={loading}>No, Keep it</button>
               <button className="confirm-btn" onClick={executeDelete} disabled={loading}>{loading ? "Deleting..." : "Yes, Delete"}</button>
