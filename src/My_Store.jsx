@@ -16,7 +16,8 @@ import {
   faCheckCircle,
   faTrash,
   faCloudUploadAlt,
-  faLayerGroup
+  faLayerGroup,
+  faTimes
 } from "@fortawesome/free-solid-svg-icons";
 
 function My_Store() {
@@ -33,7 +34,8 @@ function My_Store() {
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
   const [productToDelete, setProductToDelete] = useState(null); 
 
-  // Preview state for new uploads in the update form
+  // States for handling multiple file previews and selection
+  const [files, setFiles] = useState([]); 
   const [previewFiles, setPreviewFiles] = useState([]);
 
   // 1. Fetch Store Data (Original Logic)
@@ -112,6 +114,18 @@ function My_Store() {
       : `https://isonga-backend.onrender.com/uploads/${path}`;
   };
 
+  // --- Update Form Image Logic ---
+  const handleFileChange = (e) => {
+    const newFiles = Array.from(e.target.files);
+    setFiles((prev) => [...prev, ...newFiles]);
+    setPreviewFiles((prev) => [...prev, ...newFiles.map(f => URL.createObjectURL(f))]);
+  };
+
+  const removePreview = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviewFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   // --- Actions ---
   const executeDelete = async () => {
     if (!productToDelete) return;
@@ -144,11 +158,10 @@ function My_Store() {
     formData.append("description", editingProduct.description);
     formData.append("quantity", Number(editingProduct.quantity));
 
-    if (editingProduct.newFiles) {
-      for (let i = 0; i < editingProduct.newFiles.length; i++) {
-        formData.append("files", editingProduct.newFiles[i]);
-      }
-    }
+    // Append the array of new files
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
 
     try {
       const res = await axios.put(
@@ -161,6 +174,7 @@ function My_Store() {
           prev.map((p) => (p._id === editingProduct._id ? res.data.UpdatedProduct : p))
         );
         setEditingProduct(null);
+        setFiles([]);
         setPreviewFiles([]);
         alert("Product updated successfully!");
       }
@@ -247,6 +261,7 @@ function My_Store() {
                   <button className="delete" onClick={() => setProductToDelete(product._id)}>Delete</button>
                   <button className="update" onClick={() => {
                     setEditingProduct(product);
+                    setFiles([]);
                     setPreviewFiles([]);
                   }}>Update</button>
                 </div>
@@ -262,7 +277,7 @@ function My_Store() {
         })}
       </div>
 
-      {/* ================= MODERN UPDATE MODAL (REGISTER STYLE) ================= */}
+      {/* ================= MODERN UPDATE MODAL ================= */}
       {editingProduct && (
         <div className="modern-reg-wrapper" style={{position: 'fixed', top: 0, left: 0, zIndex: 1000, width: '100%', height: '100vh', overflowY: 'auto', background: 'rgba(0,0,0,0.85)'}}>
             <div className="modern-reg-container" style={{maxWidth: '800px', margin: '20px auto'}}>
@@ -270,28 +285,10 @@ function My_Store() {
                     <div className="form-content-wrap">
                         <div className="form-header">
                             <h1>Update Product</h1>
-                            <p>Refine your product details and gallery.</p>
+                            <p>Refine your business presence on Isonga.</p>
                         </div>
 
                         <form onSubmit={handleUpdate} className="modern-form">
-                            {/* Visual Preview Section (Circular like Profile) */}
-                            <div className="modern-upload-section">
-                                <div 
-                                    className="profile-circle-upload has-image"
-                                    onClick={() => fileInputRef.current.click()}
-                                >
-                                    {previewFiles.length > 0 ? (
-                                        <img src={previewFiles[0]} alt="New Preview" />
-                                    ) : (
-                                        <img src={getFileUrl(editingProduct.files[0])} alt="Current" />
-                                    )}
-                                </div>
-                                <div className="upload-text">
-                                    <h3>Product Cover</h3>
-                                    <p>Click circle to change or browse below.</p>
-                                </div>
-                            </div>
-
                             <div className="modern-grid">
                                 <div className="modern-input-group">
                                     <label>Product Name</label>
@@ -339,12 +336,12 @@ function My_Store() {
                                 <textarea value={editingProduct.description} onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})} required></textarea>
                             </div>
 
-                            {/* Gallery Upload Section */}
+                            {/* Multi-Upload Section with Delete Ability */}
                             <div className="modern-multi-upload">
-                                <label>Update Product Gallery</label>
+                                <label>New Product Photos/Videos</label>
                                 <div className="multi-upload-trigger" onClick={() => fileInputRef.current.click()}>
                                     <FontAwesomeIcon icon={faImages} />
-                                    <span>{editingProduct.newFiles ? `${editingProduct.newFiles.length} files selected` : "Browse Photos/Videos"}</span>
+                                    <span>Browse Photos</span>
                                 </div>
                                 <input 
                                     type="file" 
@@ -352,17 +349,16 @@ function My_Store() {
                                     hidden 
                                     multiple 
                                     accept="image/*,video/*" 
-                                    onChange={(e) => {
-                                        const picked = Array.from(e.target.files);
-                                        setEditingProduct({...editingProduct, newFiles: e.target.files});
-                                        setPreviewFiles(picked.map(f => URL.createObjectURL(f)));
-                                    }} 
+                                    onChange={handleFileChange} 
                                 />
                                 
                                 <div className="modern-gallery-grid">
-                                    {previewFiles.map((src, i) => (
+                                    {previewFiles.map((img, i) => (
                                         <div key={i} className="gallery-item">
-                                            <img src={src} alt="Preview" />
+                                            <img src={img} alt="Preview" />
+                                            <button type="button" onClick={() => removePreview(i)}>
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
@@ -370,7 +366,7 @@ function My_Store() {
 
                             <div className="form-actions" style={{display: 'flex', gap: '15px', marginTop: '20px'}}>
                                 <button type="submit" className="modern-submit-btn" disabled={loading} style={{flex: 2}}>
-                                    {loading ? "Saving Changes..." : <>Save Changes <FontAwesomeIcon icon={faCheckCircle} /></>}
+                                    {loading ? "Updating..." : <>Save Changes <FontAwesomeIcon icon={faCheckCircle} /></>}
                                 </button>
                                 <button type="button" className="modern-submit-btn" onClick={() => setEditingProduct(null)} style={{flex: 1, background: '#666'}}>
                                     Cancel
@@ -383,7 +379,7 @@ function My_Store() {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Original Delete Modal Overlay */}
       {productToDelete && (
         <div className="delete-modal-overlay">
           <div className="delete-modal-content">
@@ -391,7 +387,7 @@ function My_Store() {
             <h2>Remove Product?</h2>
             <div className="delete-modal-actions">
               <button className="cancel-btn" onClick={() => setProductToDelete(null)}>No</button>
-              <button className="confirm-btn" onClick={executeDelete} disabled={loading}>{loading ? "Deleting..." : "Yes, Delete"}</button>
+              <button className="confirm-btn" onClick={executeDelete}>Yes, Delete</button>
             </div>
           </div>
         </div>
