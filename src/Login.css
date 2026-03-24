@@ -193,3 +193,104 @@ form {
     transform: translateY(0);
   }
 }
+
+
+
+/* --- MODERN LOADING OVERLAY --- */
+.modern-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px); /* Modern blur effect */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.loader-content {
+    text-align: center;
+}
+
+.loader-content p {
+    margin-top: 15px;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: 1px;
+    animation: pulse 1.5s infinite;
+}
+
+/* THE SPINNER */
+.spinner-modern {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #ff4d4d; /* Match your brand color */
+    border-radius: 50%;
+    margin: 0 auto;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* --- MODERN ALERTS --- */
+.alert-modern {
+    margin-top: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    animation: slideUp 0.4s ease forwards;
+}
+
+.alert-modern.success {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.alert-modern.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10deg); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Button dimming when loading */
+.btn-dim {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Input styling cleanup */
+.login-input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.login-input:focus {
+    border-color: #ff4d4d;
+}
