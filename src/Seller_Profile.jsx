@@ -155,9 +155,9 @@ if (!seller) {
   const deleteImage = async (filename) => {
     try {
       await axios.delete(
-        `https://isonga-backend.onrender.com/api/delete_location_image/${filename}`,
-        { withCredentials: true }
-      );
+  `https://isonga-backend.onrender.com/api/delete_location_image/${encodeURIComponent(filename)}`,
+  { withCredentials: true }
+);
       setSeller((prev) => ({
         ...prev,
         files: prev.files.filter((f) => f !== filename),
