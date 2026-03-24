@@ -1,258 +1,226 @@
-import { Link,useNavigate } from "react-router-dom";
-import "./Register.css";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
 import axios from "axios";
-import { useState,useRef } from "react";
-function Register(){
-    const [sellerType, setSellerType] = useState("");
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloudUploadAlt, faShop, faPhone, faEnvelope, faLock, faMapMarkerAlt, faTrash, faArrowRight, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import "./Register.css";
+
+function Register() {
     const fileInputRef = useRef(null);
-    const [loading,setLoading]=useState(false);
-    const[name,setName]=useState("");
-    const cleanName = name.trim();
-    const[profile,setProfile]=useState(null);
-    const[previewProfile,setPreviewProfile]=useState(null);
-    const[location,setLocation]=useState("");
-    const[description,setDescription]=useState("");
-    const[phone,setPhone]=useState("");
-    const[email,setEmail]=useState("");
-    const[password,setPassword]=useState("");
-    const[repeat_pass,setRepeat_Pass]=useState("");
-    const[files,setFiles]=useState([]);
-    const[previewFiles,setPreviewFiles]=useState([]);
-    const[message,setMessage]=useState("");
-    const[category,setCategory]=useState("");
-    const navigate=useNavigate();
+    const [sellerType, setSellerType] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [name, setName] = useState("");
+    const [profile, setProfile] = useState(null);
+    const [previewProfile, setPreviewProfile] = useState(null);
+    const [location, setLocation] = useState("");
+    const [description, setDescription] = useState("");
+    const [phone, setPhone] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [repeat_pass, setRepeat_Pass] = useState("");
+    const [files, setFiles] = useState([]);
+    const [previewFiles, setPreviewFiles] = useState([]);
+    const [message, setMessage] = useState(null);
+    const [category, setCategory] = useState("");
+
+    const navigate = useNavigate();
     const phoneRule = /^07\d{8}$/;
     const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
-    const handleSubmit=async(e)=>{
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData=new FormData();
-        formData.append("name", cleanName);
-        formData.append("location",location.trim());
-        formData.append("phone",phone);
-        formData.append("email",email.trim());
-        formData.append("password",password);
-        formData.append("repeat_pass",repeat_pass);
-        formData.append("description",description.trim());
-        formData.append("category",category);
+        setMessage(null);
+
+        // Validations
+        if (!profile) return alert("Please Upload Profile Picture");
+        if (files.length < 2) return alert("Please Upload Atleast Two Location Images");
+        if (!rule.test(password)) return alert("Password does not meet security requirements.");
+        if (password !== repeat_pass) return alert("Passwords do not match");
+        if (!phoneRule.test(phone)) return alert("Enter a valid Rwandan phone number (07...)");
+
+        const formData = new FormData();
+        formData.append("name", name.trim());
+        formData.append("location", location.trim());
+        formData.append("phone", phone);
+        formData.append("email", email.trim());
+        formData.append("password", password);
+        formData.append("repeat_pass", repeat_pass);
+        formData.append("description", description.trim());
+        formData.append("category", category);
         formData.append("sellerType", sellerType);
+        formData.append("profile", profile);
+        files.forEach(file => formData.append("files", file));
 
-        if(!profile){
-            alert("Please Upload Profile Picture");
-            return;
-        } else{
-            formData.append("profile",profile)
-        }
-
-        if(profile.size > 5 * 1024 * 1024){
-  alert("Profile image must be under 5MB");
-  return;
-}
-
-        for (let file of files) {
-  if (file.size > 10 * 1024 * 1024) {
-    alert("Each image must be under 10MB");
-    return;
-  }
-}
-
-        if(files.length<2){
-            alert("Please Upload Atleast Two Location Images");
-            return;
-        } else{
-            files.forEach((file)=>{
-            formData.append("files",file);
-        })
-        }
-
-
-        if(files.length > 6){
-  alert("Maximum 6 images allowed");
-  return;
-}
-        if(!rule.test(password)){
-            alert(
-      "Password must be at least 10 characters and include at least 3 of these: uppercase, lowercase, number, special character."
-    );
-    return;
-        }
-        if(password !== repeat_pass){
-    alert("Passwords do not match");
-    return;
-}
-
-if(!phoneRule.test(phone)){
-  alert("Enter a valid phone number");
-  return;
-}
-setLoading(true);
+        setLoading(true);
         try {
-            const res=await axios.post("https://isonga-backend.onrender.com/api/register",formData,{
-                withCredentials:true
-            })
-           setMessage({
-      text: res.data.message,
-      type: res.data.success ? "success" : "error",
-    });
-            if (res.data.success) {
-              setTimeout(()=>{
-                navigate("/login")
-              },1000)
-            }
+            const res = await axios.post("https://isonga-backend.onrender.com/api/register", formData, { withCredentials: true });
+            setMessage({ text: res.data.message, type: res.data.success ? "success" : "error" });
+            if (res.data.success) setTimeout(() => navigate("/login"), 1500);
         } catch (error) {
-  console.log(error);
-}finally{
+            setMessage({ text: "Registration failed. Please check your connection.", type: "error" });
+        } finally {
             setLoading(false);
         }
-    }
-const removeImage = (index) => {
-  setFiles(files.filter((_, i) => i !== index));
-  setPreviewFiles(previewFiles.filter((_, i) => i !== index));
-    }
-    return(
-        <div className="Register">
-            <div className="Register_navbar">
-                <div className="Register_logo">
-                    <img src="/logo.png"/>
+    };
+
+    const removeImage = (index) => {
+        setFiles(files.filter((_, i) => i !== index));
+        setPreviewFiles(previewFiles.filter((_, i) => i !== index));
+    };
+
+    return (
+        <div className="sel_reg_viewport">
+            {loading && <div className="sel_reg_top_loader"></div>}
+
+            <div className="sel_reg_card">
+                {/* Left Side: Hero */}
+                <div className="sel_reg_hero_panel">
+                    <div className="sel_reg_hero_content">
+                        <img src="/logo.png" alt="Logo" className="sel_reg_logo_img" />
+                        <h1>Grow Your Business</h1>
+                        <p>Join the largest marketplace in Rwanda and start selling to thousands of customers today.</p>
+                        <div className="sel_reg_badge">Trusted by 500+ Local Shops 🇷🇼</div>
+                    </div>
                 </div>
-                <div className="Register_Text">
-                    <h1>Isonga</h1>
-                    <h2>Markert</h2>
+
+                {/* Right Side: Form */}
+                <div className="sel_reg_form_panel">
+                    <header className="sel_reg_header">
+                        <h2>Seller Registration</h2>
+                        <p>Create your store profile below</p>
+                    </header>
+
+                    <form onSubmit={handleSubmit} className="sel_reg_form">
+                        {/* Profile Section */}
+                        <div className="sel_reg_section">
+                            <label className="sel_reg_label">Shop Profile Photo</label>
+                            <div className="sel_reg_profile_row">
+                                <div className="sel_reg_avatar_box" onClick={() => fileInputRef.current.click()}>
+                                    {previewProfile ? <img src={previewProfile} alt="Profile" /> : <FontAwesomeIcon icon={faCloudUploadAlt} />}
+                                </div>
+                                <input type="file" ref={fileInputRef} hidden accept="image/*" onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) { setProfile(file); setPreviewProfile(URL.createObjectURL(file)); }
+                                }} />
+                                <div className="sel_reg_help_text">Click to upload shop logo or owner photo. (Max 5MB)</div>
+                            </div>
+                        </div>
+
+                        {/* Store Info Row */}
+                        <div className="sel_reg_row">
+                            <div className="sel_reg_group">
+                                <label className="sel_reg_label">Shop Name</label>
+                                <div className="sel_reg_input_wrap">
+                                    <FontAwesomeIcon icon={faShop} className="sel_reg_icon" />
+                                    <input type="text" placeholder="My Awesome Shop" onChange={(e) => setName(e.target.value)} required />
+                                </div>
+                            </div>
+                            <div className="sel_reg_group">
+                                <label className="sel_reg_label">Category</label>
+                                <select value={category} onChange={e => setCategory(e.target.value)} required>
+                                    <option value="">-- Select Category --</option>
+                                    <option value="Fashion">Fashion</option>
+                                    <option value="Real Estate">Real Estate</option>
+                                    <option value="Vehicles">Vehicles</option>
+                                    <option value="Agriculture">Agriculture</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Furniture">Furniture</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Contact Row */}
+                        <div className="sel_reg_row">
+                            <div className="sel_reg_group">
+                                <label className="sel_reg_label">Location</label>
+                                <div className="sel_reg_input_wrap">
+                                    <FontAwesomeIcon icon={faMapMarkerAlt} className="sel_reg_icon" />
+                                    <input type="text" placeholder="Kigali, Nyarugenge" onChange={(e) => setLocation(e.target.value)} required />
+                                </div>
+                            </div>
+                            <div className="sel_reg_group">
+                                <label className="sel_reg_label">Phone</label>
+                                <div className="sel_reg_input_wrap">
+                                    <FontAwesomeIcon icon={faPhone} className="sel_reg_icon" />
+                                    <input type="tel" placeholder="07XXXXXXXX" onChange={(e) => setPhone(e.target.value)} required />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Email/Password */}
+                        <div className="sel_reg_group">
+                            <label className="sel_reg_label">Email Address</label>
+                            <div className="sel_reg_input_wrap">
+                                <FontAwesomeIcon icon={faEnvelope} className="sel_reg_icon" />
+                                <input type="email" placeholder="shop@email.com" onChange={(e) => setEmail(e.target.value)} required />
+                            </div>
+                        </div>
+
+                        <div className="sel_reg_row">
+                            <div className="sel_reg_group">
+                                <label className="sel_reg_label">Password</label>
+                                <div className="sel_reg_input_wrap">
+                                    <FontAwesomeIcon icon={faLock} className="sel_reg_icon" />
+                                    <input type="password" placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} required />
+                                </div>
+                            </div>
+                            <div className="sel_reg_group">
+                                <label className="sel_reg_label">Repeat Password</label>
+                                <div className="sel_reg_input_wrap">
+                                    <FontAwesomeIcon icon={faLock} className="sel_reg_icon" />
+                                    <input type="password" placeholder="••••••••" onChange={(e) => setRepeat_Pass(e.target.value)} required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="sel_reg_group">
+                            <label className="sel_reg_label">Seller Type</label>
+                            <select value={sellerType} onChange={(e) => setSellerType(e.target.value)} required>
+                                <option value="">-- Select Type --</option>
+                                <option value="Product">Product</option>
+                                <option value="Service">Service</option>
+                                <option value="Asset">Asset</option>
+                            </select>
+                        </div>
+
+                        <div className="sel_reg_group">
+                            <label className="sel_reg_label">Business Description</label>
+                            <textarea placeholder="Tell us about what you sell..." onChange={(e) => setDescription(e.target.value)} required></textarea>
+                        </div>
+
+                        {/* Multi-Image Upload */}
+                        <div className="sel_reg_group">
+                            <label className="sel_reg_label">Store/Location Photos (Min 2, Max 6)</label>
+                            <input type="file" multiple accept="image/*" className="sel_reg_file_input" onChange={(e) => {
+                                const newFiles = Array.from(e.target.files);
+                                if (files.length + newFiles.length > 6) return alert("Max 6 images");
+                                setFiles([...files, ...newFiles]);
+                                setPreviewFiles([...previewFiles, ...newFiles.map(f => URL.createObjectURL(f))]);
+                            }} />
+                            <div className="sel_reg_grid">
+                                {previewFiles.map((img, i) => (
+                                    <div key={i} className="sel_reg_img_card">
+                                        <img src={img} alt="Preview" />
+                                        <button type="button" onClick={() => removeImage(i)}><FontAwesomeIcon icon={faTrash} /></button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <button type="submit" className="sel_reg_btn" disabled={loading}>
+                            {loading ? "Creating Account..." : <>Register Shop <FontAwesomeIcon icon={faArrowRight} /></>}
+                        </button>
+
+                        {message && <div className={`sel_reg_alert ${message.type}`}>{message.text}</div>}
+                    </form>
+
+                    <div className="sel_reg_signin">
+                        Already registered? <Link to="/login">Login here</Link>
+                    </div>
                 </div>
             </div>
-            
-            <div className="Register_Container">
-                <div className="Register_Hero">
-    <h1>Grow Your Business With Isonga Market</h1>
-    <p>
-        Reach thousands of buyers, increase your sales,
-        and manage your products easily in one powerful platform.
-    </p>
-</div>
-                <form onSubmit={handleSubmit}>
-                    <h2> Seller Register</h2>
-                <label htmlFor="profile">Profile</label><br/>
-                <input type="file" 
-                ref={fileInputRef}
-                name="profile" 
-                accept="image/*"
-                onChange={(e)=>{
-                    const file=e.target.files[0];
-                    if(!file) return;
-  if(file.size > 5 * 1024 * 1024){ // 5MB limit
-    alert("Profile image must be under 5MB");
-    return;
-  }
-                    setProfile(file);
-                    setPreviewProfile(URL.createObjectURL(file))
-                }}/><br/>
-                {previewProfile && (
-  <div className="profile-preview">
-    <img src={previewProfile} alt="Profile Preview" />
-    <button type="button" onClick={() => {
-      setProfile(null);
-      setPreviewProfile(null);
-      if (fileInputRef.current) {
-                        fileInputRef.current.value = ""; //  This clears the actual input!
-                    }
-    }}>Remove</button>
-  </div>
-)}
-                <label htmlFor="name">Shop Name</label><br/>
-                <input type="text" name="name" className="register" placeholder="Enter Shop Name"
-                onChange={(e)=>setName(e.target.value)} required/><br/>
-                 <select 
-  value={category} 
-  name="category" 
-  onChange={e => setCategory(e.target.value)} 
-  required
->
-  <option value="">-- Select Category --</option>
-  <option value="Fashion">Fashion</option>
-  <option value="Real Estate">Real Estate</option>
-  <option value="Vehicles">Vehicles</option>
-  <option value="Agriculture">Agriculture</option>
-  <option value="services">services</option>
-  <option value="Hospitality">Hospitality</option>
-  <option value="Electronics">Electronics</option>
-  <option value="Furniture">Furniture</option>
-  <option value="Construction">Construction</option>
-</select>
-                <label htmlFor="location">Location</label><br/>
-                <input type="text" name="location" className="register" 
-                 placeholder="Enter Location"
-                onChange={(e)=>setLocation(e.target.value)} required/><br/>
-                <label htmlFor="number">Phone Number</label><br/>
-                <input type="tel" name="phone" className="register" 
-                 pattern="07[0-9]{8}"placeholder="Enter Phone Number"
-                onChange={(e)=>setPhone(e.target.value)} required/><br/>
-                <label htmlFor="email">Email</label><br/>
-                <input type="email" name="email" className="register" placeholder="Enter Email"
-                onChange={(e)=>setEmail(e.target.value)} required/><br/>
-                <label htmlFor="password">Password</label><br/>
-                <small>
-Password must be at least 10 characters and contain 3 of these:
-uppercase, lowercase, number, special character.
-</small>
-                <input type="password" name="password" className="register" placeholder="Enter Password"
-                onChange={(e)=>setPassword(e.target.value)} required/><br/>
-                <label htmlFor="repeat">Repeat Password</label><br/>
-                <input type="password" name="repeat_pass" className="register" placeholder="Repeat Password"
-                onChange={(e)=>setRepeat_Pass(e.target.value)} required/><br/>
-                <label htmlFor="sellerType">Seller Type</label><br/>
-<select
-  value={sellerType}  // <- Actually create a separate state for sellerType
-  onChange={(e) => setSellerType(e.target.value)}
-  required
->
-  <option value="">-- Select Seller Type --</option>
-  <option value="Product">Product</option>
-  <option value="Service">Service</option>
-  <option value="Asset">Asset</option>
-</select><br/>
-                <label htmlFor="description">Description</label><br/>
-                <textarea name="description" placeholder="Describe Your Business"
-                onChange={(e)=>setDescription(e.target.value)} required></textarea>
-                <label htmlFor="images">Location Images</label><br/>
-                <input type="file" name="files" accept="image/*" multiple
-  onChange={(e)=>{
-    const newFiles = Array.from(e.target.files);
-    if(files.length + newFiles.length > 6){
-      alert("Maximum 6 images allowed");
-      return;
-    }
-    setFiles(prevFiles => [...prevFiles, ...newFiles]);
-    const newImages = newFiles.map(file => URL.createObjectURL(file));
-    setPreviewFiles(prev => [...prev, ...newImages]);
-    e.target.value = null;
-}}/>
-                {previewFiles.map((img, index) => (
-  <div key={index} className="image-preview">
-    <img src={img} alt={`preview ${index}`} />
-    <button type="button" onClick={() => removeImage(index)}>Remove</button>
-  </div>
-))}
-                <div className="Register_btn">
-                    <button type="submit" className="btn" disabled={loading}>
-  {loading ? "Registering..." : "Register"}
-</button>
-                </div>
-                <div className="Register_links">
-                    <Link to="/">Home</Link>
-                    <Link to="/login">Login</Link>
-                </div>
-                
-{message && (
-  <div className={`alert ${message.type}`}>
-    <span className="alert-icon">
-      {message.type === "success" ? "✓" : "⚠"}
-    </span>
-    <span>{message.text}</span>
-  </div>
-)}
-
-                </form>
-                </div>
-                </div>
-    )
+        </div>
+    );
 }
+
 export default Register;
