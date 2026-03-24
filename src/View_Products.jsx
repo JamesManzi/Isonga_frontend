@@ -155,7 +155,10 @@ function View_Products() {
           <FontAwesomeIcon icon={faArrowRight} />
         </div>
       </div>
-
+      {/* Header */}
+      <div className="View_Products_body">
+        <p>Find All Products You Desire</p>
+      </div>
       <div className="View_Products_search">
         <input type="search" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
         <button><FontAwesomeIcon icon={faSearch} /> Search</button>
