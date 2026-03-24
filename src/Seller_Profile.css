@@ -1,293 +1,355 @@
-/* ====== General Layout ====== */
-.Seller_Profile {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  font-family: Arial, sans-serif;
+/* ===================== GLOBAL ===================== */
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f7f8fa;
   color: #333;
+  margin: 0;
+  padding: 0;
 }
 
-/* ====== Profile Section ====== */
+.Seller_Profile {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ===================== HEADER ===================== */
 .profile {
-  text-align: center;
-  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
 }
 
 .seller-image {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #4CAF50;
-  margin-bottom: 1rem;
+  cursor: pointer;
+  border: 3px solid #4f46e5;
+  transition: transform 0.2s;
+}
+
+.seller-image:hover {
+  transform: scale(1.05);
 }
 
 .profile h2 {
-  margin: 0.5rem 0;
+  margin: 0;
   font-size: 1.8rem;
-  color: #222;
+  font-weight: 600;
 }
 
-.profile button {
-  background: #4CAF50;
-  color: white;
+.sell {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.modern-submit-btn {
+  background: #4f46e5;
+  color: #fff;
+  padding: 10px 20px;
   border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-weight: 500;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   transition: background 0.3s;
 }
 
-.profile button:hover {
-  background: #45a049;
+.modern-submit-btn:hover {
+  background: #3730a3;
 }
 
-/* ====== Seller Info ====== */
+.back-btn {
+  background: #e5e7eb;
+  color: #333;
+}
+
+.back-btn:hover {
+  background: #d1d5db;
+}
+
+/* ===================== INFO ===================== */
 .Seller_Profile_info {
-  margin-bottom: 2rem;
-  line-height: 1.6;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
 }
 
-.Seller_Profile_info strong {
-  color: #444;
-}
-
-/* ====== Location Images ====== */
-.seller-files {
+.Seller_Profile_info p {
+  margin: 8px 0;
+  font-size: 1rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  align-items: center;
+  gap: 10px;
+}
+
+.description-text {
+  line-height: 1.5;
+}
+
+/* ===================== GALLERY ===================== */
+.seller-files {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
 .image-wrapper {
   position: relative;
-  width: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
 .image-wrapper img {
   width: 100%;
   height: 120px;
   object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid #ddd;
+  display: block;
 }
 
-.image-wrapper button {
+.image-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.delete-overlay {
   position: absolute;
-  bottom: 6px;
+  top: 6px;
   right: 6px;
   background: rgba(255, 0, 0, 0.8);
-  color: white;
+  color: #fff;
   border: none;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
+  border-radius: 50%;
+  padding: 6px;
   cursor: pointer;
   font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
 }
 
-.image-wrapper button:hover {
-  background: red;
+.delete-overlay:hover {
+  background: rgba(255, 0, 0, 1);
 }
 
-/* ====== Image Modal ====== */
+/* ===================== MODAL ===================== */
 .image-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background: rgba(0,0,0,0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 2000;
 }
 
-.full-image {
+.image-modal img.full-image {
   max-width: 90%;
-  max-height: 90%;
+  max-height: 80vh;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
 }
 
-/* ====== Edit Modal ====== */
-.edit-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
+/* ===================== MODERN FORM ===================== */
+.modern-reg-wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 1100;
+  align-items: flex-start;
+  padding: 40px 20px;
+  overflow-y: auto;
 }
 
-.edit-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 400px;
+.modern-reg-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  padding: 30px;
+  width: 100%;
+}
+
+.form-content-wrap {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 20px;
 }
 
-.edit-form input,
-.edit-form textarea {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
+.form-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #4f46e5;
 }
 
-.edit-form textarea {
-  min-height: 80px;
-  resize: vertical;
+.form-header p {
+  margin: 5px 0 15px 0;
+  color: #6b7280;
 }
 
-.edit-form button {
-  background: #4CAF50;
-  color: white;
-  border: none;
-  padding: 0.6rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.edit-form button:hover {
-  background: #45a049;
-}
-
-.edit-form button[type="button"] {
-  background: #ccc;
-  color: #333;
-}
-
-.edit-form button[type="button"]:hover {
-  background: #bbb;
-}
-
-/* ====== Preview Images ====== */
-.preview-img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid #ddd;
-  margin-top: 0.5rem;
-}
-
-.location-preview-container {
+.modern-input-group {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.preview-wrapper {
+.modern-input-group input,
+.modern-input-group textarea {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+.modern-input-group input:focus,
+.modern-input-group textarea:focus {
+  border-color: #4f46e5;
+  outline: none;
+}
+
+.input-with-icon {
   position: relative;
 }
 
-.preview-wrapper button {
+.input-with-icon svg {
   position: absolute;
-  bottom: 6px;
-  right: 6px;
-  background: rgba(255, 0, 0, 0.8);
-  color: white;
-  border: none;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
 }
 
-.preview-wrapper button:hover {
-  background: red;
+.input-with-icon input {
+  padding-left: 35px;
 }
 
-/* ====== Back Button ====== */
-.Seller_Profile a button {
-  margin-top: 2rem;
-  background: #555;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s;
+/* Multi-Upload */
+.modern-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.Seller_Profile a button:hover {
-  background: #333;
+.gallery-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-/* ====== Edit Modal ====== */
-.edit-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
+.gallery-item img {
   width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1100;
-  overflow: hidden; /* prevent background scroll */
-}
-
-.edit-form {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  width: 500px;
-  max-height: 90vh;         /* limit height to viewport */
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;         /* scroll inside form */
-  gap: 1rem;
-}
-
-/* Keep buttons visible at bottom */
-.edit-form button[type="submit"],
-.edit-form button[type="button"] {
-  margin-top: auto;         /* push buttons to bottom */
-}
-
-/* Optional: sticky footer for buttons */
-.edit-form .form-actions {
-  position: sticky;
-  bottom: 0;
-  background: white;
-  padding-top: 1rem;
-  display: flex;
-  gap: 1rem;
-}
-
-h2{
-  text-align: center;
-  margin-bottom: 5px;
-}
-
-/* Buyer profile + name inline */
-.review-item h4 {
-  display: inline-block;   /* make name inline with image */
-  vertical-align: middle;  /* align with image vertically */
-  margin-left: 0.5rem;     /* space from image */
-}
-
-.review-item img {
-  display: inline-block;   /* keep image inline */
-  vertical-align: middle;  /* align with name text */
-  width: 40px;             /* optional size */
-  height: 40px;
-  border-radius: 50%;
+  height: 80px;
   object-fit: cover;
 }
 
+.gallery-item button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(255,0,0,0.8);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+}
 
+/* Modern upload circle */
+.profile-circle-upload {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px dashed #4f46e5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  font-size: 1.5rem;
+  color: #4f46e5;
+  transition: transform 0.2s;
+}
+
+.profile-circle-upload:hover {
+  transform: scale(1.05);
+}
+
+.profile-circle-upload img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===================== RATINGS ===================== */
+.seller-rating {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-top: 30px;
+}
+
+.rating-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.rating-number {
+  font-size: 1.5rem;
+  color: #4f46e5;
+}
+
+.review-item {
+  background: #f3f4f6;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ===================== LOADING BAR ===================== */
+.modern-progress-bar {
+  width: 100%;
+  height: 5px;
+  background: #e5e7eb;
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-progress-bar::before {
+  content: "";
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  background: #4f46e5;
+  animation: loading 1s infinite;
+}
+
+@keyframes loading {
+  0% { left: -50%; }
+  100% { left: 100%; }
+}
