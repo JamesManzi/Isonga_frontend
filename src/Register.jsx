@@ -122,7 +122,8 @@ function Register() {
                                         <input type="text" placeholder="e.g. Kigali Tech Hub" onChange={(e) => setName(e.target.value)} required />
                                     </div>
                                 </div>
-                                <select
+                                <div className="modern-input-group">
+                                    <select
   value={sellerType}  // <- Actually create a separate state for sellerType
   onChange={(e) => setSellerType(e.target.value)}
   required
@@ -132,6 +133,8 @@ function Register() {
   <option value="Service">Service</option>
   <option value="Asset">Asset</option>
 </select><br/>
+                        
+                                </div>
                                 <div className="modern-input-group">
                                     <label>Category</label>
                                     <select onChange={e => setCategory(e.target.value)} required>
