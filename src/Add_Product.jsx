@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Add_Product.css";
 import axios from "axios";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faTrash, faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 
 const categoryOptions = {
   Product: [
@@ -33,9 +33,8 @@ const categoryOptions = {
 };
 
 function Add_Product() {
-
   const navigate = useNavigate();
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
   const [type, setType] = useState("");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -62,14 +61,11 @@ function Add_Product() {
   ];
 
   const handleFileChange = (e) => {
-
     const selectedFiles = Array.from(e.target.files);
-
     const validFiles = [];
     const previews = [];
 
     selectedFiles.forEach((file) => {
-
       if (file.size > MAX_FILE_SIZE) {
         alert(`${file.name} is too large. Max size is 20MB.`);
         return;
@@ -85,17 +81,22 @@ function Add_Product() {
         url: URL.createObjectURL(file),
         type: file.type
       });
-
     });
 
+    // IMPROVEMENT: Append files so user can select many photos at different times
     setFiles((prev) => [...prev, ...validFiles]);
     setPreviewFiles((prev) => [...prev, ...previews]);
 
     e.target.value = null;
   };
 
-  const handleSubmit = async (e) => {
+  // NEW: Ability to remove a specific image from the many selected
+  const removeImage = (index) => {
+    setFiles(files.filter((_, i) => i !== index));
+    setPreviewFiles(previewFiles.filter((_, i) => i !== index));
+  };
 
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (files.length < 2) {
@@ -104,7 +105,6 @@ function Add_Product() {
     }
 
     const formData = new FormData();
-
     formData.append("type", type);
     formData.append("name", name);
     formData.append("price", price);
@@ -116,9 +116,9 @@ function Add_Product() {
     files.forEach((file) => {
       formData.append("files", file);
     });
-    setLoading(true)
-    try {
 
+    setLoading(true);
+    try {
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/add_product",
         formData,
@@ -133,33 +133,29 @@ function Add_Product() {
         return;
       }
 
-       setMessage({
-      text: res.data.message,
-      type: res.data.success ? "success" : "error",
-    });
+      setMessage({
+        text: res.data.message,
+        type: res.data.success ? "success" : "error",
+      });
 
       if (res.data.success) {
         setTimeout(() => {
-        navigate("/my_store");
-      }, 1000); 
+          navigate("/my_store");
+        }, 1000);
       }
 
     } catch (error) {
-
       console.log(error);
- setMessage({
-      text: "Adding Item Failed.",
-      type: "error",
-    });
-
-    } finally{
+      setMessage({
+        text: "Adding Item Failed.",
+        type: "error",
+      });
+    } finally {
       setLoading(false);
     }
-
   };
 
   const resetForm = () => {
-
     setType("");
     setName("");
     setPrice("");
@@ -167,43 +163,33 @@ function Add_Product() {
     setCategory("");
     setDescription("");
     setQuantity("");
-
     setFiles([]);
     setPreviewFiles([]);
-
+    setMessage("");
   };
 
   return (
-
     <div className="Add_Product">
-
       <div className="Add_Product_navbar">
-
         <div className="Add_Product_logos">
           <img src="/logo.png" alt="logo" />
         </div>
-
         <div className="Add_Product_heads">
           <h1>Isonga</h1>
           <h2>Market</h2>
         </div>
-
         <div className="Add_Product_logout">
           <Link to="/dashboard">
             <FontAwesomeIcon icon={faArrowRight} />
           </Link>
         </div>
-
       </div>
 
       <div className="Add_Product_container">
-
         <form onSubmit={handleSubmit}>
-
           <h2>Listing Information</h2>
 
           <label>Type</label>
-
           <select
             value={type}
             onChange={(e) => {
@@ -212,16 +198,13 @@ function Add_Product() {
             }}
             required
           >
-
             <option value="">-- Select Type --</option>
             <option value="Product">Product</option>
             <option value="Service">Service</option>
             <option value="Asset">Asset</option>
-
           </select>
 
           <label>Name</label>
-
           <input
             type="text"
             placeholder={
@@ -237,7 +220,6 @@ function Add_Product() {
           />
 
           <label>Price</label>
-
           <input
             type="number"
             placeholder="Enter Price"
@@ -247,7 +229,6 @@ function Add_Product() {
           />
 
           <label>Location</label>
-
           <input
             type="text"
             placeholder="Enter Location"
@@ -259,7 +240,6 @@ function Add_Product() {
           {type === "Product" && (
             <>
               <label>Quantity</label>
-
               <input
                 type="number"
                 placeholder="Enter Quantity"
@@ -270,27 +250,22 @@ function Add_Product() {
           )}
 
           <label>Category</label>
-
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             disabled={!type}
             required
           >
-
             <option value="">-- Select Category --</option>
-
             {type &&
               categoryOptions[type].map((cat, index) => (
                 <option key={index} value={cat}>
                   {cat}
                 </option>
               ))}
-
           </select>
 
           <label>Description</label>
-
           <textarea
             placeholder="Enter Description"
             value={description}
@@ -298,46 +273,43 @@ function Add_Product() {
           ></textarea>
 
           <label>Upload Images / Videos</label>
-
-          <input
-            type="file"
-            accept="image/*,video/*"
-            multiple
-            onChange={handleFileChange}
-          />
+          {/* IMPROVED FILE INPUT STYLING */}
+          <div className="custom_file_input">
+            <input
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              onChange={handleFileChange}
+            />
+            <div className="upload_design">
+               <FontAwesomeIcon icon={faCloudUploadAlt} />
+               <span>Click to Select Multiple Files</span>
+            </div>
+          </div>
 
           <div className="preview_container">
-
             {previewFiles.map((file, index) => (
-
               <div key={index} className="preview_card">
-
                 {file.type.startsWith("image") ? (
-
                   <img
                     src={file.url}
                     alt="preview"
                     className="files"
                   />
-
                 ) : (
-
                   <video
                     src={file.url}
-                    controls
                     className="files"
                   />
-
                 )}
-
+                <button type="button" className="remove_img_btn" onClick={() => removeImage(index)}>
+                   <FontAwesomeIcon icon={faTrash} />
+                </button>
               </div>
-
             ))}
-
           </div>
 
           <div className="Add_Products_btns">
-
             <button
               type="button"
               className="bt1"
@@ -345,30 +317,23 @@ function Add_Product() {
             >
               Cancel
             </button>
-
             <button type="submit" className="bt2" disabled={loading}>
-              {loading ? "Add Item ...":"Add Item"}
+              {loading ? "Add Item ..." : "Add Item"}
             </button>
-
           </div>
 
-{message && (
-  <div className={`alert ${message.type}`}>
-    <span className="alert-icon">
-      {message.type === "success" ? "✓" : "⚠"}
-    </span>
-    <span>{message.text}</span>
-  </div>
-)}
-
+          {message && (
+            <div className={`alert ${message.type}`}>
+              <span className="alert-icon">
+                {message.type === "success" ? "✓" : "⚠"}
+              </span>
+              <span>{message.text}</span>
+            </div>
+          )}
         </form>
-
       </div>
-
     </div>
-
   );
-
 }
 
 export default Add_Product;
