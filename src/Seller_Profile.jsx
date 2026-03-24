@@ -273,29 +273,26 @@ function Seller_Profile() {
         </div>
       )}
 
-      {/* RATINGS SECTION */}
-      <div className="seller-rating">
-          <h3>Customer Reviews</h3>
-          <div className="rating-summary">
-              <span className="rating-number">{averageRating.toFixed(1)}</span>
-              <div className="stars">{renderStars(averageRating)}</div>
-              <span>({numReviews} reviews)</span>
-          </div>
-          {reviews.map((r) => (
-              <div key={r._id} className="review-item">
-                  <div className="review-header">
-                    <h4>{r.buyer?.name || "Anonymous"}</h4>
-                    <div className="review-stars">{renderStars(r.rating)}</div>
-                  </div>
-                  <p>{r.comment}</p>
-                  {r.createdAt && (
+     {/* Reviews list */}
+         {reviews.map((r) => (
+          <div key={r._id} className="review-item">
+            <h4>{r.buyer?.name || "Anonymous"}</h4>
+            {r.buyer?.profile&& (
+              <img
+                src={getFileUrl(r.buyer.profile)}
+                alt="Profile"
+                onClick={() => setSelectedImage(r.buyer.profile)}
+      style={{ cursor: "pointer" }}
+              />
+            )}
+            <div className="review-stars">{renderStars(r.rating)}</div>
+            {r.comment && <p>{r.comment}</p>}
+            {r.createdAt && (
               <small>{new Date(r.createdAt).toLocaleDateString()}</small>
             )}
-              </div>
-          ))}
-      </div>
+          </div>
+        ))}
 
-      {/* Image Modal */}
       {selectedImage && (
         <div className="image-modal" onClick={() => setSelectedImage(null)}>
           <img src={getFileUrl(selectedImage)} alt="Full" className="full-image" />
