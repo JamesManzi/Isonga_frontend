@@ -3,9 +3,9 @@ import { useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import "./Buyer_Login.css";
+import "./Login.css";
 
-function Buyer_Login() {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,14 +20,14 @@ function Buyer_Login() {
 
     try {
       const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/buyer_login",
+        "https://isonga-backend.onrender.com/api/login",
         { email, password },
         { withCredentials: true }
       );
 
       if (res.data.success) {
         setMessage({ text: "Success! Welcome back.", type: "success" });
-        setTimeout(() => navigate("/buyer_dashboard"), 1500);
+        setTimeout(() => navigate("/dashboard"), 1500);
       } else {
         setMessage({ text: res.data.message, type: "error" });
         setLoading(false);
@@ -39,45 +39,45 @@ function Buyer_Login() {
   };
 
   return (
-    <div className="buyer-page">
+    <div className="login-page">
       {/* Top Loading Bar */}
-      {loading && <div className="buyer-top-loading-bar"></div>}
+      {loading && <div className="top-loading-bar"></div>}
 
-      <div className="buyer-card-container">
+      <div className="login-card-container">
         {/* Left Side: Branding/Hero */}
-        <div className="buyer-hero-side">
-          <div className="buyer-hero-overlay"></div>
-          <div className="buyer-hero-content">
-            <img src="/logo.png" alt="Logo" className="buyer-hero-logo" />
+        <div className="login-hero-side">
+          <div className="hero-overlay"></div>
+          <div className="hero-content">
+            <img src="/logo.png" alt="Logo" className="hero-logo" />
             <h1>Isonga Market</h1>
-            <p>Discover quality products and support local businesses across Rwanda.</p>
-            <div className="buyer-hero-footer">
-              <span>Join 10,000+ Happy Shoppers 🇷🇼</span>
+            <p>Empowering Rwandan entrepreneurs to reach more customers, faster.</p>
+            <div className="hero-footer">
+              <span>Trusted by 500+ Local Shops 🇷🇼</span>
             </div>
           </div>
         </div>
 
         {/* Right Side: Form */}
-        <div className="buyer-form-side">
-          <div className="buyer-form-header">
-            <h2>Buyer Login</h2>
-            <p>Sign in to continue your shopping journey</p>
+        <div className="login-form-side">
+          <div className="form-header">
+            <h2>Seller Login</h2>
+            <p>Enter your credentials to manage your store</p>
           </div>
 
           <form onSubmit={handleSubmit}>
-            <div className="buyer-input-group">
+            <div className="input-group">
               <label>Email Address</label>
               <input
                 type="email"
-                placeholder="yourname@example.com"
+                placeholder="name@company.com"
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
 
-            <div className="buyer-input-group">
+            <div className="input-group">
               <label>Password</label>
-              <div className="buyer-password-wrapper">
+              <div className="password-wrapper">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
@@ -86,18 +86,18 @@ function Buyer_Login() {
                 />
                 <FontAwesomeIcon
                   icon={showPassword ? faEyeSlash : faEye}
-                  className="buyer-password-toggle"
+                  className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 />
               </div>
             </div>
 
-            <div className="buyer-form-options">
-              <Link to="/buyer-forgot-password">Forgot password?</Link>
+            <div className="form-options">
+              <Link to="/forgot-password">Forgot password?</Link>
             </div>
 
-            <button type="submit" className="buyer-main-btn" disabled={loading}>
-              {loading ? <span className="buyer-loader-dots">Verifying...</span> : (
+            <button type="submit" className="main-login-btn" disabled={loading}>
+              {loading ? <span className="loader-dots">Authenticating...</span> : (
                 <>
                   Sign In <FontAwesomeIcon icon={faArrowRight} />
                 </>
@@ -105,17 +105,17 @@ function Buyer_Login() {
             </button>
 
             {message && (
-              <div className={`buyer-modern-alert ${message.type}`}>
+              <div className={`modern-alert ${message.type}`}>
                 {message.text}
               </div>
             )}
 
-            <div className="buyer-register-redirect">
-              New to Isonga? <Link to="/buyer_register">Create Account</Link>
+            <div className="register-redirect">
+              Don't have a shop yet? <Link to="/register">Create Account</Link>
             </div>
           </form>
 
-          <div className="buyer-form-footer">
+          <div className="form-footer">
             <Link to="/">← Back to Home</Link>
           </div>
         </div>
@@ -124,4 +124,4 @@ function Buyer_Login() {
   );
 }
 
-export default Buyer_Login;
+export default Login;
