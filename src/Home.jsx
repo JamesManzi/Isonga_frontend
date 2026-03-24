@@ -9,11 +9,10 @@ function Home() {
   const [sellers, setSellers] = useState([]);
   const [filteredSellers, setFilteredSellers] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState({});
-  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 }); // FIXED: Added missing state
   const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState("");
- const [loading, setLoading] = useState(true);
-  // State for alert popup
+  const [loading, setLoading] = useState(true);
   const [alertMessage, setAlertMessage] = useState("");
 
   // Show alert
@@ -77,7 +76,7 @@ function Home() {
       } catch (error) {
         console.error(error);
         setMessage("Error loading sellers");
-      } finally{
+      } finally {
         setLoading(false);
       }
     };
@@ -99,40 +98,43 @@ function Home() {
     }
   }, [searchQuery, sellers]);
 
+  // Auto-slide effect
   useEffect(() => {
-  const interval = setInterval(() => {
-    setCurrentImageIndex((prev) => {
-      const newIndexes = { ...prev };
-      // Change 'sellers' to your data array name
-      sellers.forEach((item) => {
-        if (item.files && item.files.length > 1) {
-          const currentIndex = prev[item._id] || 0;
-          newIndexes[item._id] = (currentIndex + 1) % item.files.length;
-        }
+    if (sellers.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => {
+        const newIndexes = { ...prev };
+        sellers.forEach((item) => {
+          if (item.files && item.files.length > 1) {
+            const currentIndex = prev[item._id] || 0;
+            newIndexes[item._id] = (currentIndex + 1) % item.files.length;
+          }
+        });
+        return newIndexes;
       });
-      return newIndexes;
-    });
-  }, 5000); 
-  return () => clearInterval(interval);
-}, [sellers]); // Update dependency to match your data
-const getFileUrl = (path) => {
-  if (!path) return "/placeholder.png"; // Fallback if no image exists
-  return path.startsWith("http") 
-    ? path 
-    : `https://isonga-backend.onrender.com/uploads/${path}`;
-};
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [sellers]);
 
-if (loading) {
-  return (
-    <div className="home-loading">
-      <div className="loading-card">
-        <div className="spinner"></div>
-        <h2>Loading marketplace...</h2>
-        <p>Please wait</p>
+  const getFileUrl = (path) => {
+    if (!path) return "/placeholder.png";
+    return path.startsWith("http")
+      ? path
+      : `https://isonga-backend.onrender.com/uploads/${path}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="home-loading">
+        <div className="loading-card">
+          <div className="spinner"></div>
+          <h2>Loading marketplace...</h2>
+          <p>Please wait</p>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+
   return (
     <div className="Home">
       {/* Navbar */}
@@ -155,19 +157,19 @@ if (loading) {
 
       {/* Hero */}
       <div className="Home_body">
-  <div className="Home_body_text">
-    <h1>Connect Buyers And Sellers</h1>
-    <p>Buy And Sell Everywhere, Fast and Secure</p>
-  </div>
-  <div className="home_body_btns">
-    <Link to="/buyer_login">
-      <button className="home_buyer_btn">I am Buyer</button>
-    </Link>
-    <Link to="/login">
-      <button className="home_seller_btn">I am Seller</button>
-    </Link>
-  </div>
-</div>
+        <div className="Home_body_text">
+          <h1>Connect Buyers And Sellers</h1>
+          <p>Buy And Sell Everywhere, Fast and Secure</p>
+        </div>
+        <div className="home_body_btns">
+          <Link to="/buyer_login">
+            <button className="home_buyer_btn">I am Buyer</button>
+          </Link>
+          <Link to="/login">
+            <button className="home_seller_btn">I am Seller</button>
+          </Link>
+        </div>
+      </div>
 
       {/* Search */}
       <div className="Buyer_Dashboard_search">
@@ -183,99 +185,117 @@ if (loading) {
         </button>
       </div>
 
-      {/* Sellers Grid */}
+      {/* Shop Grid */}
       <div className="shop-grid">
         {filteredSellers.length > 0 ? (
-          filteredSellers.map((seller) => (
-            <div key={seller._id} className="shop-card">
-              <div className="card-image-section">
-  {seller.files && seller.files.length > 0 ? (
-    <div className="image-slider">
-  {/* Logic to choose between Video or Image - CHANGED 'item' to 'seller' */}
-  {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
-    <video
-      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-      muted autoPlay loop
-      className="slider-image"
-      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-    />
-  ) : (
-    <img
-      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
-      className="slider-image"
-      alt="media"
-      onClick={() => setSelectedMedia(seller.files[currentImageIndex[seller._id] || 0])}
-    />
-  )}
+          filteredSellers.map((seller) => {
+            const activeIdx = currentImageIndex[seller._id] || 0;
+            return (
+              <div key={seller._id} className="shop-card">
+                <div className="card-image-section">
+                  {seller.files && seller.files.length > 0 ? (
+                    <div className="image-slider">
+                      {isVideoFile(seller.files[activeIdx]) ? (
+                        <video
+                          src={getFileUrl(seller.files[activeIdx])}
+                          muted autoPlay loop className="slider-image"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setModalMedia({ sellerId: seller._id, index: activeIdx });
+                          }}
+                        />
+                      ) : (
+                        <img
+                          src={getFileUrl(seller.files[activeIdx])}
+                          alt={seller.name} className="slider-image"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setModalMedia({ sellerId: seller._id, index: activeIdx });
+                          }}
+                        />
+                      )}
+                      {seller.files.length > 1 && (
+                        <div className="slider-dots">
+                          {seller.files.map((_, idx) => (
+                            <span
+                              key={idx}
+                              className={`dot ${idx === activeIdx ? "active" : ""}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCurrentImageIndex(prev => ({ ...prev, [seller._id]: idx }));
+                              }}
+                            ></span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <img src="/placeholder.png" alt="Placeholder" className="slider-image" />
+                  )}
 
-  {/* The Instagram Dots - CHANGED 'item' to 'seller' */}
-  {seller.files.length > 1 && (
-    <div className="slider-dots">
-      {seller.files.map((_, idx) => (
-        <span 
-          key={idx} 
-          className={`dot ${idx === (currentImageIndex[seller._id] || 0) ? "active" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation(); 
-            setCurrentImageIndex(prev => ({...prev, [seller._id]: idx}));
-          }}
-        ></span>
-      ))}
-    </div>
-  )}
-</div>
-  ) : (
-    <img src="/placeholder.png" alt="Placeholder" className="slider-image" />
-  )}
-
-  {/* Profile Avatar */}
-  <img
-  src={getFileUrl(seller.profile)}
-    alt={`${seller.name} Profile`}
-    className="profile_avatar"
-    onError={(e) => { e.target.src = "/default-avatar.png"; }}
-    onClick={() => showAlert("Please login first!")}
-  />
-</div>
-              {/* Info */}
-              <div className="shop-card-info">
-                <h3 className="seller-name">{seller.name} Shop</h3>
-                <p className="seller-location">{seller.location}</p>
-                <p className="seller-category">{seller.category} Shop</p>
-                <div className="rating">
-                  {renderStars(seller.averageRating)}
-                  <span>({seller.numReviews})</span>
+                  <img
+                    src={getFileUrl(seller.profile)}
+                    alt={`${seller.name} Profile`}
+                    className="profile_avatar"
+                    onError={(e) => { e.target.src = "/default-avatar.png"; }}
+                    onClick={() => showAlert("Please login first!")}
+                  />
                 </div>
-                <p className="seller-description">{seller.description}</p>
-                <div className="card-actions">
-                  <button className="visit-btn" onClick={() => showAlert("Please login first!")}>
-                    Visit Shop
-                  </button>
-                  <button className="chat-btn" onClick={() => showAlert("Please login first!")}>
-                    Chat
-                  </button>
+
+                <div className="shop-card-info">
+                  <h3 className="seller-name">{seller.name} Shop</h3>
+                  <p className="seller-location">{seller.location}</p>
+                  <p className="seller-category">{seller.category} Shop</p>
+                  <div className="rating">
+                    {renderStars(seller.averageRating)}
+                    <span>({seller.numReviews})</span>
+                  </div>
+                  <p className="seller-description">{seller.description}</p>
+                  <div className="card-actions">
+                    <button className="visit-btn" onClick={() => showAlert("Please login first!")}>
+                      Visit Shop
+                    </button>
+                    <button className="chat-btn" onClick={() => showAlert("Please login first!")}>
+                      Chat
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p>No sellers found</p>
         )}
       </div>
 
-      {/* Media Modal */}
-      {selectedMedia && (
-        <div className="media-modal" onClick={() => setSelectedMedia(null)}>
-          <span className="close-btn">&times;</span>
-          {isVideoFile(selectedMedia) ? (
-            <video src={getFileUrl(selectedMedia)} controls autoPlay />
-          ) : (
-            <img src={getFileUrl(selectedMedia)} alt="Full view" />
-          )}
-        </div>
+      {/* Media Zoom Modal */}
+      {modalMedia.sellerId && (
+        (() => {
+          const seller = sellers.find(s => s._id === modalMedia.sellerId);
+          if (!seller || !seller.files) return null;
+          const file = seller.files[modalMedia.index];
+          return (
+            <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
+              <span className="close-btn" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>&times;</span>
+              {isVideoFile(file) ? (
+                <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
+              ) : (
+                <img src={getFileUrl(file)} alt="Full view" className="full-media" onClick={(e) => e.stopPropagation()} />
+              )}
+              <div className="modal-controls">
+                <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
+                  e.stopPropagation();
+                  setModalMedia(p => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length }));
+                }} />
+                <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
+                  e.stopPropagation();
+                  setModalMedia(p => ({ ...p, index: (p.index + 1) % seller.files.length }));
+                }} />
+              </div>
+            </div>
+          );
+        })()
       )}
-
-      {message && <p>{message}</p>}
 
       {/* Alert Modal */}
       {alertMessage && (
@@ -286,86 +306,58 @@ if (loading) {
           </div>
         </div>
       )}
-      {/* ================= PREMIUM FOOTER ================= */}
+
+      {/* Footer */}
       <footer className="isonga-footer">
+        <div className="footer-cta">
+          <h2>Start Buying & Selling Today</h2>
+          <p>Join Isonga Market and grow your business or find what you need fast.</p>
+          <div className="footer-cta-buttons">
+            <Link to="/buyer_login"><button className="cta-btn buyer">Join as Buyer</button></Link>
+            <Link to="/login"><button className="cta-btn seller">Start Selling</button></Link>
+          </div>
+        </div>
 
-  {/* TOP CTA SECTION */}
-  <div className="footer-cta">
-    <h2>Start Buying & Selling Today</h2>
-    <p>Join Isonga Market and grow your business or find what you need fast.</p>
+        <div className="footer-main">
+          <div className="footer-brand">
+            <img src="/logo.png" alt="logo" />
+            <h3>Isonga Market</h3>
+            <p>Connecting buyers and sellers across Rwanda easily and securely.</p>
+          </div>
+          <div className="footer-links">
+            <div>
+              <h4>Explore</h4>
+              <Link to="#">Home</Link>
+              <Link to="/Steps">How it Works</Link>
+              <Link to="/Help">Help</Link>
+            </div>
+            <div>
+              <h4>For Sellers</h4>
+              <Link to="/login">Sell Products</Link>
+              <Link to="#">Seller Tips</Link>
+            </div>
+            <div>
+              <h4>Company</h4>
+              <Link to="#">About</Link>
+              <Link to="#">Privacy Policy</Link>
+            </div>
+          </div>
+          <div className="footer-contact">
+            <h4>Contact</h4>
+            <p>Email: support@isonga.com</p>
+            <div className="footer-socials">
+              <i className="fab fa-facebook"></i>
+              <i className="fab fa-twitter"></i>
+              <i className="fab fa-instagram"></i>
+            </div>
+          </div>
+        </div>
 
-    <div className="footer-cta-buttons">
-      <Link to="/buyer_login">
-        <button className="cta-btn buyer">Join as Buyer</button>
-      </Link>
-      <Link to="/login">
-        <button className="cta-btn seller">Start Selling</button>
-      </Link>
-    </div>
-  </div>
-
-  {/* MAIN FOOTER */}
-  <div className="footer-main">
-
-    {/* BRAND */}
-    <div className="footer-brand">
-      <img src="/logo.png" alt="logo" />
-      <h3>Isonga Market</h3>
-      <p>Connecting buyers and sellers across Rwanda easily and securely.</p>
-    </div>
-
-    {/* LINKS */}
-    <div className="footer-links">
-      <div>
-        <h4>Explore</h4>
-        <Link to="#">Home</Link>
-        <Link to="/Steps">How it Works</Link>
-        <Link to="/Help">Help</Link>
-      </div>
-
-      <div>
-        <h4>For Sellers</h4>
-        <Link to="/login">Sell Products</Link>
-        <Link to="#">Seller Tips</Link>
-        <Link to="#">Pricing</Link>
-      </div>
-
-      <div>
-        <h4>Company</h4>
-        <Link to="#">About</Link>
-        <Link to="#">Contact</Link>
-        <Link to="#">Privacy Policy</Link>
-      </div>
-    </div>
-
-    {/* CONTACT + SOCIAL */}
-    <div className="footer-contact">
-      <h4>Contact</h4>
-      <p>Email: support@isonga.com</p>
-      <p>Phone: +250 7XX XXX XXX</p>
-
-      <div className="footer-socials">
-        <i className="fab fa-facebook"></i>
-        <i className="fab fa-twitter"></i>
-        <i className="fab fa-instagram"></i>
-      </div>
-    </div>
-
-  </div>
-
-  {/* BOTTOM BAR */}
-  <div className="footer-bottom-bar">
-    <p>© {new Date().getFullYear()} Isonga Market • Built for growth 🚀</p>
-
-    <div 
-      className="scroll-top"
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-    >
-      ↑ Top
-    </div>
-  </div>
-
-</footer>
+        <div className="footer-bottom-bar">
+          <p>© {new Date().getFullYear()} Isonga Market • Built for growth 🚀</p>
+          <div className="scroll-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>↑ Top</div>
+        </div>
+      </footer>
     </div>
   );
 }
