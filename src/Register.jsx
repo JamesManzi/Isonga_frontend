@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudUploadAlt, faShop, faPhone, faEnvelope, faLock, faMapMarkerAlt, faTrash, faArrowRight, faImages } from "@fortawesome/free-solid-svg-icons";
+import { faCloudUploadAlt, faStore, faPhone, faEnvelope, faLock, faMapPin, faTrash, faChevronRight, faImages, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import "./Register.css";
 
 function Register() {
@@ -25,16 +25,12 @@ function Register() {
     const [category, setCategory] = useState("");
 
     const navigate = useNavigate();
-    const phoneRule = /^07\d{8}$/;
-    const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage(null);
-
-        if (!profile) return alert("Please Upload a Shop Profile Picture");
-        if (files.length < 2) return alert("Please Upload at least 2 Location Images");
-        if (password !== repeat_pass) return alert("Passwords do not match");
+        if (!profile) return setMessage({ text: "Profile photo is required", type: "error" });
+        if (files.length < 2) return setMessage({ text: "Upload at least 2 store photos", type: "error" });
+        if (password !== repeat_pass) return setMessage({ text: "Passwords don't match", type: "error" });
 
         const formData = new FormData();
         formData.append("name", name.trim());
@@ -53,158 +49,175 @@ function Register() {
         try {
             const res = await axios.post("https://isonga-backend.onrender.com/api/register", formData, { withCredentials: true });
             setMessage({ text: res.data.message, type: res.data.success ? "success" : "error" });
-            if (res.data.success) setTimeout(() => navigate("/login"), 1500);
+            if (res.data.success) setTimeout(() => navigate("/login"), 2000);
         } catch (error) {
-            setMessage({ text: "Server error. Please try again.", type: "error" });
+            setMessage({ text: "Connection error. Try again.", type: "error" });
         } finally {
             setLoading(false);
         }
     };
 
-    const removeLocationImage = (index) => {
-        setFiles(files.filter((_, i) => i !== index));
-        setPreviewFiles(previewFiles.filter((_, i) => i !== index));
-    };
-
     return (
-        <div className="sel_reg_viewport">
-            {loading && <div className="sel_reg_top_loader"></div>}
-
-            <div className="sel_reg_card">
-                <div className="sel_reg_hero_panel">
-                    <div className="sel_reg_hero_content">
-                        <img src="/logo.png" alt="Logo" className="sel_reg_logo_img" />
-                        <h1>Seller Portal</h1>
-                        <p>Showcase your business to thousands of shoppers in Rwanda.</p>
-                        <ul className="sel_reg_hero_list">
-                            <li>✓ Instant Store Creation</li>
-                            <li>✓ Secure Payments</li>
-                            <li>✓ Business Analytics</li>
-                        </ul>
+        <div className="modern-reg-wrapper">
+            {loading && <div className="modern-progress-bar"></div>}
+            
+            <div className="modern-reg-container">
+                {/* Visual Sidebar */}
+                <div className="modern-reg-sidebar">
+                    <div className="sidebar-branding">
+                        <img src="/logo.png" alt="Logo" />
+                        <h2>Isonga <span>Market</span></h2>
+                    </div>
+                    <div className="step-list">
+                        <div className="step-item active"><span className="step-num">1</span> Shop Identity</div>
+                        <div className="step-item active"><span className="step-num">2</span> Visuals & Location</div>
+                        <div className="step-item active"><span className="step-num">3</span> Account Security</div>
+                    </div>
+                    <div className="sidebar-footer">
+                        <p>© 2026 Isonga Market. Proudly Rwandan 🇷🇼</p>
                     </div>
                 </div>
 
-                <div className="sel_reg_form_panel">
-                    <header className="sel_reg_header">
-                        <h2>Create Your Shop</h2>
-                        <p>Complete your profile to start selling</p>
-                    </header>
+                {/* Form Side */}
+                <div className="modern-reg-main">
+                    <div className="form-content-wrap">
+                        <div className="form-header">
+                            <h1>Become a Seller</h1>
+                            <p>Set up your professional store in minutes.</p>
+                        </div>
 
-                    <form onSubmit={handleSubmit} className="sel_reg_form">
-                        
-                        {/* 1. Shop Profile Photo (Single like Buyer) */}
-                        <div className="sel_reg_section">
-                            <label className="sel_reg_label">Shop Profile (Logo)</label>
-                            {!previewProfile ? (
-                                <div className="sel_reg_upload_box" onClick={() => profileInputRef.current.click()}>
-                                    <FontAwesomeIcon icon={faCloudUploadAlt} />
-                                    <span>Upload Shop Logo</span>
+                        <form onSubmit={handleSubmit} className="modern-form">
+                            
+                            {/* Profile Section */}
+                            <div className="modern-upload-section">
+                                <div 
+                                    className={`profile-circle-upload ${previewProfile ? 'has-image' : ''}`}
+                                    onClick={() => profileInputRef.current.click()}
+                                >
+                                    {previewProfile ? (
+                                        <img src={previewProfile} alt="Profile" />
+                                    ) : (
+                                        <div className="upload-placeholder">
+                                            <FontAwesomeIcon icon={faCloudUploadAlt} />
+                                            <span>Logo</span>
+                                        </div>
+                                    )}
                                 </div>
-                            ) : (
-                                <div className="sel_reg_profile_preview">
-                                    <img src={previewProfile} alt="Logo" />
-                                    <button type="button" onClick={() => {setProfile(null); setPreviewProfile(null);}}>
-                                        <FontAwesomeIcon icon={faTrash} />
-                                    </button>
-                                </div>
-                            )}
-                            <input type="file" ref={profileInputRef} hidden accept="image/*" 
-                                onChange={(e) => {
+                                <input type="file" ref={profileInputRef} hidden accept="image/*" onChange={(e) => {
                                     const file = e.target.files[0];
                                     if (file) { setProfile(file); setPreviewProfile(URL.createObjectURL(file)); }
-                                }} 
-                            />
-                        </div>
-
-                        {/* 2. Shop Details */}
-                        <div className="sel_reg_row">
-                            <div className="sel_reg_group">
-                                <label className="sel_reg_label">Shop Name</label>
-                                <div className="sel_reg_input_wrap">
-                                    <FontAwesomeIcon icon={faShop} className="sel_reg_icon" />
-                                    <input type="text" placeholder="Isonga Electronics" onChange={(e) => setName(e.target.value)} required />
+                                }} />
+                                <div className="upload-text">
+                                    <h3>Shop Profile</h3>
+                                    <p>Upload your brand logo or a clear photo.</p>
                                 </div>
                             </div>
-                            <div className="sel_reg_group">
-                                <label className="sel_reg_label">Category</label>
-                                <select onChange={e => setCategory(e.target.value)} required>
-                                    <option value="">-- Choose Category --</option>
-                                    <option value="Fashion">Fashion</option>
-                                    <option value="Electronics">Electronics</option>
-                                    <option value="Agriculture">Agriculture</option>
-                                    <option value="Services">Services</option>
-                                </select>
-                            </div>
-                        </div>
 
-                        {/* 3. Location Images (Select Many) */}
-                        <div className="sel_reg_section">
-                            <label className="sel_reg_label">Location/Store Photos (Select 2-6 images)</label>
-                            <div className="sel_reg_multi_upload_box" onClick={() => locationImagesRef.current.click()}>
-                                <FontAwesomeIcon icon={faImages} />
-                                <span>Click to add multiple store photos</span>
+                            <div className="modern-grid">
+                                <div className="modern-input-group">
+                                    <label>Shop Name</label>
+                                    <div className="input-with-icon">
+                                        <FontAwesomeIcon icon={faStore} />
+                                        <input type="text" placeholder="e.g. Kigali Tech Hub" onChange={(e) => setName(e.target.value)} required />
+                                    </div>
+                                </div>
+
+                                <div className="modern-input-group">
+                                    <label>Category</label>
+                                    <select onChange={e => setCategory(e.target.value)} required>
+                                        <option value="">Select Category</option>
+                                        <option value="Fashion">Fashion</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Real Estate">Real Estate</option>
+                                    </select>
+                                </div>
                             </div>
-                            <input type="file" ref={locationImagesRef} hidden multiple accept="image/*" 
-                                onChange={(e) => {
+
+                            {/* Multiple Location Images Section */}
+                            <div className="modern-multi-upload">
+                                <label>Store Gallery (Min 2 photos)</label>
+                                <div className="multi-upload-trigger" onClick={() => locationImagesRef.current.click()}>
+                                    <FontAwesomeIcon icon={faImages} />
+                                    <span>Add Store / Location Photos</span>
+                                </div>
+                                <input type="file" ref={locationImagesRef} hidden multiple accept="image/*" onChange={(e) => {
                                     const newFiles = Array.from(e.target.files);
-                                    if (files.length + newFiles.length > 6) return alert("Max 6 photos allowed");
+                                    if (files.length + newFiles.length > 6) return alert("Max 6 photos");
                                     setFiles([...files, ...newFiles]);
                                     setPreviewFiles([...previewFiles, ...newFiles.map(f => URL.createObjectURL(f))]);
-                                }} 
-                            />
-                            <div className="sel_reg_multi_grid">
-                                {previewFiles.map((img, i) => (
-                                    <div key={i} className="sel_reg_multi_item">
-                                        <img src={img} alt="Preview" />
-                                        <button type="button" onClick={() => removeLocationImage(i)}><FontAwesomeIcon icon={faTrash} /></button>
+                                }} />
+                                
+                                <div className="modern-gallery-grid">
+                                    {previewFiles.map((img, i) => (
+                                        <div key={i} className="gallery-item">
+                                            <img src={img} alt="Preview" />
+                                            <button type="button" onClick={() => {
+                                                setFiles(files.filter((_, idx) => idx !== i));
+                                                setPreviewFiles(previewFiles.filter((_, idx) => idx !== i));
+                                            }}><FontAwesomeIcon icon={faTrash} /></button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="modern-grid">
+                                <div className="modern-input-group">
+                                    <label>Location</label>
+                                    <div className="input-with-icon">
+                                        <FontAwesomeIcon icon={faMapPin} />
+                                        <input type="text" placeholder="Street, City" onChange={(e) => setLocation(e.target.value)} required />
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* 4. Contact & Security */}
-                        <div className="sel_reg_row">
-                            <div className="sel_reg_group">
-                                <label className="sel_reg_label">Location</label>
-                                <div className="sel_reg_input_wrap">
-                                    <FontAwesomeIcon icon={faMapMarkerAlt} className="sel_reg_icon" />
-                                    <input type="text" placeholder="Kigali, Rwanda" onChange={(e) => setLocation(e.target.value)} required />
+                                </div>
+                                <div className="modern-input-group">
+                                    <label>Phone Number</label>
+                                    <div className="input-with-icon">
+                                        <FontAwesomeIcon icon={faPhone} />
+                                        <input type="tel" placeholder="07XXXXXXXX" onChange={(e) => setPhone(e.target.value)} required />
+                                    </div>
                                 </div>
                             </div>
-                            <div className="sel_reg_group">
-                                <label className="sel_reg_label">Phone</label>
-                                <div className="sel_reg_input_wrap">
-                                    <FontAwesomeIcon icon={faPhone} className="sel_reg_icon" />
-                                    <input type="tel" placeholder="0780000000" onChange={(e) => setPhone(e.target.value)} required />
+
+                            <div className="modern-input-group">
+                                <label>Business Description</label>
+                                <textarea placeholder="Tell customers what makes your shop special..." onChange={(e) => setDescription(e.target.value)} required></textarea>
+                            </div>
+
+                            <div className="modern-input-group">
+                                <label>Email Address</label>
+                                <div className="input-with-icon">
+                                    <FontAwesomeIcon icon={faEnvelope} />
+                                    <input type="email" placeholder="hello@shop.com" onChange={(e) => setEmail(e.target.value)} required />
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="sel_reg_group">
-                            <label className="sel_reg_label">Email Address</label>
-                            <div className="sel_reg_input_wrap">
-                                <FontAwesomeIcon icon={faEnvelope} className="sel_reg_icon" />
-                                <input type="email" placeholder="owner@shop.com" onChange={(e) => setEmail(e.target.value)} required />
+                            <div className="modern-grid">
+                                <div className="modern-input-group">
+                                    <label>Password</label>
+                                    <div className="input-with-icon">
+                                        <FontAwesomeIcon icon={faLock} />
+                                        <input type="password" placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} required />
+                                    </div>
+                                </div>
+                                <div className="modern-input-group">
+                                    <label>Confirm</label>
+                                    <div className="input-with-icon">
+                                        <FontAwesomeIcon icon={faLock} />
+                                        <input type="password" placeholder="••••••••" onChange={(e) => setRepeat_Pass(e.target.value)} required />
+                                    </div>
+                                </div>
                             </div>
+
+                            <button type="submit" className="modern-submit-btn" disabled={loading}>
+                                {loading ? "Creating Store..." : <>Get Started <FontAwesomeIcon icon={faChevronRight} /></>}
+                            </button>
+
+                            {message && <div className={`modern-alert-box ${message.type}`}>{message.text}</div>}
+                        </form>
+
+                        <div className="modern-footer-link">
+                            Already a seller? <Link to="/login">Sign In</Link>
                         </div>
-
-                        <div className="sel_reg_row">
-                            <div className="sel_reg_group">
-                                <label className="sel_reg_label">Password</label>
-                                <input type="password" placeholder="••••••••" className="sel_reg_simple_input" onChange={(e) => setPassword(e.target.value)} required />
-                            </div>
-                            <div className="sel_reg_group">
-                                <label className="sel_reg_label">Confirm</label>
-                                <input type="password" placeholder="••••••••" className="sel_reg_simple_input" onChange={(e) => setRepeat_Pass(e.target.value)} required />
-                            </div>
-                        </div>
-
-                        <button type="submit" className="sel_reg_main_btn" disabled={loading}>
-                            {loading ? "Registering..." : <>Register Shop <FontAwesomeIcon icon={faArrowRight} /></>}
-                        </button>
-
-                        {message && <div className={`sel_reg_alert ${message.type}`}>{message.text}</div>}
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
