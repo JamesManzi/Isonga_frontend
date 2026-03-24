@@ -138,10 +138,17 @@ function Register() {
                                 <div className="modern-input-group">
                                     <label>Category</label>
                                     <select onChange={e => setCategory(e.target.value)} required>
-                                        <option value="">Select Category</option>
-                                        <option value="Fashion">Fashion</option>
-                                        <option value="Electronics">Electronics</option>
-                                        <option value="Real Estate">Real Estate</option>
+                                        
+  <option value="">-- Select Category --</option>
+  <option value="Fashion">Fashion</option>
+  <option value="Real Estate">Real Estate</option>
+  <option value="Vehicles">Vehicles</option>
+  <option value="Agriculture">Agriculture</option>
+  <option value="services">services</option>
+  <option value="Hospitality">Hospitality</option>
+  <option value="Electronics">Electronics</option>
+  <option value="Furniture">Furniture</option>
+  <option value="Construction">Construction</option>
                                     </select>
                                 </div>
                             </div>
