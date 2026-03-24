@@ -288,6 +288,9 @@ function Seller_Profile() {
                     <div className="review-stars">{renderStars(r.rating)}</div>
                   </div>
                   <p>{r.comment}</p>
+                  {r.createdAt && (
+              <small>{new Date(r.createdAt).toLocaleDateString()}</small>
+            )}
               </div>
           ))}
       </div>
