@@ -1,9 +1,8 @@
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { io } from "socket.io-client";
 import "./Seller_Profile.css";
 
 function Seller_Profile() {
@@ -11,6 +10,9 @@ function Seller_Profile() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -19,49 +21,49 @@ function Seller_Profile() {
     description: "",
   });
 
-  const navigate=useNavigate();
-
   const [profileImage, setProfileImage] = useState(null);
   const [profilePreview, setProfilePreview] = useState(null);
 
   const [locationImages, setLocationImages] = useState([]);
   const [locationPreview, setLocationPreview] = useState([]);
 
-  // Ratings & Reviews
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [numReviews, setNumReviews] = useState(0);
 
-  // ================= FETCH SELLER =================
+  // ================= FETCH =================
   const fetchSeller = async () => {
     try {
-      setLoading(true)
-      const res = await axios.get("https://isonga-backend.onrender.com/api/seller_profile", {
-        withCredentials: true,
-      });
-      if(!res.data.success){
-            navigate("/login");
-            return;
-          }
-      if (res.data.success) {
-        const data = res.data.seller;
+      setLoading(true);
 
-        setSeller(data);
-        setFormData({
-          name: data.name || "",
-          location: data.location || "",
-          phone: data.phone || "",
-          description: data.description || "",
-        });
+      const res = await axios.get(
+        "https://isonga-backend.onrender.com/api/seller_profile",
+        { withCredentials: true }
+      );
 
-        setReviews(data.ratings || []);
-        setAverageRating(data.averageRating || 0);
-        setNumReviews(data.numReviews || 0);
+      if (!res.data.success) {
+        navigate("/login");
+        return;
       }
+
+      const data = res.data.seller;
+
+      setSeller(data);
+      setFormData({
+        name: data.name || "",
+        location: data.location || "",
+        phone: data.phone || "",
+        description: data.description || "",
+      });
+
+      setReviews(data.ratings || []);
+      setAverageRating(data.averageRating || 0);
+      setNumReviews(data.numReviews || 0);
+
     } catch (err) {
       console.log(err);
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,202 +71,169 @@ function Seller_Profile() {
     fetchSeller();
   }, []);
 
-  // ================= SOCKET FOR LIVE RATING UPDATES =================
-  useEffect(() => {
-    if (!seller?._id) return;
+  // ================= IMAGE URL =================
+  const getFileUrl = (path) => {
+    if (!path) return "/placeholder.png";
 
-    const socket = io("https://isonga-backend.onrender.com", { withCredentials: true });
-    socket.emit("joinSellerRoom", seller._id);
+    return path.startsWith("http")
+      ? path
+      : `https://isonga-backend.onrender.com/${path}`;
+  };
 
-    socket.on("sellerRatingUpdated", (data) => {
-      if (data.sellerId === seller._id) {
-        setAverageRating(data.averageRating);
-        setNumReviews(data.numReviews);
-        fetchSeller(); // refresh reviews
+  // ================= UPDATE =================
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+      setSaving(true);
+
+      const data = new FormData();
+
+      data.append("name", formData.name);
+      data.append("location", formData.location);
+      data.append("phone", formData.phone);
+      data.append("description", formData.description);
+
+      if (profileImage) {
+        data.append("profileImage", profileImage);
       }
-    });
 
-    return () => socket.disconnect();
-  }, [seller?._id]);
+      locationImages.forEach((file) => {
+        data.append("files", file);
+      });
 
-  // ================= RENDER STARS =================
+      const res = await axios.put(
+        "https://isonga-backend.onrender.com/api/seller_profile",
+        data,
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        await fetchSeller(); // 🔥 refresh properly
+
+        setShowEdit(false);
+        setProfilePreview(null);
+        setLocationPreview([]);
+        setLocationImages([]);
+
+      } else {
+        alert("Update failed");
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Error updating");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // ================= DELETE =================
+  const deleteImage = async (filename) => {
+    try {
+      setLoading(true);
+
+      await axios.delete(
+        `https://isonga-backend.onrender.com/api/delete_location_image/${filename}`,
+        { withCredentials: true }
+      );
+
+      // update UI instantly
+      setSeller((prev) => ({
+        ...prev,
+        files: prev.files.filter((f) => f !== filename),
+      }));
+
+    } catch (err) {
+      console.log(err);
+      alert("Delete failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ================= STARS =================
   const renderStars = (rating) =>
     [...Array(5)].map((_, i) => (
       <FontAwesomeIcon
         key={i}
         icon={faStar}
-        color={i < Math.round(rating) ? "gold" : "lightgray"}
+        color={i < Math.round(rating) ? "gold" : "#ccc"}
       />
     ));
-if (!seller) {
-  return (
-    <div className="profile-beautiful-loading">
-      <div className="loading-card">
-        
-        {/* Animated wave bars */}
-        <div className="wave-loader">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
 
-        {/* Branding */}
-        <h2>ISONGA MARKET</h2>
-        <p>Loading Your profile...</p>
-
+  // ================= LOADING UI =================
+  if (loading && !seller) {
+    return (
+      <div className="loading-screen">
+        <h2>Loading Profile...</h2>
       </div>
-    </div>
-  );
-}
-
-  // ================= UPDATE PROFILE =================
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    const updatedForm = new FormData();
-    updatedForm.append("name", formData.name);
-    updatedForm.append("location", formData.location);
-    updatedForm.append("phone", formData.phone);
-    updatedForm.append("description", formData.description);
-
-    if (profileImage) updatedForm.append("profileImage", profileImage);
-    locationImages.forEach((file) => updatedForm.append("files", file));
-
-    try {
-      const res = await axios.put(
-        "https://isonga-backend.onrender.com/api/seller_profile",
-        updatedForm,
-        { withCredentials: true }
-      );
-      if (res.data.success) {
-        setSeller(res.data.updatedSeller);
-        setShowEdit(false);
-        setProfilePreview(null);
-        setLocationPreview([]);
-        setLocationImages([]);
-        alert("Profile updated successfully");
-      }
-    } catch (err) {
-      console.log(err);
-      alert("Update failed");
-    }
-  };
-
-  // ================= DELETE LOCATION IMAGE =================
-  const deleteImage = async (filename) => {
-    setLoading(true)
-    try {
-      await axios.delete(
-  `https://isonga-backend.onrender.com/api/delete_location_image/${encodeURIComponent(filename)}`,
-  { withCredentials: true }
-);
-      setSeller((prev) => ({
-        ...prev,
-        files: prev.files.filter((f) => f !== filename),
-      }));
-    } catch (err) {
-      console.log(err);
-      alert("Delete failed");
-    } finally{
-      setLoading(false)
-    }
-  };
-
-  const getFileUrl = (path) => {
-  if (!path) return "/placeholder.png"; // Fallback if no image exists
-  return path.startsWith("http") 
-    ? path 
-    : `https://isonga-backend.onrender.com/uploads/${path}`;
-};
+    );
+  }
 
   return (
     <div className="Seller_Profile">
-      {/* PROFILE HEADER */}
-      <div className="profile">
-        {seller.profile && (
-          <img
-            src={getFileUrl(seller.profile)}
-            alt="Seller"
-            className="seller-image"
-            onClick={() => setSelectedImage(seller.profile)}
-            style={{cursor:"pointer"}}
-          />
-        )}
-        <h2>{seller.name} Shop</h2>
-        <div className="sell">
-          <button onClick={() => setShowEdit(true)}>Edit Profile</button>
-<Link to="/dashboard" style={{ marginLeft: "15px" }}>
-  <button className="back-btn">Back</button>
-</Link>
 
+      {/* HEADER */}
+      <div className="profile">
+        <img
+          src={getFileUrl(seller?.profile)}
+          alt="Seller"
+          onClick={() => setSelectedImage(seller.profile)}
+        />
+        <h2>{seller?.name}</h2>
+
+        <div className="actions">
+          <button onClick={() => setShowEdit(true)}>Edit</button>
+          <Link to="/dashboard">
+            <button>Back</button>
+          </Link>
         </div>
       </div>
 
-      {/* SELLER INFO */}
-      <div className="Seller_Profile_info">
-        <p>
-          <strong>Location:</strong> {seller.location}
-        </p>
-        <p>
-          <strong>Email: </strong> {seller.email}
-        </p>
-        <p>
-          <strong>Phone:</strong> {seller.phone}
-        </p>
-        <p>{seller.description}</p>
+      {/* INFO */}
+      <div className="info">
+        <p><strong>Location:</strong> {seller?.location}</p>
+        <p><strong>Email:</strong> {seller?.email}</p>
+        <p><strong>Phone:</strong> {seller?.phone}</p>
+        <p>{seller?.description}</p>
       </div>
 
-      {/* LOCATION IMAGES */}
-      <h3>Our Location</h3>
-      <div className="seller-files">
-        {seller.files?.map((file) => (
-          <div key={file} className="image-wrapper">
-            <img
-              src={getFileUrl(file)}
-              alt="Location"
-              onClick={() => setSelectedImage(file)}
-            />
+      {/* IMAGES */}
+      <h3>Store Images</h3>
+      <div className="images">
+        {seller?.files?.map((file) => (
+          <div key={file} className="img-box">
+            <img src={getFileUrl(file)} />
             <button onClick={() => deleteImage(file)}>Delete</button>
           </div>
         ))}
+
         {locationPreview.map((src, i) => (
-          <div key={i} className="image-wrapper">
-            <img src={src} alt={`New ${i}`} />
-            <button
-              onClick={() => {
-                setLocationImages((prev) => prev.filter((_, idx) => idx !== i));
-                setLocationPreview((prev) => prev.filter((_, idx) => idx !== i));
-              }}
-            >
-              Remove
-            </button>
+          <div key={i} className="img-box">
+            <img src={src} />
           </div>
         ))}
       </div>
 
-      {/* IMAGE MODAL */}
+      {/* MODAL */}
       {selectedImage && (
-        <div className="image-modal" onClick={() => setSelectedImage(null)}>
-          <img
-            src={getFileUrl(selectedImage)}
-            alt="Full"
-            className="full-image"
-          />
+        <div className="modal" onClick={() => setSelectedImage(null)}>
+          <img src={getFileUrl(selectedImage)} />
         </div>
       )}
 
-      {/* EDIT MODAL */}
+      {/* EDIT FORM */}
       {showEdit && (
         <div className="edit-modal">
-          <form onSubmit={handleUpdate} className="edit-form">
+          <form onSubmit={handleUpdate}>
             <input
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              placeholder="Shop Name"
+              placeholder="Name"
             />
+
             <input
               value={formData.location}
               onChange={(e) =>
@@ -272,6 +241,7 @@ if (!seller) {
               }
               placeholder="Location"
             />
+
             <input
               value={formData.phone}
               onChange={(e) =>
@@ -279,6 +249,7 @@ if (!seller) {
               }
               placeholder="Phone"
             />
+
             <textarea
               value={formData.description}
               onChange={(e) =>
@@ -286,71 +257,60 @@ if (!seller) {
               }
               placeholder="Description"
             />
+
+            {/* PROFILE IMAGE */}
             <input
               type="file"
               onChange={(e) => {
-                setProfileImage(e.target.files[0]);
-                setProfilePreview(URL.createObjectURL(e.target.files[0]));
+                const file = e.target.files[0];
+                setProfileImage(file);
+                setProfilePreview(URL.createObjectURL(file));
               }}
             />
-            {profilePreview && (
-              <img src={profilePreview} className="preview-img" alt="Preview" />
-            )}
+
+            {profilePreview && <img src={profilePreview} className="preview" />}
+
+            {/* MULTIPLE IMAGES */}
             <input
               type="file"
               multiple
               onChange={(e) => {
-                const filesArray = Array.from(e.target.files);
-                setLocationImages(filesArray);
-                setLocationPreview(filesArray.map((f) => URL.createObjectURL(f)));
+                const files = Array.from(e.target.files);
+                setLocationImages(files);
+                setLocationPreview(files.map((f) => URL.createObjectURL(f)));
               }}
             />
-            <div className="form-actions">
-              <button type="submit" disabled={loading}>
-                {loading?"Saving...":"Save"}
-              </button>
-              <button type="button" onClick={() => setShowEdit(false)}>
-                Cancel
-              </button>
-            </div>
+
+            <button type="submit" disabled={saving}>
+              {saving ? "Saving..." : "Save Changes"}
+            </button>
+
+            <button type="button" onClick={() => setShowEdit(false)}>
+              Cancel
+            </button>
           </form>
         </div>
       )}
 
-      {/* RATINGS & REVIEWS */}
-      <div className="seller-rating">
-        <h3>Ratings & Reviews</h3>
-        <div className="rating-summary">
-          <span className="rating-number">{averageRating.toFixed(1)}</span>
-          <div className="stars">{renderStars(averageRating)}</div>
-          <span>
-            ({numReviews} review{numReviews !== 1 ? "s" : ""})
-          </span>
+      {/* REVIEWS */}
+      <div className="reviews">
+        <h3>Reviews</h3>
+
+        <div className="rating">
+          <span>{averageRating.toFixed(1)}</span>
+          {renderStars(averageRating)}
+          <span>({numReviews})</span>
         </div>
 
-        {reviews.length === 0 && <p>No reviews yet.</p>}
-
         {reviews.map((r) => (
-          <div key={r._id} className="review-item">
-            <h4>{r.buyer?.name || "Anonymous"}</h4>
-            {r.buyer?.profile ? (
-              <img
-                src={getFileUrl(r.buyer.profile)}
-                alt="Profile"
-                onClick={() => setSelectedImage(r.buyer.profile)}
-      style={{ cursor: "pointer" }}
-              />
-            ) : (
-              <img src="/placeholder.png" alt="Profile" />
-            )}
-            <div className="review-stars">{renderStars(r.rating)}</div>
-            {r.comment && <p>{r.comment}</p>}
-            {r.createdAt && (
-              <small>{new Date(r.createdAt).toLocaleDateString()}</small>
-            )}
+          <div key={r._id} className="review">
+            <h4>{r.buyer?.name}</h4>
+            <div>{renderStars(r.rating)}</div>
+            <p>{r.comment}</p>
           </div>
         ))}
       </div>
+
     </div>
   );
 }
