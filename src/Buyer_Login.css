@@ -1,131 +1,158 @@
-/* Container */
-.buyer_login_page_container {
+/* Main Viewport */
+.buyer_login_viewport {
     min-height: 100vh;
+    background-color: #f8fafc;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f3f4f6;
     padding: 20px;
     font-family: 'Inter', sans-serif;
 }
 
-/* Card */
-.buyer_login_card {
+/* Card Wrapper */
+.buyer_login_card_wrapper {
     display: flex;
-    width: 1000px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 1000px;
     background: #ffffff;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* Left Panel */
-.buyer_login_info_panel {
-    flex: 1;
+/* Hero Panel (Left) */
+.buyer_login_hero_panel {
+    flex: 1.1;
     background: linear-gradient(135deg, #2563eb, #1e40af);
-    color: white;
     padding: 60px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+}
+
+.buyer_login_brand_logo { width: 60px; margin-bottom: 25px; }
+.buyer_login_hero_heading { font-size: 2.6rem; font-weight: 800; margin-bottom: 12px; }
+.buyer_login_hero_desc { font-size: 1.05rem; opacity: 0.9; line-height: 1.6; }
+
+.buyer_login_features { margin-top: 35px; }
+.buyer_login_feature_item { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    margin-bottom: 18px; 
+    font-size: 0.95rem;
+}
+.buyer_login_f_icon { color: #93c5fd; }
+
+/* Form Panel (Right) */
+.buyer_login_form_panel {
+    flex: 1;
+    padding: 50px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.buyer_login_logo_img { width: 60px; margin-bottom: 20px; }
-.buyer_login_hero_title { font-size: 2.5rem; margin-bottom: 15px; }
-.buyer_login_hero_text { font-size: 1.1rem; line-height: 1.6; opacity: 0.9; }
+.buyer_login_main_title { font-size: 1.8rem; color: #1e293b; margin-bottom: 5px; }
+.buyer_login_main_subtitle { color: #64748b; margin-bottom: 35px; font-size: 0.95rem; }
 
-.buyer_login_feature_badge {
-    margin-top: 30px;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 10px 20px;
-    border-radius: 50px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    width: fit-content;
-}
-
-/* Right Panel */
-.buyer_login_form_panel {
-    flex: 1;
-    padding: 60px;
-}
-
-.buyer_login_title { font-size: 1.8rem; color: #111827; }
-.buyer_login_subtitle { color: #6b7280; margin-bottom: 30px; }
-
-/* Form Elements */
-.buyer_login_input_group { margin-bottom: 20px; }
-.buyer_login_input_label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; }
-.buyer_login_input_field {
+/* Input Fields */
+.buyer_login_field_box { margin-bottom: 20px; }
+.buyer_login_field_label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 8px; }
+.buyer_login_field_input {
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #d1d5db;
+    padding: 13px 16px;
+    border: 1.5px solid #e2e8f0;
     border-radius: 10px;
     font-size: 1rem;
+    transition: 0.2s ease;
+}
+.buyer_login_field_input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-.buyer_login_password_wrapper { position: relative; }
-.buyer_login_password_toggle {
+/* Password Box */
+.buyer_login_pass_relative { position: relative; }
+.buyer_login_pass_eye {
     position: absolute;
-    right: 15px;
+    right: 16px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #9ca3af;
+    color: #94a3b8;
 }
 
-/* Button */
-.buyer_login_submit_btn {
+/* Forgot Password Link */
+.buyer_login_forgot_container {
+    text-align: right;
+    margin-top: -12px;
+    margin-bottom: 25px;
+}
+.buyer_login_forgot_anchor {
+    font-size: 0.82rem;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 500;
+}
+.buyer_login_forgot_anchor:hover { color: #2563eb; text-decoration: underline; }
+
+/* Action Button */
+.buyer_login_action_btn {
     width: 100%;
-    padding: 14px;
+    padding: 15px;
     background: #2563eb;
     color: white;
     border: none;
     border-radius: 10px;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.2s;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
 }
+.buyer_login_action_btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+.buyer_login_action_btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-.buyer_login_submit_btn:hover { background: #1d4ed8; }
-
-/* Alerts */
-.buyer_login_alert {
+/* Status Messages */
+.buyer_login_status_msg {
     margin-top: 20px;
     padding: 12px;
     border-radius: 8px;
     text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
-.buyer_login_alert.success { background: #dcfce7; color: #166534; }
-.buyer_login_alert.error { background: #fee2e2; color: #991b1b; }
+.buyer_login_status_msg.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.buyer_login_status_msg.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
-.buyer_login_footer_links { margin-top: 20px; text-align: center; font-size: 0.9rem; }
-.buyer_login_link_reg { color: #2563eb; font-weight: 700; text-decoration: none; margin-left: 5px; }
+/* Redirect and Footer */
+.buyer_login_switch_prompt { text-align: center; margin-top: 25px; color: #64748b; font-size: 0.9rem; }
+.buyer_login_reg_link { color: #2563eb; font-weight: 700; text-decoration: none; margin-left: 5px; }
+.buyer_login_card_footer { margin-top: 40px; text-align: left; }
+.buyer_login_home_link { color: #94a3b8; text-decoration: none; font-size: 0.85rem; }
 
-.buyer_login_back_home { margin-top: 40px; }
-.buyer_login_back_home a { color: #9ca3af; text-decoration: none; font-size: 0.85rem; }
-
-/* Loading Animation */
-.buyer_login_loading_bar {
+/* Progress Loader Bar */
+.buyer_login_top_loader {
     position: fixed;
     top: 0; left: 0; height: 4px; width: 100%;
     background: #2563eb;
-    animation: buyer_load 2s infinite linear;
     z-index: 1000;
+    animation: buyer_login_p_bar 2s infinite linear;
 }
 
-@keyframes buyer_load {
+@keyframes buyer_login_p_bar {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
 }
 
+/* Mobile Responsive */
 @media (max-width: 850px) {
-    .buyer_login_card { flex-direction: column; }
-    .buyer_login_info_panel { display: none; }
+    .buyer_login_card_wrapper { flex-direction: column; max-width: 450px; }
+    .buyer_login_hero_panel { display: none; }
+    .buyer_login_form_panel { padding: 40px; }
 }
