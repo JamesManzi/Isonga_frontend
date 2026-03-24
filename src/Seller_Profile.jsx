@@ -10,7 +10,7 @@ function Seller_Profile() {
   const [seller, setSeller] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
