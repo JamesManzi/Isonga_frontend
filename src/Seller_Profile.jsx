@@ -1,48 +1,51 @@
-import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { io } from "socket.io-client";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { io } from "socket.io-client";
 import "./Seller_Profile.css";
 
 function Seller_Profile() {
-  const navigate = useNavigate();
-
-  // --- States ---
   const [seller, setSeller] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null); // For Zooming
-  const [imageToDelete, setImageToDelete] = useState(null); // For Delete Confirmation
+  const [loading, setLoading] = useState(false);
 
-  // Form States
   const [formData, setFormData] = useState({
     name: "",
     location: "",
     phone: "",
     description: "",
   });
+
+  const navigate = useNavigate();
+
   const [profileImage, setProfileImage] = useState(null);
   const [profilePreview, setProfilePreview] = useState(null);
+
   const [locationImages, setLocationImages] = useState([]);
   const [locationPreview, setLocationPreview] = useState([]);
 
-  // Ratings & Reviews States
+  // Ratings & Reviews
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [numReviews, setNumReviews] = useState(0);
 
-  // ================= 1. FETCH DATA =================
+  // ================= FETCH SELLER =================
   const fetchSeller = async () => {
     try {
       setLoading(true);
       const res = await axios.get("https://isonga-backend.onrender.com/api/seller_profile", {
         withCredentials: true,
       });
-
+      if (!res.data.success) {
+        navigate("/login");
+        return;
+      }
       if (res.data.success) {
         const data = res.data.seller;
+
         setSeller(data);
         setFormData({
           name: data.name || "",
@@ -50,14 +53,13 @@ function Seller_Profile() {
           phone: data.phone || "",
           description: data.description || "",
         });
+
         setReviews(data.ratings || []);
         setAverageRating(data.averageRating || 0);
         setNumReviews(data.numReviews || 0);
-      } else {
-        navigate("/login");
       }
     } catch (err) {
-      console.error("Fetch Error:", err);
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -67,7 +69,7 @@ function Seller_Profile() {
     fetchSeller();
   }, []);
 
-  // ================= 2. SOCKET LOGIC =================
+  // ================= SOCKET FOR LIVE RATING UPDATES =================
   useEffect(() => {
     if (!seller?._id) return;
 
@@ -78,21 +80,14 @@ function Seller_Profile() {
       if (data.sellerId === seller._id) {
         setAverageRating(data.averageRating);
         setNumReviews(data.numReviews);
-        fetchSeller(); 
+        fetchSeller(); // refresh reviews
       }
     });
 
     return () => socket.disconnect();
   }, [seller?._id]);
 
-  // ================= 3. HELPERS =================
-  const getFileUrl = (path) => {
-    if (!path) return "/placeholder.png";
-    return path.startsWith("http") 
-      ? path 
-      : `https://isonga-backend.onrender.com/uploads/${path}`;
-  };
-
+  // ================= RENDER STARS =================
   const renderStars = (rating) =>
     [...Array(5)].map((_, i) => (
       <FontAwesomeIcon
@@ -102,11 +97,10 @@ function Seller_Profile() {
       />
     ));
 
-  // ================= 4. ACTIONS =================
+  // ================= UPDATE PROFILE =================
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
+    setLoading(true); // Added loading state here
     const updatedForm = new FormData();
     updatedForm.append("name", formData.name);
     updatedForm.append("location", formData.location);
@@ -128,37 +122,45 @@ function Seller_Profile() {
         setProfilePreview(null);
         setLocationPreview([]);
         setLocationImages([]);
-        alert("Profile updated successfully!");
+        alert("Profile updated successfully");
       }
     } catch (err) {
+      console.log(err);
       alert("Update failed");
     } finally {
       setLoading(false);
     }
   };
 
-  const executeDeleteImage = async () => {
-    if (!imageToDelete) return;
+  // ================= DELETE LOCATION IMAGE =================
+  const deleteImage = async (filename) => {
     setLoading(true);
     try {
       await axios.delete(
-        `https://isonga-backend.onrender.com/api/delete_location_image/${encodeURIComponent(imageToDelete)}`,
+        `https://isonga-backend.onrender.com/api/delete_location_image/${encodeURIComponent(filename)}`,
         { withCredentials: true }
       );
       setSeller((prev) => ({
         ...prev,
-        files: prev.files.filter((f) => f !== imageToDelete),
+        files: prev.files.filter((f) => f !== filename),
       }));
-      setImageToDelete(null);
     } catch (err) {
+      console.log(err);
       alert("Delete failed");
     } finally {
       setLoading(false);
     }
   };
 
-  // --- Conditional Loading View ---
-  if (!seller && loading) {
+  const getFileUrl = (path) => {
+    if (!path) return "/placeholder.png";
+    return path.startsWith("http")
+      ? path
+      : `https://isonga-backend.onrender.com/uploads/${path}`;
+  };
+
+  // --- LOADING SCREEN ---
+  if (!seller) {
     return (
       <div className="profile-beautiful-loading">
         <div className="loading-card">
@@ -172,151 +174,151 @@ function Seller_Profile() {
     );
   }
 
-  if (!seller) return null;
-
   return (
     <div className="Seller_Profile">
-      {/* 1. Header Section */}
-      <div className="profile-header-card">
-        <div className="profile-main-info">
-          {seller.profile && (
+      {/* PROFILE HEADER */}
+      <div className="profile">
+        {seller.profile && (
+          <img
+            src={getFileUrl(seller.profile)}
+            alt="Seller"
+            className="seller-image"
+            onClick={() => setSelectedImage(seller.profile)}
+            style={{ cursor: "pointer" }}
+          />
+        )}
+        <h2>{seller.name} Shop</h2>
+        <div className="sell">
+          <button onClick={() => setShowEdit(true)}>Edit Profile</button>
+          <Link to="/dashboard" style={{ marginLeft: "15px" }}>
+            <button className="back-btn">Back</button>
+          </Link>
+        </div>
+      </div>
+
+      {/* SELLER INFO */}
+      <div className="Seller_Profile_info">
+        <p><strong>Location:</strong> {seller.location}</p>
+        <p><strong>Email: </strong> {seller.email}</p>
+        <p><strong>Phone:</strong> {seller.phone}</p>
+        <p>{seller.description}</p>
+      </div>
+
+      {/* LOCATION IMAGES */}
+      <h3>Our Location</h3>
+      <div className="seller-files">
+        {seller.files?.map((file) => (
+          <div key={file} className="image-wrapper">
             <img
-              src={getFileUrl(seller.profile)}
-              alt="Seller"
-              className="seller-avatar"
-              onClick={() => setSelectedImage(seller.profile)}
+              src={getFileUrl(file)}
+              alt="Location"
+              onClick={() => setSelectedImage(file)}
             />
-          )}
-          <div className="seller-titles">
-            <h2>{seller.name} Shop</h2>
-            <div className="header-actions">
-              <button className="edit-btn" onClick={() => setShowEdit(true)}>Edit Profile</button>
-              <Link to="/dashboard" className="back-link">Back</Link>
-            </div>
+            <button onClick={() => deleteImage(file)} disabled={loading}>Delete</button>
           </div>
-        </div>
+        ))}
+        {locationPreview.map((src, i) => (
+          <div key={i} className="image-wrapper">
+            <img src={src} alt={`New ${i}`} />
+            <button
+              onClick={() => {
+                setLocationImages((prev) => prev.filter((_, idx) => idx !== i));
+                setLocationPreview((prev) => prev.filter((_, idx) => idx !== i));
+              }}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
       </div>
 
-      {/* 2. Info Grid */}
-      <div className="info-section">
-        <div className="info-item"><strong>Location:</strong> {seller.location}</div>
-        <div className="info-item"><strong>Email:</strong> {seller.email}</div>
-        <div className="info-item"><strong>Phone:</strong> {seller.phone}</div>
-        <p className="seller-desc">{seller.description}</p>
-      </div>
-
-      {/* 3. Location Images Gallery */}
-      <div className="gallery-section">
-        <h3>Our Location Photos</h3>
-        <div className="images-grid">
-          {seller.files?.map((file) => (
-            <div key={file} className="gallery-card">
-              <img src={getFileUrl(file)} alt="Location" onClick={() => setSelectedImage(file)} />
-              <button className="img-delete-btn" onClick={() => setImageToDelete(file)}>Delete</button>
-            </div>
-          ))}
+      {/* IMAGE MODAL */}
+      {selectedImage && (
+        <div className="image-modal" onClick={() => setSelectedImage(null)}>
+          <img src={getFileUrl(selectedImage)} alt="Full" className="full-image" />
         </div>
-      </div>
+      )}
 
-      {/* 4. Ratings Section */}
-      <div className="reviews-section">
-        <h3>Ratings & Reviews</h3>
-        <div className="rating-summary-box">
-          <div className="big-rating">{averageRating.toFixed(1)}</div>
-          <div className="star-row">{renderStars(averageRating)}</div>
-          <p>{numReviews} total review{numReviews !== 1 ? "s" : ""}</p>
-        </div>
-
-        <div className="reviews-list">
-          {reviews.length === 0 ? <p className="no-data">No reviews yet.</p> : 
-            reviews.map((r) => (
-              <div key={r._id} className="review-card">
-                <div className="review-header">
-                  <img src={getFileUrl(r.buyer?.profile)} alt="User" />
-                  <div>
-                    <h4>{r.buyer?.name || "Anonymous"}</h4>
-                    <div className="review-stars">{renderStars(r.rating)}</div>
-                  </div>
-                </div>
-                {r.comment && <p className="review-text">{r.comment}</p>}
-                <small className="review-date">{r.createdAt && new Date(r.createdAt).toLocaleDateString()}</small>
-              </div>
-            ))
-          }
-        </div>
-      </div>
-
-      {/* --- MODALS --- */}
-
-      {/* Edit Profile Modal */}
+      {/* EDIT MODAL */}
       {showEdit && (
-        <div className="modal-overlay">
-          <div className="modal-content profile-edit-form">
-            <h2>Update Profile</h2>
-            <form onSubmit={handleUpdate}>
-              <div className="input-group">
-                <label>Shop Name</label>
-                <input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
-              </div>
-              <div className="input-group">
-                <label>Location</label>
-                <input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
-              </div>
-              <div className="input-group">
-                <label>Phone</label>
-                <input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} required />
-              </div>
-              <div className="input-group">
-                <label>Description</label>
-                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
-              </div>
-              
-              <div className="file-inputs">
-                <label>Change Profile Image</label>
-                <input type="file" onChange={(e) => {
+        <div className="edit-modal">
+          <form onSubmit={handleUpdate} className="edit-form">
+            <input
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Shop Name"
+            />
+            <input
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              placeholder="Location"
+            />
+            <input
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="Phone"
+            />
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Description"
+            />
+            <input
+              type="file"
+              onChange={(e) => {
+                if (e.target.files[0]) {
                   setProfileImage(e.target.files[0]);
                   setProfilePreview(URL.createObjectURL(e.target.files[0]));
-                }} />
-                {profilePreview && <img src={profilePreview} className="form-preview" />}
-                
-                <label>Add Location Photos (Multiple)</label>
-                <input type="file" multiple onChange={(e) => {
-                  const filesArray = Array.from(e.target.files);
-                  setLocationImages(filesArray);
-                  setLocationPreview(filesArray.map((f) => URL.createObjectURL(f)));
-                }} />
-              </div>
-
-              <div className="modal-actions">
-                <button type="submit" className="save-btn" disabled={loading}>{loading ? "Saving..." : "Save Changes"}</button>
-                <button type="button" className="cancel-btn" onClick={() => setShowEdit(false)}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Image Zoom Modal */}
-      {selectedImage && (
-        <div className="zoom-modal" onClick={() => setSelectedImage(null)}>
-          <img src={getFileUrl(selectedImage)} alt="Full View" />
-          <span className="close-zoom">&times;</span>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {imageToDelete && (
-        <div className="modal-overlay">
-          <div className="modal-content delete-confirm">
-            <h3>Delete this photo?</h3>
-            <p>This action cannot be undone.</p>
-            <div className="modal-actions">
-              <button className="confirm-delete" onClick={executeDeleteImage} disabled={loading}>{loading ? "Deleting..." : "Yes, Delete"}</button>
-              <button className="cancel-btn" onClick={() => setImageToDelete(null)}>Cancel</button>
+                }
+              }}
+            />
+            {profilePreview && <img src={profilePreview} className="preview-img" alt="Preview" />}
+            
+            <input
+              type="file"
+              multiple
+              onChange={(e) => {
+                const filesArray = Array.from(e.target.files);
+                setLocationImages(filesArray);
+                setLocationPreview(filesArray.map((f) => URL.createObjectURL(f)));
+              }}
+            />
+            <div className="form-actions">
+              <button type="submit" disabled={loading}>
+                {loading ? "Saving..." : "Save"}
+              </button>
+              <button type="button" onClick={() => setShowEdit(false)}>Cancel</button>
             </div>
-          </div>
+          </form>
         </div>
       )}
+
+      {/* RATINGS & REVIEWS */}
+      <div className="seller-rating">
+        <h3>Ratings & Reviews</h3>
+        <div className="rating-summary">
+          <span className="rating-number">{averageRating.toFixed(1)}</span>
+          <div className="stars">{renderStars(averageRating)}</div>
+          <span>({numReviews} review{numReviews !== 1 ? "s" : ""})</span>
+        </div>
+
+        {reviews.length === 0 && <p>No reviews yet.</p>}
+
+        {reviews.map((r) => (
+          <div key={r._id} className="review-item">
+            <h4>{r.buyer?.name || "Anonymous"}</h4>
+            <img
+              src={getFileUrl(r.buyer?.profile)}
+              alt="Profile"
+              onClick={() => r.buyer?.profile && setSelectedImage(r.buyer.profile)}
+              style={{ cursor: "pointer" }}
+            />
+            <div className="review-stars">{renderStars(r.rating)}</div>
+            {r.comment && <p>{r.comment}</p>}
+            {r.createdAt && <small>{new Date(r.createdAt).toLocaleDateString()}</small>}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
