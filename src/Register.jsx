@@ -47,7 +47,8 @@ function Register() {
 
         setLoading(true);
         try {
-            const res = await axios.post("https://isonga-backend.onrender.com/api/register", formData, { withCredentials: true });
+            const res = await axios.post("https://isonga-backend.onrender.com/api/register", formData,
+                 { withCredentials: true });
             setMessage({ text: res.data.message, type: res.data.success ? "success" : "error" });
             if (res.data.success) setTimeout(() => navigate("/login"), 2000);
         } catch (error) {
@@ -121,7 +122,16 @@ function Register() {
                                         <input type="text" placeholder="e.g. Kigali Tech Hub" onChange={(e) => setName(e.target.value)} required />
                                     </div>
                                 </div>
-
+                                <select
+  value={sellerType}  // <- Actually create a separate state for sellerType
+  onChange={(e) => setSellerType(e.target.value)}
+  required
+>
+  <option value="">-- Select Seller Type --</option>
+  <option value="Product">Product</option>
+  <option value="Service">Service</option>
+  <option value="Asset">Asset</option>
+</select><br/>
                                 <div className="modern-input-group">
                                     <label>Category</label>
                                     <select onChange={e => setCategory(e.target.value)} required>
