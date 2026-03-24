@@ -1,168 +1,135 @@
-/* ===== MAIN PAGE ===== */
-.Buyer_Login {
+.buyer-login-page {
     min-height: 100vh;
-    background: #f4f6f9;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-/* ===== NAVBAR ===== */
-.Buyer_Login_navbar {
     display: flex;
     align-items: center;
-    padding: 15px 40px;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    justify-content: center;
+    background: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
 }
 
-.Buyer_Login_navbar img {
-    width: 55px;
-    height: 55px;
-    object-fit: contain;
+.login-card-container {
+    display: flex;
+    width: 950px;
+    max-width: 100%;
+    min-height: 600px;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-.Buyer_Login_heads {
-    margin-left: 10px;
+/* Buyer Hero - Blue/Indigo Theme */
+.buyer-hero-side {
+    flex: 1;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    padding: 50px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.Buyer_Login_heads h1 {
-    margin: 0;
-    font-size: 22px;
-    color: #2c3e50;
+.hero-logo { width: 70px; margin-bottom: 20px; }
+.buyer-hero-side h1 { font-size: 2.2rem; margin-bottom: 15px; }
+.buyer-hero-side p { font-size: 1rem; opacity: 0.9; line-height: 1.6; }
+
+.hero-features {
+    list-style: none;
+    padding: 0;
+    margin-top: 30px;
 }
 
-.Buyer_Login_heads h2 {
-    margin: 0;
-    font-size: 18px;
-    color: #27ae60;
+.hero-features li {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
 }
 
-/* ===== CONTAINER (SIDE BY SIDE) ===== */
-.Buyer_Login_Container {
+/* Form Styling */
+.login-form-side {
+    flex: 1;
+    padding: 50px;
+    background: #fff;
+}
+
+.form-header h2 { font-size: 1.7rem; color: #111; margin-bottom: 5px; }
+.form-header p { color: #666; margin-bottom: 30px; }
+
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.input-group input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+.password-wrapper { position: relative; }
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+}
+
+.buyer-main-btn {
+    width: 100%;
+    padding: 14px;
+    background: #1e3a8a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 60px 8%;
-    gap: 70px;
+    gap: 8px;
 }
 
-/* ===== HERO SECTION ===== */
-.Buyer_Login_Hero {
-    flex: 1;
-}
+.buyer-main-btn:hover { background: #1e40af; transform: translateY(-1px); }
 
-.Buyer_Login_Hero h1 {
-    font-size: 36px;
-    color: #2c3e50;
-    margin-bottom: 20px;
-}
-
-.Buyer_Login_Hero p {
-    font-size: 18px;
-    line-height: 1.7;
-    color: #555;
-    margin-bottom: 20px;
-}
-
-.Buyer_Login_Hero ul {
-    list-style: none;
-    padding: 0;
-}
-
-.Buyer_Login_Hero ul li {
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #27ae60;
-    font-weight: 500;
-}
-
-/* ===== FORM ===== */
-form {
-    flex: 1;
-    background: white;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-}
-
-.Buyer_Login_form h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #27ae60;
-}
-
-/* Inputs */
-.buyer_login {
-    width: 100%;
+/* Alerts */
+.modern-alert {
+    margin-top: 20px;
     padding: 12px;
-    margin: 8px 0 18px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    outline: none;
-    font-size: 15px;
-}
-
-.buyer_login:focus {
-    border-color: #27ae60;
-}
-
-/* Button */
-.Buyer_Login_btn {
+    border-radius: 6px;
     text-align: center;
 }
+.modern-alert.success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.modern-alert.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
-.Buyer_Login_btn button {
-    width: 100%;
-    background: #27ae60;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s ease;
+.register-redirect { margin-top: 25px; text-align: center; color: #666; font-size: 0.9rem; }
+.register-redirect a { color: #3b82f6; font-weight: 600; text-decoration: none; }
+
+.form-footer { margin-top: auto; padding-top: 20px; text-align: left; }
+.form-footer a { color: #888; text-decoration: none; font-size: 0.85rem; }
+
+/* Progress Bar */
+.buyer-progress-bar {
+    position: fixed;
+    top: 0; left: 0; height: 4px; width: 100%;
+    background: #3b82f6;
+    animation: slideProgress 2s infinite;
+    z-index: 9999;
 }
 
-.Buyer_Login_btn button:hover {
-    background: #219150;
+@keyframes slideProgress {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
 }
 
-/* Links */
-.Buyer_Login_links {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
+@media (max-width: 768px) {
+    .login-card-container { flex-direction: column; }
+    .buyer-hero-side { display: none; }
 }
-
-.Buyer_Login_links a {
-    text-decoration: none;
-    color: #27ae60;
-    font-weight: 500;
-}
-
-.Buyer_Login_links a:hover {
-    text-decoration: underline;
-}
-
-/* Error */
-.error {
-    color: red;
-    text-align: center;
-    margin-top: 15px;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 900px) {
-    .Buyer_Login_Container {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .Buyer_Login_Hero {
-        margin-bottom: 40px;
-    }
-
-    form {
-        width: 100%;
-    }
-}
-

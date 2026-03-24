@@ -1,101 +1,126 @@
-import { Link,useNavigate } from "react-router-dom";
-import "./Buyer_Login.css";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-function Buyer_Login(){
-     const[email,setEmail]=useState("");
-     const [loading,setLoading]=useState(false);
-    const[password,setPassword]=useState("");
-    const[message,setMessage]=useState("");
-    const navigate=useNavigate();
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash, faArrowRight, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import "./Buyer_Login.css";
 
-    const handleSubmit=async(e)=>{
-        e.preventDefault();
-       setLoading(true);
-        try {
-            const res=await axios.post("https://isonga-backend.onrender.com/api/buyer_login",{
-                email,
-                password
-            },
-            {withCredentials:true}
-        )
+function Buyer_Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
 
-        setMessage({
-      text: res.data.message,
-      type: res.data.success ? "success" : "error",
-    });
-        if(res.data.success){
-             setTimeout(() => {
-        navigate("/buyer_dashboard");
-      }, 1000); 
-        }
-        } catch (error) {
-            console.log(error.response?.data);
- setMessage({
-      text: "Login failed. Please try again.",
-      type: "error",
-    });
-        } finally{
-            setLoading(false);
-        }
-    } 
-    return(
-        <div className="Buyer_Login">
-            <div className="Buyer_Login_navbar">
-                <div className="Buyer_Login_navbar">
-                    <img src="/logo.png"/>
-                </div>
-                <div className="Buyer_Login_heads">
-                    <h1>Isonga</h1>
-                    <h2>Markert</h2>
-                </div>
-            </div>
-             <div className="Buyer_Login_Container">
-                <div className="Buyer_Login_Hero">
-    <h1>Welcome Back to Isonga Market</h1>
-    <p>
-        Continue exploring quality products and trusted stores.
-        Sign in now and enjoy a smarter, faster, and more convenient
-        shopping experience.
-    </p>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
 
-    <ul>
-        <li> Discover products near you</li>
-        <li> Save your favorite items</li>
-        <li> Shop with confidence</li>
-    </ul>
-</div>
+    try {
+      const res = await axios.post(
+        "https://isonga-backend.onrender.com/api/buyer_login",
+        { email, password },
+        { withCredentials: true }
+      );
 
-                <form onSubmit={handleSubmit}>
-                <div className="Buyer_Login_form">
-                    <h2>Buyer Login</h2>
-                    <label htmlFor="email">Email</label><br/>
-                    <input type="email" name="email" className="buyer_login"
-                    placeholder="Enter Email" onChange={(e)=>setEmail(e.target.value)} required/><br/>
-                    <label htmlFor="password">Password</label><br/>
-                    <input type="password" name="password" className="buyer_login"
-                    placeholder="Enter Password" onChange={(e)=>setPassword(e.target.value)} required/><br/>
-                    <div className="Buyer_Login_btn">
-                        <button type="submit" disabled={loading}
-                        >{loading ? "Login...":"Login"}</button>
-                    </div>
-                    <div className="Buyer_Login_links">
-                        <Link to="/buyer_register">Register</Link>
-                        <Link to="/">Home</Link>
-                    </div>
-                </div>
- {message && (
-  <div className={`alert ${message.type}`}>
-    <span className="alert-icon">
-      {message.type === "success" ? "✓" : "⚠"}
-    </span>
-    <span>{message.text}</span>
-  </div>
-)}
-            </form>
-             </div>
+      if (res.data.success) {
+        setMessage({ text: "Welcome back! Redirecting...", type: "success" });
+        setTimeout(() => navigate("/buyer_dashboard"), 1500);
+      } else {
+        setMessage({ text: res.data.message, type: "error" });
+        setLoading(false);
+      }
+    } catch (error) {
+      console.log(error.response?.data);
+      setMessage({ text: "Login failed. Please try again.", type: "error" });
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="buyer-login-page">
+      {/* Top Progress Bar */}
+      {loading && <div className="buyer-progress-bar"></div>}
+
+      <div className="login-card-container">
+        {/* Left Side: Hero */}
+        <div className="buyer-hero-side">
+          <div className="hero-content">
+            <img src="/logo.png" alt="Logo" className="hero-logo" />
+            <h1>Welcome Back!</h1>
+            <p>Continue exploring quality products and trusted stores across Rwanda.</p>
+            
+            <ul className="hero-features">
+              <li><FontAwesomeIcon icon={faCheckCircle} /> Discover products near you</li>
+              <li><FontAwesomeIcon icon={faCheckCircle} /> Save your favorite items</li>
+              <li><FontAwesomeIcon icon={faCheckCircle} /> Shop with confidence</li>
+            </ul>
+          </div>
         </div>
-    )
+
+        {/* Right Side: Form */}
+        <div className="login-form-side">
+          <div className="form-header">
+            <h2>Buyer Login</h2>
+            <p>Sign in to your account</p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <label>Email Address</label>
+              <input
+                type="email"
+                placeholder="yourname@example.com"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label>Password</label>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <FontAwesomeIcon
+                  icon={showPassword ? faEyeSlash : faEye}
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="buyer-main-btn" disabled={loading}>
+              {loading ? "Authenticating..." : (
+                <>
+                  Login <FontAwesomeIcon icon={faArrowRight} />
+                </>
+              )}
+            </button>
+
+            {message && (
+              <div className={`modern-alert ${message.type}`}>
+                {message.text}
+              </div>
+            )}
+
+            <div className="register-redirect">
+              New here? <Link to="/buyer_register">Create an account</Link>
+            </div>
+          </form>
+
+          <div className="form-footer">
+            <Link to="/">← Back to Home</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Buyer_Login;
