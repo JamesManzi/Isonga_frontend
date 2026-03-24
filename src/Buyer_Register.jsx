@@ -1,170 +1,200 @@
-import { Link,useNavigate } from "react-router-dom";
-import { useState,useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloudUploadAlt, faUser, faEnvelope, faLock, faTrash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Register.css";
-function Buyer_Register(){
+
+function Buyer_Register() {
     const fileInputRef = useRef(null);
-    const [loading,setLoading]=useState(false);
-    const[name,setName]=useState("");
-    const[profile,setProfile]=useState("");
-    const[previewProfile,setPreviewProfile]=useState(null);
-    const[email,setEmail]=useState("");
-    const[password,setPassword]=useState("");
-    const[repeat_pass,setRepeat_Pass]=useState("");
-    const[message,setMessage]=useState("");
+    const [loading, setLoading] = useState(false);
+    const [name, setName] = useState("");
+    const [profile, setProfile] = useState(null);
+    const [previewProfile, setPreviewProfile] = useState(null);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [repeat_pass, setRepeat_Pass] = useState("");
+    const [message, setMessage] = useState(null);
+
+    const navigate = useNavigate();
     const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
 
-
-     const navigate=useNavigate();
-    const handleSubmit=async(e)=>{
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData=new FormData();
-        formData.append("name",name.trim());
-        formData.append("email",email.trim());
-        formData.append("password",password);
-        formData.append("repeat_pass",repeat_pass);
+        setMessage(null);
 
-        if(!profile){
-            alert("Please Upload Profile Picture");
+        if (!profile) {
+            setMessage({ text: "Please upload a profile picture", type: "error" });
             return;
-        } else{
-            formData.append("profile",profile)
         }
 
-        if(profile.size > 5 * 1024 * 1024){
-  alert("Profile image must be under 5MB");
-  return;
-}
-
-         if(!rule.test(password)){
-            alert(
-      "Password must be at least 10 characters and include at least 3 of these: uppercase, lowercase, number, special character."
-    );
-    return;
+        if (!rule.test(password)) {
+            setMessage({ text: "Password must be 10+ chars with 3 types (Upper, Lower, Number, Special)", type: "error" });
+            return;
         }
-    if(password !== repeat_pass){
-    alert("Passwords do not match");
-    return;
-}
 
-       setLoading(true);
-            try {
-            const res=await axios.post("https://isonga-backend.onrender.com/api/buyer_register",formData,{
-                withCredentials:true
-            })
+        if (password !== repeat_pass) {
+            setMessage({ text: "Passwords do not match", type: "error" });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("name", name.trim());
+        formData.append("email", email.trim());
+        formData.append("password", password);
+        formData.append("repeat_pass", repeat_pass);
+        formData.append("profile", profile);
+
+        setLoading(true);
+        try {
+            const res = await axios.post("https://isonga-backend.onrender.com/api/buyer_register", formData, {
+                withCredentials: true
+            });
+
             setMessage({
-      text: res.data.message,
-      type: res.data.success ? "success" : "error",
-    });
-            if(res.data.success){
-                setTimeout(()=>{
-                    navigate("/buyer_login")
-                },1000)
+                text: res.data.message,
+                type: res.data.success ? "success" : "error",
+            });
+
+            if (res.data.success) {
+                setTimeout(() => navigate("/buyer_login"), 2000);
             }
-         } catch (error) {
-    console.error("REGISTRATION ERROR:", error);
-    
-    // Check if the error came from the server response
-    if (error.response && error.response.data) {
-        setMessage(error.response.data.message || "Registration failed");
-    } else {
-        setMessage("Network error. Please check your connection.");
-    }
-} finally {
-    setLoading(false);
-}
+        } catch (error) {
+            setMessage({
+                text: error.response?.data?.message || "Registration failed. Try again.",
+                type: "error"
+            });
+        } finally {
+            setLoading(false);
+        }
     };
-    return(
-        <div className="Buyer_Register">
-            <div className="Register_navbar">
-                <div className="Register_logo">
-                    <img src="/logo.png"/>
+
+    return (
+        <div className="buyer_reg_viewport">
+            {loading && <div className="buyer_reg_loader_bar"></div>}
+
+            <div className="buyer_reg_card">
+                {/* Left Side: Hero Info */}
+                <div className="buyer_reg_info_side">
+                    <div className="buyer_reg_info_content">
+                        <img src="/logo.png" alt="Logo" className="buyer_reg_logo_img" />
+                        <h1>Start Your Journey</h1>
+                        <p>Join Isonga Market and get access to the best products from verified Rwandan sellers.</p>
+                        
+                        <ul className="buyer_reg_feature_list">
+                            <li>✓ Wide variety of categories</li>
+                            <li>✓ Verified & trusted sellers</li>
+                            <li>✓ Secure shopping experience</li>
+                        </ul>
+                    </div>
                 </div>
-                <div className="Register_Text">
-                    <h1>Isonga</h1>
-                    <h2>Markert</h2>
+
+                {/* Right Side: Form */}
+                <div className="buyer_reg_form_side">
+                    <header className="buyer_reg_header">
+                        <h2>Create Buyer Account</h2>
+                        <p>Fill in the details to get started</p>
+                    </header>
+
+                    <form onSubmit={handleSubmit} className="buyer_reg_form">
+                        
+                        {/* Profile Upload Area */}
+                        <div className="buyer_reg_upload_section">
+                            <label className="buyer_reg_label">Profile Photo</label>
+                            {!previewProfile ? (
+                                <div className="buyer_reg_upload_box" onClick={() => fileInputRef.current.click()}>
+                                    <FontAwesomeIcon icon={faCloudUploadAlt} size="2x" />
+                                    <span>Click to upload photo</span>
+                                </div>
+                            ) : (
+                                <div className="buyer_reg_preview_box">
+                                    <img src={previewProfile} alt="Preview" />
+                                    <button type="button" onClick={() => {
+                                        setProfile(null);
+                                        setPreviewProfile(null);
+                                        fileInputRef.current.value = "";
+                                    }}>
+                                        <FontAwesomeIcon icon={faTrash} />
+                                    </button>
+                                </div>
+                            )}
+                            <input 
+                                type="file" 
+                                ref={fileInputRef} 
+                                hidden 
+                                accept="image/*" 
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file && file.size <= 5 * 1024 * 1024) {
+                                        setProfile(file);
+                                        setPreviewProfile(URL.createObjectURL(file));
+                                    } else {
+                                        alert("File too large (Max 5MB)");
+                                    }
+                                }}
+                            />
+                        </div>
+
+                        <div className="buyer_reg_input_row">
+                            <div className="buyer_reg_group">
+                                <label className="buyer_reg_label">Full Name</label>
+                                <div className="buyer_reg_input_wrapper">
+                                    <FontAwesomeIcon icon={faUser} className="buyer_reg_icon" />
+                                    <input type="text" placeholder="John Doe" onChange={(e) => setName(e.target.value)} required />
+                                </div>
+                            </div>
+
+                            <div className="buyer_reg_group">
+                                <label className="buyer_reg_label">Email Address</label>
+                                <div className="buyer_reg_input_wrapper">
+                                    <FontAwesomeIcon icon={faEnvelope} className="buyer_reg_icon" />
+                                    <input type="email" placeholder="john@example.com" onChange={(e) => setEmail(e.target.value)} required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="buyer_reg_input_row">
+                            <div className="buyer_reg_group">
+                                <label className="buyer_reg_label">Password</label>
+                                <div className="buyer_reg_input_wrapper">
+                                    <FontAwesomeIcon icon={faLock} className="buyer_reg_icon" />
+                                    <input type="password" placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} required />
+                                </div>
+                            </div>
+
+                            <div className="buyer_reg_group">
+                                <label className="buyer_reg_label">Repeat Password</label>
+                                <div className="buyer_reg_input_wrapper">
+                                    <FontAwesomeIcon icon={faLock} className="buyer_reg_icon" />
+                                    <input type="password" placeholder="••••••••" onChange={(e) => setRepeat_Pass(e.target.value)} required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" className="buyer_reg_submit_btn" disabled={loading}>
+                            {loading ? "Creating Account..." : (
+                                <>Register <FontAwesomeIcon icon={faArrowRight} /></>
+                            )}
+                        </button>
+
+                        {message && (
+                            <div className={`buyer_reg_alert ${message.type}`}>
+                                {message.text}
+                            </div>
+                        )}
+
+                        <div className="buyer_reg_signin_link">
+                            Already have an account? <Link to="/buyer_login">Sign In</Link>
+                        </div>
+                    </form>
+
+                    <footer className="buyer_reg_footer">
+                        <Link to="/">← Back to Home</Link>
+                    </footer>
                 </div>
             </div>
-            <div className="Buyer_Register_Container">
-                <div className="Buyer_Register_Hero">
-    <h1>Welcome to the Future of Shopping</h1>
-    <p>
-        Isonga Market connects you with reliable sellers and
-        quality products in one powerful platform.
-        Sign up today and start exploring.
-    </p>
-
-    <ul>
-        <li> Wide variety of categories</li>
-        <li> Trusted sellers</li>
-        <li> Fast and convenient experience</li>
-    </ul>
-</div>
-
-                <form onSubmit={handleSubmit}>
-                    <h2> Buyer Register</h2>
-                <label htmlFor="buyer_profile">Profile</label><br/>
-                <input type="file" 
-                ref={fileInputRef}
-                name="profile" 
-                accept="image/*"
-                onChange={(e)=>{
-                    const file=e.target.files[0];
-                    if(!file) return;
-  if(file.size > 5 * 1024 * 1024){ // 5MB limit
-    alert("Profile image must be under 5MB");
-    return;
-  }
-                    setProfile(file);
-                    setPreviewProfile(URL.createObjectURL(file))
-                }}/><br/>
-                {previewProfile && (
-  <div className="profile-preview">
-    <img src={previewProfile} alt="Profile Preview" />
-    <button type="button" onClick={() => {
-      setProfile(null);
-      setPreviewProfile(null);
-      if (fileInputRef.current) {
-                        fileInputRef.current.value = ""; //  This clears the actual input!
-                    }
-    }}>Remove</button>
-  </div>
-)}
-                <label htmlFor="name">Name</label><br/>
-                <input type="text" name="name" className="buyer_register" placeholder="Enter Name"
-                onChange={(e)=>setName(e.target.value)} required/><br/>
-                <label htmlFor="email">Email</label><br/>
-                <input type="email" name="email" className="buyer_register" placeholder="Enter Email"
-                onChange={(e)=>setEmail(e.target.value)} required/><br/>
-                <label htmlFor="password">Password</label><br/>
-                <input type="password" name="password" className="buyer_register" placeholder="Enter Password"
-                onChange={(e)=>setPassword(e.target.value)} required/><br/>
-                <label htmlFor="repeat">Repeat Password</label><br/>
-                <input type="password" name="repeat_pass" className="buyer_register" placeholder="Repeat Password"
-                onChange={(e)=>setRepeat_Pass(e.target.value)} required/><br/>
-
-                <div className="Buyer_Register_btn">
-                    <button type="submit" className="Buyer_btn" disabled={loading}>
-              {loading ? "Registering..." : "Register"}
-            </button>
-                </div>
-                <div className="Buyer_Register_links">
-                    <Link to="/">Home</Link>
-                    <Link to="/buyer_login">Login</Link>
-                </div>
-                     
-{message && (
-  <div className={`alert ${message.type}`}>
-    <span className="alert-icon">
-      {message.type === "success" ? "✓" : "⚠"}
-    </span>
-    <span>{message.text}</span>
-  </div>
-)}
-                </form>
-                </div>
-                </div>
-    )
+        </div>
+    );
 }
 
 export default Buyer_Register;
