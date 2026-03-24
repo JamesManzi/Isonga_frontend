@@ -133,7 +133,29 @@ function Seller_Profile() {
     } catch (err) { alert("Delete failed"); }
   };
 
-  if (!seller) return <div className="modern-progress-bar"></div>;
+  if (!seller) {
+  return (
+    <div className="profile-beautiful-loading">
+      <div className="loading-card">
+        
+        {/* Animated wave bars */}
+        <div className="wave-loader">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        {/* Branding */}
+        <h2>ISONGA MARKET</h2>
+        <p>Loading seller profile...</p>
+
+      </div>
+    </div>
+  );
+}
+
 
   return (
     <div className="Seller_Profile">
