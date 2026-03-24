@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faTimes } from "@fortawesome/free-solid-svg-icons"; // Added faTimes
 import "./Buyer_Profile.css";
+
 function Buyer_Profile() {
 
 const [buyer,setBuyer] = useState(null);
@@ -16,6 +17,9 @@ const [profile,setProfile] = useState(null);
 const [preview,setPreview] = useState("");
 
 const [message,setMessage] = useState("");
+
+// --- ADDED FOR ZOOM ---
+const [isZoomed, setIsZoomed] = useState(false);
 
 //////////////////////////////////////////////////
 // FETCH BUYER
@@ -128,7 +132,7 @@ const getFileUrl = (path)=>{
 
 if(!path) return "/placeholder.png";
 
-return path.startsWith("http")
+return path.startsWith("http") || path.startsWith("blob:")
 ? path
 : `https://isonga-backend.onrender.com/uploads/${path}`;
 
@@ -149,6 +153,13 @@ if (loading || !buyer) {
     </div>
   );
 }
+
+// Logic to determine which image is currently showing
+const currentImage = profile 
+? preview 
+: buyer?.profile 
+? getFileUrl(buyer.profile) 
+: "/placeholder.png";
 
 //////////////////////////////////////////////////
 // UI
@@ -177,15 +188,11 @@ return(
 <div className="profile-image-section">
 
 <img
-src={
-profile
-? preview
-: buyer?.profile
-? getFileUrl(buyer.profile)
-: "/placeholder.png"
-}
+src={currentImage}
 alt="profile"
 className="profile-image"
+onClick={() => setIsZoomed(true)} /* Trigger Zoom */
+style={{cursor: "zoom-in"}}
 />
 
 <input
@@ -244,15 +251,34 @@ Update Profile
 </form>
 
 {message && (
-  <div className={`alert ${message.type}`}>
-    <span className="alert-icon">
-      {message.type === "success" ? "✓" : "⚠"}
-    </span>
-    <span>{message.text}</span>
+  <div className={`alert`}>
+    <span>{message}</span>
   </div>
 )}
 
 </div>
+
+{/* ZOOM MODAL (COMBINED FROM YOUR PREVIOUS MODAL STYLE) */}
+{isZoomed && (
+  <div className="media-modal" onClick={() => setIsZoomed(false)} style={{
+      position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+      backgroundColor: 'rgba(0,0,0,0.9)', display: 'flex', 
+      justifyContent: 'center', alignItems: 'center', zIndex: 2000
+  }}>
+    <span className="close-btn" style={{
+        position: 'absolute', top: '20px', right: '30px', 
+        color: 'white', fontSize: '30px', cursor: 'pointer'
+    }}>
+      <FontAwesomeIcon icon={faTimes} />
+    </span>
+    <img 
+      src={currentImage} 
+      alt="Full Profile" 
+      style={{ maxWidth: '90%', maxHeight: '85%', borderRadius: '10px' }} 
+      onClick={(e) => e.stopPropagation()} 
+    />
+  </div>
+)}
 
 </div>
 
