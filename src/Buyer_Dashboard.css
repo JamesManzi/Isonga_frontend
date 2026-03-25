@@ -34,15 +34,10 @@ img, video {
 
 /* NAVBAR */
 .Buyer_Dashboard_navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 5%;
-  background: var(--white);
-  box-shadow: var(--shadow);
   position: sticky;
   top: 0;
-  z-index: 1000; /* LOWER than modal */
+  z-index: 1000;
+  transition: transform 0.3s ease;
 }
 
 .Buyer_Dashboard_logos img {

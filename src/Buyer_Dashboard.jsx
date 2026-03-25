@@ -197,6 +197,37 @@ if (loading) {
   );
 }
 
+useEffect(() => {
+  const navbar = document.querySelector(".Buyer_Dashboard_navbar");
+
+  if (modalMedia.sellerId) {
+    navbar.style.transform = "translateY(-100%)";
+  } else {
+    navbar.style.transform = "translateY(0)";
+  }
+}, [modalMedia]);
+
+useEffect(() => {
+  let lastScrollY = window.scrollY;
+
+  const handleScroll = () => {
+    const navbar = document.querySelector(".Buyer_Dashboard_navbar");
+
+    if (window.scrollY > lastScrollY) {
+      // scrolling DOWN
+      navbar.style.transform = "translateY(-100%)";
+    } else {
+      // scrolling UP
+      navbar.style.transform = "translateY(0)";
+    }
+
+    lastScrollY = window.scrollY;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 return(
 <div className="Buyer_Dashboard">
 
