@@ -165,7 +165,9 @@ function Seller_Chat() {
 
                 {msg.files && msg.files.map((filePath, idx) => {
                   const clean = filePath.trim().replace(/\\/g, "/");
-                  const url = filePath;
+const url = clean.startsWith("http")
+  ? clean
+  : `https://isonga-backend.onrender.com/${clean}`;
                   const isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(filePath);
 
                   if (isVideo) {
