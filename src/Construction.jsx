@@ -33,6 +33,41 @@ function Construction() {
       ? path 
       : `https://isonga-backend.onrender.com/uploads/${path}`;
   };
+// Hide navbar when modal opens or on scroll
+useEffect(() => {
+  const navbar = document.querySelector(".Buyer_Dashboard_navbar");
+  if (!navbar) return; // Safety check
+
+  // Modal opens → hide navbar
+  if (modalMedia.sellerId) {
+    navbar.style.transform = "translateY(-100%)";
+  } else {
+    navbar.style.transform = "translateY(0)";
+  }
+}, [modalMedia]);
+
+useEffect(() => {
+  let lastScrollY = window.scrollY;
+
+  const handleScroll = () => {
+    const navbar = document.querySelector(".Buyer_Dashboard_navbar");
+    if (!navbar) return; // Safety check
+
+    if (window.scrollY > lastScrollY) {
+      // scrolling down
+      navbar.style.transform = "translateY(-100%)";
+    } else {
+      // scrolling up
+      navbar.style.transform = "translateY(0)";
+    }
+
+    lastScrollY = window.scrollY;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 
   // Reusable star rating logic
   const renderStars = (avg) => {
