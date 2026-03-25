@@ -180,10 +180,12 @@ const getFileUrl = (path) => {
   if (path.startsWith("http")) return path;
   return `https://isonga-backend.onrender.com/uploads/${path}`;
 };
-
+// Hide navbar when modal opens or on scroll
 useEffect(() => {
   const navbar = document.querySelector(".Buyer_Dashboard_navbar");
+  if (!navbar) return; // Safety check
 
+  // Modal opens → hide navbar
   if (modalMedia.sellerId) {
     navbar.style.transform = "translateY(-100%)";
   } else {
@@ -196,12 +198,13 @@ useEffect(() => {
 
   const handleScroll = () => {
     const navbar = document.querySelector(".Buyer_Dashboard_navbar");
+    if (!navbar) return; // Safety check
 
     if (window.scrollY > lastScrollY) {
-      // scrolling DOWN
+      // scrolling down
       navbar.style.transform = "translateY(-100%)";
     } else {
-      // scrolling UP
+      // scrolling up
       navbar.style.transform = "translateY(0)";
     }
 
@@ -212,7 +215,6 @@ useEffect(() => {
 
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
-
 if (loading) {
   return (
     <div className="beautiful-loading">
