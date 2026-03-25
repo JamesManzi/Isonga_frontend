@@ -12,6 +12,7 @@ function BuyerConversations() {
   const [buyerId, setBuyerId] = useState("");
   const [conversations, setConversations] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading,setLoading]=useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +28,8 @@ function BuyerConversations() {
         if (convRes.data.success) setConversations(convRes.data.conversations);
       } catch (err) {
         console.error(err);
+      } finally{
+        setLoading(false)
       }
     };
     fetchData();
@@ -94,8 +97,10 @@ function BuyerConversations() {
       </div>
 
       <div className="chat-list">
-        {filteredChats.length === 0 ? <div className="empty-state">No conversations yet.</div> :
-          filteredChats.map((chat) => (
+        {loading ? (
+          <div className="loading">Loading Chats...</div>
+         ) :filteredChats.length === 0 ? <div className="empty-state">No conversations yet.</div> 
+           :filteredChats.map((chat) => (
             <div key={chat.room} className="chat-item" onClick={() => openChat(chat)}>
               <div className="avatar">
                 <img src={chat.sellerProfile ? getFileUrl(chat.sellerProfile) : "/placeholder.png"} alt={chat.sellerName} />

@@ -145,7 +145,7 @@ const getFileUrl = (path) => {
 
       <div className="chat-list">
         {loading ? (
-          <div className="loading">Loading...</div>
+          <div className="loading">Loading Chats...</div>
         ) : filteredChats.length === 0 ? (
           <div className="empty-state">No conversations yet.</div>
         ) : (
