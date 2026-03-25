@@ -52,14 +52,14 @@ function Help() {
         </div>
         
         <div className="Navbar_Auth_Group">
-          <Link to="/buyer_login" className="login-link">
-            <FontAwesomeIcon icon={faRightToBracket} /> Login
+          <Link to="/" className="login-link">
+            <FontAwesomeIcon icon={faRightToBracket} /> Home
           </Link>
           <div className="Signup_Buttons">
-            <Link to="/register" className="reg-btn buyer">
+            <Link to="/buyer_register" className="reg-btn buyer">
               <FontAwesomeIcon icon={faCartShopping} /> Buyer Sign Up
             </Link>
-            <Link to="/seller_register" className="reg-btn seller">
+            <Link to="/register" className="reg-btn seller">
               <FontAwesomeIcon icon={faStore} /> Seller Sign Up
             </Link>
           </div>
