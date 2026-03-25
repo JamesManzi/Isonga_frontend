@@ -8,53 +8,40 @@ import {
   faPhone, 
   faHeadset, 
   faUserPlus, 
-  faRightToBracket 
+  faRightToBracket,
+  faStore,
+  faCartShopping
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import "./Help.css";
 
 function Help() {
   useEffect(() => {
-    // Initialize Animations
     AOS.init({ duration: 800, easing: "ease-in-out", once: true });
-  }, []);
-
-  // Sticky Navbar Scroll Effect
-  useEffect(() => {
-    const handleScroll = () => {
-      const navbar = document.querySelector(".Landing_Navbar");
-      if (window.scrollY > 50) {
-        navbar?.classList.add("scrolled");
-      } else {
-        navbar?.classList.remove("scrolled");
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const faqs = [
     { 
-      question: "How do I create an account?", 
-      answer: "Click the 'Sign Up' button in the top right corner. You can register as a Buyer to shop or a Seller to list products." 
+      question: "How do I start selling?", 
+      answer: "Click the 'Seller Sign Up' button, set up your shop profile, and start uploading your properties or products immediately." 
     },
     { 
-      question: "Is Isonga Market free to use?", 
-      answer: "Browsing and searching for products is completely free. Sellers may have different plans for listing their items." 
+      question: "Is there a fee for buyers?", 
+      answer: "No, browsing and contacting sellers is completely free for all buyers on Isonga Market." 
     },
     { 
-      question: "Which payment methods are supported?", 
-      answer: "We focus on local Rwandan payments including MTN MoMo and Airtel Money for fast, secure transactions." 
+      question: "How do payments work?", 
+      answer: "We integrate with MTN MoMo and Airtel Money to ensure fast and secure local transactions within Rwanda." 
     },
     { 
-      question: "How do I contact a seller?", 
-      answer: "Once you create a free account and log in, you will see a 'Chat' button on every shop and product page." 
+      question: "Can I trust the listings?", 
+      answer: "We encourage users to review seller ratings and verify details through our built-in chat system before making payments." 
     }
   ];
 
   return (
     <div className="help-wrapper">
-      {/* Landing Page Navbar (No Profile Needed) */}
+      {/* Clean Navbar: Brand + Login + 2 Signups */}
       <nav className="Landing_Navbar">
         <div className="Navbar_Brand">
           <img src="/logo.png" alt="Isonga Logo" />
@@ -64,38 +51,32 @@ function Help() {
           </div>
         </div>
         
-        <div className="Navbar_Links">
-          <Link to="/">Home</Link>
-          <Link to="/RealEstate">Assets</Link>
-          <Link to="/Agriculture">Agriculture</Link>
-        </div>
-
-        <div className="Navbar_Auth">
+        <div className="Navbar_Auth_Group">
           <Link to="/buyer_login" className="login-link">
             <FontAwesomeIcon icon={faRightToBracket} /> Login
           </Link>
-          <Link to="/buyer_register" className="register-btn">
-            <FontAwesomeIcon icon={faUserPlus} /> Sign Up
-          </Link>
+          <div className="Signup_Buttons">
+            <Link to="/buyer_register" className="reg-btn buyer">
+              <FontAwesomeIcon icon={faCartShopping} /> Buyer Sign Up
+            </Link>
+            <Link to="/seller_register" className="reg-btn seller">
+              <FontAwesomeIcon icon={faStore} /> Seller Sign Up
+            </Link>
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
       <div className="help-hero" data-aos="fade-down">
         <FontAwesomeIcon icon={faHeadset} size="4x" className="hero-icon" />
-        <h1>How can we help you?</h1>
-        <p>Everything you need to know about using Isonga Market in Rwanda.</p>
+        <h1>Help Center</h1>
+        <p>Get started with Rwanda's most trusted digital marketplace.</p>
       </div>
 
       {/* FAQ Grid */}
       <div className="faq-grid">
         {faqs.map((faq, index) => (
-          <div 
-            className="faq-item" 
-            key={index} 
-            data-aos="fade-up" 
-            data-aos-delay={index * 100}
-          >
+          <div className="faq-item" key={index} data-aos="fade-up" data-aos-delay={index * 100}>
             <div className="faq-q-header">
               <FontAwesomeIcon icon={faQuestionCircle} className="q-icon" />
               <h3>{faq.question}</h3>
@@ -105,10 +86,9 @@ function Help() {
         ))}
       </div>
 
-      {/* Direct Contact */}
+      {/* Support Contact */}
       <div className="support-contact" data-aos="zoom-in">
         <h2>Still have questions?</h2>
-        <p>Our support team is ready to help you get started.</p>
         <div className="contact-methods">
           <div className="method-card">
             <FontAwesomeIcon icon={faEnvelope} size="2x" />
@@ -123,7 +103,6 @@ function Help() {
         </div>
       </div>
 
-      {/* Landing Footer */}
       <footer className="Landing_Footer">
         <div className="Footer_Content">
           <div className="Footer_Info">
@@ -131,7 +110,6 @@ function Help() {
             <p>Connecting Rwanda's buyers and sellers safely.</p>
           </div>
           <div className="Footer_Payments">
-            <h4>Accepted Payments</h4>
             <div className="badge-row">
               <span className="momo-badge">MTN MoMo</span>
               <span className="airtel-badge">Airtel Money</span>
