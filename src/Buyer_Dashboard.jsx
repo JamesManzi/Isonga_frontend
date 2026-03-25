@@ -181,22 +181,6 @@ const getFileUrl = (path) => {
   return `https://isonga-backend.onrender.com/uploads/${path}`;
 };
 
-if (loading) {
-  return (
-    <div className="beautiful-loading">
-      <div className="text-center bg-white/20 backdrop-blur-lg p-10 rounded-3xl border border-white/30 shadow-2xl">
-        <div className="loader-dots flex space-x-2 justify-center mb-4">
-           <div className="w-4 h-4 bg-white rounded-full animate-bounce"></div>
-           <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-           <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-        </div>
-        <h2 className="text-white font-bold text-xl tracking-widest">ISONGA MARKET</h2>
-        <p className="text-white/80 text-sm">Preparing your dashboard...</p>
-      </div>
-    </div>
-  );
-}
-
 useEffect(() => {
   const navbar = document.querySelector(".Buyer_Dashboard_navbar");
 
@@ -228,6 +212,23 @@ useEffect(() => {
 
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
+
+if (loading) {
+  return (
+    <div className="beautiful-loading">
+      <div className="text-center bg-white/20 backdrop-blur-lg p-10 rounded-3xl border border-white/30 shadow-2xl">
+        <div className="loader-dots flex space-x-2 justify-center mb-4">
+           <div className="w-4 h-4 bg-white rounded-full animate-bounce"></div>
+           <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+           <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+        </div>
+        <h2 className="text-white font-bold text-xl tracking-widest">ISONGA MARKET</h2>
+        <p className="text-white/80 text-sm">Preparing your dashboard...</p>
+      </div>
+    </div>
+  );
+}
+
 return(
 <div className="Buyer_Dashboard">
 
