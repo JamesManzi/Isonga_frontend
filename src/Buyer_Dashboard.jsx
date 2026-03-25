@@ -12,7 +12,7 @@ import {
 
 import ChatNotification from "./ChatNotification";
 import "./Buyer_Dashboard.css";
-
+import { createPortal } from "react-dom";
 function Buyer_Dashboard() {
 
 const navigate = useNavigate();
@@ -296,34 +296,74 @@ return(
 <p className="no-sellers-msg">No sellers found</p>
 )}
 </div>
-
-{/* MEDIA ZOOM MODAL - MATCHES MY_STORE STYLE */}
-{modalMedia.sellerId && (() => {
+{modalMedia.sellerId &&
+createPortal(
+(() => {
   const seller = sellers.find(s => s._id === modalMedia.sellerId);
   if (!seller) return null;
   const file = seller.files[modalMedia.index];
+
   return (
-    <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
-      <span className="close-btn" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>&times;</span>
+    <div
+      className="media-modal"
+      onClick={() => setModalMedia({ sellerId: null, index: 0 })}
+    >
+      <span
+        className="close-btn"
+        onClick={() => setModalMedia({ sellerId: null, index: 0 })}
+      >
+        &times;
+      </span>
+
       {isVideoFile(file) ? (
-        <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
+        <video
+          src={getFileUrl(file)}
+          controls
+          autoPlay
+          className="full-media"
+          onClick={(e) => e.stopPropagation()}
+        />
       ) : (
-        <img src={getFileUrl(file)} alt="Full view" className="full-media" onClick={(e) => e.stopPropagation()} />
+        <img
+          src={getFileUrl(file)}
+          alt="Full view"
+          className="full-media"
+          onClick={(e) => e.stopPropagation()}
+        />
       )}
+
       <div className="modal-controls">
-        <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
-          e.stopPropagation();
-          setModalMedia(p => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length }));
-        }} />
-        <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
-          e.stopPropagation();
-          setModalMedia(p => ({ ...p, index: (p.index + 1) % seller.files.length }));
-        }} />
+        <FontAwesomeIcon
+          icon={faChevronLeft}
+          className="modal-arrow"
+          onClick={(e) => {
+            e.stopPropagation();
+            setModalMedia((p) => ({
+              ...p,
+              index:
+                (p.index - 1 + seller.files.length) %
+                seller.files.length,
+            }));
+          }}
+        />
+
+        <FontAwesomeIcon
+          icon={faChevronRight}
+          className="modal-arrow"
+          onClick={(e) => {
+            e.stopPropagation();
+            setModalMedia((p) => ({
+              ...p,
+              index: (p.index + 1) % seller.files.length,
+            }));
+          }}
+        />
       </div>
     </div>
   );
-})()}
-
+})(),
+document.body
+)}
 {message && (
   <div className={`alert ${message.type}`}><span className="alert-icon">{message.type === "success" ? "✓" : "⚠"}</span><span>{message.text}</span></div>
 )}
