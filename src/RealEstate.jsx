@@ -3,7 +3,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight, faSearch, faCartShopping, faStar } from "@fortawesome/free-solid-svg-icons";
+import { 
+  faChevronLeft, 
+  faChevronRight, 
+  faSearch, 
+  faCartShopping, 
+  faStar 
+} from "@fortawesome/free-solid-svg-icons";
 
 function RealEstate() {
   const [sellers, setSellers] = useState([]);
@@ -15,6 +21,7 @@ function RealEstate() {
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
   const [cartCount, setCartCount] = useState(0);
 
+  // --- Cart Count Logic ---
   const fetchCartCount = async () => {
     try {
       const res = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
@@ -30,6 +37,7 @@ function RealEstate() {
     fetchCartCount();
   }, []);
 
+  // --- Star Rating Logic ---
   const renderStars = (avg) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -51,7 +59,7 @@ function RealEstate() {
     return stars;
   };
 
-  // Auto-sliding logic for the main grid images
+  // --- Auto-sliding Images Logic ---
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => {
@@ -68,6 +76,7 @@ function RealEstate() {
     return () => clearInterval(interval);
   }, [sellers]);
 
+  // --- Fetch Real Estate Sellers ---
   useEffect(() => {
     const fetchSellers = async () => {
       try {
@@ -95,15 +104,11 @@ function RealEstate() {
     return path.startsWith("http") ? path : `https://isonga-backend.onrender.com/uploads/${path}`;
   };
 
-  // Hide/Show navbar based on modal or scroll
+  // --- Navbar Visibility (Modal & Scroll) ---
   useEffect(() => {
     const navbar = document.querySelector(".Buyer_Dashboard_navbar");
     if (!navbar) return;
-    if (modalMedia.sellerId) {
-      navbar.style.transform = "translateY(-100%)";
-    } else {
-      navbar.style.transform = "translateY(0)";
-    }
+    navbar.style.transform = modalMedia.sellerId ? "translateY(-100%)" : "translateY(0)";
   }, [modalMedia]);
 
   useEffect(() => {
@@ -126,7 +131,7 @@ function RealEstate() {
 
   return (
     <div>
-      {/* Navbar */}
+      {/* Navbar Section */}
       <div className="Buyer_Dashboard_navbar">
         <div className="Buyer_Dashboard_logos">
           <img src="/logo.png" alt="Logo" />
@@ -159,20 +164,19 @@ function RealEstate() {
           )}
         </Link>
         <div className="Buyer_Dashboard_logout">
-          <Link to="/buyer_dashboard">
-            <button>Dashboard</button>
-          </Link>
+          <Link to="/buyer_dashboard"><button>Dashboard</button></Link>
         </div>
       </div>
 
-      {/* Welcome Message */}
+      {/* Heading */}
       <div className="Buyer_Dashboard_Heading">
         <h1>Welcome back, {buyerName}! 🛍️</h1>
-        <p>Browse premium Real Estate listings and find your perfect property.</p>
+        <p>Browse premium Real Estate and enjoy secure property shopping.</p>
       </div>
 
+      {/* Search Bar */}
       <div className="Buyer_Dashboard_search">
-        <input type="search" className="searching" placeholder="Search Property" />
+        <input type="search" className="searching" placeholder="Search" />
         <button><FontAwesomeIcon icon={faSearch} />Search</button>
       </div>
 
@@ -189,19 +193,13 @@ function RealEstate() {
                       <video
                         src={getFileUrl(seller.files[activeIdx])}
                         muted autoPlay loop className="slider-image"
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          setModalMedia({ sellerId: seller._id, index: activeIdx }); 
-                        }}
+                        onClick={() => setModalMedia({ sellerId: seller._id, index: activeIdx })}
                       />
                     ) : (
                       <img
                         src={getFileUrl(seller.files[activeIdx])}
                         alt={seller.name} className="slider-image"
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          setModalMedia({ sellerId: seller._id, index: activeIdx }); 
-                        }}
+                        onClick={() => setModalMedia({ sellerId: seller._id, index: activeIdx })}
                       />
                     )}
                     {seller.files.length > 1 && (
@@ -221,28 +219,18 @@ function RealEstate() {
                   <img src="/placeholder.png" alt="No Images" className="slider-image" />
                 )}
                 <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
-                  <img
-                    src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"}
-                    alt={seller.name}
-                    className="avatar-image"
-                  />
+                  <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt="avatar" className="avatar-image" />
                 </Link>
               </div>
 
               <div className="shop-card-info">
                 <h3 className="seller-name">{seller.name} Shop</h3>
                 <p className="seller-location">{seller.location}</p>
-                <div className="rating">
-                  <p>{renderStars(seller.averageRating || 0)} ({seller.numReviews || 0})</p>
-                </div>
+                <div className="rating">{renderStars(seller.averageRating || 0)} ({seller.numReviews || 0})</div>
                 <p className="seller-description">{seller.description}</p>
                 <div className="card-actions">
-                  <Link to={`/Asset_products/${seller._id}`}>
-                    <button className="visit-btn">Visit Shop</button>
-                  </Link>
-                  <Link to={`/buyer_chat/${seller._id}`}>
-                    <button className="chat-btn">Chat</button>
-                  </Link>
+                  <Link to={`/Asset_products/${seller._id}`}><button className="visit-btn">Visit Shop</button></Link>
+                  <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
                 </div>
               </div>
             </div>
@@ -250,40 +238,34 @@ function RealEstate() {
         })}
       </div>
 
-      {/* Media Zoom Modal Fix */}
+      {/* Zoom Modal Model */}
       {modalMedia.sellerId && (() => {
         const seller = sellers.find((s) => s._id === modalMedia.sellerId);
         if (!seller) return null;
         const file = seller.files[modalMedia.index];
         return (
           <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
-            <span className="close-btn" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>&times;</span>
-            
-            <div className="modal-content-wrapper" onClick={(e) => e.stopPropagation()}>
-              {isVideoFile(file) ? (
-                <video src={getFileUrl(file)} controls autoPlay className="full-media" />
-              ) : (
-                <img src={getFileUrl(file)} alt="Full view" className="full-media" />
-              )}
-              
-              {/* Modal Navigation Arrows */}
-              {seller.files.length > 1 && (
-                <div className="modal-controls">
-                  <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow left" onClick={(e) => {
-                    e.stopPropagation();
-                    setModalMedia(p => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length }));
-                  }} />
-                  <FontAwesomeIcon icon={faChevronRight} className="modal-arrow right" onClick={(e) => {
-                    e.stopPropagation();
-                    setModalMedia(p => ({ ...p, index: (p.index + 1) % seller.files.length }));
-                  }} />
-                </div>
-              )}
+            <span className="close-btn">&times;</span>
+            {isVideoFile(file) ? (
+              <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
+            ) : (
+              <img src={getFileUrl(file)} alt="Full view" className="full-media" onClick={(e) => e.stopPropagation()} />
+            )}
+            <div className="modal-controls">
+              <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
+                e.stopPropagation();
+                setModalMedia(p => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length }));
+              }} />
+              <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
+                e.stopPropagation();
+                setModalMedia(p => ({ ...p, index: (p.index + 1) % seller.files.length }));
+              }} />
             </div>
           </div>
         );
       })()}
 
+      {/* Footer Section */}
       <footer className="Buyer_Footer">
         <div className="Footer_Container">
           <div className="Footer_Section">
@@ -291,7 +273,7 @@ function RealEstate() {
               <img src="/logo.png" alt="Isonga Logo"/>
               <h3>Isonga Market</h3>
             </div>
-            <p>The leading digital marketplace in Rwanda.</p>
+            <p>The leading digital marketplace in Rwanda. Connecting local sellers with happy buyers.</p>
           </div>
           <div className="Footer_Section">
             <h4>Quick Links</h4>
@@ -312,6 +294,7 @@ function RealEstate() {
         </div>
         <div className="Footer_Bottom">
           <p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved.</p>
+          <p>Designed for Rwanda 🇷🇼</p>
         </div>
       </footer>
     </div>
