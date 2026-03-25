@@ -1,20 +1,29 @@
-import { Link, useNavigate } from "react-router-dom"; // FIX: Added useNavigate to import
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faChevronLeft, faChevronRight, faSearch,faStar,faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { 
+  faSearch, 
+  faChevronLeft, 
+  faChevronRight, 
+  faCartShopping, 
+  faStar 
+} from "@fortawesome/free-solid-svg-icons";
+import { Link, useNavigate } from "react-router-dom";
+import ChatNotification from "./ChatNotification";
 
-function RealEstate(){
+function RealEstate() {
+  const navigate = useNavigate(); 
   const [sellers, setSellers] = useState([]);
+  const [filteredSellers, setFilteredSellers] = useState([]); 
+  const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState("");
-  const [buyerName,setBuyerName]=useState("");
-  const [profile,setProfile]=useState("");
-  const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 }); // FIX: Named to match your useEffect
+  const [buyerName, setBuyerName] = useState("");
+  const [profile, setProfile] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState({});
-  const [cartCount, setCartCount] = useState(0); 
+  const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 }); // Updated for navigation
+  const [cartCount, setCartCount] = useState(0);
 
-  const navigate = useNavigate(); // FIX: Initialized navigate
+  // --- Logic Functions ---
 
   const fetchCartCount = async () => {
     try {
@@ -26,10 +35,6 @@ function RealEstate(){
       console.error("Error fetching cart count:", err);
     }
   };
-
-  useEffect(() => {
-    fetchCartCount();
-  }, []);
 
   const renderStars = (avg) => {
     const stars = [];
@@ -52,6 +57,7 @@ function RealEstate(){
     return stars;
   };
 
+  // Auto-sliding Logic
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => {
@@ -68,6 +74,12 @@ function RealEstate(){
     return () => clearInterval(interval);
   }, [sellers]);
 
+  // --- Effects ---
+
+  useEffect(() => {
+    fetchCartCount();
+  }, []);
+
   useEffect(() => {
     const fetchSellers = async () => {
       try {
@@ -75,25 +87,34 @@ function RealEstate(){
           "https://isonga-backend.onrender.com/api/sellers/RealEstate",
           { withCredentials: true }
         );
-        if(!res.data.success){
-            navigate("/buyer_login");
-            return;
-          }
-        if (res.data.success) {
-          setSellers(res.data.sellers);
-          setProfile(res.data.buyer.profile);
-          setBuyerName(res.data.buyer.name);
-        } else {
-          setMessage("No shops found");
+        
+        if (!res.data.success) {
+          navigate("/buyer_login");
+          return;
         }
+
+        setSellers(res.data.sellers);
+        setFilteredSellers(res.data.sellers);
+        setBuyerName(res.data.buyer.name);
+        setProfile(res.data.buyer.profile);
       } catch (error) {
-        console.log(error);
-        setMessage("Error fetching shops");
+        console.error("Error fetching shops:", error);
+        setMessage({ text: "Fetching Shops Error", type: "error" });
       }
     };
-
     fetchSellers();
   }, [navigate]);
+
+  // Search Logic
+  useEffect(() => {
+    const q = searchQuery.toLowerCase();
+    setFilteredSellers(
+      sellers.filter((s) =>
+        s.name?.toLowerCase().includes(q) ||
+        s.location?.toLowerCase().includes(q)
+      )
+    );
+  }, [searchQuery, sellers]);
 
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
@@ -102,14 +123,11 @@ function RealEstate(){
       : `https://isonga-backend.onrender.com/uploads/${path}`;
   };
 
+  // Navbar visibility logic
   useEffect(() => {
     const navbar = document.querySelector(".Buyer_Dashboard_navbar");
     if (!navbar) return;
-    if (modalMedia.sellerId) {
-      navbar.style.transform = "translateY(-100%)";
-    } else {
-      navbar.style.transform = "translateY(0)";
-    }
+    navbar.style.transform = modalMedia.sellerId ? "translateY(-100%)" : "translateY(0)";
   }, [modalMedia]);
 
   useEffect(() => {
@@ -117,11 +135,7 @@ function RealEstate(){
     const handleScroll = () => {
       const navbar = document.querySelector(".Buyer_Dashboard_navbar");
       if (!navbar) return;
-      if (window.scrollY > lastScrollY) {
-        navbar.style.transform = "translateY(-100%)";
-      } else {
-        navbar.style.transform = "translateY(0)";
-      }
+      navbar.style.transform = window.scrollY > lastScrollY ? "translateY(-100%)" : "translateY(0)";
       lastScrollY = window.scrollY;
     };
     window.addEventListener("scroll", handleScroll);
@@ -130,7 +144,7 @@ function RealEstate(){
 
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
 
-  return(
+  return (
     <div>
       {/* Navbar */}
       <div className="Buyer_Dashboard_navbar">
@@ -143,13 +157,9 @@ function RealEstate(){
         </div>
         <div className="Buyer_Dashboard_user">
           <Link to="/buyer_profile">
-            {profile ? (
-              <img src={getFileUrl(profile)} alt="Profile" />
-            ) : (
-              <img src="/placeholder.png" alt="Profile" />
-            )}
+            <img src={getFileUrl(profile)} alt="Profile" />
           </Link>
-          <ChatNotification/>
+          <ChatNotification />
         </div>
         <div className="Buyer_Dashboard_nav">
           <nav>
@@ -167,110 +177,130 @@ function RealEstate(){
         </div>
       </div>
 
-      {/* Welcome Message */}
       <div className="Buyer_Dashboard_Heading">
-        <h1>Welcome back, {buyerName}! 🛍️</h1>
-        <p>Browse thousands of better Shops and enjoy secure, fast shopping.</p>
+        <h1>Welcome back, {buyerName}! 🏠</h1>
+        <p>Browse premium Real Estate listings and find your dream home.</p>
       </div>
-
+        
       <div className="Buyer_Dashboard_search">
-        <input type="search" className="searching" placeholder="Search"/>
+        <input 
+          type="search" 
+          className="searching" 
+          placeholder="Search location or shop..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
         <button><FontAwesomeIcon icon={faSearch} />Search</button>
       </div>
 
-      {/* Sellers Grid */}
       <div className="shop-grid">
-        {sellers.map((seller) => { // FIX: Changed from filteredSellers to sellers
-          const activeIdx = currentImageIndex[seller._id] || 0;
-          return (
-            <div key={seller._id} className="shop-card">
-              <div className="card-image-section">
-                {seller.files && seller.files.length > 0 ? (
-                  <div className="image-slider">
-                    {isVideoFile(seller.files[activeIdx]) ? (
-                      <video
-                        src={getFileUrl(seller.files[activeIdx])}
-                        muted autoPlay loop className="slider-image"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setModalMedia({ sellerId: seller._id, index: activeIdx });
-                        }}
-                      />
-                    ) : (
-                      <img
-                        src={getFileUrl(seller.files[activeIdx])}
-                        alt={seller.name} className="slider-image"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setModalMedia({ sellerId: seller._id, index: activeIdx });
-                        }}
-                      />
-                    )}
-                    {seller.files.length > 1 && (
-                      <div className="slider-dots">
-                        {seller.files.map((_, idx) => (
-                          <span 
-                            key={idx} 
-                            className={`dot ${idx === activeIdx ? "active" : ""}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCurrentImageIndex(prev => ({ ...prev, [seller._id]: idx }));
-                            }}
-                          ></span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <img src="/placeholder.png" alt="No Images" className="slider-image" />
-                )}
+        {filteredSellers.map((seller) => (
+          <div key={seller._id} className="shop-card">
+            <div className="card-image-section">
+              {seller.files && seller.files.length > 0 ? (
+                <div className="image-slider">
+                  {isVideoFile(seller.files[currentImageIndex[seller._id] || 0]) ? (
+                    <video
+                      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+                      muted autoPlay loop
+                      className="slider-image"
+                      onClick={() => setModalMedia({ sellerId: seller._id, index: currentImageIndex[seller._id] || 0 })}
+                    />
+                  ) : (
+                    <img
+                      src={getFileUrl(seller.files[currentImageIndex[seller._id] || 0])}
+                      className="slider-image"
+                      alt="media"
+                      onClick={() => setModalMedia({ sellerId: seller._id, index: currentImageIndex[seller._id] || 0 })}
+                    />
+                  )}
 
-                <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
-                  <img
-                    src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"}
-                    alt={`${seller.name} Profile`}
-                    className="avatar-image"
-                  />
-                </Link>
+                  {seller.files.length > 1 && (
+                    <div className="slider-dots">
+                      {seller.files.map((_, idx) => (
+                        <span 
+                          key={idx} 
+                          className={`dot ${idx === (currentImageIndex[seller._id] || 0) ? "active" : ""}`}
+                          onClick={(e) => {
+                            e.stopPropagation(); 
+                            setCurrentImageIndex(prev => ({...prev, [seller._id]: idx}));
+                          }}
+                        ></span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <img src="/placeholder.png" alt="No Images" className="slider-image" />
+              )}
+              <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
+                <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt="Avatar" />
+              </Link>
+            </div>
+
+            <div className="shop-card-info">
+              <h3 className="seller-name">{seller.name}</h3>
+              <p className="seller-location">{seller.location}</p>
+              
+              <div className="rating">
+                <p>
+                  {renderStars(seller.averageRating || 0)}
+                  <span> ({seller.numReviews || 0})</span>
+                </p>
               </div>
 
-              <div className="shop-card-info">
-                <h3 className="seller-name">{seller.name} Shop</h3>
-                <p className="seller-location">{seller.location}</p>
-                <p className="seller-category">{seller.category} Shop</p>
-                <div className="rating">
-                  <p>
-                    {renderStars(seller.averageRating || 0)}
-                    ({seller.numReviews || 0})
-                  </p>
-                </div>
-                <p className="seller-description">{seller.description}</p>
+              <p className="seller-description">{seller.description}</p>
 
-                <div className="card-actions">
-                  <Link to={`/Asset_products/${seller._id}`}>
-                    <button className="visit-btn">Visit Shop</button>
-                  </Link>
-                  <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
-                </div>
+              <div className="card-actions">
+                <Link to={`/Asset_products/${seller._id}`}>
+                  <button className="visit-btn">Visit Shop</button>
+                </Link>
+                <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
+      {/* Modal with Navigation Arrows */}
       {modalMedia.sellerId && (
         <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
           <span className="close-btn">&times;</span>
           {(() => {
-             const currentSeller = sellers.find(s => s._id === modalMedia.sellerId);
-             const currentFile = currentSeller?.files[modalMedia.index];
-             if (!currentFile) return null;
-             return isVideoFile(currentFile) ? (
-               <video src={getFileUrl(currentFile)} controls autoPlay />
-             ) : (
-               <img src={getFileUrl(currentFile)} alt="Full view" />
-             );
+            const seller = sellers.find(s => s._id === modalMedia.sellerId);
+            const file = seller?.files[modalMedia.index];
+            if (!file) return null;
+            return (
+              <div className="modal-content-wrapper" onClick={(e) => e.stopPropagation()}>
+                {isVideoFile(file) ? (
+                  <video src={getFileUrl(file)} controls autoPlay className="full-media" />
+                ) : (
+                  <img src={getFileUrl(file)} alt="Full view" className="full-media" />
+                )}
+                
+                {seller.files.length > 1 && (
+                  <div className="modal-controls">
+                    <FontAwesomeIcon 
+                      icon={faChevronLeft} 
+                      className="modal-arrow left" 
+                      onClick={() => setModalMedia(p => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length }))} 
+                    />
+                    <FontAwesomeIcon 
+                      icon={faChevronRight} 
+                      className="modal-arrow right" 
+                      onClick={() => setModalMedia(p => ({ ...p, index: (p.index + 1) % seller.files.length }))} 
+                    />
+                  </div>
+                )}
+              </div>
+            );
           })()}
+        </div>
+      )}
+
+      {message && (
+        <div className={`alert ${message.type}`}>
+          <span>{message.text}</span>
         </div>
       )}
 
@@ -282,15 +312,15 @@ function RealEstate(){
               <img src="/logo.png" alt="Isonga Logo"/>
               <h3>Isonga Market</h3>
             </div>
-            <p>The leading digital marketplace in Rwanda. Connecting local sellers with happy buyers.</p>
+            <p>The leading digital marketplace in Rwanda.</p>
           </div>
 
           <div className="Footer_Section">
             <h4>Quick Links</h4>
             <ul>
-              <li><Link to="/fashion">All Products</Link></li>
-              <li><Link to="/services">Services</Link></li>
-              <li><Link to="/RealEstate">Assets</Link></li>
+              <li><Link to="/RealEstate">Real Estate</Link></li>
+              <li><Link to="/Vehicles">Vehicles</Link></li>
+              <li><Link to="/Agriculture">Agriculture</Link></li>
               <li><Link to="/cart">My Cart</Link></li>
             </ul>
           </div>
@@ -306,22 +336,19 @@ function RealEstate(){
 
           <div className="Footer_Section">
             <h4>Secure Payments</h4>
-            <p>We support local payment methods:</p>
             <div className="Payment_Methods">
               <span className="Payment_Badge momo">MTN MoMo</span>
               <span className="Payment_Badge airtel">Airtel Money</span>
             </div>
-            <p className="Secure_Note">🔒 SSL Secure Transactions</p>
           </div>
         </div>
 
         <div className="Footer_Bottom">
           <p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved.</p>
-          <p>Designed for Rwanda 🇷🇼</p>
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
 export default RealEstate;
