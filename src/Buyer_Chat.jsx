@@ -5,9 +5,11 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
-const socket = io("https://isonga-backend.onrender.com", { withCredentials: true,
+// Use the same socket connection as your seller chat
+const socket = io("https://isonga-backend.onrender.com", { 
+  withCredentials: true,
   transports: ["websocket"],
- });
+});
 
 function Buyer_Chat() {
   const { sellerId } = useParams();
@@ -28,19 +30,24 @@ function Buyer_Chat() {
   const fileInputRef = useRef();
   const emojiRef = useRef();
 
-  // LOAD CHAT
+  // 1. INITIAL LOAD & JOIN ROOM
   useEffect(() => {
     const loadChat = async () => {
       try {
+        // Fetch Buyer Data
         const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", { withCredentials: true });
         if (!buyerRes.data.success) return;
         const buyerData = buyerRes.data.buyer;
         setBuyer(buyerData);
 
+        // Fetch Seller Data
         const sellerRes = await axios.get(`https://isonga-backend.onrender.com/api/get_seller/${sellerId}`, { withCredentials: true });
         if (sellerRes.data.success) setSeller(sellerRes.data.seller);
 
+        // Define Room ID
         const room = `Buyer_${buyerData._id}__Seller_${sellerId}`;
+
+        // Join Room
         socket.emit("joinRoom", {
           senderId: buyerData._id,
           senderModel: "Buyer",
@@ -48,21 +55,57 @@ function Buyer_Chat() {
           receiverModel: "Seller"
         });
 
+        // Load Previous Messages
         const msgRes = await axios.get(`https://isonga-backend.onrender.com/api/messages/${room}`, { withCredentials: true });
         if (msgRes.data.success) setMessages(msgRes.data.messages);
-      } catch (err) { console.log(err); }
+
+        // MARK MESSAGES AS READ (When Buyer opens the chat)
+        await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: true });
+        socket.emit("messagesRead", { room });
+
+      } catch (err) {
+        console.error("Error loading chat:", err);
+      }
     };
     loadChat();
   }, [sellerId]);
 
-  // RECEIVE MESSAGE
+  // 2. SOCKET LISTENERS (Receive & Read Receipt)
   useEffect(() => {
-    const handleReceive = (msg) => {
+    const handleReceive = async (msg) => {
       const room = `Buyer_${buyer?._id}__Seller_${sellerId}`;
-      if (msg.room === room) setMessages(prev => [...prev, msg]);
+      if (msg.room === room) {
+        setMessages(prev => [...prev, msg]);
+
+        // If a message comes from the seller, mark it as read immediately if chat is open
+        if (msg.senderModel === "Seller") {
+          try {
+            await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: true });
+            socket.emit("messagesRead", { room });
+          } catch (err) {
+            console.error("Read update error:", err);
+          }
+        }
+      }
     };
+
+    // Update ticks from single to double in real-time
+    const handleMessagesRead = (data) => {
+      const room = `Buyer_${buyer?._id}__Seller_${sellerId}`;
+      if (data.room === room) {
+        setMessages((prev) => 
+          prev.map((msg) => (msg.read === false ? { ...msg, read: true } : msg))
+        );
+      }
+    };
+
     socket.on("receiveMessage", handleReceive);
-    return () => socket.off("receiveMessage", handleReceive);
+    socket.on("messagesRead", handleMessagesRead);
+
+    return () => {
+      socket.off("receiveMessage", handleReceive);
+      socket.off("messagesRead", handleMessagesRead);
+    };
   }, [buyer, sellerId]);
 
   // AUTO SCROLL
@@ -70,6 +113,7 @@ function Buyer_Chat() {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // HANDLERS
   const onEmojiClick = (emoji) => {
     setText(prev => prev + emoji.emoji);
     setShowEmoji(false);
@@ -83,14 +127,6 @@ function Buyer_Chat() {
   };
 
   const removeFile = (index) => setFiles(prev => prev.filter((_, i) => i !== index));
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    if (e.dataTransfer.files) {
-      const dropped = Array.from(e.dataTransfer.files);
-      setFiles(prev => [...prev, ...dropped]);
-    }
-  };
 
   const handleSend = async () => {
     if (!buyer || (!text.trim() && files.length === 0)) return;
@@ -106,6 +142,7 @@ function Buyer_Chat() {
         });
         if (uploadRes.data.success) uploadedFiles = uploadRes.data.files;
       }
+
       const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
       socket.emit("sendMessage", {
         sender: buyer._id,
@@ -116,9 +153,13 @@ function Buyer_Chat() {
         files: uploadedFiles,
         room
       });
-      setText(""); setFiles([]);
+
+      setText(""); 
+      setFiles([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch (err) { console.log(err); }
+    } catch (err) {
+      console.log(err);
+    }
     setSending(false);
   };
 
@@ -142,46 +183,44 @@ function Buyer_Chat() {
         <h3>{seller?.name || "Loading..."}</h3>
       </div>
 
-      {/* MESSAGES */}
-      <div className="chat-messages" onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
+      {/* MESSAGES AREA */}
+      <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
           return (
             <div key={i} className={`message ${isMe ? "sent" : "received"}`}>
               <div className="bubble">
                 {msg.message && <p>{msg.message}</p>}
+                
                 {msg.files && msg.files.map((file, index) => {
                   const clean = file.trim().replace(/\\/g, "/");
                   const url = `https://isonga-backend.onrender.com/${clean.replace(/^\/+/, "")}`;
                   const isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(clean);
 
-                  if (isVideo) {
-                    return <video key={index} src={url} controls className="chat-video" />;
-                  } else {
-                    return (
-                      <img
-                        key={index}
-                        src={url}
-                        className="chat-image"
-                        alt="img"
-                        onClick={() => setZoomImage(url)} // OPEN LIGHTBOX
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          const link = document.createElement('a');
-                          link.href = url;
-                          link.target = "_blank";
-                          link.innerText = "📎 View Attachment";
-                          link.style.display = "block";
-                          link.style.color = "#3498db";
-                          e.target.parentNode.appendChild(link);
-                        }}
-                      />
-                    );
-                  }
+                  return isVideo ? (
+                    <video key={index} src={url} controls className="chat-video" />
+                  ) : (
+                    <img
+                      key={index}
+                      src={url}
+                      className="chat-image"
+                      alt="attachment"
+                      onClick={() => setZoomImage(url)}
+                    />
+                  );
                 })}
-                <span className="time">
-                  {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                </span>
+
+                <div className="msg-info">
+                  <span className="time">
+                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                  {/* TICK LOGIC: Displayed only for messages the buyer sent */}
+                  {isMe && (
+                    <span className={`read-status ${msg.read ? "read" : ""}`}>
+                      {msg.read ? " ✓✓" : " ✓"}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -189,27 +228,33 @@ function Buyer_Chat() {
         <div ref={scrollRef}></div>
       </div>
 
-      {/* PREVIEW */}
+      {/* FILE PREVIEW */}
       {files.length > 0 && <div className="preview-container">{renderPreview()}</div>}
 
-      {/* EMOJI */}
+      {/* EMOJI BOX */}
       {showEmoji && (
         <div className="emoji-box" ref={emojiRef}>
           <Picker onEmojiClick={onEmojiClick} />
         </div>
       )}
 
-      {/* INPUT */}
+      {/* INPUT AREA */}
       <div className="chat-input">
         <input type="file" multiple ref={fileInputRef} style={{ display: "none" }} accept="image/*,video/*" onChange={handleFileSelect} />
         <button type="button" onClick={() => fileInputRef.current.click()}>📎</button>
         <button type="button" onClick={() => setShowEmoji(prev => !prev)}>😊</button>
-        <textarea value={text} placeholder="Type message..." onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }} />
-        <button onClick={handleSend} disabled={sending}>{sending ? "..." : "➤"}</button>
+        <textarea 
+          value={text} 
+          placeholder="Type message..." 
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }} 
+        />
+        <button onClick={handleSend} disabled={sending} className="send-btn">
+          {sending ? "..." : "➤"}
+        </button>
       </div>
 
-      {/* LIGHTBOX MODAL */}
+      {/* LIGHTBOX */}
       {zoomImage && (
         <div className="lightbox-overlay" onClick={() => setZoomImage(null)}>
           <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
