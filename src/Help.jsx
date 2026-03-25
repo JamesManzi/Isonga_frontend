@@ -56,7 +56,7 @@ function Help() {
             <FontAwesomeIcon icon={faRightToBracket} /> Login
           </Link>
           <div className="Signup_Buttons">
-            <Link to="/buyer_register" className="reg-btn buyer">
+            <Link to="/register" className="reg-btn buyer">
               <FontAwesomeIcon icon={faCartShopping} /> Buyer Sign Up
             </Link>
             <Link to="/seller_register" className="reg-btn seller">
