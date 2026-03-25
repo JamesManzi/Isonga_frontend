@@ -194,7 +194,10 @@ function Buyer_Chat() {
                 
                 {msg.files && msg.files.map((file, index) => {
                   const clean = file.trim().replace(/\\/g, "/");
-                  const url = `https://isonga-backend.onrender.com/${clean.replace(/^\/+/, "")}`;
+
+const url = clean.startsWith("http")
+  ? clean
+  : `https://isonga-backend.onrender.com/${clean.replace(/^\/+/, "")}`;
                   const isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(clean);
 
                   return isVideo ? (
