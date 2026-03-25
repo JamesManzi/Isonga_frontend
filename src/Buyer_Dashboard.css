@@ -15,9 +15,9 @@ html {
 }
 
 body {
-  overflow-x: hidden;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 img, video {
@@ -25,6 +25,7 @@ img, video {
   height: auto;
 }
 
+/* MAIN */
 .Buyer_Dashboard {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--bg-light);
@@ -41,7 +42,7 @@ img, video {
   box-shadow: var(--shadow);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 1000; /* LOWER than modal */
 }
 
 .Buyer_Dashboard_logos img {
@@ -73,11 +74,6 @@ img, video {
   text-decoration: none;
   color: var(--text-dark);
   font-weight: 600;
-  transition: var(--transition);
-}
-
-.Buyer_Dashboard_nav a:hover {
-  color: var(--accent-color);
 }
 
 .Buyer_Dashboard_user {
@@ -90,8 +86,8 @@ img, video {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  object-fit: cover;
   border: 2px solid var(--accent-color);
+  object-fit: cover;
 }
 
 .Buyer_Dashboard_Logout button {
@@ -101,7 +97,6 @@ img, video {
   padding: 8px 15px;
   border-radius: 5px;
   cursor: pointer;
-  font-weight: 600;
 }
 
 /* HEADING */
@@ -125,7 +120,7 @@ img, video {
   border: 1px solid #ddd;
   border-radius: 25px 0 0 25px;
   outline: none;
-  font-size: 16px; /* prevents zoom */
+  font-size: 16px; /* FIX zoom */
 }
 
 .Buyer_Dashboard_search button {
@@ -164,11 +159,6 @@ img, video {
   position: relative;
   height: 220px;
   overflow: hidden;
-}
-
-.image-slider {
-  width: 100%;
-  height: 100%;
 }
 
 .slider-image {
@@ -256,18 +246,17 @@ img, video {
   background: #f0f2f5;
 }
 
-/* MODAL */
+/* 🔥 MODAL FIXED (MAIN ISSUE) */
 .media-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.95);
+  inset: 0; /* FULL SCREEN */
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.98);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 9999; /* ABOVE NAVBAR */
   padding: 10px;
   touch-action: none;
 }
