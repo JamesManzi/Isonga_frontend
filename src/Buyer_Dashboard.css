@@ -318,3 +318,9 @@ img, video {
     max-height: 75%;
   }
 }
+
+.media-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
