@@ -38,7 +38,7 @@ function View_Profile() {
         return;
       }
       try {
-      const res=await api.get("/api/view_profile");
+      const res = await api.get(`/api/view_profile/${id}`);
         if (res.data.success) {
           setSeller(res.data.seller);
           setReviews(res.data.seller.ratings || []);
