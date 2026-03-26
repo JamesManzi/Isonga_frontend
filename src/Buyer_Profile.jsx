@@ -30,11 +30,20 @@ useEffect(()=>{
 const fetchBuyer = async()=>{
 setLoading(true)
 try{
-
+const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/buyer_login");
+        return;
+      }
 const res = await axios.get(
 "https://isonga-backend.onrender.com/api/buyer_profile",
-{withCredentials:true}
-);
+{
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
 if(res.data.success){
 
