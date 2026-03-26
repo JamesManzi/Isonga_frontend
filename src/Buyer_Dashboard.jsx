@@ -108,14 +108,20 @@ useEffect(()=>{
 const fetchData=async()=>{
 setLoading(true);
 try{
+  const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/buyer_login");
+        return;
+      }
 const res=await axios.get(
 "https://isonga-backend.onrender.com/api/buyer_dashboard",
-{withCredentials:true}
-);
-if(!res.data.success){
-navigate("/buyer_login");
-return;
-}
+{
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 const buyer=res.data.buyer;
 setBuyerName(buyer.name);
 setProfile(buyer.profile);
