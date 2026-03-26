@@ -50,6 +50,7 @@ return `/view_products/${id}`;
 
 const fetchCartCount=async()=>{
 try{
+  const token = localStorage.getItem("token");
 const res=await axios.get(
 "https://isonga-backend.onrender.com/api/cart/count",
 {
@@ -72,6 +73,7 @@ fetchCartCount();
 
 const handleLogout=async()=>{
 try{
+  const token = localStorage.getItem("token");
 const res=await axios.post(
 "https://isonga-backend.onrender.com/api/logout",
 {},
