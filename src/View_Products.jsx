@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import api from "./api";
 import "./View_Products.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -39,14 +39,8 @@ function View_Products() {
         navigate("/buyer_login");
         return;
       }
-        const res = await axios.get(
-          `https://isonga-backend.onrender.com/api/view_products/${id}`,
-          {
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
-        },
-      }
-    );
+        
+        const res = await api.get(`/api/view_products/${id}`);
 
         const fetchedProducts = res.data.products;
         setProducts(fetchedProducts);
@@ -59,27 +53,20 @@ function View_Products() {
         });
         setCurrentIndex(indexes);
 
-        if (!hasTracked.current) {
-          axios.post(
-            `https://isonga-backend.onrender.com/api/seller/view/${id}`, 
-            {}, 
-           {
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
-        },
+       if (!hasTracked.current) {
+        api.post(`/api/seller/view/${id}`).catch(() => {});
+        hasTracked.current = true;
       }
-          ).catch(err => console.log("Visit not tracked"));
-          hasTracked.current = true; 
-        }
-      } catch (error) {
-        console.log(error);
-        setMessage("Error loading products");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, [id, navigate]);
+    } catch (error) {
+      console.error("Fetch Error:", error);
+      setMessage("Error loading products");
+      if (error.response?.status === 401) navigate("/buyer_login");
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchProducts();
+}, [id, navigate]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -123,15 +110,7 @@ function View_Products() {
   const addToCart = async (productId, productName) => {
     try {
       setCartLoading(productId);
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/cart/add",
-        { productId, quantity: 1 },
-        {
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
-        },
-      }
-    );
+      const res = await api.post("/api/cart/add", { productId, quantity: 1 });
       setPopupMessage(res.data.success ? `${productName} added to cart!` : "Error");
       setShowCartPopup(true);
       setTimeout(() => setShowCartPopup(false), 2000);

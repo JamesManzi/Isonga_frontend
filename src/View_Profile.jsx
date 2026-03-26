@@ -160,7 +160,7 @@ if (!seller) {
           ))}
           <textarea placeholder="Comment" value={comment} onChange={(e) => setComment(e.target.value)} />
           <button onClick={submitRating} disabled={loading}>
-  {loading ? "Submitting..." : "Submit Rating"}
+  {loading ? "Submiting..." : "submit Rating"}
 </button>
           {message && <p>{message}</p>}
         </div>
