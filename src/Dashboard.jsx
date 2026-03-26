@@ -136,17 +136,20 @@ const orderLink =
     const fetchSellerData = async () => {
 
       try {
-
+         const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/login");
+        return;
+      }
         const res = await axios.get(
           "https://isonga-backend.onrender.com/api/dashboard",
-          { withCredentials: true }
-        );
-
-        if (!res.data.success) {
-          navigate("/login");
-          return;
+               {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-
+      );
         const s = res.data.seller;
 
         setSeller({
@@ -162,8 +165,13 @@ const orderLink =
         setTodayViews(res.data.todayViews || 0);
         const unreadRes = await axios.get(
           "https://isonga-backend.onrender.com/api/seller/conversations",
-          { withCredentials: true }
-        );
+          {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
         if (unreadRes.data.success) {
 
