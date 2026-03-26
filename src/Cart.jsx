@@ -17,10 +17,20 @@ function Cart() {
 
   const fetchCart = async () => {
     setLoading(true)
+    const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/buyer_login");
+        return;
+      }
     try {
       const res = await axios.get(
         "https://isonga-backend.onrender.com/api/cart",
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       if (res.data.success) {
@@ -52,8 +62,13 @@ function Cart() {
 
     await axios.delete(
       `https://isonga-backend.onrender.com/api/cart/remove/${productId}`,
-      { withCredentials: true }
-    );
+      {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
   } catch (error) {
     console.log("Remove Item Error:", error);
     fetchCart(); // fallback
@@ -83,8 +98,13 @@ const updateQuantity = async (productId, quantity) => {
     await axios.put(
       "https://isonga-backend.onrender.com/api/cart/update",
       { productId, quantity },
-      { withCredentials: true }
-    );
+      {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
   } catch (error) {
     console.log("Update Quantity Error:", error);
     fetchCart(); // fallback if error
@@ -97,7 +117,12 @@ const updateQuantity = async (productId, quantity) => {
       await axios.post(
         "https://isonga-backend.onrender.com/api/logout",
         {},
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       navigate("/buyer_login");
     } catch (error) {

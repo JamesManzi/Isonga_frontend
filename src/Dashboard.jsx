@@ -202,10 +202,15 @@ const orderLink =
 
     if (!socketRef.current) {
 
-      socketRef.current = io("https://isonga-backend.onrender.com", {
-        withCredentials: true,
-        transports: ["websocket"],
-      });
+      socketRef.current = io("https://isonga-backend.onrender.com", 
+        {
+          withCredentials: true,
+          transports:["websocket"],
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
     }
 

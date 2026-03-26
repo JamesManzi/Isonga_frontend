@@ -64,7 +64,12 @@ function View_Products() {
           axios.post(
             `https://isonga-backend.onrender.com/api/seller/view/${id}`, 
             {}, 
-            { withCredentials: true }
+            {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
           ).catch(err => console.log("Visit not tracked"));
           hasTracked.current = true; 
         }
@@ -123,7 +128,12 @@ function View_Products() {
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/cart/add",
         { productId, quantity: 1 },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setPopupMessage(res.data.success ? `${productName} added to cart!` : "Error");
       setShowCartPopup(true);
