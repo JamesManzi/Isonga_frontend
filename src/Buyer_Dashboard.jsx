@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "./api";
@@ -51,7 +52,14 @@ return `/view_products/${id}`;
 const fetchCartCount=async()=>{
 try{
   const token = localStorage.getItem("token");
-const res = await api.get("/api/cart/count");
+const res=await axios.get(
+"https://isonga-backend.onrender.com/api/cart/count",
+{
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
+        },
+      }
+    );
 if(res.data.success){
 setCartCount(res.data.count);
 }
@@ -64,9 +72,24 @@ useEffect(()=>{
 fetchCartCount();
 },[]);
 
-const handleLogout = () => {
-  localStorage.removeItem("token");
-  navigate("/buyer_login");
+const handleLogout=async()=>{
+try{
+  const token = localStorage.getItem("token");
+const res=await axios.post(
+"https://isonga-backend.onrender.com/api/logout",
+{},
+{
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
+        },
+      }
+    );
+if(res.data.success){
+navigate("/buyer_login");
+}
+}catch(err){
+console.log(err);
+}
 };
 
 const renderStars=(avg=0)=>{
@@ -101,7 +124,14 @@ try{
         navigate("/buyer_login");
         return;
       }
-const res=await api.get("/api/buyer_dashboard");
+const res=await axios.get(
+"https://isonga-backend.onrender.com/api/buyer_dashboard",
+{
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
+        },
+      }
+    );
 const buyer=res.data.buyer;
 setBuyerName(buyer.name);
 setProfile(buyer.profile);
