@@ -42,7 +42,7 @@ function Furniture() {
       try {
         const res = await axios.get(
           "https://isonga-backend.onrender.com/api/sellers/Furniture",
-          { withCredentials: true }
+          { withCredentials: false}
         );
         if (!res.data.success) {
           navigate("/buyer_login");

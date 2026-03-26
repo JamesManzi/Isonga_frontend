@@ -43,7 +43,7 @@ function Dashboard() {
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/logout",
         {},
-        { withCredentials: true }
+        { withCredentials: false }
       );
 
       if (res.data.success) {
@@ -144,7 +144,7 @@ const orderLink =
         const res = await axios.get(
           "https://isonga-backend.onrender.com/api/dashboard",
                {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -166,7 +166,7 @@ const orderLink =
         const unreadRes = await axios.get(
           "https://isonga-backend.onrender.com/api/seller/conversations",
           {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -204,7 +204,7 @@ const orderLink =
 
       socketRef.current = io("https://isonga-backend.onrender.com", 
         {
-          withCredentials: true,
+          withCredentials: false,
           transports:["websocket"],
           headers: {
             Authorization: `Bearer ${token}`,

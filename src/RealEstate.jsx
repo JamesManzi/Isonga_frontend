@@ -25,7 +25,7 @@ function RealEstate() {
   const fetchCartCount = async () => {
     try {
       const res = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
-        withCredentials: true
+        withCredentials: false
       });
       if (res.data.success) setCartCount(res.data.count);
     } catch (err) {
@@ -82,7 +82,7 @@ function RealEstate() {
       try {
         const res = await axios.get(
           "https://isonga-backend.onrender.com/api/sellers/RealEstate",
-          { withCredentials: true }
+          { withCredentials: false }
         );
         if (!res.data.success) {
           navigate("/buyer_login");

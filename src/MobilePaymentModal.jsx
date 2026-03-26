@@ -10,7 +10,7 @@ function MobilePaymentModal({ isOpen, onClose, orderId }) {
       const res = await axios.post(
         `https://isonga-backend.onrender.com/api/order/${orderId}/pay`,
         { network },
-        { withCredentials: true }
+        { withCredentials: false}
       );
 
       if (res.data.success) {

@@ -48,7 +48,7 @@ function Register() {
         setLoading(true);
         try {
             const res = await axios.post("https://isonga-backend.onrender.com/api/register", formData,
-                 { withCredentials: true });
+                 { withCredentials: false });
             setMessage({ text: res.data.message, type: res.data.success ? "success" : "error" });
             if (res.data.success) setTimeout(() => navigate("/login"), 2000);
         } catch (error) {

@@ -50,7 +50,7 @@ function My_Store() {
       try {
         const res = await axios.get("https://isonga-backend.onrender.com/api/my_store", 
           {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -152,7 +152,7 @@ function My_Store() {
     try {
       const res = await axios.delete(
         `https://isonga-backend.onrender.com/api/products/delete/${productToDelete}`,
-        { withCredentials: true }
+        { withCredentials: false }
       );
       if (res.data.success) {
         setProducts((prev) => prev.filter((p) => p._id !== productToDelete));
@@ -189,7 +189,7 @@ function My_Store() {
       const res = await axios.put(
         `https://isonga-backend.onrender.com/api/products/update/${editingProduct._id}`,
         formData,
-        { withCredentials: true, headers: { "Content-Type": "multipart/form-data" } }
+        { withCredentials: false, headers: { "Content-Type": "multipart/form-data" } }
       );
       if (res.data.success) {
         setProducts((prev) =>

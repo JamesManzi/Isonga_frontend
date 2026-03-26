@@ -15,7 +15,7 @@ const getBookings = async () => {
   try {
     const res = await axios.get(
       "https://isonga-backend.onrender.com/api/seller/bookings",
-      { withCredentials: true }
+      { withCredentials: false }
     );
 
     if (res.data.success) {

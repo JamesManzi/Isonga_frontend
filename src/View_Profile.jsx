@@ -19,7 +19,7 @@ function View_Profile() {
 
   // Socket for live rating updates
   useEffect(() => {
-    const socket = io("https://isonga-backend.onrender.com", { withCredentials: true });
+    const socket = io("https://isonga-backend.onrender.com", { withCredentials: false });
     socket.on("sellerRatingUpdated", (data) => {
       if (data.sellerId === id) {
         setAverageRating(data.averageRating);
@@ -40,7 +40,7 @@ function View_Profile() {
       try {
         const res = await axios.get(`https://isonga-backend.onrender.com/api/view_profile/${id}`,
           {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,7 +59,7 @@ function View_Profile() {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(`https://isonga-backend.onrender.com/api/view_profile/${id}`, { withCredentials: true });
+      const res = await axios.get(`https://isonga-backend.onrender.com/api/view_profile/${id}`, { withCredentials: false });
       if (res.data.success) setReviews(res.data.seller.ratings || []);
     } catch (err) { console.log(err); }
   };
@@ -67,7 +67,7 @@ function View_Profile() {
   const submitRating = async () => {
     if (!rating) { setMessage("Select a rating!"); return; }
     try {
-      const res = await axios.post(`https://isonga-backend.onrender.com/api/rate_seller/${id}`, { rating, comment }, { withCredentials: true });
+      const res = await axios.post(`https://isonga-backend.onrender.com/api/rate_seller/${id}`, { rating, comment }, { withCredentials: false });
       if (res.data.success) {
         setMessage("Rating submitted!");
         setRating(0);

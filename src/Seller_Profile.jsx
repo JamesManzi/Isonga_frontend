@@ -46,7 +46,7 @@ function Seller_Profile() {
       }
       const res = await axios.get("https://isonga-backend.onrender.com/api/seller_profile",
         {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -80,7 +80,7 @@ function Seller_Profile() {
   // Socket for live updates
   useEffect(() => {
     if (!seller?._id) return;
-    const socket = io("https://isonga-backend.onrender.com", { withCredentials: true });
+    const socket = io("https://isonga-backend.onrender.com", { withCredentials: false });
     socket.emit("joinSellerRoom", seller._id);
     socket.on("sellerRatingUpdated", (data) => {
       if (data.sellerId === seller._id) {
@@ -117,7 +117,7 @@ function Seller_Profile() {
 
     try {
       const res = await axios.put("https://isonga-backend.onrender.com/api/seller_profile", formData, {
-        withCredentials: true,
+        withCredentials: false,
       });
       if (res.data.success) {
         setSeller(res.data.updatedSeller);
@@ -137,7 +137,7 @@ function Seller_Profile() {
     if(!window.confirm("Delete this photo?")) return;
     try {
       await axios.delete(`https://isonga-backend.onrender.com/api/delete_location_image/${encodeURIComponent(filename)}`, {
-        withCredentials: true,
+        withCredentials: false,
       });
       setSeller(prev => ({ ...prev, files: prev.files.filter(f => f !== filename) }));
     } catch (err) { alert("Delete failed"); }

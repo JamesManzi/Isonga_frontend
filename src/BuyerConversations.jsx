@@ -25,7 +25,7 @@ function BuyerConversations() {
       try {
         const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", 
           {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },

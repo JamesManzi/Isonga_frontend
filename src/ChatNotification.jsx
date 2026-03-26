@@ -17,7 +17,7 @@ function ChatNotification() {
 
         const res = await axios.get(
           "https://isonga-backend.onrender.com/api/buyer_dashboard",
-          { withCredentials: true }
+          { withCredentials: false }
         );
 
         if (!res.data.success) return;
@@ -32,7 +32,7 @@ function ChatNotification() {
 
         const convRes = await axios.get(
           "https://isonga-backend.onrender.com/api/buyer/conversations",
-          { withCredentials: true }
+          { withCredentials: false }
         );
 
         if (convRes.data.success) {

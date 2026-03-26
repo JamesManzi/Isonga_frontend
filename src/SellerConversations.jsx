@@ -6,7 +6,7 @@ import "./SellerConversations.css";
 
 // Initialize socket outside component to prevent multiple connections
 const socket = io("https://isonga-backend.onrender.com", {
-  withCredentials: true,
+  withCredentials: false,
   transports: ["websocket"],
 });
 
@@ -30,7 +30,7 @@ function SellerConversations() {
         // Fetch seller profile to get ID
         const sellerRes = await axios.get("https://isonga-backend.onrender.com/api/dashboard", 
           {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -50,7 +50,7 @@ function SellerConversations() {
 
         // Fetch conversation list from backend
         const convRes = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations", { 
-          withCredentials: true 
+          withCredentials: false 
         });
 
         if (convRes.data.success) {
@@ -100,7 +100,7 @@ function SellerConversations() {
   const fetchLatestConversations = async () => {
     const res = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations",
       {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -123,7 +123,7 @@ function SellerConversations() {
       await axios.put(
         `https://isonga-backend.onrender.com/api/messages/read/${chat.room}`,
         {},
-        { withCredentials: true }
+        { withCredentials: false }
       );
 
       // Navigate to the individual chat page

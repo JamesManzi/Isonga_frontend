@@ -6,7 +6,7 @@ import Picker from "emoji-picker-react";
 import "./Seller_Chat.css";
 
 const socket = io("https://isonga-backend.onrender.com", 
-  { withCredentials: true,
+  { withCredentials: false,
     transports: ["websocket"],
    });
 
@@ -38,7 +38,7 @@ function Seller_Chat() {
       try {
         const sellerRes = await axios.get("https://isonga-backend.onrender.com/api/dashboard",
           {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -48,7 +48,7 @@ function Seller_Chat() {
         const sellerData = sellerRes.data.seller;
         setSeller(sellerData);
 
-        const buyerRes = await axios.get(`https://isonga-backend.onrender.com/api/get_buyer/${buyerId}`, { withCredentials: true });
+        const buyerRes = await axios.get(`https://isonga-backend.onrender.com/api/get_buyer/${buyerId}`, { withCredentials: false });
         if (buyerRes.data.success) setBuyer(buyerRes.data.buyer);
 
         const room = `Buyer_${buyerId}__Seller_${sellerData._id}`;
@@ -59,10 +59,10 @@ function Seller_Chat() {
           receiverModel: "Buyer"
         });
 
-        const msgRes = await axios.get(`https://isonga-backend.onrender.com/api/messages/${room}`, { withCredentials: true });
+        const msgRes = await axios.get(`https://isonga-backend.onrender.com/api/messages/${room}`, { withCredentials: false });
         if (msgRes.data.success) setMessages(msgRes.data.messages);
 
-        await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: true });
+        await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: false });
         socket.emit("messagesRead", { room });
       } catch (err) { console.error(err); }
     };
@@ -77,7 +77,7 @@ function Seller_Chat() {
         setMessages((prev) => [...prev, msg]);
         if (msg.senderModel === "Buyer") {
           try {
-            await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: true });
+            await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: false });
             socket.emit("messagesRead", { room });
           } catch (err) { console.error(err); }
         }
@@ -125,7 +125,7 @@ function Seller_Chat() {
         const formData = new FormData();
         files.forEach(f => formData.append("files", f));
         const res = await axios.post("https://isonga-backend.onrender.com/api/chat/upload", formData, {
-          withCredentials: true,
+          withCredentials: false,
           headers: { "Content-Type": "multipart/form-data" }
         });
         if (res.data.success) uploadedFiles = res.data.files;

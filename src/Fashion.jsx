@@ -19,7 +19,7 @@ function Fashion() {
   const fetchCartCount = async () => {
     try {
       const res = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
-        withCredentials: true
+        withCredentials: false
       });
       if (res.data.success) setCartCount(res.data.count);
     } catch (err) {
@@ -73,7 +73,7 @@ function Fashion() {
       try {
         const res = await axios.get(
           "https://isonga-backend.onrender.com/api/sellers/Fashion",
-          { withCredentials: true }
+          { withCredentials: false }
         );
         if (!res.data.success) {
           navigate("/buyer_login");

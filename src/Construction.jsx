@@ -117,7 +117,7 @@ useEffect(() => {
         // Fetch Construction Sellers
         const res = await axios.get(
           "https://isonga-backend.onrender.com/api/sellers/Construction",
-          { withCredentials: true }
+          { withCredentials: false }
         );
         
         if (!res.data.success) {
@@ -131,7 +131,7 @@ useEffect(() => {
 
         // Fetch Cart Count
         const cartRes = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
-          withCredentials: true
+          withCredentials: false
         });
         if (cartRes.data.success) setCartCount(cartRes.data.count);
 

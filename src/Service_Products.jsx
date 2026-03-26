@@ -45,7 +45,7 @@ function Service_Products() {
       const res = await axios.get(
         `https://isonga-backend.onrender.com/api/Service_Products/${id}`,
         {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -61,7 +61,7 @@ function Service_Products() {
         axios.post(
           `https://isonga-backend.onrender.com/api/seller/view/${res.data.seller._id}`,
           {},
-          { withCredentials: true }
+          { withCredentials: false }
         ).catch(err => console.log("Visit not tracked"));
         hasTracked.current = true;
       }

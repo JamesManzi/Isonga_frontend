@@ -33,7 +33,7 @@ function Checkout() {
     try {
       const res = await axios.get(
         "https://isonga-backend.onrender.com/api/cart",
-        { withCredentials: true }
+        { withCredentials: false }
       );
 
       if (res.data.success) {
@@ -98,7 +98,7 @@ function Checkout() {
         "https://isonga-backend.onrender.com/api/order",
         formData,
         { 
-          withCredentials: true,
+          withCredentials: false,
           headers: { "Content-Type": "multipart/form-data" } 
         }
       );

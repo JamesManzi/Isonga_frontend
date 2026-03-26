@@ -25,7 +25,7 @@ function Vehicles() {
   const fetchCartCount = async () => {
     try {
       const res = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
-        withCredentials: true
+        withCredentials: false
       });
       if (res.data.success) setCartCount(res.data.count);
     } catch (err) {
@@ -78,7 +78,7 @@ function Vehicles() {
     const fetchSellers = async () => {
       try {
         const res = await axios.get("https://isonga-backend.onrender.com/api/sellers/Vehicles", {
-          withCredentials: true,
+          withCredentials: false,
         });
 
         if (!res.data.success) {

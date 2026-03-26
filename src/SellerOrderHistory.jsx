@@ -19,7 +19,7 @@ function SellerOrderHistory() {
   axios
     .get("https://isonga-backend.onrender.com/api/seller/orders",
       {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },

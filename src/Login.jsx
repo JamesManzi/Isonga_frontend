@@ -22,7 +22,7 @@ function Login() {
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/login",
         { email, password },
-        { withCredentials: true }
+        { withCredentials: false }
       );
 
       if (res.data.success) {

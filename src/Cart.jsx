@@ -26,7 +26,7 @@ function Cart() {
       const res = await axios.get(
         "https://isonga-backend.onrender.com/api/cart",
         {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -63,7 +63,7 @@ function Cart() {
     await axios.delete(
       `https://isonga-backend.onrender.com/api/cart/remove/${productId}`,
       {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -99,7 +99,7 @@ const updateQuantity = async (productId, quantity) => {
       "https://isonga-backend.onrender.com/api/cart/update",
       { productId, quantity },
       {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -118,7 +118,7 @@ const updateQuantity = async (productId, quantity) => {
         "https://isonga-backend.onrender.com/api/logout",
         {},
         {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },

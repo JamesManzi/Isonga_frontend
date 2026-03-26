@@ -23,7 +23,7 @@ useEffect(() => {
       const res = await axios.get(
         "https://isonga-backend.onrender.com/api/seller/orders",
         {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -52,7 +52,7 @@ useEffect(() => {
     const res = await axios.put(
       `https://isonga-backend.onrender.com/api/order/status/${orderId}`,
       { status: newStatus },
-      { withCredentials: true }
+      { withCredentials: false }
     );
 
     if (res.data.success) {
