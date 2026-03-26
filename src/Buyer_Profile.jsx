@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faTimes } from "@fortawesome/free-solid-svg-icons"; // Added faTimes
 import "./Buyer_Profile.css";
@@ -30,20 +30,7 @@ useEffect(()=>{
 const fetchBuyer = async()=>{
 setLoading(true)
 try{
-const token = localStorage.getItem("token");
-        if (!token) {
-        navigate("/buyer_login");
-        return;
-      }
-const res = await axios.get(
-"https://isonga-backend.onrender.com/api/buyer_profile",
-{
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+const res = await api.get("/api/buyer_profile");
 
 if(res.data.success){
 
@@ -111,14 +98,7 @@ if(profile){
 formData.append("profile",profile);
 }
 
-const res = await axios.put(
-"https://isonga-backend.onrender.com/api/update_buyer_profile",
-formData,
-{
-withCredentials:false,
-headers:{ "Content-Type":"multipart/form-data" }
-}
-);
+const res = await api.put("/api/update_buyer_profile", formData);
 
 if(res.data.success){
 setMessage("Profile updated successfully");
