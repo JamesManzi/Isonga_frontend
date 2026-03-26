@@ -199,7 +199,7 @@ const orderLink =
   useEffect(() => {
 
     if (!seller?._id) return;
-
+    const token = localStorage.getItem("token"); 
     if (!socketRef.current) {
 
       socketRef.current = io("https://isonga-backend.onrender.com", 
@@ -422,10 +422,10 @@ if (!seller) {
         <div className="orders">
           <FontAwesomeIcon icon={faBox} />
           <h2>{orderTitle}</h2>
-          <p className="order_count_main">
-            <p>Total: {seller.totalOrders}</p>
-<p>New: {newOrdersCount}</p>
-          </p>
+          <div className="order_count_main">
+  <p>Total: {seller.totalOrders}</p>
+  <p>New: {newOrdersCount}</p>
+</div>
         </div>
 
       </div>

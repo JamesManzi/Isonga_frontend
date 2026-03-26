@@ -42,12 +42,11 @@ function View_Products() {
         const res = await axios.get(
           `https://isonga-backend.onrender.com/api/view_products/${id}`,
           {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
+        },
+      }
+    );
 
         const fetchedProducts = res.data.products;
         setProducts(fetchedProducts);
@@ -64,12 +63,11 @@ function View_Products() {
           axios.post(
             `https://isonga-backend.onrender.com/api/seller/view/${id}`, 
             {}, 
-            {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+           {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
+        },
+      }
           ).catch(err => console.log("Visit not tracked"));
           hasTracked.current = true; 
         }
@@ -129,12 +127,11 @@ function View_Products() {
         "https://isonga-backend.onrender.com/api/cart/add",
         { productId, quantity: 1 },
         {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
+        },
+      }
+    );
       setPopupMessage(res.data.success ? `${productName} added to cart!` : "Error");
       setShowCartPopup(true);
       setTimeout(() => setShowCartPopup(false), 2000);

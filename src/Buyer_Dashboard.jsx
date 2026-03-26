@@ -52,8 +52,12 @@ const fetchCartCount=async()=>{
 try{
 const res=await axios.get(
 "https://isonga-backend.onrender.com/api/cart/count",
-{withCredentials:true}
-);
+{
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
+        },
+      }
+    );
 if(res.data.success){
 setCartCount(res.data.count);
 }
@@ -71,8 +75,12 @@ try{
 const res=await axios.post(
 "https://isonga-backend.onrender.com/api/logout",
 {},
-{withCredentials:true}
-);
+{
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
+        },
+      }
+    );
 if(res.data.success){
 navigate("/buyer_login");
 }
@@ -116,12 +124,11 @@ try{
 const res=await axios.get(
 "https://isonga-backend.onrender.com/api/buyer_dashboard",
 {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
+        },
+      }
+    );
 const buyer=res.data.buyer;
 setBuyerName(buyer.name);
 setProfile(buyer.profile);
