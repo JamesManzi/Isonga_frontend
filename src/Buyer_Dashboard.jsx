@@ -49,47 +49,35 @@ return `/Asset_products/${id}`;
 return `/view_products/${id}`;
 };
 
-const fetchCartCount=async()=>{
-try{
-  const token = localStorage.getItem("token");
-const res=await axios.get(
-"https://isonga-backend.onrender.com/api/cart/count",
-{
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
-        },
-      }
-    );
-if(res.data.success){
-setCartCount(res.data.count);
-}
-}catch(err){
-console.log(err);
-}
+const fetchCartCount = async () => {
+  try {
+    // No need for 'axios' or manual headers anymore!
+    const res = await api.get("/api/cart/count"); 
+    if (res.data.success) {
+      setCartCount(res.data.count);
+    }
+  } catch (err) {
+    console.error("Cart count error:", err);
+  }
 };
 
 useEffect(()=>{
 fetchCartCount();
 },[]);
 
-const handleLogout=async()=>{
-try{
-  const token = localStorage.getItem("token");
-const res=await axios.post(
-"https://isonga-backend.onrender.com/api/logout",
-{},
-{
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
-        },
-      }
-    );
-if(res.data.success){
-navigate("/buyer_login");
-}
-}catch(err){
-console.log(err);
-}
+const handleLogout = async () => {
+  try {
+    const res = await api.post("/api/logout"); // Simplified
+    if (res.data.success) {
+      localStorage.removeItem("token");
+      navigate("/buyer_login");
+    }
+  } catch (err) {
+    console.error("Logout error:", err);
+    // Even if the server call fails, we should clear the token locally
+    localStorage.removeItem("token");
+    navigate("/buyer_login");
+  }
 };
 
 const renderStars=(avg=0)=>{
@@ -124,14 +112,7 @@ try{
         navigate("/buyer_login");
         return;
       }
-const res=await axios.get(
-"https://isonga-backend.onrender.com/api/buyer_dashboard",
-{
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ SEND TOKEN
-        },
-      }
-    );
+const res = await api.get("/api/buyer_dashboard");
 const buyer=res.data.buyer;
 setBuyerName(buyer.name);
 setProfile(buyer.profile);
