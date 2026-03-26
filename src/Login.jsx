@@ -26,6 +26,10 @@ function Login() {
       );
 
       if (res.data.success) {
+        localStorage.setItem("token", res.data.token);
+  
+  // Optional: Save user info if you need it for the Navbar
+  localStorage.setItem("user", JSON.stringify(res.data.seller));
         setMessage({ text: "Success! Welcome back.", type: "success" });
         setTimeout(() => navigate("/dashboard"), 1500);
       } else {
