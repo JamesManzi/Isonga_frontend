@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "./api"; // ✅ Fixed: Using your api instance
 import "./Cart.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,143 +16,106 @@ function Cart() {
   }, []);
 
   const fetchCart = async () => {
-    setLoading(true)
-    const token = localStorage.getItem("token");
-        if (!token) {
-        navigate("/buyer_login");
-        return;
-      }
+    setLoading(true);
     try {
-      const res = await axios.get(
-        "https://isonga-backend.onrender.com/api/cart",
-        {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // ✅ Fixed: api handles the token and base URL automatically
+      const res = await api.get("/api/cart");
 
       if (res.data.success) {
         setCart(res.data.cart);
-        // Using optional chaining to prevent error if buyer data is missing
         setProfile(res.data.buyer?.profile || "");
       }
     } catch (error) {
       console.log("Fetch Cart Error:", error);
+      if (error.response?.status === 401) navigate("/buyer_login");
     }
     setLoading(false);
   };
 
   const removeItem = async (productId) => {
-  try {
-    // Instant UI removal
-    setCart((prev) => {
-      const updatedItems = prev.items.filter(
-        (item) => item.product?._id !== productId
-      );
+    try {
+      // Instant UI removal
+      setCart((prev) => {
+        const updatedItems = prev.items.filter(
+          (item) => (item.product?._id || item._id) !== productId
+        );
 
-      const newTotal = updatedItems.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
+        const newTotal = updatedItems.reduce(
+          (acc, item) => acc + (item.price || 0) * item.quantity,
+          0
+        );
 
-      return { ...prev, items: updatedItems, totalPrice: newTotal };
-    });
+        return { ...prev, items: updatedItems, totalPrice: newTotal };
+      });
 
-    await axios.delete(
-      `https://isonga-backend.onrender.com/api/cart/remove/${productId}`,
-      {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  } catch (error) {
-    console.log("Remove Item Error:", error);
-    fetchCart(); // fallback
-  }
-};
+      // ✅ Fixed: Using api.delete
+      await api.delete(`/api/cart/remove/${productId}`);
+    } catch (error) {
+      console.log("Remove Item Error:", error);
+      fetchCart(); // fallback
+    }
+  };
 
-const updateQuantity = async (productId, quantity) => {
-  if (quantity < 1) return;
+  const updateQuantity = async (productId, quantity) => {
+    if (quantity < 1) return;
 
-  try {
-    // Optimistic UI update (instant)
-    setCart((prev) => ({
-      ...prev,
-      items: prev.items.map((item) =>
-        item.product?._id === productId
-          ? { ...item, quantity }
-          : item
-      ),
-      totalPrice: prev.items.reduce((acc, item) => {
-        if (item.product?._id === productId) {
-          return acc + item.price * quantity;
-        }
-        return acc + item.price * item.quantity;
-      }, 0),
-    }));
+    try {
+      // Optimistic UI update (instant)
+      setCart((prev) => ({
+        ...prev,
+        items: prev.items.map((item) =>
+          item.product?._id === productId
+            ? { ...item, quantity }
+            : item
+        ),
+        totalPrice: prev.items.reduce((acc, item) => {
+          if (item.product?._id === productId) {
+            return acc + item.price * quantity;
+          }
+          return acc + item.price * item.quantity;
+        }, 0),
+      }));
 
-    await axios.put(
-      "https://isonga-backend.onrender.com/api/cart/update",
-      { productId, quantity },
-      {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  } catch (error) {
-    console.log("Update Quantity Error:", error);
-    fetchCart(); // fallback if error
-  }
-};
+      // ✅ Fixed: Using api.put
+      await api.put("/api/cart/update", { productId, quantity });
+    } catch (error) {
+      console.log("Update Quantity Error:", error);
+      fetchCart(); // fallback if error
+    }
+  };
 
   const logout = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      await axios.post(
-        "https://isonga-backend.onrender.com/api/logout",
-        {},
-        {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // ✅ Fixed: Using api.post
+      await api.post("/api/logout");
+      localStorage.removeItem("token"); 
       navigate("/buyer_login");
     } catch (error) {
       console.log("Logout Error:", error);
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
   const getFileUrl = (path) => {
-    if (!path) return "/placeholder.png"; 
+    if (!path) return "/placeholder.png";
     return path.startsWith("http")
       ? path
       : `https://isonga-backend.onrender.com/uploads/${path}`;
   };
 
   if (loading) {
-  return (
-    <div className="cart-loading-modern">
-      <div className="cart-loader-card">
-
-        <div className="cart-spinner"></div>
-
-        <h2>ISONGA MARKET</h2>
-        <p>Preparing your cart...</p>
-
+    return (
+      <div className="cart-loading-modern">
+        <div className="cart-loader-card">
+          <div className="cart-spinner"></div>
+          <h2>ISONGA MARKET</h2>
+          <p>Preparing your cart...</p>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   // Render empty state if no cart exists or items array is empty
   if (!cart || cart.items.length === 0) {
@@ -200,23 +163,22 @@ const updateQuantity = async (productId, quantity) => {
         <div className="cart-products">
           {cart.items.map((item) => {
             // SAFETY CHECK: If the product was deleted from the database
-            // Find the error-item block inside your .map()
-if (!item.product) {
-  return (
-    <div className="cart-item error-item" key={item._id}>
-      <div className="cart-info">
-        <h3 style={{ color: "#ef4444" }}>Item Unavailable</h3>
-        <p>This product was removed by the seller.</p>
-        <button
-          className="remove"
-          onClick={() =>removeItem(item._id)}
-        >
-          Remove
-        </button>
-      </div>
-    </div>
-  );
-}
+            if (!item.product) {
+              return (
+                <div className="cart-item error-item" key={item._id}>
+                  <div className="cart-info">
+                    <h3 style={{ color: "#ef4444" }}>Item Unavailable</h3>
+                    <p>This product was removed by the seller.</p>
+                    <button
+                      className="remove"
+                      onClick={() => removeItem(item._id)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              );
+            }
 
             // NORMAL RENDERING
             return (
