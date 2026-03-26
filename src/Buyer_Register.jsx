@@ -48,7 +48,7 @@ function Buyer_Register() {
         setLoading(true);
         try {
             const res = await axios.post("https://isonga-backend.onrender.com/api/buyer_register", formData, {
-                withCredentials: true
+                withCredentials: false
             });
 
             setMessage({

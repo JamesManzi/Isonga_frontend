@@ -74,7 +74,7 @@ function Booking() {
         "https://isonga-backend.onrender.com/api/bookService",
         formData,
         {
-          withCredentials: true,
+          withCredentials: false,
           headers: { "Content-Type": "multipart/form-data" }
         }
       );

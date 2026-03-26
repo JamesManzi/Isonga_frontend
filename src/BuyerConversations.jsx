@@ -4,7 +4,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import "./BuyerConversations.css";
 
-const socket = io("https://isonga-backend.onrender.com", { withCredentials: true,
+const socket = io("https://isonga-backend.onrender.com", { withCredentials: false,
   transports: ["websocket"],
  });
 
@@ -35,7 +35,7 @@ function BuyerConversations() {
 
         socket.emit("userOnline", { userId: buyerRes.data.buyer._id, userModel: "Buyer" });
 
-        const convRes = await axios.get("https://isonga-backend.onrender.com/api/buyer/conversations", { withCredentials: true });
+        const convRes = await axios.get("https://isonga-backend.onrender.com/api/buyer/conversations", { withCredentials: false});
         if (convRes.data.success) setConversations(convRes.data.conversations);
       } catch (err) {
         console.error(err);
@@ -79,7 +79,7 @@ function BuyerConversations() {
 
   const openChat = async (chat) => {
     try {
-      await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${chat.room}`, {}, { withCredentials: true });
+      await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${chat.room}`, {}, { withCredentials: false });
       socket.emit("messagesRead", { room: chat.room });
 
       setConversations((prev) => prev.map((c) => (c.room === chat.room ? { ...c, unreadCount: 0 } : c)));

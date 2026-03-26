@@ -38,7 +38,7 @@ const token = localStorage.getItem("token");
 const res = await axios.get(
 "https://isonga-backend.onrender.com/api/buyer_profile",
 {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -115,7 +115,7 @@ const res = await axios.put(
 "https://isonga-backend.onrender.com/api/update_buyer_profile",
 formData,
 {
-withCredentials:true,
+withCredentials:false,
 headers:{ "Content-Type":"multipart/form-data" }
 }
 );

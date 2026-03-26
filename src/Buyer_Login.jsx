@@ -22,7 +22,7 @@ function Buyer_Login() {
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/buyer_login",
         { email, password },
-        { withCredentials: true }
+        { withCredentials: false }
       );
 
       if (res.data.success) {

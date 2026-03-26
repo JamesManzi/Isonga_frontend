@@ -128,7 +128,7 @@ function Add_Product() {
         "https://isonga-backend.onrender.com/api/add_product",
         formData,
         {
-          withCredentials: true,
+          withCredentials: false,
           headers: { "Content-Type": "multipart/form-data" }
         }
       );
