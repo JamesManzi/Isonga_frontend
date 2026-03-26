@@ -30,8 +30,20 @@ function Seller_Chat() {
   // 1. LOAD DATA
   useEffect(() => {
     const loadChat = async () => {
+       const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/login");
+        return;
+      }
       try {
-        const sellerRes = await axios.get("https://isonga-backend.onrender.com/api/dashboard", { withCredentials: true });
+        const sellerRes = await axios.get("https://isonga-backend.onrender.com/api/dashboard",
+          {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
         if (!sellerRes.data.success) return;
         const sellerData = sellerRes.data.seller;
         setSeller(sellerData);

@@ -42,10 +42,20 @@ function My_Store() {
   useEffect(() => {
     const fetchProducts = async () => {
       setPageLoading(true);
+       const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/login");
+        return;
+      }
       try {
-        const res = await axios.get("https://isonga-backend.onrender.com/api/my_store", {
+        const res = await axios.get("https://isonga-backend.onrender.com/api/my_store", 
+          {
           withCredentials: true,
-        });
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
         if (res.data.success) {
           setProducts(res.data.products);
           setFilteredProducts(res.data.products);

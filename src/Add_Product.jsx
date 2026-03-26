@@ -118,6 +118,11 @@ function Add_Product() {
     });
 
     setLoading(true);
+     const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/login");
+        return;
+      }
     try {
       const res = await axios.post(
         "https://isonga-backend.onrender.com/api/add_product",

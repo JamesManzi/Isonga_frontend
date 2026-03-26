@@ -12,14 +12,23 @@ const [actionLoading, setActionLoading] = useState(null); // for buttons
 
 useEffect(() => {
   const getOrders = async () => {
+     const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/login");
+        return;
+      }
     try {
       setLoading(true);
 
       const res = await axios.get(
         "https://isonga-backend.onrender.com/api/seller/orders",
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-
       if (res.data.success) {
         const incoming = res.data.orders.filter(
           (order) => order.status === "Pending"

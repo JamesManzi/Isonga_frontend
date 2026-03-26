@@ -11,9 +11,21 @@ function SellerOrderHistory() {
    
   const getOrders = () => {
   setLoading(true);
-
+ const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/login");
+        return;
+      }
   axios
-    .get("https://isonga-backend.onrender.com/api/seller/orders", { withCredentials: true })
+    .get("https://isonga-backend.onrender.com/api/seller/orders",
+      {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+  
     .then((res) => {
       if (res.data.success) {
         const processed = res.data.orders.filter(
