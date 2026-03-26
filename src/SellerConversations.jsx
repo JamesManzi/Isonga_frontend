@@ -21,11 +21,21 @@ function SellerConversations() {
   // 1. Fetch Seller Data and Conversations
   useEffect(() => {
     const fetchInitialData = async () => {
+      const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/login");
+        return;
+      }
       try {
         // Fetch seller profile to get ID
-        const sellerRes = await axios.get("https://isonga-backend.onrender.com/api/dashboard", {
+        const sellerRes = await axios.get("https://isonga-backend.onrender.com/api/dashboard", 
+          {
           withCredentials: true,
-        });
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
 
         if (!sellerRes.data.success) {
           setLoading(false);

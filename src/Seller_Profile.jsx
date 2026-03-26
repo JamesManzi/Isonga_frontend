@@ -39,9 +39,19 @@ function Seller_Profile() {
   const fetchSeller = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("https://isonga-backend.onrender.com/api/seller_profile", {
-        withCredentials: true,
-      });
+      const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/login");
+        return;
+      }
+      const res = await axios.get("https://isonga-backend.onrender.com/api/seller_profile",
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       if (res.data.success) {
         const data = res.data.seller;
         setSeller(data);
