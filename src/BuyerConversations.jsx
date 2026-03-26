@@ -17,9 +17,20 @@ function BuyerConversations() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/buyer_login");
+        return;
+      }
       try {
-        const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", { withCredentials: true });
-        if (!buyerRes.data.success) return navigate("/buyer_login");
+        const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", 
+          {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
         setBuyerId(buyerRes.data.buyer._id);
 
         socket.emit("userOnline", { userId: buyerRes.data.buyer._id, userModel: "Buyer" });

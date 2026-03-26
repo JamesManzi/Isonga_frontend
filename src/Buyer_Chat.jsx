@@ -33,10 +33,21 @@ function Buyer_Chat() {
   // 1. INITIAL LOAD & JOIN ROOM
   useEffect(() => {
     const loadChat = async () => {
+      const token = localStorage.getItem("token");
+        if (!token) {
+        navigate("/buyer_login");
+        return;
+      }
       try {
         // Fetch Buyer Data
-        const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", { withCredentials: true });
-        if (!buyerRes.data.success) return;
+        const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", 
+           {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
         const buyerData = buyerRes.data.buyer;
         setBuyer(buyerData);
 
