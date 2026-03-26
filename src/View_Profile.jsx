@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faStar } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import api from "./api";
 import { io } from "socket.io-client";
 
 function View_Profile() {
@@ -16,7 +16,7 @@ function View_Profile() {
   const [averageRating, setAverageRating] = useState(0);
   const [numReviews, setNumReviews] = useState(0);
   const [message, setMessage] = useState("");
-
+  const [loading,setLoading]=useState(false)
   // Socket for live rating updates
   useEffect(() => {
     const socket = io("https://isonga-backend.onrender.com", { withCredentials: false });
@@ -38,14 +38,7 @@ function View_Profile() {
         return;
       }
       try {
-        const res = await axios.get(`https://isonga-backend.onrender.com/api/view_profile/${id}`,
-          {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res=await api.get("/api/view_profile");
         if (res.data.success) {
           setSeller(res.data.seller);
           setReviews(res.data.seller.ratings || []);
@@ -59,15 +52,16 @@ function View_Profile() {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(`https://isonga-backend.onrender.com/api/view_profile/${id}`, { withCredentials: false });
+     const res = await api.get(`/api/view_profile/${id}`);
       if (res.data.success) setReviews(res.data.seller.ratings || []);
     } catch (err) { console.log(err); }
   };
 
   const submitRating = async () => {
     if (!rating) { setMessage("Select a rating!"); return; }
+    setLoading(true)
     try {
-      const res = await axios.post(`https://isonga-backend.onrender.com/api/rate_seller/${id}`, { rating, comment }, { withCredentials: false });
+      const res = await api.post(`/api/rate_seller/${id}`, { rating, comment });
       if (res.data.success) {
         setMessage("Rating submitted!");
         setRating(0);
@@ -76,8 +70,11 @@ function View_Profile() {
         setNumReviews(res.data.numReviews);
         fetchReviews();
       }
-    } catch (err) { console.log(err); setMessage("Error submitting rating"); }
-  };
+    } catch (err) { console.log(err); setMessage("Error submitting rating"); 
+  } finally{
+    setLoading(false)
+  }
+};
 
   const renderStars = (avg) => {
     const stars = [];
@@ -162,7 +159,9 @@ if (!seller) {
             <FontAwesomeIcon key={star} icon={faStar} color={star <= rating ? "gold" : "gray"} onClick={() => setRating(star)} style={{ cursor: "pointer" }} />
           ))}
           <textarea placeholder="Comment" value={comment} onChange={(e) => setComment(e.target.value)} />
-          <button onClick={submitRating}>Submit Rating</button>
+          <button onClick={submitRating} disabled={loading}>
+  {loading ? "Submitting..." : "Submit Rating"}
+</button>
           {message && <p>{message}</p>}
         </div>
 
