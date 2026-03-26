@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "./api";
 import { useNavigate } from "react-router-dom";
 import "./Checkout.css";
 
@@ -31,11 +31,7 @@ function Checkout() {
 
   const fetchCart = async () => {
     try {
-      const res = await axios.get(
-        "https://isonga-backend.onrender.com/api/cart",
-        { withCredentials: false }
-      );
-
+      const res = await api.get("/api/cart");
       if (res.data.success) {
         setCart(res.data.cart);
       }
@@ -94,14 +90,9 @@ function Checkout() {
         formData.append("paymentProof", paymentImage);
       }
 
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/order",
-        formData,
-        { 
-          withCredentials: false,
-          headers: { "Content-Type": "multipart/form-data" } 
-        }
-      );
+      const res = await api.post("/api/order", formData, { 
+      headers: { "Content-Type": "multipart/form-data" } 
+    });
 
       if (res.data.success) {
         alert("Order placed successfully");
