@@ -98,7 +98,14 @@ function SellerConversations() {
   }, [sellerId]);
 
   const fetchLatestConversations = async () => {
-    const res = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations", { withCredentials: true });
+    const res = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations",
+      {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
     if (res.data.success) setConversations(res.data.conversations);
   };
 
