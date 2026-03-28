@@ -40,12 +40,7 @@ function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/logout",
-        {},
-        { withCredentials: false }
-      );
-
+      const res=await api.post("/api/logout");
       if (res.data.success) {
         if (socketRef.current) socketRef.current.disconnect();
         navigate("/login");
@@ -141,15 +136,7 @@ const orderLink =
         navigate("/login");
         return;
       }
-        const res = await axios.get(
-          "https://isonga-backend.onrender.com/api/dashboard",
-               {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res=await api.get("/api/dashboard");
         const s = res.data.seller;
 
         setSeller({
@@ -163,16 +150,8 @@ const orderLink =
         setTotalViews(res.data.totalViews || 0);
         setNewOrdersCount(s.newOrders || 0);
         setTodayViews(res.data.todayViews || 0);
-        const unreadRes = await axios.get(
-          "https://isonga-backend.onrender.com/api/seller/conversations",
-          {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+        
+      const unreadRes = await api.get("/api/seller/conversations");
         if (unreadRes.data.success) {
 
           const count = unreadRes.data.conversations.reduce(
