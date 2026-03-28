@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import api from "./api";
 import "./My_Store.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   faArrowRight,
   faChevronLeft,
@@ -33,7 +34,7 @@ function My_Store() {
   const [pageLoading, setPageLoading] = useState(true);
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
   const [productToDelete, setProductToDelete] = useState(null); 
-
+  const navigate = useNavigate();
   // Multi-upload states for the modern form
   const [selectedFiles, setSelectedFiles] = useState([]); 
   const [previewFiles, setPreviewFiles] = useState([]);
@@ -47,15 +48,8 @@ function My_Store() {
         navigate("/login");
         return;
       }
-      try {
-        const res = await axios.get("https://isonga-backend.onrender.com/api/my_store", 
-          {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      try{
+      const res = await api.get("/api/my_store");
         if (res.data.success) {
           setProducts(res.data.products);
           setFilteredProducts(res.data.products);
@@ -75,10 +69,9 @@ function My_Store() {
       } finally {
         setPageLoading(false);
       }
-    };
+    }
     fetchProducts();
   }, []);
-
   // 2. Search Filter Logic
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -150,10 +143,7 @@ function My_Store() {
     if (!productToDelete) return;
     setLoading(true);
     try {
-      const res = await axios.delete(
-        `https://isonga-backend.onrender.com/api/products/delete/${productToDelete}`,
-        { withCredentials: false }
-      );
+      const res = await api.delete('/api/products/delete/${productToDelete}');
       if (res.data.success) {
         setProducts((prev) => prev.filter((p) => p._id !== productToDelete));
         setProductToDelete(null); 
@@ -186,11 +176,7 @@ function My_Store() {
     });
 
     try {
-      const res = await axios.put(
-        `https://isonga-backend.onrender.com/api/products/update/${editingProduct._id}`,
-        formData,
-        { withCredentials: false, headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const res = await api.put('/api/products/update/${editingProduct._id}',formData,);
       if (res.data.success) {
         setProducts((prev) =>
           prev.map((p) => (p._id === editingProduct._id ? res.data.UpdatedProduct : p))
