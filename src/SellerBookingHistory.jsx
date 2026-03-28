@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "./api";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes, faHistory } from "@fortawesome/free-solid-svg-icons";
@@ -13,11 +13,7 @@ function SellerBookingHistory() {
 const getBookings = async () => {
   setLoading(true); // spinner shows immediately
   try {
-    const res = await axios.get(
-      "https://isonga-backend.onrender.com/api/seller/bookings",
-      { withCredentials: false }
-    );
-
+     const res = await api.get("/api/seller/bookings");
     if (res.data.success) {
       const history = res.data.bookings.filter((b) => b.status !== "Pending");
       setBookings(history);

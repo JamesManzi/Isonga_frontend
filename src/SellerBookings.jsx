@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "./api";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -13,10 +13,7 @@ function SellerBookings() {
 const getBookings = async () => {
   setLoading(true);
   try {
-    const res = await axios.get("https://isonga-backend.onrender.com/api/seller/bookings", {
-      withCredentials: false,
-    });
-
+    const res = await api.get("/api/seller/bookings");
     if (res.data.success) {
       // Show everything that isn't Accepted or Cancelled.
       // This ensures "Pending" and "Read" items stay visible!
@@ -41,12 +38,8 @@ const getBookings = async () => {
   try {
     setActionLoading(bookingId); // Start loading for this specific ID
 
-    const res = await axios.put(
-      `https://isonga-backend.onrender.com/api/bookings/${bookingId}`,
-      { status: newStatus },
-      { withCredentials: false }
-    );
-
+    const res = await api.put(`/api/bookings/${bookingId}`,
+      { status: newStatus },)
     if (res.data.success) {
       setBookings((prev) => prev.filter((b) => b._id !== bookingId));
     }
