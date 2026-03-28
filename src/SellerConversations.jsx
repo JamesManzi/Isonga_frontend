@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "./api";
 import { io } from "socket.io-client";
 import "./SellerConversations.css";
 
@@ -28,15 +28,7 @@ function SellerConversations() {
       }
       try {
         // Fetch seller profile to get ID
-        const sellerRes = await axios.get("https://isonga-backend.onrender.com/api/dashboard", 
-          {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-
+      const sellerRes = await api.get("/api/dashboard");
         if (!sellerRes.data.success) {
           setLoading(false);
           return navigate("/login");
@@ -49,10 +41,7 @@ function SellerConversations() {
         socket.emit("userOnline", { userId: id, userModel: "Seller" });
 
         // Fetch conversation list from backend
-        const convRes = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations", { 
-          withCredentials: false 
-        });
-
+       const convRes = await api.get("/api/seller/conversations");
         if (convRes.data.success) {
           setConversations(convRes.data.conversations || []);
         }
@@ -98,14 +87,7 @@ function SellerConversations() {
   }, [sellerId]);
 
   const fetchLatestConversations = async () => {
-    const res = await axios.get("https://isonga-backend.onrender.com/api/seller/conversations",
-      {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      const res = await api.get("/api/seller/conversations");
     if (res.data.success) setConversations(res.data.conversations);
   };
 
@@ -120,12 +102,7 @@ function SellerConversations() {
   const openChat = async (chat) => {
     try {
       // Mark messages in this room as read
-      await axios.put(
-        `https://isonga-backend.onrender.com/api/messages/read/${chat.room}`,
-        {},
-        { withCredentials: false }
-      );
-
+    await api.put(`/api/messages/read/${chat.room}`);
       // Navigate to the individual chat page
       // Note: We use buyerId here as the param for the Chat window
       navigate(`/seller_chat/${chat.buyerId}`);

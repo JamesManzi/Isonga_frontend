@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "./api";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -19,16 +19,7 @@ useEffect(() => {
       }
     try {
       setLoading(true);
-
-      const res = await axios.get(
-        "https://isonga-backend.onrender.com/api/seller/orders",
-        {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await api.get("/api/seller/orders");
       if (res.data.success) {
         const incoming = res.data.orders.filter(
           (order) => order.status === "Pending"
@@ -48,13 +39,7 @@ useEffect(() => {
   const updateStatus = async (orderId, newStatus) => {
   try {
     setActionLoading(orderId);
-
-    const res = await axios.put(
-      `https://isonga-backend.onrender.com/api/order/status/${orderId}`,
-      { status: newStatus },
-      { withCredentials: false }
-    );
-
+   const res = await api.put(`/api/order/status/${orderId}`);
     if (res.data.success) {
       setOrders((prevOrders) =>
         prevOrders.filter((order) => order._id !== orderId)

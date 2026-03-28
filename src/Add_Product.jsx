@@ -316,7 +316,7 @@ function Add_Product() {
               Cancel
             </button>
             <button type="submit" className="bt2" disabled={loading}>
-              {loading ? "Add Item ..." : "Add Item"}
+              {loading ? "Adding Item ..." : "Add Item"}
             </button>
           </div>
 

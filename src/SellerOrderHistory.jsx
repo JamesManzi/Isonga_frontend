@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "./api";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes, faHistory } from "@fortawesome/free-solid-svg-icons";
@@ -16,16 +16,8 @@ function SellerOrderHistory() {
         navigate("/login");
         return;
       }
-  axios
-    .get("https://isonga-backend.onrender.com/api/seller/orders",
-      {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-  
+
+   api.get("/api/seller/orders")
     .then((res) => {
       if (res.data.success) {
         const processed = res.data.orders.filter(
