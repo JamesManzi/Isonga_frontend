@@ -39,7 +39,10 @@ useEffect(() => {
   const updateStatus = async (orderId, newStatus) => {
   try {
     setActionLoading(orderId);
-   const res = await api.put(`/api/order/status/${orderId}`);
+   const res = await api.put(
+  `/api/order/status/${orderId}`,
+  { status: newStatus }
+);
     if (res.data.success) {
       setOrders((prevOrders) =>
         prevOrders.filter((order) => order._id !== orderId)
