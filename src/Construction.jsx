@@ -115,11 +115,7 @@ useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch Construction Sellers
-        const res = await axios.get(
-          "https://isonga-backend.onrender.com/api/sellers/Construction",
-          { withCredentials: false }
-        );
-        
+        const res = await api.get("/api/sellers/Construction");
         if (!res.data.success) {
           navigate("/buyer_login");
           return;
@@ -130,9 +126,7 @@ useEffect(() => {
         setProfile(res.data.buyer.profile);
 
         // Fetch Cart Count
-        const cartRes = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
-          withCredentials: false
-        });
+        const cartRes = await api.get("/api/cart/count");
         if (cartRes.data.success) setCartCount(cartRes.data.count);
 
       } catch (error) {

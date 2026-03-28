@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import "./Login.css";
@@ -19,12 +19,9 @@ function Login() {
     setMessage(null);
 
     try {
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/login",
-        { email, password },
-        { withCredentials: false }
+      const res = await api.post("/api/login",
+        { email, password }
       );
-
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
   

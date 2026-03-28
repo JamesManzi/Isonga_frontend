@@ -18,9 +18,7 @@ function Electronics() {
 
   const fetchCartCount = async () => {
     try {
-      const res = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
-        withCredentials: false
-      });
+      const res = await api.get("/api/cart/count");
       if (res.data.success) setCartCount(res.data.count);
     } catch (err) {
       console.error("Error fetching cart count:", err);
@@ -71,10 +69,7 @@ function Electronics() {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const res = await axios.get(
-          "https://isonga-backend.onrender.com/api/sellers/Electronics",
-          { withCredentials: false }
-        );
+        const res = await api.get("/api/sellers/Electronics");
         if (!res.data.success) {
           navigate("/buyer_login");
           return;

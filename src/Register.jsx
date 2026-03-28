@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
-import axios from "axios";
+import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt, faStore, faPhone, faEnvelope, faLock, faMapPin, faTrash, faChevronRight, faImages, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import "./Register.css";
@@ -47,8 +47,7 @@ function Register() {
 
         setLoading(true);
         try {
-            const res = await axios.post("https://isonga-backend.onrender.com/api/register", formData,
-                 { withCredentials: false });
+             const res = await api.post("/api/register",formData)    
             setMessage({ text: res.data.message, type: res.data.success ? "success" : "error" });
             if (res.data.success) setTimeout(() => navigate("/login"), 2000);
         } catch (error) {

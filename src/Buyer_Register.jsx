@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
-import axios from "axios";
+import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt, faUser, faEnvelope, faLock, faTrash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Register.css";
@@ -47,10 +47,7 @@ function Buyer_Register() {
 
         setLoading(true);
         try {
-            const res = await axios.post("https://isonga-backend.onrender.com/api/buyer_register", formData, {
-                withCredentials: false
-            });
-
+           const res = await api.post("/api/buyer_register",formData)
             setMessage({
                 text: res.data.message,
                 type: res.data.success ? "success" : "error",

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "./api";
 import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
@@ -24,9 +24,7 @@ function Vehicles() {
   // --- Cart Count Logic ---
   const fetchCartCount = async () => {
     try {
-      const res = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
-        withCredentials: false
-      });
+      const res = await api.get("/api/cart/count");
       if (res.data.success) setCartCount(res.data.count);
     } catch (err) {
       console.error("Error fetching cart count:", err);
@@ -77,10 +75,7 @@ function Vehicles() {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const res = await axios.get("https://isonga-backend.onrender.com/api/sellers/Vehicles", {
-          withCredentials: false,
-        });
-
+        const res = await api.get("/api/sellers/Vehicles");
         if (!res.data.success) {
           navigate("/buyer_login");
           return;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import "./Home.css";
@@ -55,7 +55,7 @@ function Home() {
     const fetchSellers = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("https://isonga-backend.onrender.com/api/home_sellers");
+        const res = await api.get("/api/home_sellers");
         if (res.data.success) {
           const sellersWithRatings = (res.data.sellers || []).map((seller) => ({
             ...seller,

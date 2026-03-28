@@ -1,6 +1,6 @@
 import { Link,useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "./api";
 import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight, faSearch,faStar,faCartShopping } from "@fortawesome/free-solid-svg-icons";
@@ -17,9 +17,7 @@ const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [cartCount, setCartCount] = useState(0); // rename from cartItems
 const fetchCartCount = async () => {
     try {
-      const res = await axios.get("https://isonga-backend.onrender.com/api/cart/count", {
-        withCredentials: false
-      });
+      const res = await api.get("/api/cart/count");
       if (res.data.success) setCartCount(res.data.count);
     } catch (err) {
       console.error("Error fetching cart count:", err);
@@ -72,10 +70,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const res = await axios.get(
-          "https://isonga-backend.onrender.com/api/sellers/Hospitality",
-          { withCredentials: false }
-        );
+        const res = await api.get("/api/sellers/Hospitality");
         if(!res.data.success){
             navigate("/buyer_login");
             return;
