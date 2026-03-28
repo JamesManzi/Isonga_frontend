@@ -124,15 +124,8 @@ function Add_Product() {
         return;
       }
     try {
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/add_product",
-        formData,
-        {
-          withCredentials: false,
-          headers: { "Content-Type": "multipart/form-data" }
-        }
-      );
-
+     const res = await api.post("/api/add_product",
+        formData)
       if (!res.data.success) {
         navigate("/login");
         return;
