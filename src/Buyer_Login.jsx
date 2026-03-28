@@ -18,12 +18,7 @@ function Buyer_Login() {
     setMessage(null);
 
     try {
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/buyer_login",
-        { email, password },
-        { withCredentials: false }
-      );
-
+    const res = await api.post("/api/buyer_login");
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
   
