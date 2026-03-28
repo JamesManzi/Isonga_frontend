@@ -40,19 +40,12 @@ function Buyer_Chat() {
       }
       try {
         // Fetch Buyer Data
-        const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", 
-           {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const buyerRes = await api.get("/api/buyer_dashboard");
         const buyerData = buyerRes.data.buyer;
         setBuyer(buyerData);
 
         // Fetch Seller Data
-        const sellerRes = await axios.get(`https://isonga-backend.onrender.com/api/get_seller/${sellerId}`, { withCredentials: false});
+        const sellerRes = await api.get(`/api/get_seller/${sellerId}`);
         if (sellerRes.data.success) setSeller(sellerRes.data.seller);
 
         // Define Room ID
@@ -67,11 +60,11 @@ function Buyer_Chat() {
         });
 
         // Load Previous Messages
-        const msgRes = await axios.get(`https://isonga-backend.onrender.com/api/messages/${room}`, { withCredentials: false });
+        const msgRes = await api.get(`/api/messages/${room}`);
         if (msgRes.data.success) setMessages(msgRes.data.messages);
 
         // MARK MESSAGES AS READ (When Buyer opens the chat)
-        await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: false });
+        await api.put(`/api/messages/read/${room}`);
         socket.emit("messagesRead", { room });
 
       } catch (err) {
@@ -91,7 +84,7 @@ function Buyer_Chat() {
         // If a message comes from the seller, mark it as read immediately if chat is open
         if (msg.senderModel === "Seller") {
           try {
-            await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${room}`, {}, { withCredentials: false });
+            await api.put(`/api/messages/read/${room}`,{})
             socket.emit("messagesRead", { room });
           } catch (err) {
             console.error("Read update error:", err);
@@ -147,10 +140,7 @@ function Buyer_Chat() {
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach(file => formData.append("files", file));
-        const uploadRes = await axios.post("https://isonga-backend.onrender.com/api/chat/upload", formData, {
-          withCredentials: false,
-          headers: { "Content-Type": "multipart/form-data" }
-        });
+        const uploadRes = await api.post("/api/chat/upload", formData)
         if (uploadRes.data.success) uploadedFiles = uploadRes.data.files;
       }
 

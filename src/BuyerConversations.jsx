@@ -23,19 +23,12 @@ function BuyerConversations() {
         return;
       }
       try {
-        const buyerRes = await axios.get("https://isonga-backend.onrender.com/api/buyer_dashboard", 
-          {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const buyerRes = await api.get("/api/buyer_dashboard");
         setBuyerId(buyerRes.data.buyer._id);
 
         socket.emit("userOnline", { userId: buyerRes.data.buyer._id, userModel: "Buyer" });
-
-        const convRes = await axios.get("https://isonga-backend.onrender.com/api/buyer/conversations", { withCredentials: false});
+        
+        const convRes = await api.get("/api/buyer/conversations");
         if (convRes.data.success) setConversations(convRes.data.conversations);
       } catch (err) {
         console.error(err);
@@ -79,7 +72,7 @@ function BuyerConversations() {
 
   const openChat = async (chat) => {
     try {
-      await axios.put(`https://isonga-backend.onrender.com/api/messages/read/${chat.room}`, {}, { withCredentials: false });
+      await api.put(`/api/messages/read/${chat.room}`,{})
       socket.emit("messagesRead", { room: chat.room });
 
       setConversations((prev) => prev.map((c) => (c.room === chat.room ? { ...c, unreadCount: 0 } : c)));
