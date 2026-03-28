@@ -143,7 +143,7 @@ function My_Store() {
     if (!productToDelete) return;
     setLoading(true);
     try {
-      const res = await api.delete('/api/products/delete/${productToDelete}');
+      const res = await api.delete(`/api/products/delete/${productToDelete}`);
       if (res.data.success) {
         setProducts((prev) => prev.filter((p) => p._id !== productToDelete));
         setProductToDelete(null); 
@@ -176,7 +176,7 @@ function My_Store() {
     });
 
     try {
-      const res = await api.put('/api/products/update/${editingProduct._id}',formData,);
+      const res = await api.put(`/api/products/update/${editingProduct._id}`,formData,);
       if (res.data.success) {
         setProducts((prev) =>
           prev.map((p) => (p._id === editingProduct._id ? res.data.UpdatedProduct : p))
