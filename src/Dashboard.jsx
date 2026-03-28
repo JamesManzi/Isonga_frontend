@@ -18,7 +18,7 @@ import {
   faBox,
 } from "@fortawesome/free-solid-svg-icons";
 
-import axios from "axios";
+import api from "./api";
 import { io } from "socket.io-client";
 import toast, { Toaster } from "react-hot-toast";
 

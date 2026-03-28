@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import api from "./api";
 import "./View_Products.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams, useNavigate } from "react-router-dom";

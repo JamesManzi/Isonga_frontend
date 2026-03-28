@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Add_Product.css";
-import axios from "axios";
+import api from "./api";
 import { faArrowRight, faTrash, faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 
 const categoryOptions = {

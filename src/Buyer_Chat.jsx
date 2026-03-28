@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import api from "./api";
 import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";

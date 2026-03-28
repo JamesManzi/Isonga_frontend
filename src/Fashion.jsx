@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "./api";
 import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight, faSearch, faCartShopping, faStar } from "@fortawesome/free-solid-svg-icons";
