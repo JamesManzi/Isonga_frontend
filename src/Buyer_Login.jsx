@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Login.css";
-
+import api from "./api";
 function Buyer_Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +18,10 @@ function Buyer_Login() {
     setMessage(null);
 
     try {
-    const res = await api.post("/api/buyer_login");
+   const res = await api.post("/api/buyer_login", {
+  email,
+  password
+});
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
   
