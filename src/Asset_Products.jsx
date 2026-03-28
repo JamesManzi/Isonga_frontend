@@ -42,26 +42,14 @@ function Asset_Products() {
         navigate("/buyer_login");
         return;
       }
-      const res = await axios.get(
-        `https://isonga-backend.onrender.com/api/Asset_Products/${id}`,
-        {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+     const res = await api.get(`/api/Asset_Products/${id}`);
       const fetchedProducts = res.data.products;
       setProducts(fetchedProducts);
       setFilteredProducts(fetchedProducts);
       setSeller(res.data.seller);
 
       if (!hasTracked.current && res.data.seller?._id) {
-        axios.post(
-          `https://isonga-backend.onrender.com/api/seller/view/${res.data.seller._id}`,
-          {},
-          { withCredentials: false }
+        api.post(`/api/seller/view/${res.data.seller._id}`,{}
         ).catch(err => console.log("Silent seller view fail"));
         hasTracked.current = true;
       }
