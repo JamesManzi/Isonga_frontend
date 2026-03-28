@@ -54,7 +54,9 @@ function Buyer_Register() {
             });
 
             if (res.data.success) {
-                setTimeout(() => navigate("/buyer_login"), 2000);
+                setTimeout(() => navigate("/verify-email", {
+  state: { email }
+}), 2000);
             }
         } catch (error) {
             setMessage({
