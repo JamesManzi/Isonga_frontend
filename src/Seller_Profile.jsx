@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "./api";
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
@@ -44,14 +44,7 @@ function Seller_Profile() {
         navigate("/login");
         return;
       }
-      const res = await axios.get("https://isonga-backend.onrender.com/api/seller_profile",
-        {
-          withCredentials: false,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      const res = await api.get("/api/seller_profile");
       if (res.data.success) {
         const data = res.data.seller;
         setSeller(data);
@@ -116,9 +109,7 @@ function Seller_Profile() {
     files.forEach((file) => formData.append("files", file));
 
     try {
-      const res = await axios.put("https://isonga-backend.onrender.com/api/seller_profile", formData, {
-        withCredentials: false,
-      });
+      const res = await api.put("/api/seller_profile", formData);
       if (res.data.success) {
         setSeller(res.data.updatedSeller);
         setShowEdit(false);
@@ -136,9 +127,7 @@ function Seller_Profile() {
   const deleteImage = async (filename) => {
     if(!window.confirm("Delete this photo?")) return;
     try {
-      await axios.delete(`https://isonga-backend.onrender.com/api/delete_location_image/${encodeURIComponent(filename)}`, {
-        withCredentials: false,
-      });
+      await api.delete('api/delete_location_image/${encodeURIComponent(filename)}');
       setSeller(prev => ({ ...prev, files: prev.files.filter(f => f !== filename) }));
     } catch (err) { alert("Delete failed"); }
   };
