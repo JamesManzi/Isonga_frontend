@@ -70,15 +70,8 @@ function Booking() {
   formData.append("paymentProof", paymentImage); 
 }
 
-      const res = await axios.post(
-        "https://isonga-backend.onrender.com/api/bookService",
-        formData,
-        {
-          withCredentials: false,
-          headers: { "Content-Type": "multipart/form-data" }
-        }
-      );
-
+     
+      const res = await api.post("/api/bookService",formData);
       if (res.data.success) {
         setMessage({ text: "Booking Successful!", type: "success" });
         setTimeout(() => {
