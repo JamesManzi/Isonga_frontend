@@ -29,6 +29,7 @@ const [buyerId,setBuyerId]=useState("");
 const [cartCount,setCartCount]=useState(0);
 const [message,setMessage]=useState("");
 const [loading, setLoading] = useState(true);
+const [unreadNotifCount, setUnreadNotifCount] = useState(0);
 // State for Media Zoom Modal (Matches My_Store style)
 const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
