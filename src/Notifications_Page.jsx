@@ -13,19 +13,16 @@ function Notifications_Page() {
   useEffect(() => {
   const fetchNotifications = async () => {
     try {
+      // ✅ mark as read FIRST
+      await api.put("/api/notifications/mark-read");
+
+      // ✅ then fetch updated notifications
       const res = await api.get("/api/notifications");
 
       if (res.data.success) {
         setNotifications(res.data.notifications);
-
-        // ✅ mark as read
-        await api.put("/api/notifications/mark-read");
-
-        // ✅ update UI instantly
-        setNotifications(prev =>
-          prev.map(n => ({ ...n, read: true }))
-        );
       }
+
     } catch (err) {
       console.error("Error:", err);
     } finally {
