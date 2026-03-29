@@ -51,63 +51,44 @@ function Dashboard() {
   };
 
   /* ---------------- SELLER TYPE LOGIC ---------------- */
+  // Fallback to "Product" if seller is null to prevent crashing
+  const sType = seller?.sellerType || "Product";
 
-  const addLink =
-    seller?.sellerType === "Product"
-      ? "/add_product"
-      : seller?.sellerType === "Service"
-      ? "/add_product"
-      : "/add_product";
+  const addLink = "/add_product";
 
   const addText =
-    seller?.sellerType === "Product"
-      ? "Add New Product"
-      : seller?.sellerType === "Service"
-      ? "Add New Service"
-      : "Add New Asset";
+    sType === "Product" ? "Add New Product" :
+    sType === "Service" ? "Add New Service" : 
+    "Add New Asset";
 
   const orderTitle =
-    seller?.sellerType === "Product"
-      ? "Orders"
-      : seller?.sellerType === "Service"
-      ? "Bookings"
-      : "Rentals";
+    sType === "Product" ? "Orders" :
+    sType === "Service" ? "Bookings" : 
+    "Rentals";
 
-  const viewTitle =
-    seller?.sellerType === "Product"
-      ? "Total Views"
-      : seller?.sellerType === "Service"
-      ? "Total Views"
-      : "Total Views";
+  const viewTitle = "Total Views";
 
-      const orderHistory=
-      seller?.sellerType==="Product"
-      ?"Order History"
-      :seller?.sellerType==="Service"
-      ?"Booking History"
-      :"Asset History"
-      /* ---------------- SELLER TYPE LOGIC ---------------- */
-// ... your existing addLink, addText, orderTitle ...
+  const orderHistory =
+    sType === "Product" ? "Order History" :
+    sType === "Service" ? "Booking History" : 
+    "Asset History";
 
-const orderLink = 
-  seller?.sellerType === "Product" 
-    ? "/seller_orders" 
-    : seller?.sellerType === "Service" 
-    ? "/seller_bookings" // Change this to your new bookings route
-    : "/seller_rentals";
-  /* ---------------- CLICK OUTSIDE MENU ---------------- */
- const AddType=
-     seller?.sellerType==="Product"
-     ?"Total Products"
-     :seller?.sellerType==="Service"
-     ?"Total Services"
-     :"Total Assets"
-  const historyLink=
-  seller?.sellerType==="Product"
-  ?"/SellerOrderHistory"
-  :seller?.sellerType==="Service"
-  ?"/SellerBookingHistory"
-  :"none"
+  const orderLink = 
+    sType === "Product" ? "/seller_orders" : 
+    sType === "Service" ? "/seller_bookings" : 
+    "/seller_rentals";
+
+  const AddType =
+    sType === "Product" ? "Total Products" :
+    sType === "Service" ? "Total Services" : 
+    "Total Assets";
+
+  const historyLink =
+    sType === "Product" ? "/SellerOrderHistory" :
+    sType === "Service" ? "/SellerBookingHistory" : 
+    "none";
+  /* ---------------- END SELLER TYPE LOGIC ---------------- */
+
   useEffect(() => {
 
     const handleClickOutside = (event) => {
@@ -448,17 +429,15 @@ if (!seller) {
           </Link>
         </div>
 
-        <div className="buyer_messages">
-          <Link to="#">
-            <FontAwesomeIcon icon={faBoxOpen} />
-      <h2>{AddType}</h2> {/* Displays "Total Products", "Total Services", etc. */}
-      
-      {/* Display the count from the backend */}
-      <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
-        {seller.totalItemsCount || 0}
-      </p>
-          </Link>
-        </div>
+       <div className="buyer_messages">
+  <Link to="/inventory">
+    <FontAwesomeIcon icon={faBoxOpen} />
+    <h2>{AddType}</h2> 
+    <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
+      {seller?.totalItemsCount || 0}
+    </p>
+  </Link>
+</div>
 
       </div>
 
