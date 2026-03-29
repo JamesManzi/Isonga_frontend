@@ -11,22 +11,30 @@ function Notifications_Page() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const res = await api.get("/api/notifications");
-        if (res.data.success) {
-          setNotifications(res.data.notifications);
-          // Automatically mark all as read when they visit this page
-          await api.post("/api/notifications/mark-all-read");
-        }
-      } catch (err) {
-        console.error("Error:", err);
-      } finally {
-        setLoading(false);
+  const fetchNotifications = async () => {
+    try {
+      const res = await api.get("/api/notifications");
+
+      if (res.data.success) {
+        setNotifications(res.data.notifications);
+
+        // ✅ mark as read
+        await api.put("/api/notifications/mark-read");
+
+        // ✅ update UI instantly
+        setNotifications(prev =>
+          prev.map(n => ({ ...n, read: true }))
+        );
       }
-    };
-    fetchNotifications();
-  }, []);
+    } catch (err) {
+      console.error("Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchNotifications();
+}, []);
 
   return (
     <div className="notifications-page">
