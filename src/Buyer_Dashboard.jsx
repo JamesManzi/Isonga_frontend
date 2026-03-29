@@ -187,19 +187,6 @@ sellers.filter(s=>
 );
 },[searchQuery,sellers]);
 
-useEffect(() => {
-  if (socket) {
-    socket.on("new_notification", (data) => {
-      // Update the red dot instantly when the seller accepts/declines
-      setUnreadNotifCount(data.unreadCount);
-      
-      // Optional: Show a temporary message at the bottom
-      setMessage({ type: "success", text: data.message });
-      setTimeout(() => setMessage(""), 5000);
-    });
-  }
-  return () => socket?.off("new_notification");
-}, [socket]);
 
 useEffect(() => {
   const interval = setInterval(() => {
