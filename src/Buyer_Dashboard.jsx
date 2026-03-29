@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -16,6 +15,7 @@ import {
 import ChatNotification from "./ChatNotification";
 import "./Buyer_Dashboard.css";
 import { createPortal } from "react-dom";
+
 function Buyer_Dashboard() {
 
 const navigate = useNavigate();
@@ -31,7 +31,6 @@ const [cartCount,setCartCount]=useState(0);
 const [message,setMessage]=useState("");
 const [loading, setLoading] = useState(true);
 const [unreadNotifCount, setUnreadNotifCount] = useState(0);
-// State for Media Zoom Modal (Matches My_Store style)
 const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
 const productCategories=["Fashion","Electronics","Furniture","Construction"];
@@ -57,10 +56,9 @@ return `/view_products/${id}`;
 useEffect(() => {
   const fetchOrderNotifications = async () => {
     try {
-      const res = await api.get("/api/notifications"); // Fetch from the notification model directly
+      const res = await api.get("/api/notifications"); 
       if (res.data.success) {
         setNotifications(res.data.notifications);
-        // Only count those where read === false
         const unread = res.data.notifications.filter(n => !n.read).length;
         setUnreadNotifCount(unread);
       }
@@ -71,7 +69,7 @@ useEffect(() => {
   if (buyerId) fetchOrderNotifications();
 }, [buyerId]);
 
-// 2. Real-time Listener (No more setInterval!)
+// 2. FIXED: Unified Real-time Listener (Removed the duplicate effect)
 useEffect(() => {
   if (!buyerId) return;
 
@@ -79,22 +77,34 @@ useEffect(() => {
   socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
 
   socket.on("new_notification", (data) => {
-    // Add new notification to the top immediately
     setNotifications((prev) => [data, ...prev]);
-    setUnreadNotifCount(data.unreadCount);
+    setUnreadNotifCount(data.unreadCount); // Backend sends updated unread count
     
-    // Modern touch: Browser notification if they aren't looking at the tab
     if (document.hidden) {
       new Notification("Isonga Market Update", { body: data.message });
     }
   });
 
-  return () => socket.disconnect();
+  return () => {
+    socket.off("new_notification");
+    socket.disconnect();
+  };
 }, [buyerId]);
+
+// ✅ NEW: Added handler to mark read when bell is clicked
+const handleBellClick = async () => {
+  try {
+    await api.put("/api/notifications/mark-read");
+    setUnreadNotifCount(0);
+    navigate("/notifications");
+  } catch (err) {
+    console.error("Error marking as read", err);
+    navigate("/notifications");
+  }
+};
 
 const fetchCartCount = async () => {
   try {
-    // No need for 'axios' or manual headers anymore!
     const res = await api.get("/api/cart/count"); 
     if (res.data.success) {
       setCartCount(res.data.count);
@@ -108,42 +118,20 @@ useEffect(()=>{
 fetchCartCount();
 },[]);
 
-// Add this near your other useEffects
-useEffect(() => {
-  if (!buyerId) return;
-
-  // 1. Join the private room
-  const socket = io("https://isonga-backend.onrender.com"); // Use your backend URL
-  socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
-
-  // 2. Listen for the specific event name from your backend
-  socket.on("new_notification", (data) => {
-    // Add the new notification to the top of the list
-    setNotifications((prev) => [data, ...prev]);
-    // Update the red badge count
-    setUnreadNotifCount(data.unreadCount);
-    
-    // Optional: Add a sound effect or a toast here
-    console.log("New Update:", data.message);
-  });
-
-  return () => socket.disconnect();
-}, [buyerId]);
-
 const handleLogout = async () => {
   try {
-    const res = await api.post("/api/logout"); // Simplified
+    const res = await api.post("/api/logout"); 
     if (res.data.success) {
       localStorage.removeItem("token");
       navigate("/buyer_login");
     }
   } catch (err) {
     console.error("Logout error:", err);
-    // Even if the server call fails, we should clear the token locally
     localStorage.removeItem("token");
     navigate("/buyer_login");
   }
 };
+
 const renderStars=(avg=0)=>{
 const stars=[];
 for(let i=1;i<=5;i++){
@@ -242,12 +230,11 @@ const getFileUrl = (path) => {
   if (path.startsWith("http")) return path;
   return `https://isonga-backend.onrender.com/uploads/${path}`;
 };
-// Hide navbar when modal opens or on scroll
+
 useEffect(() => {
   const navbar = document.querySelector(".Buyer_Dashboard_navbar");
-  if (!navbar) return; // Safety check
+  if (!navbar) return; 
 
-  // Modal opens → hide navbar
   if (modalMedia.sellerId) {
     navbar.style.transform = "translateY(-100%)";
   } else {
@@ -260,13 +247,11 @@ useEffect(() => {
 
   const handleScroll = () => {
     const navbar = document.querySelector(".Buyer_Dashboard_navbar");
-    if (!navbar) return; // Safety check
+    if (!navbar) return; 
 
     if (window.scrollY > lastScrollY) {
-      // scrolling down
       navbar.style.transform = "translateY(-100%)";
     } else {
-      // scrolling up
       navbar.style.transform = "translateY(0)";
     }
 
@@ -277,6 +262,7 @@ useEffect(() => {
 
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
+
 if (loading) {
   return (
     <div className="beautiful-loading">
@@ -306,18 +292,15 @@ return(
 <div className="Buyer_Dashboard_nav">
 <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
 </div>
-{/* Simplified Bell Icon */}
-<div className="notification-container" style={{ position: "relative" }}>
-  <Link 
-    to="/notifications" 
-    className="nav-icon-link" 
-  >
+
+{/* ✅ FIXED: Changed Link to div with onClick to handle clearing count */}
+<div className="notification-container" style={{ position: "relative", cursor: "pointer" }} onClick={handleBellClick}>
     <FontAwesomeIcon icon={faBell} size="2x" />
     {unreadNotifCount > 0 && (
       <span className="notification-badge">{unreadNotifCount}</span>
     )}
-  </Link>
 </div>
+
 <Link to="/cart" style={{position:"relative"}}>
 <FontAwesomeIcon icon={faCartShopping} size="2x"/>
 {cartCount>0 &&(
@@ -326,6 +309,8 @@ return(
 </Link>
 <div className="Buyer_Dashboard_Logout"><button onClick={handleLogout}>Logout</button></div>
 </div>
+
+{/* ... Rest of your original Return statement continues here unchanged ... */}
 
 <div className="Buyer_Dashboard_Heading">
 <h1>Welcome back, {buyerName}! 🛍️</h1>
@@ -382,7 +367,6 @@ return(
   <img src="/placeholder.png" alt="no image" className="slider-image" />
 )}
 </div>
-{/* Link is kept only on the small avatar icon area */}
 <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
   <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image"/>
 </Link>
