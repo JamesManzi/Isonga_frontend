@@ -8,7 +8,8 @@ import {
   faSearch,
   faChevronLeft,
   faChevronRight,
-  faCartShopping
+  faCartShopping,
+  faBell
 } from "@fortawesome/free-solid-svg-icons";
 
 import ChatNotification from "./ChatNotification";
@@ -28,7 +29,7 @@ const [buyerId,setBuyerId]=useState("");
 const [cartCount,setCartCount]=useState(0);
 const [message,setMessage]=useState("");
 const [loading, setLoading] = useState(true);
-
+const [unreadNotifCount, setUnreadNotifCount] = useState(0);
 // State for Media Zoom Modal (Matches My_Store style)
 const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
@@ -80,6 +81,21 @@ const handleLogout = async () => {
   }
 };
 
+const fetchNotificationCount = async () => {
+  try {
+    const res = await api.get("/api/notifications/unread-count");
+    if (res.data.success) {
+      setUnreadNotifCount(res.data.count);
+    }
+  } catch (err) {
+    console.error("Notification count error:", err);
+  }
+};
+
+useEffect(() => {
+  fetchCartCount();
+  fetchNotificationCount(); // New call
+}, []); 
 const renderStars=(avg=0)=>{
 const stars=[];
 for(let i=1;i<=5;i++){
@@ -153,6 +169,20 @@ sellers.filter(s=>
 )
 );
 },[searchQuery,sellers]);
+
+useEffect(() => {
+  if (socket) {
+    socket.on("new_notification", (data) => {
+      // Update the red dot instantly when the seller accepts/declines
+      setUnreadNotifCount(data.unreadCount);
+      
+      // Optional: Show a temporary message at the bottom
+      setMessage({ type: "success", text: data.message });
+      setTimeout(() => setMessage(""), 5000);
+    });
+  }
+  return () => socket?.off("new_notification");
+}, [socket]);
 
 useEffect(() => {
   const interval = setInterval(() => {
@@ -241,6 +271,13 @@ return(
 <div className="Buyer_Dashboard_nav">
 <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
 </div>
+{/* Notification Bell */}
+<Link to="/notifications" className="nav-icon-link">
+  <FontAwesomeIcon icon={faBell} size="2x" />
+  {unreadNotifCount > 0 && (
+    <span className="notification-badge">{unreadNotifCount}</span>
+  )}
+</Link>
 <Link to="/cart" style={{position:"relative"}}>
 <FontAwesomeIcon icon={faCartShopping} size="2x"/>
 {cartCount>0 &&(

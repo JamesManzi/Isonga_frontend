@@ -1,0 +1,49 @@
+.glass-nav {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.bell-container {
+  position: relative;
+  font-size: 22px;
+  color: #2c3e50;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background: #e74c3c; /* Bright red for attention */
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.notif-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: 12px;
+  border-left: 5px solid #3498db;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.notif-card.unread {
+  background: rgba(52, 152, 219, 0.1); /* Light blue for unread */
+  border-left-color: #2ecc71; /* Green for new updates */
+}
+
+.notif-time {
+  font-size: 12px;
+  color: #95a5a6;
+}
