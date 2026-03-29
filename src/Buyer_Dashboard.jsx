@@ -119,6 +119,23 @@ stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray"/>);
 return stars;
 };
 
+useEffect(() => {
+  socket.connect(); // ✅ start connection
+
+  const handler = (data) => {
+    setUnreadNotifCount(data.unreadCount);
+    setMessage({ type: "success", text: data.message });
+    setTimeout(() => setMessage(""), 5000);
+  };
+
+  socket.on("new_notification", handler);
+
+  return () => {
+    socket.off("new_notification", handler);
+    socket.disconnect(); // optional cleanup
+  };
+}, []);
+
 useEffect(()=>{
 const fetchData=async()=>{
 setLoading(true);
