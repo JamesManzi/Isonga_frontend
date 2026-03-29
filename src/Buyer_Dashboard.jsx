@@ -105,22 +105,20 @@ useEffect(() => {
 }, [buyerId]);
 
 const handleBellClick = async () => {
+  // Optimistically clear the UI first
+  setUnreadNotifCount(0);
+  
   try {
     const res = await api.put("/api/notifications/mark-read");
 
     if (res.data.success) {
-      // ✅ reset count
-      setUnreadNotifCount(0);
-
-      // ✅ ALSO update notifications list
-      setNotifications(prev =>
-        prev.map(n => ({ ...n, read: true }))
-      );
-
-      navigate("/notifications");
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      // Delay navigation slightly to ensure DB write is finalized
+      setTimeout(() => navigate("/notifications"), 100);
     }
   } catch (err) {
     console.error("Failed to mark notifications as read:", err);
+    // Even if it fails, we usually want to see the notifications page
     navigate("/notifications");
   }
 };
