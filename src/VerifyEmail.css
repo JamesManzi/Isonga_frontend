@@ -1,0 +1,137 @@
+/* VerifyEmail.css */
+
+/* Background gradient */
+.verify-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f7ff, #e0e7ff);
+  padding: 1rem;
+}
+
+/* Glassmorphism card */
+.verify-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Icon circle */
+.verify-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+/* Headings */
+.verify-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.verify-subtitle {
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.verify-subtitle span {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+/* Input field */
+.verify-input {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid #f3f4f6;
+  border-radius: 16px;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.5em;
+  outline: none;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.verify-input:focus {
+  border-color: #2563eb;
+  background: #fff;
+}
+
+/* Button */
+.verify-button {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 16px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+  transition: all 0.2s ease;
+}
+
+.verify-button.active {
+  background: #2563eb;
+}
+
+.verify-button.active:hover {
+  background: #1e40af;
+}
+
+.verify-button.disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Resend link */
+.verify-resend {
+  margin-top: 2rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.verify-resend button {
+  color: #2563eb;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.verify-resend button:hover {
+  text-decoration: underline;
+}
+
+/* Back link */
+.verify-back {
+  margin-top: 1.5rem;
+  width: 100%;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #9ca3af;
+  transition: color 0.2s ease;
+}
+
+.verify-back:hover {
+  color: #4b5563;
+}
