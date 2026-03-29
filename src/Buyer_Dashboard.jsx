@@ -105,20 +105,23 @@ useEffect(() => {
 }, [buyerId]);
 
 const handleBellClick = async () => {
-  // Optimistically clear the UI first
+  // 1. Force the UI to hide the badge IMMEDIATELY (Optimistic UI)
   setUnreadNotifCount(0);
   
   try {
+    // 2. Tell the backend to mark them as read
     const res = await api.put("/api/notifications/mark-read");
 
     if (res.data.success) {
+      // 3. Update the local list so they don't look "bold" or "unread"
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      // Delay navigation slightly to ensure DB write is finalized
-      setTimeout(() => navigate("/notifications"), 100);
+      
+      // 4. Move to the notifications page
+      navigate("/notifications");
     }
   } catch (err) {
     console.error("Failed to mark notifications as read:", err);
-    // Even if it fails, we usually want to see the notifications page
+    // Even if it fails, go to the page so the user can see them
     navigate("/notifications");
   }
 };
@@ -313,8 +316,9 @@ return(
 <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
 </div>
 
-{/* ✅ FIXED: Changed Link to div with onClick to handle clearing count */}
-<div className="notification-container" style={{ position: "relative", cursor: "pointer" }} onClick={handleBellClick}>
+<div className="notification-container" 
+     style={{ position: "relative", cursor: "pointer", display: "inline-block" }} 
+     onClick={handleBellClick}>
     <FontAwesomeIcon icon={faBell} size="2x" />
     {unreadNotifCount > 0 && (
       <span className="notification-badge">{unreadNotifCount}</span>
