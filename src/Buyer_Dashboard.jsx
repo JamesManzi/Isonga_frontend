@@ -1,4 +1,4 @@
-
+import { socket } from "./socket";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "./api";
@@ -65,6 +65,33 @@ const fetchCartCount = async () => {
 useEffect(()=>{
 fetchCartCount();
 },[]);
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token || !buyerId) return; // ✅ wait until buyerId is ready
+
+  socket.connect();
+
+  socket.emit("userOnline", {
+    userId: buyerId,
+    userModel: "Buyer"
+  });
+
+  socket.on("new_notification", (data) => {
+    console.log("🔔 New Notification:", data);
+
+    setUnreadNotifCount(data.unreadCount);
+
+    setMessage({
+      type: "success",
+      text: data.message
+    });
+  });
+
+  return () => {
+    socket.off("new_notification");
+  };
+}, [buyerId]); // ✅ depends on buyerId
 
 const handleLogout = async () => {
   try {
