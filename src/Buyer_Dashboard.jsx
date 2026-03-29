@@ -118,6 +118,28 @@ stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray"/>);
 }
 return stars;
 };
+useEffect(() => {
+  if (socket) {
+    // 1. Manually connect since autoConnect is false
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    // 2. Listen for the event
+    const handleNotification = (data) => {
+      setUnreadNotifCount(data.unreadCount);
+      setMessage({ type: "success", text: data.message });
+      setTimeout(() => setMessage(""), 5000);
+    };
+
+    socket.on("new_notification", handleNotification);
+
+    // 3. Cleanup on unmount
+    return () => {
+      socket.off("new_notification", handleNotification);
+    };
+  }
+}, []); // Empty array so this only runs once when the dashboard opens
 
 useEffect(() => {
   socket.connect(); // ✅ start connection
