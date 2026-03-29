@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./api";
-import { Mail, Lock, ShieldCheck, ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
-import "./VerifyEmail.css"; // Reuse your existing glassmorphic styles
+import { Mail, Lock, ShieldCheck, ArrowLeft, Loader2, Eye, EyeOff, KeyRound } from "lucide-react";
+import "./VerifyEmail.css"; 
 
 function ForgotPassword() {
-  const [step, setStep] = useState(1); // 1: Email, 2: Reset
+  const [step, setStep] = useState(1); // 1: Email, 2: Code, 3: New Password
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -13,7 +13,7 @@ function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Handle Requesting the Code
+  // STEP 1: Request Code
   const handleRequestCode = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -31,21 +31,40 @@ function ForgotPassword() {
     }
   };
 
-  // Handle Saving New Password
-  const handleResetPassword = async (e) => {
+  // STEP 2: Verify Code (Before showing password field)
+  const handleVerifyCode = async (e) => {
     e.preventDefault();
     if (code.length < 6) return;
     setLoading(true);
     try {
-      const res = await api.post("/api/reset-password", { email, code, newPassword });
+      // New temporary route to check if code is valid
+      const res = await api.post("/api/verify-reset-code", { email, code });
       if (res.data.success) {
-        alert("Password reset successful! Please login.");
-        navigate("/buyer_login"); // Or dynamic based on role if needed
+        setStep(3);
       } else {
         alert(res.data.message);
       }
     } catch (err) {
-      alert("Reset failed. Check your code.");
+      alert("Verification failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // STEP 3: Save New Password
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await api.post("/api/reset-password", { email, code, newPassword });
+      if (res.data.success) {
+        alert("Password updated! Please login.");
+        navigate("/buyer_login"); 
+      } else {
+        alert(res.data.message);
+      }
+    } catch (err) {
+      alert("Reset failed.");
     } finally {
       setLoading(false);
     }
@@ -65,18 +84,24 @@ function ForgotPassword() {
         <div className="verify-card">
           <div className="verify-header">
             <div className="icon-badge">
-              {step === 1 ? <Mail size={32} /> : <Lock size={32} />}
+              {step === 1 && <Mail size={32} />}
+              {step === 2 && <KeyRound size={32} />}
+              {step === 3 && <ShieldCheck size={32} />}
             </div>
-            <h2>{step === 1 ? "Forgot Password?" : "Reset Password"}</h2>
+            <h2>
+              {step === 1 && "Forgot Password?"}
+              {step === 2 && "Verify Code"}
+              {step === 3 && "New Password"}
+            </h2>
             <p>
-              {step === 1 
-                ? "Enter your email to receive a reset code." 
-                : `Enter the code sent to ${email}`}
+              {step === 1 && "Enter your email to receive a reset code."}
+              {step === 2 && `Enter the 6-digit code sent to ${email}`}
+              {step === 3 && "Create a new secure password for your account."}
             </p>
           </div>
 
-          {step === 1 ? (
-            /* STEP 1: EMAIL FORM */
+          {/* STEP 1: EMAIL */}
+          {step === 1 && (
             <form onSubmit={handleRequestCode} className="verify-form">
               <div className="input-group">
                 <input
@@ -85,7 +110,7 @@ function ForgotPassword() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="otp-input" // Reusing style for consistency
+                  className="otp-input"
                   style={{ fontSize: '1rem', textAlign: 'left', padding: '0 15px' }}
                 />
               </div>
@@ -93,20 +118,31 @@ function ForgotPassword() {
                 {loading ? <Loader2 className="spinner" /> : "Send Reset Code"}
               </button>
             </form>
-          ) : (
-            /* STEP 2: RESET FORM */
-            <form onSubmit={handleResetPassword} className="verify-form">
+          )}
+
+          {/* STEP 2: CODE VERIFICATION */}
+          {step === 2 && (
+            <form onSubmit={handleVerifyCode} className="verify-form">
               <div className="input-group">
                 <input
                   type="text"
                   maxLength="6"
-                  placeholder="6-digit code"
+                  placeholder="000000"
+                  required
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
                   className="otp-input"
                 />
               </div>
+              <button type="submit" disabled={loading || code.length < 6} className="submit-btn active">
+                {loading ? <Loader2 className="spinner" /> : "Verify Code"}
+              </button>
+            </form>
+          )}
 
+          {/* STEP 3: NEW PASSWORD */}
+          {step === 3 && (
+            <form onSubmit={handleResetPassword} className="verify-form">
               <div className="input-group" style={{ position: 'relative' }}>
                 <input
                   type={showPass ? "text" : "password"}
@@ -125,8 +161,7 @@ function ForgotPassword() {
                   {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-
-              <button type="submit" disabled={loading || code.length < 6} className="submit-btn active">
+              <button type="submit" disabled={loading} className="submit-btn active">
                 {loading ? <Loader2 className="spinner" /> : "Update Password"}
               </button>
             </form>
@@ -134,14 +169,14 @@ function ForgotPassword() {
 
           <div className="resend-section">
             <button onClick={() => setStep(1)} className="resend-link">
-              Back to start
+              {step === 1 ? "Wait, I remember it!" : "Back to start"}
             </button>
           </div>
         </div>
 
         <button onClick={() => navigate(-1)} className="back-btn">
           <ArrowLeft size={18} />
-          Back to Login
+          Back
         </button>
       </div>
     </div>
