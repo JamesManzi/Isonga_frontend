@@ -1,4 +1,4 @@
-
+import { socket } from "./socket";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "./api";
@@ -15,7 +15,6 @@ import {
 import ChatNotification from "./ChatNotification";
 import "./Buyer_Dashboard.css";
 import { createPortal } from "react-dom";
-import { socket } from "./socket"; // Or wherever your socket instance is exported from
 function Buyer_Dashboard() {
 
 const navigate = useNavigate();
