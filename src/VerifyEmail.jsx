@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "./api";
-import { Mail, ShieldCheck, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
 import "./VerifyEmail.css";
 
 function VerifyEmail() {
@@ -11,7 +11,9 @@ function VerifyEmail() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
+  // Get data passed from the registration pages
   const email = state?.email || "your email";
+  const userRole = state?.role || "buyer"; // 'buyer' or 'seller'
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -26,27 +28,41 @@ function VerifyEmail() {
     
     setLoading(true);
     try {
+      // The backend route handles both models now
       const res = await api.post("/api/verify-email", { email, code });
+      
       if (res.data.success) {
-        navigate("/buyer_login", { state: { message: "Verified successfully!" } });
+        // Decide which login page to send them to
+        const targetPath = userRole === "seller" ? "/login" : "/buyer_login";
+        
+        navigate(targetPath, { 
+          state: { message: "Account verified! Please login." } 
+        });
       } else {
         alert(res.data.message);
       }
     } catch (err) {
-      alert("Invalid code. Please try again.");
+      alert("Verification failed. Please check the code.");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleResend = async () => {
+    try {
+      setTimer(59); // Reset visual timer
+      await api.post("/api/resend-verification", { email });
+    } catch (err) {
+      console.error("Resend failed");
+    }
+  };
+
   return (
     <div className="verify-page-wrapper">
-      {/* Decorative background elements */}
       <div className="bg-blob-1"></div>
       <div className="bg-blob-2"></div>
 
       <div className="verify-container">
-        {/* Brand Identity */}
         <div className="brand-logo">
           <span className="brand-isonga">ISONGA</span>
           <span className="brand-market">MARKET</span>
@@ -57,7 +73,7 @@ function VerifyEmail() {
             <div className="icon-badge">
               <ShieldCheck size={32} />
             </div>
-            <h2>Verify your identity</h2>
+            <h2>Verify {userRole} Account</h2>
             <p>
               We’ve sent a 6-digit code to <br />
               <span className="user-email">{email}</span>
@@ -71,7 +87,7 @@ function VerifyEmail() {
                 inputMode="numeric"
                 autoFocus
                 maxLength="6"
-                placeholder="······"
+                placeholder="000000"
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
                 className="otp-input"
@@ -92,7 +108,7 @@ function VerifyEmail() {
             {timer > 0 ? (
               <p>Resend code in <span>{timer}s</span></p>
             ) : (
-              <button onClick={() => setTimer(59)} className="resend-link">
+              <button onClick={handleResend} className="resend-link">
                 I didn't receive a code
               </button>
             )}
@@ -101,7 +117,7 @@ function VerifyEmail() {
 
         <button onClick={() => navigate(-1)} className="back-btn">
           <ArrowLeft size={18} />
-          Back to registration
+          Back
         </button>
       </div>
     </div>

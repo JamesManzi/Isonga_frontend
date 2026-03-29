@@ -49,8 +49,7 @@ function Register() {
         try {
              const res = await api.post("/api/register",formData)    
             setMessage({ text: res.data.message, type: res.data.success ? "success" : "error" });
-            if (res.data.success) setTimeout(() => navigate("/verify-email", {
-  state: { email }
+            if (res.data.success) setTimeout(() => navigate("/verify-email", { state: { email: email, role: "seller" } 
 }), 2000);
         } catch (error) {
             setMessage({ text: "Connection error. Try again.", type: "error" });
