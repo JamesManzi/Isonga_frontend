@@ -119,31 +119,6 @@ stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray"/>);
 return stars;
 };
 
-useEffect(() => {
-  // Use 'socket' only if it exists in the scope
-  const currentSocket = typeof socket !== 'undefined' ? socket : null;
-
-  if (currentSocket) {
-    if (!currentSocket.connected) {
-      currentSocket.connect();
-    }
-
-    const handler = (data) => {
-      setUnreadNotifCount(data.unreadCount);
-      setMessage({ type: "success", text: data.message });
-      setTimeout(() => setMessage(""), 5000);
-    };
-
-    currentSocket.on("new_notification", handler);
-
-    return () => {
-      currentSocket.off("new_notification", handler);
-    };
-  } else {
-    console.error("Critical Error: 'socket' is not defined in Buyer_Dashboard. Check your import path!");
-  }
-}, []);
-
 useEffect(()=>{
 const fetchData=async()=>{
 setLoading(true);
