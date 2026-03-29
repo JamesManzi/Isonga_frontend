@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "./api";
 import { socket } from "./socket";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
@@ -14,12 +14,7 @@ function ChatNotification() {
 
     const fetchUser = async () => {
       try {
-
-        const res = await axios.get(
-          "https://isonga-backend.onrender.com/api/buyer_dashboard",
-          { withCredentials: false }
-        );
-
+        const res = await api.get("com/api/buyer_dashboard");
         if (!res.data.success) return;
 
         const buyer = res.data.buyer;
@@ -30,10 +25,7 @@ function ChatNotification() {
           userModel: "Buyer"
         });
 
-        const convRes = await axios.get(
-          "https://isonga-backend.onrender.com/api/buyer/conversations",
-          { withCredentials: false }
-        );
+        const convRes = await api.get("/api/buyer/conversations");
 
         if (convRes.data.success) {
           setConversations(convRes.data.conversations);
