@@ -52,13 +52,13 @@ return `/Asset_products/${id}`;
 return `/view_products/${id}`;
 };
 
-// 1. Fetch History ONCE on load
 useEffect(() => {
   const fetchOrderNotifications = async () => {
     try {
       const res = await api.get("/api/notifications"); 
       if (res.data.success) {
         setNotifications(res.data.notifications);
+
         const unread = res.data.notifications.filter(n => !n.read).length;
         setUnreadNotifCount(unread);
       }
@@ -66,7 +66,20 @@ useEffect(() => {
       console.error("Error fetching notifications:", err);
     }
   };
-  if (buyerId) fetchOrderNotifications();
+
+  if (buyerId) {
+    fetchOrderNotifications();
+  }
+
+  // ✅ re-fetch when page becomes active again
+  const handleFocus = () => {
+    if (buyerId) fetchOrderNotifications();
+  };
+
+  window.addEventListener("focus", handleFocus);
+
+  return () => window.removeEventListener("focus", handleFocus);
+
 }, [buyerId]);
 
 // 2. FIXED: Unified Real-time Listener (Removed the duplicate effect)
@@ -94,13 +107,21 @@ useEffect(() => {
 const handleBellClick = async () => {
   try {
     const res = await api.put("/api/notifications/mark-read");
+
     if (res.data.success) {
-      setUnreadNotifCount(0); // This hides the red circle
+      // ✅ reset count
+      setUnreadNotifCount(0);
+
+      // ✅ ALSO update notifications list
+      setNotifications(prev =>
+        prev.map(n => ({ ...n, read: true }))
+      );
+
       navigate("/notifications");
     }
   } catch (err) {
     console.error("Failed to mark notifications as read:", err);
-    navigate("/notifications"); // Navigate anyway as a fallback
+    navigate("/notifications");
   }
 };
 
