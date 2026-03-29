@@ -118,45 +118,33 @@ stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray"/>);
 }
 return stars;
 };
+
 useEffect(() => {
-  if (socket) {
-    // 1. Manually connect since autoConnect is false
-    if (!socket.connected) {
-      socket.connect();
+    // Check if socket is imported correctly
+    if (socket) {
+      // 1. Manually connect because autoConnect is false in your socket.js
+      if (!socket.connected) {
+        socket.connect();
+      }
+
+      const handler = (data) => {
+        setUnreadNotifCount(data.unreadCount);
+        setMessage({ type: "success", text: data.message });
+        setTimeout(() => setMessage(""), 5000);
+      };
+
+      // 2. Set up listener
+      socket.on("new_notification", handler);
+
+      // 3. Cleanup
+      return () => {
+        socket.off("new_notification", handler);
+        // We don't disconnect here so ChatNotification can still use it
+      };
+    } else {
+      console.error("Socket is not defined. Check your import path!");
     }
-
-    // 2. Listen for the event
-    const handleNotification = (data) => {
-      setUnreadNotifCount(data.unreadCount);
-      setMessage({ type: "success", text: data.message });
-      setTimeout(() => setMessage(""), 5000);
-    };
-
-    socket.on("new_notification", handleNotification);
-
-    // 3. Cleanup on unmount
-    return () => {
-      socket.off("new_notification", handleNotification);
-    };
-  }
-}, []); // Empty array so this only runs once when the dashboard opens
-
-useEffect(() => {
-  socket.connect(); // ✅ start connection
-
-  const handler = (data) => {
-    setUnreadNotifCount(data.unreadCount);
-    setMessage({ type: "success", text: data.message });
-    setTimeout(() => setMessage(""), 5000);
-  };
-
-  socket.on("new_notification", handler);
-
-  return () => {
-    socket.off("new_notification", handler);
-    socket.disconnect(); // optional cleanup
-  };
-}, []);
+  }, []);
 
 useEffect(()=>{
 const fetchData=async()=>{
