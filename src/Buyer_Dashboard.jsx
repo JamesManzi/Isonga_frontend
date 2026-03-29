@@ -1,4 +1,4 @@
-import { socket } from "./socket";
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "./api";
@@ -29,7 +29,6 @@ const [buyerId,setBuyerId]=useState("");
 const [cartCount,setCartCount]=useState(0);
 const [message,setMessage]=useState("");
 const [loading, setLoading] = useState(true);
-const [unreadNotifCount, setUnreadNotifCount] = useState(0);
 // State for Media Zoom Modal (Matches My_Store style)
 const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
@@ -107,22 +106,6 @@ const handleLogout = async () => {
     navigate("/buyer_login");
   }
 };
-
-const fetchNotificationCount = async () => {
-  try {
-    const res = await api.get("/api/notifications/unread-count");
-    if (res.data.success) {
-      setUnreadNotifCount(res.data.count);
-    }
-  } catch (err) {
-    console.error("Notification count error:", err);
-  }
-};
-
-useEffect(() => {
-  fetchCartCount();
-  fetchNotificationCount(); // New call
-}, []); 
 const renderStars=(avg=0)=>{
 const stars=[];
 for(let i=1;i<=5;i++){
@@ -286,7 +269,7 @@ return(
 <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
 </div>
 {/* Notification Bell */}
-<Link to="/notifications" className="nav-icon-link">
+<Link to="#" className="nav-icon-link">
   <FontAwesomeIcon icon={faBell} size="2x" />
   {unreadNotifCount > 0 && (
     <span className="notification-badge">{unreadNotifCount}</span>
