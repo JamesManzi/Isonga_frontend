@@ -38,6 +38,7 @@ import SellerOrderHistory from "./SellerOrderHistory";
 import SellerBookingHistory from "./SellerBookingHistory";
 import VerifyEmail from "./VerifyEmail";
 import ForgotPassword from "./ForgotPassword";
+import Notifications_Page from "./Notifications_Page";
 function App(){
   return(
     <div>
@@ -82,6 +83,7 @@ function App(){
         <Route path="/SellerBookingHistory" element={<SellerBookingHistory/>}/>
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword/>}/>
+         <Route path="/notifications" element={<Notifications_Page />} />
       </Routes>
       </BrowserRouter>
     </div>

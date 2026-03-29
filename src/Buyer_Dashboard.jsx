@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -36,6 +37,8 @@ const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 const productCategories=["Fashion","Electronics","Furniture","Construction"];
 const serviceCategories=["services","Hospitality"];
 const assetCategories=["RealEstate","Vehicles","Agriculture"];
+const [notifications, setNotifications] = useState([]);
+const [showNotifDropdown, setShowNotifDropdown] = useState(false);
 
 const getSellerRoute=(category,id)=>{
 if(productCategories.includes(category)){
@@ -49,6 +52,45 @@ return `/Asset_products/${id}`;
 }
 return `/view_products/${id}`;
 };
+
+// 1. Fetch History ONCE on load
+useEffect(() => {
+  const fetchOrderNotifications = async () => {
+    try {
+      const res = await api.get("/api/notifications"); // Fetch from the notification model directly
+      if (res.data.success) {
+        setNotifications(res.data.notifications);
+        // Only count those where read === false
+        const unread = res.data.notifications.filter(n => !n.read).length;
+        setUnreadNotifCount(unread);
+      }
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+    }
+  };
+  if (buyerId) fetchOrderNotifications();
+}, [buyerId]);
+
+// 2. Real-time Listener (No more setInterval!)
+useEffect(() => {
+  if (!buyerId) return;
+
+  const socket = io("https://isonga-backend.onrender.com");
+  socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
+
+  socket.on("new_notification", (data) => {
+    // Add new notification to the top immediately
+    setNotifications((prev) => [data, ...prev]);
+    setUnreadNotifCount(data.unreadCount);
+    
+    // Modern touch: Browser notification if they aren't looking at the tab
+    if (document.hidden) {
+      new Notification("Isonga Market Update", { body: data.message });
+    }
+  });
+
+  return () => socket.disconnect();
+}, [buyerId]);
 
 const fetchCartCount = async () => {
   try {
@@ -65,6 +107,28 @@ const fetchCartCount = async () => {
 useEffect(()=>{
 fetchCartCount();
 },[]);
+
+// Add this near your other useEffects
+useEffect(() => {
+  if (!buyerId) return;
+
+  // 1. Join the private room
+  const socket = io("https://isonga-backend.onrender.com"); // Use your backend URL
+  socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
+
+  // 2. Listen for the specific event name from your backend
+  socket.on("new_notification", (data) => {
+    // Add the new notification to the top of the list
+    setNotifications((prev) => [data, ...prev]);
+    // Update the red badge count
+    setUnreadNotifCount(data.unreadCount);
+    
+    // Optional: Add a sound effect or a toast here
+    console.log("New Update:", data.message);
+  });
+
+  return () => socket.disconnect();
+}, [buyerId]);
 
 const handleLogout = async () => {
   try {
@@ -242,13 +306,18 @@ return(
 <div className="Buyer_Dashboard_nav">
 <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
 </div>
-{/* Notification Bell */}
-<Link to="#" className="nav-icon-link">
-  <FontAwesomeIcon icon={faBell} size="2x" />
-  {unreadNotifCount > 0 && (
-    <span className="notification-badge">{unreadNotifCount}</span>
-  )}
-</Link>
+{/* Simplified Bell Icon */}
+<div className="notification-container" style={{ position: "relative" }}>
+  <Link 
+    to="/notifications" 
+    className="nav-icon-link" 
+  >
+    <FontAwesomeIcon icon={faBell} size="2x" />
+    {unreadNotifCount > 0 && (
+      <span className="notification-badge">{unreadNotifCount}</span>
+    )}
+  </Link>
+</div>
 <Link to="/cart" style={{position:"relative"}}>
 <FontAwesomeIcon icon={faCartShopping} size="2x"/>
 {cartCount>0 &&(

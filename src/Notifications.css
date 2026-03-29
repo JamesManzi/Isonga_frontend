@@ -1,49 +1,79 @@
-.glass-nav {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 15px 30px;
+.notifications-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: #fdfdfd;
+}
+
+.notif-page-header {
   display: flex;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
 }
 
-.bell-container {
-  position: relative;
-  font-size: 22px;
-  color: #2c3e50;
+.notif-page-header h1 { font-size: 1.5rem; color: #1a1a1a; margin: 0; }
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #333;
 }
 
-.notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -8px;
-  background: #e74c3c; /* Bright red for attention */
-  color: white;
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 50%;
-  border: 2px solid white;
-}
-
-.notif-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(5px);
-  margin-bottom: 10px;
-  padding: 15px;
+.notif-page-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: white;
   border-radius: 12px;
-  border-left: 5px solid #3498db;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: 1px solid #f0f0f0;
 }
 
-.notif-card.unread {
-  background: rgba(52, 152, 219, 0.1); /* Light blue for unread */
-  border-left-color: #2ecc71; /* Green for new updates */
+.notif-page-card:active { transform: scale(0.98); }
+
+.unread-notif {
+  border-left: 4px solid #3498db;
+  background: #f7fbff;
 }
 
-.notif-time {
-  font-size: 12px;
-  color: #95a5a6;
+.notif-status-icon {
+  font-size: 1.5rem;
+  margin-right: 15px;
 }
+
+.notif-page-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #2d3436;
+  font-weight: 500;
+}
+
+.notif-date {
+  font-size: 0.8rem;
+  color: #b2bec3;
+  margin-top: 5px;
+  display: block;
+}
+
+.unread-dot {
+  color: #3498db;
+  font-size: 0.5rem;
+  margin-left: auto;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 100px;
+  color: #b2bec3;
+}
+
+.empty-icon { font-size: 3rem; margin-bottom: 10px; }
