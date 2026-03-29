@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "./api";
 import { Mail, CheckCircle, ArrowRight, RefreshCw } from "lucide-react"; // Optional: npm install lucide-react
-import "/VerifyEmail";
+import "./VerifyEmail.css";
 function VerifyEmail() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
