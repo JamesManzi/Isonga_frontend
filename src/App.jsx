@@ -37,6 +37,7 @@ import SellerBookings from "./SellerBookings";
 import SellerOrderHistory from "./SellerOrderHistory";
 import SellerBookingHistory from "./SellerBookingHistory";
 import VerifyEmail from "./VerifyEmail";
+import ForgotPassword from "./ForgotPassword";
 function App(){
   return(
     <div>
@@ -80,6 +81,7 @@ function App(){
         <Route path="/SellerOrderHistory" element={<SellerOrderHistory/>}/>
         <Route path="/SellerBookingHistory" element={<SellerBookingHistory/>}/>
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword/>}/>
       </Routes>
       </BrowserRouter>
     </div>
