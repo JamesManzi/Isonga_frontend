@@ -91,14 +91,21 @@ useEffect(() => {
   };
 }, [buyerId]);
 
-// ✅ NEW: Added handler to mark read when bell is clicked
 const handleBellClick = async () => {
   try {
-    await api.put("/api/notifications/mark-read");
-    setUnreadNotifCount(0);
-    navigate("/notifications");
+    // 1. Tell the backend to update the database
+    const res = await api.put("/api/notifications/mark-read");
+    
+    if (res.data.success) {
+      // 2. Only if the DB update works, clear the local UI badge
+      setUnreadNotifCount(0);
+      
+      // 3. Now go to the notifications page
+      navigate("/notifications");
+    }
   } catch (err) {
-    console.error("Error marking as read", err);
+    console.error("Failed to mark notifications as read:", err);
+    // Fallback: Navigate anyway so the user can see their messages
     navigate("/notifications");
   }
 };
