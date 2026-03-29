@@ -94,7 +94,7 @@ function Buyer_Login() {
             </div>
 
             <div className="buyer-form-options">
-              <Link to="/buyer-forgot-password">Forgot password?</Link>
+              <Link to="/forgot-password">Forgot password?</Link>
             </div>
 
             <button type="submit" className="buyer-main-btn" disabled={loading}>
