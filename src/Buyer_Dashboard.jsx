@@ -120,31 +120,29 @@ return stars;
 };
 
 useEffect(() => {
-    // Check if socket is imported correctly
-    if (socket) {
-      // 1. Manually connect because autoConnect is false in your socket.js
-      if (!socket.connected) {
-        socket.connect();
-      }
+  // Use 'socket' only if it exists in the scope
+  const currentSocket = typeof socket !== 'undefined' ? socket : null;
 
-      const handler = (data) => {
-        setUnreadNotifCount(data.unreadCount);
-        setMessage({ type: "success", text: data.message });
-        setTimeout(() => setMessage(""), 5000);
-      };
-
-      // 2. Set up listener
-      socket.on("new_notification", handler);
-
-      // 3. Cleanup
-      return () => {
-        socket.off("new_notification", handler);
-        // We don't disconnect here so ChatNotification can still use it
-      };
-    } else {
-      console.error("Socket is not defined. Check your import path!");
+  if (currentSocket) {
+    if (!currentSocket.connected) {
+      currentSocket.connect();
     }
-  }, []);
+
+    const handler = (data) => {
+      setUnreadNotifCount(data.unreadCount);
+      setMessage({ type: "success", text: data.message });
+      setTimeout(() => setMessage(""), 5000);
+    };
+
+    currentSocket.on("new_notification", handler);
+
+    return () => {
+      currentSocket.off("new_notification", handler);
+    };
+  } else {
+    console.error("Critical Error: 'socket' is not defined in Buyer_Dashboard. Check your import path!");
+  }
+}, []);
 
 useEffect(()=>{
 const fetchData=async()=>{
