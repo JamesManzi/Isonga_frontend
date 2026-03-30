@@ -32,31 +32,6 @@ function Notifications_Page() {
   fetchNotifications();
 }, []);
 
-useEffect(() => {
-  const fetchAndMarkRead = async () => {
-    try {
-      const res = await api.get("/api/notifications");
-      if (res.data.success) {
-        setNotifications(res.data.notifications);
-
-        // 1. Mark as read in DB
-        await api.put("/api/notifications/mark-read");
-        
-        // 2. Update local state so dots disappear immediately
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-        
-        // 3. IMPORTANT: Tell the dashboard (via localStorage) that we just read them
-        // This acts as a backup flag
-        localStorage.setItem("lastReadNotif", Date.now().toString());
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchAndMarkRead();
-}, []);
 
   return (
     <div className="notifications-page">
