@@ -45,18 +45,17 @@ function Buyer_Dashboard() {
     return `/view_products/${id}`;
   };
 
-const fetchOrderNotifications = async () => {
+  const fetchOrderNotifications = async () => {
   if (!buyerId) return;
   try {
-    // Add a small cache-buster to ensure you get the freshest data
     const res = await api.get(`/api/notifications?t=${Date.now()}`); 
     if (res.data.success) {
       const fetchedNotifs = res.data.notifications;
       setNotifications(fetchedNotifs);
       
-      // Calculate count strictly from the fresh data
-      const count = fetchedNotifs.filter(n => n.status === "Unread").length;
-      setUnreadNotifCount(count);
+      // ✅ FIX: Match the backend 'read' boolean
+      const unreadCount = fetchedNotifs.filter(n => !n.read).length; 
+      setUnreadNotifCount(unreadCount);
     }
   } catch (err) {
     console.error("Notif Error:", err);
@@ -97,42 +96,56 @@ const fetchOrderNotifications = async () => {
   useEffect(() => {
     if (!buyerId) return;
 
+    // Connect to your production backend
     const socket = io("https://isonga-backend.onrender.com");
+
+    // Register user as online so the server knows where to send notifications
     socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
 
     socket.on("new_notification", (data) => {
+      // 1. Add the new notification to the top of the state array
       setNotifications((prev) => [data, ...prev]);
-      setUnreadNotifCount(prev => prev + 1);
+
+      // 2. ✅ UPDATE: Use the exact count from the server if it exists
+      // This prevents the badge from getting "out of sync"
+      if (data.unreadCount !== undefined) {
+        setUnreadNotifCount(data.unreadCount);
+      } else {
+        setUnreadNotifCount(prev => prev + 1);
+      }
+
+      // 3. Browser Desktop Notification (if tab is minimized)
       if (document.hidden && Notification.permission === "granted") {
-        new Notification("Isonga Market Update", { body: data.message });
+        new Notification("Isonga Market Update", { 
+          body: data.message,
+          icon: "/logo.png" // Added icon for a professional look
+        });
       }
     });
 
+    // Cleanup on unmount or buyerId change
     return () => {
       socket.off("new_notification");
       socket.disconnect();
     };
   }, [buyerId]);
-
+  
   const handleBellClick = async () => {
-  // 1. Instant UI feedback: Clear the badge count immediately
+  // 1. Instant UI feedback
   setUnreadNotifCount(0);
   
   try {
-    // 2. Tell the database to mark all as read
+    // 2. Call the backend to update the database
     const res = await api.put("/api/notifications/mark-read");
     
     if (res.data.success) {
-      // 3. Update the local notifications array so the 'unread-notif' 
-      // class in your CSS is removed
+      // 3. Update local state so if the user comes back, they are all 'read'
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      
-      // 4. Move to the notifications page
-      navigate("/notifications");
     }
   } catch (err) {
     console.error("Failed to mark notifications as read:", err);
-    // Still navigate so the user can see their messages
+  } finally {
+    // 4. Always navigate so they can see the list
     navigate("/notifications");
   }
 };
