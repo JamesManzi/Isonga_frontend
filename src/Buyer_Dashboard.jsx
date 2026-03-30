@@ -55,7 +55,7 @@ const fetchOrderNotifications = async () => {
       setNotifications(fetchedNotifs);
       
       // Calculate count strictly from the fresh data
-      const count = fetchedNotifs.filter(n => !n.read).length;
+      const count = fetchedNotifs.filter(n => n.status === "Unread").length;
       setUnreadNotifCount(count);
     }
   } catch (err) {
