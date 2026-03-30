@@ -14,7 +14,7 @@ function ChatNotification() {
 
     const fetchUser = async () => {
       try {
-        const res = await api.get("com/api/buyer_dashboard");
+        const res = await api.get("/api/buyer_dashboard");
         if (!res.data.success) return;
 
         const buyer = res.data.buyer;
