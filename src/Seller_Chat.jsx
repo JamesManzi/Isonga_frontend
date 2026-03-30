@@ -7,11 +7,8 @@ import "./Seller_Chat.css";
 
 export const socket = io("https://isonga-backend.onrender.com", {
   withCredentials: false,
-  transports: ["polling", "websocket"], // ✅ FIX
+  transports: ["polling", "websocket"], // ✅ FIXED
   autoConnect: false,
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  reconnectionDelay: 2000,
 });
 
 function Seller_Chat() {
