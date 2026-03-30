@@ -13,18 +13,17 @@ function Notifications_Page() {
   useEffect(() => {
   const fetchNotifications = async () => {
     try {
-      // ✅ mark as read FIRST
-      await api.put("/api/notifications/mark-read");
-
-      // ✅ then fetch updated notifications
+      // 1. Fetch notifications first so the user sees something immediately
       const res = await api.get("/api/notifications");
-
       if (res.data.success) {
         setNotifications(res.data.notifications);
       }
 
+      // 2. Silently mark them as read in the background
+      await api.put("/api/notifications/mark-read");
+      
     } catch (err) {
-      console.error("Error:", err);
+      console.error("Notification Page Error:", err);
     } finally {
       setLoading(false);
     }
