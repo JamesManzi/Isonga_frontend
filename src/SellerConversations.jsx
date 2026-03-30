@@ -6,8 +6,7 @@ import "./SellerConversations.css";
 
 // Initialize socket outside component to prevent multiple connections
 const socket = io("https://isonga-backend.onrender.com", {
-  withCredentials: false,
-  transports: ["websocket"],
+  transports: ["polling", "websocket"],
 });
 
 function SellerConversations() {

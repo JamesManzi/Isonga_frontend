@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 import "./BuyerConversations.css";
 
 const socket = io("https://isonga-backend.onrender.com", { withCredentials: false,
-  transports: ["websocket"],
+  transports: ["polling", "websocket"],
  });
 
 function BuyerConversations() {
