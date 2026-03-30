@@ -111,19 +111,24 @@ function Buyer_Dashboard() {
   }, [buyerId]);
 
   const handleBellClick = async () => {
+  // 1. Instant UI feedback: Clear the badge count immediately
+  setUnreadNotifCount(0);
+  
   try {
+    // 2. Tell the database to mark all as read
     const res = await api.put("/api/notifications/mark-read");
     
     if (res.data.success) {
-      // Update local state first to provide instant feedback
-      setUnreadNotifCount(0);
+      // 3. Update the local notifications array so the 'unread-notif' 
+      // class in your CSS is removed
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
       
-      // Then navigate
+      // 4. Move to the notifications page
       navigate("/notifications");
     }
   } catch (err) {
     console.error("Failed to mark notifications as read:", err);
+    // Still navigate so the user can see their messages
     navigate("/notifications");
   }
 };
@@ -293,10 +298,18 @@ function Buyer_Dashboard() {
           <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
         </div>
 
-        <div className="notification-container" style={{ position: "relative", cursor: "pointer", display: "inline-block" }} onClick={handleBellClick}>
-          <FontAwesomeIcon icon={faBell} size="2x" />
-          {unreadNotifCount > 0 && <span className="notification-badge">{unreadNotifCount}</span>}
-        </div>
+        <div 
+  className="notification-container nav-icon-link" 
+  style={{ position: "relative", cursor: "pointer" }} 
+  onClick={handleBellClick}
+>
+  <FontAwesomeIcon icon={faBell} size="2x" />
+  {unreadNotifCount > 0 && (
+    <span className="notification-badge">
+      {unreadNotifCount}
+    </span>
+  )}
+</div>
 
         <Link to="/cart" style={{ position: "relative" }}>
           <FontAwesomeIcon icon={faCartShopping} size="2x" />
