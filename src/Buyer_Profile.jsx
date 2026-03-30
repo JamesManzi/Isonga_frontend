@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faTimes } from "@fortawesome/free-solid-svg-icons"; // Added faTimes
@@ -8,7 +8,7 @@ import "./Buyer_Profile.css";
 function Buyer_Profile() {
 
 const [buyer,setBuyer] = useState(null);
-
+const navigate=useNavigate();
 const [name,setName] = useState("");
 const [password,setPassword] = useState("");
 const [confirmPassword,setConfirmPassword] = useState("");
@@ -102,6 +102,8 @@ const res = await api.put("/api/update_buyer_profile", formData);
 
 if(res.data.success){
 setMessage("Profile updated successfully");
+navigate("/buyer_dashboard");
+
 }
 
 }catch(err){
