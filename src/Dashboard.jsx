@@ -107,53 +107,59 @@ function Dashboard() {
 
   /* ---------------- FETCH DASHBOARD DATA ---------------- */
 
-  useEffect(() => {
-
-    const fetchSellerData = async () => {
-
-      try {
-         const token = localStorage.getItem("token");
-        if (!token) {
+ useEffect(() => {
+  const fetchSellerData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
         navigate("/login");
         return;
       }
-      const res=await api.get("/api/dashboard");
+
+      const res = await api.get("/api/dashboard");
+
+      // 1. Check if the response actually contains the seller data
+      if (res.data.success && res.data.seller) {
         const s = res.data.seller;
 
         setSeller({
           ...s,
-          averageRating: s.averageRating || 0,
-          numReviews: s.numReviews || 0,
-          totalOrders: s.totalOrders || 0,
-          totalSales: s.totalSales || 0,
+          // Use the Nullish Coalescing Operator (??) for safer defaults
+          averageRating: s.averageRating ?? 0,
+          numReviews: s.numReviews ?? 0,
+          totalOrders: s.totalOrders ?? 0,
+          totalSales: s.totalSales ?? 0,
         });
 
-        setTotalViews(res.data.totalViews || 0);
-        setNewOrdersCount(s.newOrders || 0);
-        setTodayViews(res.data.todayViews || 0);
-        
-      const unreadRes = await api.get("/api/seller/conversations");
-        if (unreadRes.data.success) {
+        setTotalViews(res.data.totalViews ?? 0);
+        setNewOrdersCount(s.newOrders ?? 0);
+        setTodayViews(res.data.todayViews ?? 0);
 
+        // 2. Only fetch conversations if the dashboard load was successful
+        const unreadRes = await api.get("/api/seller/conversations");
+        if (unreadRes.data.success && unreadRes.data.conversations) {
           const count = unreadRes.data.conversations.reduce(
             (sum, conv) => sum + (conv.unreadCount || 0),
             0
           );
-
           setUnreadCount(count);
-
         }
-
-      } catch (err) {
-        console.error("Dashboard Fetch Error:", err);
+      } else {
+        // Handle case where success is false (e.g., session expired)
+        console.error("Dashboard error:", res.data.message);
+        toast.error("Session error. Please login again.");
+        // navigate("/login"); 
       }
 
-    };
+    } catch (err) {
+      console.error("Dashboard Fetch Error:", err);
+      // This prevents the UI from staying in a "Loading" state forever if the server is down
+      toast.error("Server connection failed");
+    }
+  };
 
-    fetchSellerData();
-
-  }, [navigate]);
-
+  fetchSellerData();
+}, [navigate]);
   /* ---------------- SOCKET REALTIME ---------------- */
 
   useEffect(() => {
