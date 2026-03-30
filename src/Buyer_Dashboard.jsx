@@ -111,18 +111,22 @@ function Buyer_Dashboard() {
   }, [buyerId]);
 
   const handleBellClick = async () => {
-    setUnreadNotifCount(0);
-    try {
-      const res = await api.put("/api/notifications/mark-read");
-      if (res.data.success) {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-        navigate("/notifications");
-      }
-    } catch (err) {
-      console.error("Failed to mark notifications as read:", err);
+  try {
+    const res = await api.put("/api/notifications/mark-read");
+    
+    if (res.data.success) {
+      // Update local state first to provide instant feedback
+      setUnreadNotifCount(0);
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      
+      // Then navigate
       navigate("/notifications");
     }
-  };
+  } catch (err) {
+    console.error("Failed to mark notifications as read:", err);
+    navigate("/notifications");
+  }
+};
 
   const handleLogout = async () => {
     try {
