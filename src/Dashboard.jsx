@@ -430,7 +430,7 @@ if (!seller) {
         </div>
 
        <div className="buyer_messages">
-  <Link to="/inventory">
+  <Link to="#">
     <FontAwesomeIcon icon={faBoxOpen} />
     <h2>{AddType}</h2> 
     <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
