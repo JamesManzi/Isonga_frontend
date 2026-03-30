@@ -5,10 +5,13 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
-// Use the same socket connection as your seller chat
-const socket = io("https://isonga-backend.onrender.com", { 
+export const socket = io("https://isonga-backend.onrender.com", {
   withCredentials: false,
-  transports: ["websocket"],
+  transports: ["polling", "websocket"], // ✅ FIX
+  autoConnect: false,
+  reconnection: true,
+  reconnectionAttempts: Infinity,
+  reconnectionDelay: 2000,
 });
 
 function Buyer_Chat() {
