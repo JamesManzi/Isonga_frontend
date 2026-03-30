@@ -16,8 +16,7 @@ const [loading,setLoading]=useState(false);
 const [profile,setProfile] = useState(null);
 const [preview,setPreview] = useState("");
 
-const [message,setMessage] = useState("");
-
+const [message, setMessage] = useState({ text: "", type: "" });
 // --- ADDED FOR ZOOM ---
 const [isZoomed, setIsZoomed] = useState(false);
 
@@ -243,10 +242,11 @@ Update Profile
 </form>
 
 {message && (
-  <div className={`alert`}>
-    <span>{message}</span>
-  </div>
-)}
+              <div className={`buyer-modern-alert ${message.type}`}>
+                {message.text}
+              </div>
+            )}
+
 
 </div>
 
