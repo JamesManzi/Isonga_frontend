@@ -6,9 +6,7 @@ import Picker from "emoji-picker-react";
 import "./Seller_Chat.css";
 
 export const socket = io("https://isonga-backend.onrender.com", {
-  withCredentials: false,
   transports: ["polling", "websocket"], // ✅ FIXED
-  autoConnect: false,
 });
 
 function Seller_Chat() {
