@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import api from "./api";
 import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight, faSearch, faCartShopping, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faChevronRight, faSearch, faCartShopping, faStar,faBell } from "@fortawesome/free-solid-svg-icons";
 
 function Fashion() {
   const [sellers, setSellers] = useState([]);
@@ -89,6 +89,27 @@ function Fashion() {
     fetchSellers();
   }, [navigate]);
 
+  
+  const handleBellClick = async () => {
+  // 1. Instant UI feedback
+  setUnreadNotifCount(0);
+  
+  try {
+    // 2. Call the backend to update the database
+    const res = await api.put("/api/notifications/mark-read");
+    
+    if (res.data.success) {
+      // 3. Update local state so if the user comes back, they are all 'read'
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    }
+  } catch (err) {
+    console.error("Failed to mark notifications as read:", err);
+  } finally {
+    // 4. Always navigate so they can see the list
+    navigate("/notifications");
+  }
+};
+
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
     return path.startsWith("http") ? path : `https://isonga-backend.onrender.com/uploads/${path}`;
@@ -161,6 +182,19 @@ useEffect(() => {
             </ul>
           </nav>
         </div>
+        <div 
+          className="notification-container nav-icon-link" 
+          style={{ position: "relative", cursor: "pointer" }} 
+          onClick={handleBellClick}
+        >
+          <FontAwesomeIcon icon={faBell} size="2x" />
+          {unreadNotifCount > 0 && (
+            <span className="notification-badge">
+              {unreadNotifCount}
+            </span>
+          )}
+        </div>
+
         <Link to="/cart" className="cart-link" style={{ position: "relative" }}>
           <FontAwesomeIcon icon={faCartShopping} size="2x" className="faCartShopping" />
           {cartCount > 0 && (
