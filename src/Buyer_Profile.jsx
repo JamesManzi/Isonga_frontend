@@ -102,7 +102,8 @@ const res = await api.put("/api/update_buyer_profile", formData);
 
 if(res.data.success){
 setMessage("Profile updated successfully");
-navigate("/buyer_dashboard");
+setMessage({ text: "Profile updated successfully", type: "success" });
+setTimeout(() => navigate("/buyer_dashboard"), 1500);
 
 }
 
