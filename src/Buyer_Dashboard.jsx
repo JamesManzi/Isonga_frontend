@@ -45,19 +45,23 @@ function Buyer_Dashboard() {
     return `/view_products/${id}`;
   };
 
-  // Helper for fetching (Defined here so it can be called in multiple effects)
-  const fetchOrderNotifications = async () => {
-    if (!buyerId) return;
-    try {
-      const res = await api.get("/api/notifications");
-      if (res.data.success) {
-        setNotifications(res.data.notifications);
-        setUnreadNotifCount(res.data.notifications.filter(n => !n.read).length);
-      }
-    } catch (err) {
-      console.error("Notif Error:", err);
+const fetchOrderNotifications = async () => {
+  if (!buyerId) return;
+  try {
+    // Add a small cache-buster to ensure you get the freshest data
+    const res = await api.get(`/api/notifications?t=${Date.now()}`); 
+    if (res.data.success) {
+      const fetchedNotifs = res.data.notifications;
+      setNotifications(fetchedNotifs);
+      
+      // Calculate count strictly from the fresh data
+      const count = fetchedNotifs.filter(n => !n.read).length;
+      setUnreadNotifCount(count);
     }
-  };
+  } catch (err) {
+    console.error("Notif Error:", err);
+  }
+};
 
   const fetchCartCount = async () => {
     try {
@@ -132,6 +136,18 @@ function Buyer_Dashboard() {
     navigate("/notifications");
   }
 };
+
+useEffect(() => {
+  if (buyerId) {
+    fetchOrderNotifications();
+  }
+  
+  // Re-fetch whenever the user comes back to this tab/page
+  const handlePageShow = () => fetchOrderNotifications();
+  window.addEventListener("pageshow", handlePageShow);
+  
+  return () => window.removeEventListener("pageshow", handlePageShow);
+}, [buyerId]);
 
   const handleLogout = async () => {
     try {
