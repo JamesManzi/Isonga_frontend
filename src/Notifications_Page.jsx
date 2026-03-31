@@ -51,7 +51,7 @@ function Notifications_Page() {
       }
 
       // Hit the specific endpoint (Ensure your backend matches this pluralization)
-      const res = await api.get(`/api/${type}s/${id}`);
+      const res = await api.get(`/api/${type}/${id}`);
 
       if (res.data.success) {
         // We set the data and explicitly keep the type for the PDF naming logic
