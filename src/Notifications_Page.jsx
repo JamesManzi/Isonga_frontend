@@ -39,17 +39,20 @@ function Notifications_Page() {
 
   const id = n.refId || n.orderId || n.bookingId || n._id;
 
+  console.log("NAVIGATING ID:", id);
+  console.log("TYPE:", n.type);
+
   if (!id) {
-    alert("No ID found for this notification");
+    alert("No ID found");
     return;
   }
 
   if (n.type === "Order") {
     navigate(`/buyer/order/${id}`);
-  }
-
-  if (n.type === "Booking") {
+  } else if (n.type === "Booking") {
     navigate(`/buyer/booking/${id}`);
+  } else {
+    alert("TYPE MISSING OR WRONG");
   }
 };
 
