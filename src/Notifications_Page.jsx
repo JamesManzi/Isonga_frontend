@@ -35,24 +35,16 @@ function Notifications_Page() {
   }, []);
 
   const handleView = (n) => {
-  console.log("CLICKED NOTIF:", n);
+  console.log("CLICKED:", n);
 
-  const id = n.refId || n.orderId || n.bookingId || n._id;
-
-  console.log("NAVIGATING ID:", id);
-  console.log("TYPE:", n.type);
-
-  if (!id) {
-    alert("No ID found");
-    return;
-  }
-
-  if (n.type === "Order") {
-    navigate(`/buyer/order/${id}`);
-  } else if (n.type === "Booking") {
-    navigate(`/buyer/booking/${id}`);
-  } else {
-    alert("TYPE MISSING OR WRONG");
+  if (n.orderId) {
+    navigate(`/buyer/order/${n.orderId}`);
+  } 
+  else if (n.bookingId) {
+    navigate(`/buyer/booking/${n.bookingId}`);
+  } 
+  else {
+    alert("No valid order or booking found");
   }
 };
 
