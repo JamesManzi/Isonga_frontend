@@ -35,33 +35,29 @@ function Notifications_Page() {
   }, []);
 
   const fetchDetails = async (notif) => {
-    try {
-      let details = {};
+  try {
+    let details = {};
 
-      if (notif.orderId) {
-        const res = await api.get(`/api/orders/${notif.orderId}`);
-        if (res.data.success) {
-          details = res.data.order;
-        }
-      }
-
-      if (notif.bookingId) {
-        const res = await api.get(`/api/bookings/${notif.bookingId}`);
-        if (res.data.success) {
-          details = res.data.booking;
-        }
-      }
-
-      // ✅ Merge notification + fetched data
-      setSelectedNotif({ ...notif, ...details });
-
-      // ✅ Mark ONLY this notification as read (better UX)
-      await api.put(`/api/notifications/${notif._id}/read`);
-
-    } catch (err) {
-      console.error(err);
+    if (notif.orderId) {
+      const res = await api.get(`/api/orders/${notif.orderId}`);
+      details = res.data.order || {};
     }
-  };
+
+    if (notif.bookingId) {
+      const res = await api.get(`/api/bookings/${notif.bookingId}`);
+      details = res.data.booking || {};
+    }
+
+    // ✅ ALWAYS OPEN MODAL EVEN IF API FAILS
+    setSelectedNotif({ ...notif, ...details });
+
+  } catch (err) {
+    console.error(err);
+
+    // ✅ fallback: still open modal
+    setSelectedNotif(notif);
+  }
+};
 
   return (
     <div className="notifications-page">
