@@ -8,9 +8,6 @@ import "./Notifications.css";
 function Notifications_Page() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedNotif, setSelectedNotif] = useState(null);
-  const [selectedImg, setSelectedImg] = useState(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,11 +18,9 @@ function Notifications_Page() {
           setNotifications(res.data.notifications);
         }
 
-        // Mark all as read (optional - keep original behavior)
         await api.put("/api/notifications/mark-read");
-
       } catch (err) {
-        console.error("Notification Page Error:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -33,31 +28,6 @@ function Notifications_Page() {
 
     fetchNotifications();
   }, []);
-
-  const fetchDetails = async (notif) => {
-  try {
-    let details = {};
-
-    if (notif.orderId) {
-      const res = await api.get(`/api/orders/${notif.orderId}`);
-      details = res.data.order || {};
-    }
-
-    if (notif.bookingId) {
-      const res = await api.get(`/api/bookings/${notif.bookingId}`);
-      details = res.data.booking || {};
-    }
-
-    // ✅ ALWAYS OPEN MODAL EVEN IF API FAILS
-    setSelectedNotif({ ...notif, ...details });
-
-  } catch (err) {
-    console.error(err);
-
-    // ✅ fallback: still open modal
-    setSelectedNotif(notif);
-  }
-};
 
   return (
     <div className="notifications-page">
@@ -75,14 +45,16 @@ function Notifications_Page() {
           <div className="empty-state">
             <div className="empty-icon">🔔</div>
             <h3>No notifications yet</h3>
-            <p>Your Notifications updates will appear here.</p>
           </div>
         ) : (
           notifications.map((n) => (
             <div
               key={n._id}
               className={`notif-page-card ${!n.read ? "unread-notif" : ""}`}
-              onClick={() => fetchDetails(n)}
+              onClick={() => {
+                if (n.orderId) navigate(`/buyer/order/${n.orderId}`);
+                if (n.bookingId) navigate(`/buyer/booking/${n.bookingId}`);
+              }}
             >
               <div className="notif-status-icon">
                 {n.message.includes("✅") ? "📦" : "❌"}
@@ -106,114 +78,6 @@ function Notifications_Page() {
           ))
         )}
       </div>
-
-      {/* ✅ MAIN MODAL */}
-      {selectedNotif && (
-        <div
-          className="modal-overlay"
-          onClick={() => setSelectedNotif(null)}
-        >
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="close-btn"
-              onClick={() => setSelectedNotif(null)}
-            >
-              ✖
-            </button>
-
-            <h2>
-              {selectedNotif.items ? "Order Details" : "Booking Details"}
-            </h2>
-
-            {/* CUSTOMER */}
-            <p><strong>Name:</strong> {selectedNotif.name}</p>
-            <p><strong>Phone:</strong> {selectedNotif.phone}</p>
-            <p><strong>Address:</strong> {selectedNotif.address}</p>
-
-            {/* BOOKING INFO */}
-            {selectedNotif.date && (
-              <>
-                <p><strong>Date:</strong> {selectedNotif.date}</p>
-                <p><strong>Time:</strong> {selectedNotif.time}</p>
-                <p><strong>Message:</strong> {selectedNotif.message || "No message"}</p>
-              </>
-            )}
-
-            {/* PAYMENT */}
-            <p><strong>Payment:</strong> {selectedNotif.paymentMethod}</p>
-
-            {/* RECEIPT */}
-            {selectedNotif.paymentProof && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedImg(selectedNotif.paymentProof);
-                }}
-              >
-                📷 View Receipt
-              </button>
-            )}
-
-            {/* ITEMS */}
-            {selectedNotif.items && (
-              <div>
-                <h3>Items</h3>
-                {selectedNotif.items.map((item, i) => (
-                  <div key={i}>
-                    {item.product?.name || "Deleted Product"} × {item.quantity}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* TOTAL */}
-            {selectedNotif.totalPrice && (
-              <h3>Total: {selectedNotif.totalPrice} Rwf</h3>
-            )}
-
-            {/* DOWNLOAD */}
-            {selectedNotif.fileUrl && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  window.open(selectedNotif.fileUrl, "_blank");
-                }}
-              >
-                ⬇ Download
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ✅ IMAGE MODAL (OUTSIDE MAIN MODAL) */}
-      {selectedImg && (
-        <div
-          className="modal-overlay"
-          onClick={() => setSelectedImg(null)}
-        >
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="close-btn"
-              onClick={() => setSelectedImg(null)}
-            >
-              ✖
-            </button>
-
-            <img
-              src={selectedImg}
-              alt="Receipt"
-              style={{ maxWidth: "100%", maxHeight: "80vh" }}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
