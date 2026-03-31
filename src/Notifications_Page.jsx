@@ -35,20 +35,23 @@ function Notifications_Page() {
   }, []);
 
   const handleView = (n) => {
-    if (n.type === "Order") {
-      navigate(`/buyer/order/${n.refId}`);
-    }
+  console.log("CLICKED NOTIF:", n);
 
-    if (n.type === "Booking") {
-      navigate(`/buyer/booking/${n.refId}`);
-    }
-  };
+  const id = n.refId || n.orderId || n.bookingId || n._id;
 
-  const handleDownload = (e, n) => {
-    e.stopPropagation();
-    if (n.fileUrl) window.open(n.fileUrl, "_blank");
-    else alert("No file available");
-  };
+  if (!id) {
+    alert("No ID found for this notification");
+    return;
+  }
+
+  if (n.type === "Order") {
+    navigate(`/buyer/order/${id}`);
+  }
+
+  if (n.type === "Booking") {
+    navigate(`/buyer/booking/${id}`);
+  }
+};
 
   return (
     <div className="notifications-page">
