@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"; // Added useRef
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./api";
 import jsPDF from "jspdf";
@@ -8,7 +8,6 @@ import {
   faArrowLeft,
   faEye,
   faDownload,
-  faCircle,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "./Notifications.css";
@@ -17,18 +16,21 @@ function Notifications_Page() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewDetail, setViewDetail] = useState(null);
-  const pdfRef = useRef(); // Reference for the PDF generator
+  const pdfRef = useRef();
   const navigate = useNavigate();
 
-  // ... fetchNotifications logic remains the same ...
+  // 1. Fetch Notifications and Mark as Read
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const res = await api.get("/api/notifications");
-        if (res.data.success) setNotifications(res.data.notifications);
-        await api.put("/api/notifications/mark-read");
+        if (res.data.success) {
+          setNotifications(res.data.notifications);
+          // Auto-mark all as read when opening the page
+          await api.put("/api/notifications/mark-read");
+        }
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching notifications:", err);
       } finally {
         setLoading(false);
       }
@@ -36,28 +38,42 @@ function Notifications_Page() {
     fetchNotifications();
   }, []);
 
+  // 2. Corrected handleView Logic
   const handleView = async (n) => {
     try {
+      // Determine if we are fetching an order or a booking
       const type = n.orderId ? "order" : "booking";
       const id = n.orderId || n.bookingId;
+
+      if (!id) {
+        alert("Details ID not found in notification.");
+        return;
+      }
+
+      // Hit the specific endpoint (Ensure your backend matches this pluralization)
       const res = await api.get(`/api/${type}s/${id}`);
+
       if (res.data.success) {
+        // We set the data and explicitly keep the type for the PDF naming logic
         setViewDetail({ ...res.data[type], type });
+      } else {
+        alert("Could not load details.");
       }
     } catch (err) {
-      alert("Details not found.");
+      console.error("Detail Fetch Error:", err);
+      alert("Details not found. The item may have been deleted.");
     }
   };
 
-  // PROFESSIONAL PDF DOWNLOAD LOGIC
+  // 3. Robust PDF Download
   const downloadPDF = async () => {
     const element = pdfRef.current;
-    if (!element) return;
+    if (!element || !viewDetail) return;
 
     try {
       const canvas = await html2canvas(element, {
-        scale: 2, // Higher quality
-        useCORS: true, // Allows images from other domains
+        scale: 2,
+        useCORS: true,
         logging: false,
       });
       const imgData = canvas.toDataURL("image/png");
@@ -68,28 +84,46 @@ function Notifications_Page() {
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight);
-      pdf.save(`${viewDetail.type}_${viewDetail._id.slice(-6)}.pdf`);
+      pdf.save(`Isonga_${viewDetail.type}_${viewDetail._id?.slice(-6)}.pdf`);
     } catch (error) {
       console.error("PDF Generation Error:", error);
+      alert("Error generating PDF.");
     }
   };
 
   return (
     <div className="notifications-page">
       <div className="notif-header">
-        <button onClick={() => navigate(-1)}><FontAwesomeIcon icon={faArrowLeft} /></button>
+        <button onClick={() => navigate(-1)} className="back-btn">
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </button>
         <h2>Notifications</h2>
       </div>
 
       <div className="notif-list">
-        {loading ? <p>Loading...</p> : notifications.map((n) => (
-          <div key={n._id} className="notif-card" onClick={() => handleView(n)}>
-            <div className="notif-center"><p>{n.message}</p></div>
-            <div className="notif-right">
-              <button className="icon-btn view"><FontAwesomeIcon icon={faEye} /></button>
+        {loading ? (
+          <p className="loading-text">Loading...</p>
+        ) : notifications.length === 0 ? (
+          <p className="empty-msg">No notifications found.</p>
+        ) : (
+          notifications.map((n) => (
+            <div 
+              key={n._id} 
+              className={`notif-card ${n.read ? "read" : "unread"}`} 
+              onClick={() => handleView(n)}
+            >
+              <div className="notif-center">
+                <p>{n.message}</p>
+                <span className="notif-date">{new Date(n.createdAt).toLocaleDateString()}</span>
+              </div>
+              <div className="notif-right">
+                <button className="icon-btn view">
+                  <FontAwesomeIcon icon={faEye} />
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* --- DETAIL MODAL --- */}
@@ -101,12 +135,11 @@ function Notifications_Page() {
               <button onClick={downloadPDF} style={downloadBtnStyle}>
                 <FontAwesomeIcon icon={faDownload} /> Download PDF
               </button>
-              <button style={{ border: "none", background: "none", cursor: "pointer" }} onClick={() => setViewDetail(null)}>
+              <button style={closeBtnStyle} onClick={() => setViewDetail(null)}>
                 <FontAwesomeIcon icon={faTimes} size="lg" />
               </button>
             </div>
 
-            {/* THIS IS THE PART THAT GETS TURNED INTO A PDF */}
             <div ref={pdfRef} style={pdfCanvasStyle}>
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                     <h2 style={{ color: '#2c3e50', margin: 0 }}>ISONGA MARKET</h2>
@@ -116,33 +149,41 @@ function Notifications_Page() {
                 <div style={gridStyle}>
                     <section>
                         <h4 style={sectionTitle}>Customer Information</h4>
-                        <p><strong>Name:</strong> {viewDetail.name}</p>
-                        <p><strong>Phone:</strong> {viewDetail.phone}</p>
+                        <p><strong>Name:</strong> {viewDetail.name || "Customer"}</p>
+                        <p><strong>Phone:</strong> {viewDetail.phone || "N/A"}</p>
                         {viewDetail.address && <p><strong>Address:</strong> {viewDetail.address}</p>}
                     </section>
                     <section>
                         <h4 style={sectionTitle}>Order Status</h4>
-                        <p><strong>ID:</strong> #{viewDetail._id.slice(-8)}</p>
-                        <p><strong>Status:</strong> {viewDetail.status}</p>
+                        <p><strong>ID:</strong> #{viewDetail._id?.slice(-8).toUpperCase()}</p>
+                        <p><strong>Status:</strong> 
+                          <span style={{ 
+                            color: viewDetail.status === "Cancelled" ? "#e74c3c" : "#27ae60",
+                            fontWeight: "bold" 
+                          }}> {viewDetail.status}</span>
+                        </p>
                         <p><strong>Date:</strong> {new Date(viewDetail.createdAt).toLocaleDateString()}</p>
                     </section>
                 </div>
 
-                {viewDetail.items && (
+                {viewDetail.items && viewDetail.items.length > 0 && (
                     <div style={itemBox}>
                         <h4 style={{ marginTop: 0 }}>Items Ordered</h4>
                         {viewDetail.items.map((item, i) => (
                             <div key={i} style={itemRow}>
                                 <span>{item.product?.name || "Product"} x {item.quantity}</span>
-                                <span>{item.price * item.quantity} Rwf</span>
+                                <span>{(item.price * item.quantity).toLocaleString()} Rwf</span>
                             </div>
                         ))}
-                        <div style={totalStyle}>Total: {viewDetail.totalPrice} Rwf</div>
+                        <div style={totalStyle}>
+                          Total: {viewDetail.totalPrice?.toLocaleString()} Rwf
+                        </div>
                     </div>
                 )}
                 
-                <div style={{ marginTop: '30px', fontSize: '12px', textAlign: 'center', color: '#bdc3c7' }}>
-                    Thank you for shopping with Isonga Market!
+                <div style={{ marginTop: '30px', fontSize: '11px', textAlign: 'center', color: '#bdc3c7' }}>
+                    Thank you for shopping with Isonga Market! <br />
+                    This is a computer-generated receipt.
                 </div>
             </div>
           </div>
@@ -156,27 +197,28 @@ function Notifications_Page() {
 
 const modalOverlayStyle = {
   position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-  background: "rgba(0,0,0,0.8)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000
+  background: "rgba(0,0,0,0.85)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000
 };
 
 const modalContentStyle = {
   background: "#fff", padding: "20px", borderRadius: "12px",
-  width: "90%", maxWidth: "600px", maxHeight: "90vh", overflowY: "auto"
+  width: "95%", maxWidth: "600px", maxHeight: "90vh", overflowY: "auto", boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
 };
 
 const pdfCanvasStyle = {
-    padding: "30px", background: "#fff", border: "1px solid #eee"
+    padding: "30px", background: "#fff", border: "1px solid #f1f1f1"
 };
 
 const downloadBtnStyle = {
   background: "#27ae60", color: "#fff", border: "none",
-  padding: "10px 20px", borderRadius: "6px", cursor: "pointer", fontWeight: "600"
+  padding: "10px 18px", borderRadius: "6px", cursor: "pointer", fontWeight: "600", fontSize: "14px"
 };
 
+const closeBtnStyle = { border: "none", background: "none", cursor: "pointer", color: "#333" };
 const gridStyle = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px" };
-const sectionTitle = { borderBottom: "2px solid #f1f1f1", paddingBottom: "5px", color: "#2c3e50" };
-const itemBox = { marginTop: "20px", background: "#f9f9f9", padding: "15px", borderRadius: "8px" };
-const itemRow = { display: "flex", justifyContent: "space-between", marginBottom: "8px" };
-const totalStyle = { textAlign: "right", fontWeight: "bold", marginTop: "15px", borderTop: "1px solid #ddd", paddingTop: "10px", fontSize: "1.1rem" };
+const sectionTitle = { borderBottom: "2px solid #f1f1f1", paddingBottom: "5px", color: "#2c3e50", fontSize: "14px" };
+const itemBox = { marginTop: "20px", background: "#fdfdfd", padding: "15px", borderRadius: "8px", border: "1px solid #eee" };
+const itemRow = { display: "flex", justifyContent: "space-between", marginBottom: "8px", fontSize: "14px" };
+const totalStyle = { textAlign: "right", fontWeight: "bold", marginTop: "15px", borderTop: "2px solid #eee", paddingTop: "10px", fontSize: "1.1rem", color: "#2c3e50" };
 
 export default Notifications_Page;
