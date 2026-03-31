@@ -1,8 +1,14 @@
-import { useEffect, useState, useRef } from "react"; // Added useRef
+import { useEffect, useState, useRef } from "react";
 import api from "./api";
-import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faImage, faTimes, faHistory, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { 
+  faArrowLeft, 
+  faImage, 
+  faTimes, 
+  faHistory, 
+  faDownload 
+} from "@fortawesome/free-solid-svg-icons";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./SellerOrderHistory.css";
@@ -13,7 +19,7 @@ function SellerOrderHistory() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   
-  // Create an object to store refs for each order card
+  // Refs to capture specific order cards for PDF generation
   const orderRefs = useRef({});
 
   const getOrders = () => {
@@ -41,21 +47,26 @@ function SellerOrderHistory() {
     getOrders();
   }, []);
 
-  // PROFESSIONAL DOWNLOAD LOGIC
+  // PDF DOWNLOAD LOGIC
   const downloadOrderPDF = async (orderId) => {
     const element = orderRefs.current[orderId];
     if (!element) return;
 
     try {
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      const canvas = await html2canvas(element, { 
+        scale: 2, 
+        useCORS: true,
+        backgroundColor: "#ffffff" 
+      });
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const imgProps = pdf.getImageProperties(imgData);
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
+      // Adding a small margin from the top
       pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight);
-      pdf.save(`Order_Receipt_${orderId.slice(-6)}.pdf`);
+      pdf.save(`Receipt_${orderId.slice(-6)}.pdf`);
     } catch (error) {
       console.error("PDF Export Error:", error);
       alert("Failed to generate PDF");
@@ -74,43 +85,40 @@ function SellerOrderHistory() {
   }
 
   return (
-    <div style={{ padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
-      <Link to="/dashboard" style={{ textDecoration: "none", color: "#3498db", fontWeight: "600" }}>
+    <div style={containerStyle}>
+      <Link to="/dashboard" style={backLinkStyle}>
         <FontAwesomeIcon icon={faArrowLeft} /> Back to Dashboard
       </Link>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1 style={{ margin: "25px 0", color: "#2c3e50" }}>
-          <FontAwesomeIcon icon={faHistory} /> Order History
-        </h1>
-      </div>
+      <h1 style={titleStyle}>
+        <FontAwesomeIcon icon={faHistory} /> Order History
+      </h1>
 
       {orders.length === 0 ? (
-        <div style={{ textAlign: "center", marginTop: "50px", color: "#7f8c8d" }}>
+        <div style={emptyStateStyle}>
           <p>No processed orders in your history yet.</p>
         </div>
       ) : (
         orders.map((order) => (
-          <div key={order._id} style={{ position: 'relative', marginBottom: '20px' }}>
-            {/* Download Button Overlayed on Top Right */}
-            <button 
-              onClick={() => downloadOrderPDF(order._id)}
-              style={downloadBtnStyle}
-              title="Download Invoice"
-            >
-              <FontAwesomeIcon icon={faDownload} /> PDF
-            </button>
-
-            {/* The actual card that gets captured into PDF */}
-            <div 
-              ref={(el) => (orderRefs.current[order._id] = el)} 
-              style={historyCardStyle}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h3 style={{ margin: 0, color: "#34495e" }}>Order ...{order._id.slice(-6)}</h3>
+          <div key={order._id} style={historyCardStyle}>
+            
+            {/* Header: Contains ID, Download Button, and Status */}
+            <div style={cardHeaderStyle}>
+              <h3 style={{ margin: 0, color: "#34495e" }}>Order ...{order._id.slice(-6)}</h3>
+              
+              <div style={actionAreaStyle}>
+                <button 
+                  onClick={() => downloadOrderPDF(order._id)}
+                  style={downloadBtnStyle}
+                >
+                  <FontAwesomeIcon icon={faDownload} /> PDF
+                </button>
                 <span style={statusBadge(order.status)}>{order.status}</span>
               </div>
+            </div>
 
+            {/* This div is the only part captured in the PDF */}
+            <div ref={(el) => (orderRefs.current[order._id] = el)} style={{ padding: '5px' }}>
               <div style={gridStyle}>
                 <section>
                   <h4 style={sectionTitle}>Customer</h4>
@@ -131,24 +139,19 @@ function SellerOrderHistory() {
 
               <div style={itemBox}>
                 {order.items.map((item, index) => (
-                  <div key={index} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "3px" }}>
+                  <div key={index} style={itemRowStyle}>
                     <span>{item.product?.name || "Product"} × {item.quantity}</span>
                     <span>{item.price * item.quantity} Rwf</span>
                   </div>
                 ))}
                 <div style={totalStyle}>Total Amount: {order.totalPrice} Rwf</div>
               </div>
-              
-              {/* Footer for PDF branding */}
-              <div className="pdf-only" style={{ display: 'none', textAlign: 'center', marginTop: '10px', fontSize: '10px', color: '#ccc' }}>
-                Generated via ISONGA MARKET
-              </div>
             </div>
           </div>
         ))
       )}
 
-      {/* Modal for Receipt */}
+      {/* Modal for Payment Proof */}
       {selectedImg && (
         <div style={modalOverlayStyle} onClick={() => setSelectedImg(null)}>
           <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
@@ -163,42 +166,61 @@ function SellerOrderHistory() {
   );
 }
 
-/* --- Styles --- */
+/* --- STYLES --- */
 
-const downloadBtnStyle = {
-  position: "absolute",
-  right: "10px",
-  top: "10px",
-  zIndex: 5,
-  background: "#2ecc71",
-  color: "#fff",
-  border: "none",
-  borderRadius: "5px",
-  padding: "5px 12px",
-  cursor: "pointer",
-  fontSize: "0.8rem",
-  fontWeight: "bold",
-  boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-};
+const containerStyle = { padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" };
+const backLinkStyle = { textDecoration: "none", color: "#3498db", fontWeight: "600" };
+const titleStyle = { margin: "25px 0", color: "#2c3e50" };
+const emptyStateStyle = { textAlign: "center", marginTop: "50px", color: "#7f8c8d" };
 
 const historyCardStyle = {
   background: "#fff",
   padding: "20px",
   borderRadius: "10px",
+  marginBottom: "20px",
   borderLeft: "5px solid #bdc3c7",
   boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-  position: "relative"
 };
 
-const gridStyle = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "10px" };
-const sectionTitle = { borderBottom: "1px solid #eee", paddingBottom: "5px", color: "#7f8c8d", fontSize: "0.9rem", textTransform: "uppercase" };
+const cardHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "15px",
+  paddingBottom: "10px",
+  borderBottom: "1px solid #f9f9f9"
+};
+
+const actionAreaStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "10px"
+};
+
+const downloadBtnStyle = {
+  background: "#fff",
+  color: "#27ae60",
+  border: "1px solid #27ae60",
+  borderRadius: "4px",
+  padding: "4px 10px",
+  cursor: "pointer",
+  fontSize: "0.75rem",
+  fontWeight: "bold",
+  display: "flex",
+  alignItems: "center",
+  gap: "5px"
+};
+
+const gridStyle = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" };
+const sectionTitle = { borderBottom: "1px solid #eee", paddingBottom: "5px", color: "#7f8c8d", fontSize: "0.85rem", textTransform: "uppercase" };
 const textStyle = { margin: "5px 0", fontSize: "0.9rem", color: "#2c3e50" };
-const itemBox = { marginTop: "12px", background: "#fcfcfc", padding: "10px", borderRadius: "5px", border: "1px dashed #eee" };
-const totalStyle = { textAlign: "right", fontWeight: "bold", color: "#2c3e50", marginTop: "8px", paddingTop: "5px", borderTop: "1px solid #eee" };
+const itemBox = { marginTop: "15px", background: "#fcfcfc", padding: "12px", borderRadius: "5px", border: "1px dashed #eee" };
+const itemRowStyle = { display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "4px" };
+const totalStyle = { textAlign: "right", fontWeight: "bold", color: "#2c3e50", marginTop: "10px", paddingTop: "5px", borderTop: "1px solid #eee" };
 
 const statusBadge = (status) => ({
   backgroundColor: status === "Accepted" ? "#27ae60" : "#95a5a6",
-  color: "white", padding: "3px 10px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: "bold"
+  color: "white", padding: "4px 12px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: "bold"
 });
 
 const receiptButtonStyle = { background: "none", border: "none", color: "#3498db", cursor: "pointer", fontSize: "0.85rem", padding: 0, marginTop: "5px" };
