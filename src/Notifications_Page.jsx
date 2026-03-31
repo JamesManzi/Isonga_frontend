@@ -2,7 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCircle, faDownload, faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faEye,
+  faDownload,
+  faCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import "./Notifications.css";
 
 function Notifications_Page() {
@@ -30,38 +35,35 @@ function Notifications_Page() {
   }, []);
 
   const handleView = (n) => {
-    if (n.orderId) navigate(`/buyer/order/${n.orderId}`);
-    if (n.bookingId) navigate(`/buyer/booking/${n.bookingId}`);
+    if (n.type === "Order") {
+      navigate(`/buyer/order/${n.refId}`);
+    }
+
+    if (n.type === "Booking") {
+      navigate(`/buyer/booking/${n.refId}`);
+    }
   };
 
   const handleDownload = (e, n) => {
     e.stopPropagation();
-
-    if (n.fileUrl) {
-      window.open(n.fileUrl, "_blank");
-    } else {
-      alert("No file available for download");
-    }
+    if (n.fileUrl) window.open(n.fileUrl, "_blank");
+    else alert("No file available");
   };
 
   return (
     <div className="notifications-page">
-      <div className="notif-page-header">
-        <button onClick={() => navigate(-1)} className="back-btn">
+      <div className="notif-header">
+        <button onClick={() => navigate(-1)}>
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
-        <h1>Notifications</h1>
+        <h2>Notifications</h2>
       </div>
 
       <div className="notif-list">
         {loading ? (
-          <p className="loading-text">Loading updates...</p>
+          <p>Loading...</p>
         ) : notifications.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">🔔</div>
-            <h3>No notifications yet</h3>
-            <p>Your updates will appear here.</p>
-          </div>
+          <p>No notifications</p>
         ) : (
           notifications.map((n) => (
             <div
@@ -70,26 +72,20 @@ function Notifications_Page() {
               onClick={() => handleView(n)}
             >
               <div className="notif-left">
-                <div className="notif-icon">
-                  {n.message.includes("✅") ? "📦" : "❌"}
-                </div>
+                <span>{n.type === "Order" ? "📦" : "📅"}</span>
               </div>
 
               <div className="notif-center">
-                <p className="notif-message">{n.message}</p>
-                <span className="notif-date">
-                  {new Date(n.createdAt).toLocaleDateString()} •{" "}
-                  {new Date(n.createdAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+                <p>{n.message}</p>
+                <small>
+                  {new Date(n.createdAt).toLocaleString()}
+                </small>
               </div>
 
               <div className="notif-right">
-                {/* VIEW BUTTON */}
+                {/* VIEW */}
                 <button
-                  className="view-btn"
+                  className="icon-btn view"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleView(n);
@@ -98,10 +94,10 @@ function Notifications_Page() {
                   <FontAwesomeIcon icon={faEye} />
                 </button>
 
-                {/* DOWNLOAD BUTTON */}
+                {/* DOWNLOAD */}
                 {n.fileUrl && (
                   <button
-                    className="download-btn"
+                    className="icon-btn download"
                     onClick={(e) => handleDownload(e, n)}
                   >
                     <FontAwesomeIcon icon={faDownload} />
@@ -109,7 +105,7 @@ function Notifications_Page() {
                 )}
 
                 {!n.read && (
-                  <FontAwesomeIcon icon={faCircle} className="unread-dot" />
+                  <FontAwesomeIcon icon={faCircle} className="dot" />
                 )}
               </div>
             </div>
