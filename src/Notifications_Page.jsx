@@ -42,9 +42,8 @@ function Notifications_Page() {
   const handleView = async (n) => {
     try {
       // Determine if we are fetching an order or a booking
-      const type = n.orderId ? "order" : "booking";
-      const id = n.orderId || n.bookingId;
-
+      const type = n.bookingId ? "booking" : "order";
+const id = n.bookingId || n.orderId;
       if (!id) {
         alert("Details ID not found in notification.");
         return;
