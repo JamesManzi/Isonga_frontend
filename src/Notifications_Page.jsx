@@ -40,6 +40,7 @@ function Notifications_Page() {
 
   // 2. Corrected handleView Logic
   const handleView = async (n) => {
+     console.log("CLICKED:", n);
     try {
       // Determine if we are fetching an order or a booking
       const type = n.bookingId ? "booking" : "order";
