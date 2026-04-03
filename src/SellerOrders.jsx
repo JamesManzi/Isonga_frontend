@@ -96,6 +96,7 @@ useEffect(() => {
                 <p><strong>Name:</strong> {order.name}</p>
                 <p><strong>Phone:</strong> {order.phone}</p>
                 <p><strong>Address:</strong> {order.address}</p>
+                <p><strong>Message:</strong> {order.notes || "No message"}</p>
               </section>
 
               <section>
