@@ -124,6 +124,7 @@ function SellerOrderHistory() {
                   <h4 style={sectionTitle}>Customer</h4>
                   <p style={textStyle}><strong>Name:</strong> {order.name}</p>
                   <p style={textStyle}><strong>Phone:</strong> {order.phone}</p>
+                  <p style={textStyle}><strong>Message:</strong> {order.notes || "No message"}</p>
                 </section>
 
                 <section>
