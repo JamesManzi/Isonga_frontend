@@ -1,198 +1,157 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "./api";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faEye,
-  faDownload,
-  faTimes,
-  faImage,
-} from "@fortawesome/free-solid-svg-icons";
-import "./Notifications.css";
 
-function Notifications_Page() {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [viewDetail, setViewDetail] = useState(null);
-  const pdfRef = useRef();
-  const navigate = useNavigate();
+import { useEffect, useState } from "react";
+import api from "./api";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
+function SellerBookings() {
+  const [bookings, setBookings] = useState([]);
+  const [selectedImg, setSelectedImg] = useState(null);
+  const [loading, setLoading] = useState(false);
+ const [actionLoading, setActionLoading] = useState(null);
+  // 1. Move fetch logic into a function usable by useEffect
+  // ✅ SellerBookings.js - Filter update
+const getBookings = async () => {
+  setLoading(true);
+  try {
+    const res = await api.get("/api/seller/bookings");
+    if (res.data.success) {
+      // Show everything that isn't Accepted or Cancelled.
+      // This ensures "Pending" and "Read" items stay visible!
+      const incoming = res.data.bookings.filter(
+        (b) => b.status !== "Accepted" && b.status !== "Cancelled"
+      );
+      setBookings(incoming);
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const res = await api.get("/api/notifications");
-        if (res.data.success) {
-          setNotifications(res.data.notifications);
-          await api.put("/api/notifications/mark-read");
-        }
-      } catch (err) {
-        console.error("Error fetching notifications:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNotifications();
+    getBookings();
   }, []);
 
-  const handleView = async (n) => {
-    try {
-      const type = n.bookingId ? "booking" : "order";
-      const id = n.bookingId || n.orderId;
-      if (!id) return alert("Details ID not found.");
+  // 2. Define updateStatus clearly
+ const updateStatus = async (bookingId, newStatus) => {
+  try {
+    setActionLoading(bookingId); // Start loading for this specific ID
 
-      const res = await api.get(`/api/${type}s/${id}`);
-
-      if (res.data.success) {
-        // Inject the 'type' into the object so the modal knows what to render
-        setViewDetail({ ...res.data[type], type });
-      } else {
-        alert("Could not load details.");
-      }
-    } catch (err) {
-      console.error("Detail Fetch Error:", err);
-      alert("Details not found. The item may have been deleted.");
+    const res = await api.put(`/api/bookings/${bookingId}`,
+      { status: newStatus },)
+    if (res.data.success) {
+      setBookings((prev) => prev.filter((b) => b._id !== bookingId));
     }
-  };
+  } catch (err) {
+    console.error("Error updating booking status:", err);
+  } finally {
+    setActionLoading(null); // Stop loading
+  }
+};
+  
+ if (loading) {
+  return (
+    <div className="orders-loading">
+      <div className="orders-loader-card">
 
-  const downloadPDF = async () => {
-    const element = pdfRef.current;
-    if (!element || !viewDetail) return;
+        <div className="ring-loader"></div>
 
-    try {
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        <h2>ISONGA MARKET</h2>
+        <p>Fetching incoming Bookings...</p>
 
-      pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight);
-      pdf.save(`Isonga_${viewDetail.type}_${viewDetail._id?.slice(-6)}.pdf`);
-    } catch (error) {
-      console.error("PDF Error:", error);
-      alert("Error generating PDF.");
-    }
-  };
+      </div>
+    </div>
+  );
+}
+
 
   return (
-    <div className="notifications-page">
-      <div className="notif-header">
-        <button onClick={() => navigate(-1)} className="back-btn">
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-        <h2>Notifications</h2>
-      </div>
+    // ... rest of your JSX remains the same
+    <div style={containerStyle}>
+      <Link to="/dashboard" style={backStyle}>
+        <FontAwesomeIcon icon={faArrowLeft} /> Back to Dashboard
+      </Link>
 
-      <div className="notif-list">
-        {loading ? (
-          <p className="loading-text">Loading...</p>
-        ) : notifications.length === 0 ? (
-          <p className="empty-msg">No notifications found.</p>
-        ) : (
-          notifications.map((n) => (
-            <div 
-              key={n._id} 
-              className={`notif-card ${n.read ? "read" : "unread"}`} 
-              onClick={() => handleView(n)}
+      <h1 style={titleStyle}>Incoming Bookings</h1>
+
+      {bookings.length === 0 ? (
+        <p style={{ color: "#7f8c8d" }}>No incoming bookings.</p>
+      ) : (
+        bookings.map((booking) => (
+          <div key={booking._id} style={cardStyle}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <h3>Booking ID: ...{booking._id.slice(-6)}</h3>
+              <span style={statusBadge(booking.status)}>
+                {booking.status}
+              </span>
+            </div>
+
+            <div style={gridStyle}>
+              <section>
+                <h4 style={sectionTitle}>Customer Info</h4>
+                <p><strong>Name:</strong> {booking.name}</p>
+                <p><strong>Phone:</strong> {booking.phone}</p>
+                <p><strong>Message:</strong> {booking.message || "No message"}</p>
+              </section>
+
+              <section>
+                <h4 style={sectionTitle}>Schedule & Payment</h4>
+                <p><strong>Date:</strong> {booking.date}</p>
+                <p><strong>Time:</strong> {booking.time}</p>
+                <p><strong>Payment:</strong> {booking.paymentMethod}</p>
+
+                {booking.paymentScreenshot && (
+                  <button
+                    onClick={() => setSelectedImg(booking.paymentScreenshot)}
+                    style={receiptButtonStyle}
+                  >
+                    <FontAwesomeIcon icon={faImage} /> View Receipt
+                  </button>
+                )}
+              </section>
+            </div>
+
+            {/* ✅ ACTION BUTTONS */}
+              <div style={btnContainer}>
+  <button
+    onClick={() => updateStatus(booking._id, "Accepted")}
+    style={btnAccept}
+    disabled={actionLoading === booking._id}
+  >
+    {actionLoading === booking._id ? "Processing..." : "Approve"}
+  </button>
+
+  <button
+    onClick={() => updateStatus(booking._id, "Cancelled")}
+    style={btnDecline}
+    disabled={actionLoading === booking._id}
+  >
+    {actionLoading === booking._id ? "Processing..." : "Decline"}
+  </button>
+</div>
+          </div>
+        ))
+      )}
+
+      {/* ✅ IMAGE MODAL */}
+      {selectedImg && (
+        <div
+          style={modalOverlayStyle}
+          onClick={() => setSelectedImg(null)}
+        >
+          <div
+            style={modalContentStyle}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              style={closeButtonStyle}
+              onClick={() => setSelectedImg(null)}
             >
-              <div className="notif-center">
-                <p>{n.message}</p>
-                <span className="notif-date">{new Date(n.createdAt).toLocaleDateString()}</span>
-              </div>
-              <div className="notif-right">
-                <button className="icon-btn view">
-                  <FontAwesomeIcon icon={faEye} />
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* --- DETAIL MODAL --- */}
-      {viewDetail && (
-        <div style={modalOverlayStyle} onClick={() => setViewDetail(null)}>
-          <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-            
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
-              <button onClick={downloadPDF} style={downloadBtnStyle}>
-                <FontAwesomeIcon icon={faDownload} /> Download PDF
-              </button>
-              <button style={closeBtnStyle} onClick={() => setViewDetail(null)}>
-                <FontAwesomeIcon icon={faTimes} size="lg" />
-              </button>
-            </div>
-
-            <div ref={pdfRef} style={pdfCanvasStyle}>
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    <h2 style={{ color: '#2c3e50', margin: 0 }}>ISONGA MARKET</h2>
-                    <p style={{ color: '#7f8c8d' }}>Official {viewDetail.type.toUpperCase()} Receipt</p>
-                </div>
-
-                <div style={gridStyle}>
-                    <section>
-                        <h4 style={sectionTitle}>Customer Information</h4>
-                        <p><strong>Name:</strong> {viewDetail.name || "N/A"}</p>
-                        <p><strong>Phone:</strong> {viewDetail.phone || "N/A"}</p>
-                        {viewDetail.address && <p><strong>Address:</strong> {viewDetail.address}</p>}
-                    </section>
-                    <section>
-                        <h4 style={sectionTitle}>Transaction Info</h4>
-                        <p><strong>ID:</strong> #{viewDetail._id?.slice(-8).toUpperCase()}</p>
-                        <p><strong>Status:</strong> 
-                          <span style={{ color: "#27ae60", fontWeight: "bold" }}> {viewDetail.status}</span>
-                        </p>
-                        <p><strong>Payment:</strong> {viewDetail.paymentMethod}</p>
-                    </section>
-                </div>
-
-                {/* --- BOOKING SPECIFIC INFO (Date/Time/Message) --- */}
-                {viewDetail.type === "booking" && (
-                  <div style={itemBox}>
-                    <h4 style={{ marginTop: 0 }}>Booking Details</h4>
-                    <p><strong>Service Date:</strong> {viewDetail.date}</p>
-                    <p><strong>Service Time:</strong> {viewDetail.time}</p>
-                    <p><strong>Notes:</strong> {viewDetail.message || "No specific instructions"}</p>
-                  </div>
-                )}
-
-                {/* --- ORDER SPECIFIC INFO (Items/Total) --- */}
-                {viewDetail.type === "order" && viewDetail.items && (
-                    <div style={itemBox}>
-                        <h4 style={{ marginTop: 0 }}>Items Ordered</h4>
-                        {viewDetail.items.map((item, i) => (
-                            <div key={i} style={itemRow}>
-                                <span>{item.product?.name || "Product"} x {item.quantity}</span>
-                                <span>{(item.price * item.quantity).toLocaleString()} Rwf</span>
-                            </div>
-                        ))}
-                        <div style={totalStyle}>
-                          Total: {viewDetail.totalPrice?.toLocaleString()} Rwf
-                        </div>
-                    </div>
-                )}
-
-                {/* --- PAYMENT PROOF (Handles both models) --- */}
-                {(viewDetail.paymentProof || viewDetail.paymentScreenshot) && (
-                   <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                      <p style={{ fontSize: '13px', fontWeight: 'bold' }}>
-                        <FontAwesomeIcon icon={faImage} /> Payment Receipt Attached
-                      </p>
-                      <img 
-                        src={viewDetail.paymentProof || viewDetail.paymentScreenshot} 
-                        alt="Proof" 
-                        style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '10px', border: '1px solid #ddd' }} 
-                      />
-                   </div>
-                )}
-                
-                <div style={{ marginTop: '30px', fontSize: '11px', textAlign: 'center', color: '#bdc3c7' }}>
-                    Thank you for choosing Isonga Market! <br />
-                    This is a computer-generated document.
-                </div>
-            </div>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+            <img src={selectedImg} alt="Receipt" style={modalImgStyle} />
           </div>
         </div>
       )}
@@ -200,16 +159,126 @@ function Notifications_Page() {
   );
 }
 
-/* ---------------- STYLES (Your Original Styles Kept) ---------------- */
-const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.85)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
-const modalContentStyle = { background: "#fff", padding: "20px", borderRadius: "12px", width: "95%", maxWidth: "600px", maxHeight: "90vh", overflowY: "auto", boxShadow: "0 10px 30px rgba(0,0,0,0.3)" };
-const pdfCanvasStyle = { padding: "30px", background: "#fff", border: "1px solid #f1f1f1" };
-const downloadBtnStyle = { background: "#27ae60", color: "#fff", border: "none", padding: "10px 18px", borderRadius: "6px", cursor: "pointer", fontWeight: "600", fontSize: "14px" };
-const closeBtnStyle = { border: "none", background: "none", cursor: "pointer", color: "#333" };
-const gridStyle = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px" };
-const sectionTitle = { borderBottom: "2px solid #f1f1f1", paddingBottom: "5px", color: "#2c3e50", fontSize: "14px" };
-const itemBox = { marginTop: "20px", background: "#fdfdfd", padding: "15px", borderRadius: "8px", border: "1px solid #eee" };
-const itemRow = { display: "flex", justifyContent: "space-between", marginBottom: "8px", fontSize: "14px" };
-const totalStyle = { textAlign: "right", fontWeight: "bold", marginTop: "15px", borderTop: "2px solid #eee", paddingTop: "10px", fontSize: "1.1rem", color: "#2c3e50" };
+/* ---------------- STYLES ---------------- */
 
-export default Notifications_Page;
+const containerStyle = {
+  padding: "30px",
+  maxWidth: "1000px",
+  margin: "0 auto",
+  fontFamily: "sans-serif",
+};
+
+const backStyle = {
+  textDecoration: "none",
+  color: "#3498db",
+  fontWeight: "600",
+};
+
+const titleStyle = {
+  margin: "25px 0",
+  color: "#2c3e50",
+};
+
+const cardStyle = {
+  background: "#fff",
+  padding: "20px",
+  borderRadius: "10px",
+  marginBottom: "20px",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+};
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "20px",
+  marginTop: "15px",
+};
+
+const sectionTitle = {
+  borderBottom: "1px solid #eee",
+  paddingBottom: "5px",
+};
+
+const statusBadge = (status) => ({
+  background:
+    status === "Pending" || status === "Read"
+      ? "#f1c40f"
+      : status === "Rejected"
+      ? "#e74c3c"
+      : "#2ecc71",
+  color: "#fff",
+  padding: "4px 10px",
+  borderRadius: "20px",
+});
+
+const receiptButtonStyle = {
+  background: "none",
+  border: "none",
+  color: "#3498db",
+  cursor: "pointer",
+};
+
+const btnContainer = {
+  display: "flex",
+  gap: "10px",
+  marginTop: "20px",
+};
+
+const btnAccept = {
+  flex: 1,
+  padding: "10px",
+  background: "#27ae60",
+  color: "#fff",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+};
+
+const btnDecline = {
+  flex: 1,
+  padding: "10px",
+  background: "#e74c3c",
+  color: "#fff",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+};
+
+const modalOverlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  background: "rgba(0,0,0,0.85)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000,
+};
+
+const modalContentStyle = {
+  position: "relative",
+  background: "#fff",
+  padding: "10px",
+  borderRadius: "8px",
+};
+
+const modalImgStyle = {
+  maxWidth: "100%",
+  maxHeight: "80vh",
+};
+
+const closeButtonStyle = {
+  position: "absolute",
+  top: "-40px",
+  right: "0",
+  background: "#fff",
+  border: "none",
+  borderRadius: "50%",
+  width: "30px",
+  height: "30px",
+  cursor: "pointer",
+};
+
+export default SellerBookings;
