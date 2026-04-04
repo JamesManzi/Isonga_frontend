@@ -179,25 +179,12 @@ useEffect(() => {
         <div className="Buyer_Dashboard_nav">
           <nav>
             <ul>
-              <li><Link to="/fashion">Fashion</Link></li>
               <li><Link to="/Electronics">Electronics</Link></li>
               <li><Link to="/Furniture">Furniture</Link></li>
               <li><Link to="/Construction">Construction</Link></li>
               <li><Link to="/Food">Food</Link></li>
             </ul>
           </nav>
-        </div>
-        <div 
-          className="notification-container nav-icon-link" 
-          style={{ position: "relative", cursor: "pointer" }} 
-          onClick={handleBellClick}
-        >
-          <FontAwesomeIcon icon={faBell} size="2x" />
-          {unreadNotifCount > 0 && (
-            <span className="notification-badge">
-              {unreadNotifCount}
-            </span>
-          )}
         </div>
 
         <Link to="/cart" className="cart-link" style={{ position: "relative" }}>
