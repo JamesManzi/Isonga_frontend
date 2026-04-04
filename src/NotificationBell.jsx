@@ -1,82 +1,107 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
-import { io } from "socket.io-client";
 import api from "./api"; // Your axios instance
-import "./NotificationBell.css"
-const NotificationBell = ({ userId }) => {
+
+const NotificationBell = ({ buyerId }) => {
   const navigate = useNavigate();
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const fetchNotifications = async () => {
-    if (!userId) return;
+  const fetchOrderNotifications = async () => {
+    if (!buyerId) return;
     try {
-      const res = await api.get("/api/notifications");
+      const res = await api.get(`/api/notifications?t=${Date.now()}`);
       if (res.data.success) {
-        setNotifications(res.data.notifications);
-        setUnreadCount(res.data.notifications.filter(n => !n.read).length);
+        const fetchedNotifs = res.data.notifications;
+        setNotifications(fetchedNotifs);
+        setUnreadNotifCount(fetchedNotifs.filter((n) => !n.read).length);
       }
     } catch (err) {
-      console.error("Error fetching notifications:", err);
+      console.error("Notif Error:", err);
     }
   };
 
   useEffect(() => {
-    if (!userId) return;
-    fetchNotifications();
+    if (!buyerId) return;
 
+    fetchOrderNotifications();
+
+    // Socket Setup
     const socket = io("https://isonga-backend.onrender.com");
-    socket.emit("userOnline", { userId, userModel: "Buyer" });
+    socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
 
     socket.on("new_notification", (data) => {
       setNotifications((prev) => [data, ...prev]);
-      setUnreadCount((prev) => prev + 1);
+      if (data.unreadCount !== undefined) {
+        setUnreadNotifCount(data.unreadCount);
+      } else {
+        setUnreadNotifCount((prev) => prev + 1);
+      }
+      
+      if (document.hidden && Notification.permission === "granted") {
+        new Notification("Isonga Market Update", { body: data.message, icon: "/logo.png" });
+      }
     });
+
+    // Re-fetch on window focus
+    const handleFocus = () => fetchOrderNotifications();
+    window.addEventListener("focus", handleFocus);
 
     return () => {
       socket.off("new_notification");
       socket.disconnect();
+      window.removeEventListener("focus", handleFocus);
     };
-  }, [userId]);
+  }, [buyerId]);
 
-  const handleBellClick = async () => {
+  const handleToggleDropdown = () => {
     setShowDropdown(!showDropdown);
-    if (unreadCount > 0) {
-      try {
-        await api.put("/api/notifications/mark-read");
-        setUnreadCount(0);
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      } catch (err) {
-        console.error("Mark read error:", err);
+  };
+
+  const handleMarkAllRead = async () => {
+    setUnreadNotifCount(0);
+    try {
+      const res = await api.put("/api/notifications/mark-read");
+      if (res.data.success) {
+        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       }
+    } catch (err) {
+      console.error("Failed to mark read:", err);
     }
+    navigate("/notifications");
+    setShowDropdown(false);
   };
 
   return (
-    <div className="bell-wrapper" style={{ position: "relative", cursor: "pointer" }}>
-      <div onClick={handleBellClick}>
-        <FontAwesomeIcon icon={faBell} size="lg" />
-        {unreadCount > 0 && (
-          <span className="bell-badge">{unreadCount}</span>
+    <div className="notification-wrapper" style={{ position: "relative" }}>
+      <div className="bell-icon-container" onClick={handleToggleDropdown} style={{ cursor: "pointer" }}>
+        <FontAwesomeIcon icon={faBell} size="2x" />
+        {unreadNotifCount > 0 && (
+          <span className="notification-badge-global">{unreadNotifCount}</span>
         )}
       </div>
 
       {showDropdown && (
-        <div className="bell-dropdown">
-          <div className="bell-dropdown-header">
-            Notifications
-            <button onClick={() => navigate("/notifications")}>See All</button>
+        <div className="notification-dropdown-global">
+          <div className="notif-dropdown-header">
+            <h4>Notifications</h4>
+            <button onClick={handleMarkAllRead}>See All</button>
           </div>
-          <div className="bell-dropdown-list">
-            {notifications.slice(0, 5).map((n) => (
-              <div key={n._id} className={`bell-item ${!n.read ? "unread" : ""}`}>
-                {n.message}
-              </div>
-            ))}
-            {notifications.length === 0 && <p className="empty-text">No notifications</p>}
+          <div className="notif-dropdown-list">
+            {notifications.length > 0 ? (
+              notifications.slice(0, 5).map((n) => (
+                <div key={n._id} className={`notif-dropdown-item ${!n.read ? "unread" : ""}`}>
+                  <p>{n.message}</p>
+                  <small>{new Date(n.createdAt).toLocaleDateString()}</small>
+                </div>
+              ))
+            ) : (
+              <p className="no-notif-msg">No new notifications</p>
+            )}
           </div>
         </div>
       )}
