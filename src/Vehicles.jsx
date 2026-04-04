@@ -10,10 +10,11 @@ import {
   faStar, 
   faCartShopping 
 } from "@fortawesome/free-solid-svg-icons";
-
+import GlobalBell from "./GlobalBell";
 function Vehicles() {
   const [sellers, setSellers] = useState([]);
   const [buyerName, setBuyerName] = useState("");
+  const [buyerId,setBuyerId]=useState("");
   const [profile, setProfile] = useState("");
   const [message, setMessage] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState({});
@@ -84,6 +85,7 @@ function Vehicles() {
         if (res.data.buyer) {
           setBuyerName(res.data.buyer.name || "");
           setProfile(res.data.buyer.profile || "");
+          setBuyerId(res.data.buyerId||"");
         }
 
         setSellers(res.data.sellers || []);
@@ -143,6 +145,7 @@ function Vehicles() {
           </Link>
           <ChatNotification/>
         </div>
+        <GlobalBell buyerId={buyerId} />
         <div className="Buyer_Dashboard_nav">
           <nav>
             <ul>

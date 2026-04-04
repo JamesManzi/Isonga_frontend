@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import api from "./api";
 import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import GlobalBell from "./GlobalBell";
 import { faChevronLeft, faChevronRight, faSearch,faStar,faCartShopping } from "@fortawesome/free-solid-svg-icons";
 function Hospitality(){
     const [sellers, setSellers] = useState([]);

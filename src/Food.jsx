@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import ChatNotification from "./ChatNotification";
+import GlobalBell from "./GlobalBell";
 function Food() {
   const navigate = useNavigate(); 
   const [sellers, setSellers] = useState([]);

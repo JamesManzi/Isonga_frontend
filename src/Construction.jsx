@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import ChatNotification from "./ChatNotification";
-
+import GlobalBell from "./GlobalBell";
 function Construction() {
   const [sellers, setSellers] = useState([]);
     const [message, setMessage] = useState("");

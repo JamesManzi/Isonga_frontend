@@ -11,7 +11,7 @@ import {
   faCartShopping 
 } from "@fortawesome/free-solid-svg-icons";
 import { createPortal } from "react-dom"; // Necessary for the modal to work correctly
-
+import GlobalBell from "./GlobalBell";
 function Furniture() {
   const [sellers, setSellers] = useState([]);
   const [filteredSellers, setFilteredSellers] = useState([]); // Added for search functionality

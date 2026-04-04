@@ -10,7 +10,7 @@ import {
   faCartShopping, 
   faStar 
 } from "@fortawesome/free-solid-svg-icons";
-
+import GlobalBell from "./GlobalBell";
 function RealEstate() {
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
