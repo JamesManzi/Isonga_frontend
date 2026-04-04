@@ -18,6 +18,7 @@ function Furniture() {
   const [searchQuery, setSearchQuery] = useState(""); // Added to track search input
   const [message, setMessage] = useState("");
   const [buyerName, setBuyerName] = useState("");
+  const [buyerId,setBuyerId]=useState("");
   const [profile, setProfile] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
@@ -47,7 +48,7 @@ function Furniture() {
         setFilteredSellers(res.data.sellers); // Set initial filtered list
         setProfile(res.data.buyer.profile);
         setBuyerName(res.data.buyer.name);
-
+        setBuyerId(res.data.buyerId);
         // Initialize image indexes for the slider
         const indexes = {};
         res.data.sellers.forEach((s) => {
@@ -147,6 +148,7 @@ function Furniture() {
           </Link>
           <ChatNotification />
         </div>
+        <GlobalBell buyerId={buyerId} />
         <div className="Buyer_Dashboard_nav">
           <nav>
             <ul>

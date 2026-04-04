@@ -15,6 +15,7 @@ function RealEstate() {
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
   const [buyerName, setBuyerName] = useState("");
+  const [buyerId,setBuyerId]=useState("");
   const [profile, setProfile] = useState("");
   const navigate = useNavigate(); 
   const [currentImageIndex, setCurrentImageIndex] = useState({});
@@ -86,6 +87,7 @@ function RealEstate() {
         setSellers(res.data.sellers);
         setProfile(res.data.buyer.profile);
         setBuyerName(res.data.buyer.name);
+        setBuyerId(res.data.buyerId);
       } catch (error) {
         console.log(error);
         setMessage("Error fetching shops");
@@ -141,6 +143,7 @@ function RealEstate() {
           </Link>
           <ChatNotification />
         </div>
+        <GlobalBell buyerId={buyerId} />
         <div className="Buyer_Dashboard_nav">
           <nav>
             <ul>

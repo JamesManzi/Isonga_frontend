@@ -13,6 +13,7 @@ function Construction() {
   const [sellers, setSellers] = useState([]);
     const [message, setMessage] = useState("");
     const [buyerName, setBuyerName] = useState("");
+    const [buyerId,setBuyerId]=useState("");
     const [profile, setProfile] = useState("");
     const [currentImageIndex, setCurrentImageIndex] = useState({});
     const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
@@ -124,7 +125,7 @@ useEffect(() => {
         setSellers(res.data.sellers);
         setBuyerName(res.data.buyer.name);
         setProfile(res.data.buyer.profile);
-
+        setBuyerId(res.data.buyerId)
         // Fetch Cart Count
         const cartRes = await api.get("/api/cart/count");
         if (cartRes.data.success) setCartCount(cartRes.data.count);
@@ -155,6 +156,7 @@ useEffect(() => {
           </Link>
           <ChatNotification />
         </div>
+        <GlobalBell buyerId={buyerId} />
         <div className="Buyer_Dashboard_nav">
           <nav>
             <ul>

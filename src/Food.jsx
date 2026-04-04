@@ -16,6 +16,7 @@ function Food() {
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
   const [buyerName, setBuyerName] = useState("");
+  const [buyerId,setBuyerId]=useState("");
   const [profile, setProfile] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
@@ -88,6 +89,7 @@ function Food() {
         setSellers(res.data.sellers);
         setBuyerName(res.data.buyer.name);
         setProfile(res.data.buyer.profile);
+        setBuyerId(res.data.buyerId);
       } catch (error) {
         console.error("Error fetching shops:", error);
         setMessage({ text: "Fetching Shops Error", type: "error" });
@@ -145,6 +147,7 @@ function Food() {
           </Link>
           <ChatNotification />
         </div>
+        <GlobalBell buyerId={buyerId} />
         <div className="Buyer_Dashboard_nav">
           <nav>
             <ul>

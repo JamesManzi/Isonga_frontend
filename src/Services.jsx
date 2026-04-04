@@ -9,6 +9,7 @@ function Services() {
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
   const [buyerName, setBuyerName] = useState("");
+  const [buyerId,setBuyerId]=useState("");
   const [profile, setProfile] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
@@ -79,6 +80,7 @@ function Services() {
         setSellers(res.data.sellers);
         setProfile(res.data.buyer.profile);
         setBuyerName(res.data.buyer.name);
+        setBuyerId(res.data.buyerId);
       } catch (error) {
         console.log(error);
         setMessage("Error fetching shops");
@@ -147,6 +149,7 @@ useEffect(() => {
           </Link>
           <ChatNotification />
         </div>
+        <GlobalBell buyerId={buyerId} />
         <div className="Buyer_Dashboard_nav">
           <nav>
             <ul>
