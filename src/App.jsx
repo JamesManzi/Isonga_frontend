@@ -41,6 +41,7 @@ import ForgotPassword from "./ForgotPassword";
 import Notifications_Page from "./Notifications_Page";
 import BuyerOrderDetails from "./BuyerOrderDetails";
 import BuyerBookingDetails from "./BuyerBookingDetails";
+import Food from "./Food";
 function App(){
   return(
     <div>
@@ -88,6 +89,7 @@ function App(){
          <Route path="/notifications" element={<Notifications_Page />} />
          <Route path="/buyer/order/:id" element={<BuyerOrderDetails />} />
          <Route path="/buyer/booking/:id" element={<BuyerBookingDetails />} />
+         <Route path="/food" element={<Food/>}/>
       </Routes>
       </BrowserRouter>
     </div>

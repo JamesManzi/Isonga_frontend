@@ -11,7 +11,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import ChatNotification from "./ChatNotification";
 
-function Agriculture() {
+function Livestock() {
   const navigate = useNavigate(); 
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
@@ -322,4 +322,4 @@ function Agriculture() {
   );
 }
 
-export default Agriculture;
+export default Livestock;
