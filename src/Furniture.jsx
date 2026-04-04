@@ -48,7 +48,7 @@ function Furniture() {
         setFilteredSellers(res.data.sellers); // Set initial filtered list
         setProfile(res.data.buyer.profile);
         setBuyerName(res.data.buyer.name);
-        setBuyerId(res.data.buyerId);
+        setBuyerId(res.data.buyer._id);
         // Initialize image indexes for the slider
         const indexes = {};
         res.data.sellers.forEach((s) => {
