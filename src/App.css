@@ -1,0 +1,19 @@
+.global-notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff0000; /* Bright red */
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid white; /* Makes it pop on dark backgrounds */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  line-height: 1;
+  z-index: 10;
+}
