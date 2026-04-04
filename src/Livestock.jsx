@@ -79,7 +79,7 @@ function Livestock() {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const res = await api.get("/api/sellers/Agriculture");
+        const res = await api.get("/api/sellers/Livestock");
         if (!res.data.success) {
           navigate("/buyer_login");
           return;
