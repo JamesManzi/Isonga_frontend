@@ -11,7 +11,7 @@ import Seller_Profile from "./Seller_Profile";
 import Buyer_Dashboard from "./Buyer_Dashboard";
 import View_Profile from "./View_Profile";
 import View_Products from "./View_Products";
-import Agriculture from "./Agriculture";
+import Livestock from "./Livestock";
 import Services from "./Services";
 import Fashion from "./Fashion";
 import RealEstate from "./RealEstate";
@@ -58,7 +58,7 @@ function App(){
         <Route path="/buyer_dashboard" element={<Buyer_Dashboard/>}/>
         <Route path="/view_profile/:id" element={<View_Profile/>}/>
         <Route path="/view_products/:id" element={<View_Products/>}/>
-        <Route path="/Agriculture" element={<Agriculture/>}/>
+        <Route path="/Livestock" element={<Livestock/>}/>
         <Route path="/services" element={<Services/>}/>
         <Route path="/fashion" element={<Fashion/>}/>
         <Route path="/RealEstate" element={<RealEstate/>}/>

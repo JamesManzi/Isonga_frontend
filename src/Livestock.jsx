@@ -150,7 +150,7 @@ function Agriculture() {
             <ul>
               <li><Link to="/RealEstate">Real Estate</Link></li>
               <li><Link to="/Vehicles">Vehicles</Link></li>
-              <li><Link to="/Agriculture">Agriculture</Link></li>
+              <li><Link to="/Livestock">Livestock</Link></li>
             </ul>
           </nav>
         </div>

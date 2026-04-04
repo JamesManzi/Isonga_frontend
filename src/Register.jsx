@@ -143,7 +143,7 @@ function Register() {
   <option value="Fashion">Fashion</option>
   <option value="Real Estate">Real Estate</option>
   <option value="Vehicles">Vehicles</option>
-  <option value="Agriculture">Agriculture</option>
+  <option value="Livestock">Livestock</option>
   <option value="services">services</option>
   <option value="Hospitality">Hospitality</option>
   <option value="Electronics">Electronics</option>
