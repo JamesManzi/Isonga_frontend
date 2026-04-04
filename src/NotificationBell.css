@@ -1,0 +1,44 @@
+.bell-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff3b30;
+  color: white;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 50%;
+  font-weight: bold;
+  border: 1px solid white;
+}
+
+.bell-dropdown {
+  position: absolute;
+  top: 35px;
+  right: 0;
+  width: 260px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  z-index: 1000;
+  border: 1px solid #ddd;
+}
+
+.bell-dropdown-header {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  background: #f9f9f9;
+  border-bottom: 1px solid #eee;
+}
+
+.bell-item {
+  padding: 10px;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.bell-item.unread {
+  background-color: #f0f7ff;
+  border-left: 3px solid #007bff;
+}

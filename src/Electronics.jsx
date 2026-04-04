@@ -4,7 +4,7 @@ import api from "./api";
 import ChatNotification from "./ChatNotification";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight, faSearch, faCartShopping, faStar } from "@fortawesome/free-solid-svg-icons";
-
+import NotificationBell from "./NotificationBell";
 function Electronics() {
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
@@ -156,6 +156,7 @@ useEffect(() => {
             </ul>
           </nav>
         </div>
+        <NotificationBell userId={buyerId} />
         <Link to="/cart" className="cart-link" style={{ position: "relative" }}>
           <FontAwesomeIcon icon={faCartShopping} size="2x" className="faCartShopping" />
           {cartCount > 0 && (
