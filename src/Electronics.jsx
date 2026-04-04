@@ -9,6 +9,7 @@ function Electronics() {
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
   const [buyerName, setBuyerName] = useState("");
+  const [buyerId,setBuyerId]=useState("");
   const [profile, setProfile] = useState("");
   const [selectedMedia, setSelectedMedia] = useState(null);
   const navigate = useNavigate(); // FIX: Initialized navigate
@@ -77,6 +78,7 @@ function Electronics() {
         setSellers(res.data.sellers);
         setProfile(res.data.buyer.profile);
         setBuyerName(res.data.buyer.name);
+        setBuyerId(res.data.buyerId)
       } catch (error) {
         console.log(error);
         setMessage("Error fetching shops");
