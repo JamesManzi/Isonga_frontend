@@ -79,7 +79,7 @@ function Food() {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const res = await api.get("/api/sellers/Agriculture");
+        const res = await api.get("/api/sellers/Food");
         if (!res.data.success) {
           navigate("/buyer_login");
           return;
