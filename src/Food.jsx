@@ -89,7 +89,7 @@ function Food() {
         setSellers(res.data.sellers);
         setBuyerName(res.data.buyer.name);
         setProfile(res.data.buyer.profile);
-        setBuyerId(res.data.buyerId);
+        setBuyerId(res.data.buyer._id);
       } catch (error) {
         console.error("Error fetching shops:", error);
         setMessage({ text: "Fetching Shops Error", type: "error" });

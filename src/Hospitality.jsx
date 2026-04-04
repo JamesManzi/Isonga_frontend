@@ -81,7 +81,7 @@ useEffect(() => {
           setSellers(res.data.sellers);
           setProfile(res.data.buyer.profile);
           setBuyerName(res.data.buyer.name);
-          setBuyerId(res.data.buyerId);
+          setBuyerId(res.data.buyer._id);
         } else {
           setMessage("No shops found");
         }

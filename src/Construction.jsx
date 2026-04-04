@@ -125,7 +125,7 @@ useEffect(() => {
         setSellers(res.data.sellers);
         setBuyerName(res.data.buyer.name);
         setProfile(res.data.buyer.profile);
-        setBuyerId(res.data.buyerId)
+        setBuyerId(res.data.buyer._id);
         // Fetch Cart Count
         const cartRes = await api.get("/api/cart/count");
         if (cartRes.data.success) setCartCount(cartRes.data.count);

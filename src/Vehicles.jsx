@@ -85,7 +85,7 @@ function Vehicles() {
         if (res.data.buyer) {
           setBuyerName(res.data.buyer.name || "");
           setProfile(res.data.buyer.profile || "");
-          setBuyerId(res.data.buyerId||"");
+          setBuyerId(res.data.buyer._id);
         }
 
         setSellers(res.data.sellers || []);

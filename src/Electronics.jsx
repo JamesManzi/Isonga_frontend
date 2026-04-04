@@ -78,7 +78,7 @@ function Electronics() {
         setSellers(res.data.sellers);
         setProfile(res.data.buyer.profile);
         setBuyerName(res.data.buyer.name);
-        setBuyerId(res.data.buyerId)
+        setBuyerId(res.data.buyer._id);
       } catch (error) {
         console.log(error);
         setMessage("Error fetching shops");
