@@ -89,7 +89,7 @@ function App(){
          <Route path="/notifications" element={<Notifications_Page />} />
          <Route path="/buyer/order/:id" element={<BuyerOrderDetails />} />
          <Route path="/buyer/booking/:id" element={<BuyerBookingDetails />} />
-         <Route path="/food" element={<Food/>}/>
+         <Route path="/Food" element={<Food/>}/>
       </Routes>
       </BrowserRouter>
     </div>
