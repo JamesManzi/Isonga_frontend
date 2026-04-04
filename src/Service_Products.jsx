@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import api from "./api";
-import "./View_Products.css";
+import "./Service_Products.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
@@ -112,24 +112,24 @@ function Service_Products() {
   }
 
   return (
-    <div className="View_Products">
+    <div className="Service_Products">
       {/* Navbar */}
-      <div className="View_Products_navbar">
-        <div className="View_Products_logo">
+      <div className="Service_navbar">
+        <div className="Service_logo">
           <img src="/logo.png" alt="logo" />
-          <div className="View_Products_heads"><h1>Isonga</h1><h2>Market</h2></div>
+          <div className="Service_heads"><h1>Isonga</h1><h2>Market</h2></div>
         </div>
-        <div className="View_Products_back" onClick={() => navigate(-1)}><FontAwesomeIcon icon={faArrowRight} /></div>
+        <div className="Service_back" onClick={() => navigate(-1)}><FontAwesomeIcon icon={faArrowRight} /></div>
       </div>
 
-      <div className="View_Products_body"><p>Find All Services You Desire</p></div>
+      <div className="Service_body"><p>Find All Services You Desire</p></div>
 
-      <div className="View_Products_search">
+      <div className="Service_search">
         <input type="search" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
         <button><FontAwesomeIcon icon={faSearch} /> Search</button>
       </div>
 
-      <div className="store_container">
+      <div className="service_container">
         {filteredProducts.map((product) => {
           const files = product.files || [];
           const activeIdx = currentFileIndex[product._id] || 0;
@@ -161,14 +161,14 @@ function Service_Products() {
                   <Link to={`/view_profile/${seller._id}`} className="profile-avatar"><img src={getFileUrl(seller.profile)} alt="profile" /></Link>
                 )}
               </div>
-
+              <div className="service_card">
               <h1>{product.name}</h1>
               <p><strong>Price:</strong> {product.price} Rwf</p>
               <p><strong>Location:</strong> {product.location}</p>
               <p>{product.description}</p>
-
-              <div className="View_Products_btns">
-                <Link to={`/buyer_chat/${seller?._id}`}><button className="chat-btn">Chat Seller</button></Link>
+              </div>
+              <div className="service_btns">
+                <Link to={`/buyer_chat/${seller?._id}`}><button className="service_chat_btn">Chat Seller</button></Link>
                 <Link to={`/book/${product._id}`} className="booking-btn"><button>Book Now</button></Link>
               </div>
             </div>
