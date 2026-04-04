@@ -199,13 +199,13 @@ function View_Products() {
               </div>
 
               {/* PRODUCT INFO */}
-                <h1>{product.name}</h1>
+              <div className="product-info">
+                 <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
                 <p><strong>Location:</strong> {product.location}</p>
                 <p><strong>Quantity:</strong> {product.quantity}</p>
                 <p>{product.description}</p>
-
-
+</div>
               <div className="View_Products_btns">
                 <Link to={`/buyer_chat/${seller?._id}`}><button className="chat-btn">Chat</button></Link>
                 <button onClick={() => addToCart(product._id, product.name)} disabled={cartLoading === product._id}>
