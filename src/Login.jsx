@@ -201,6 +201,9 @@ function Login() {
               Don't have a shop yet? <Link to="/register">Create Account</Link>
             </div>
           </form>
+          <div className="form-footer">
+            <Link to="/">← Back to Home</Link>
+          </div>
         </div>
       </div>
     </div>
