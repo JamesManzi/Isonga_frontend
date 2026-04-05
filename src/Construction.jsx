@@ -1,75 +1,36 @@
-import { useEffect, useState } from "react";
-import api from "./api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faSearch, 
-  faCartShopping, 
-  faStar,
-  faChevronLeft,
-  faChevronRight  
-} from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import api from "./api";
 import ChatNotification from "./ChatNotification";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight, faSearch, faCartShopping, faStar } from "@fortawesome/free-solid-svg-icons";
 import GlobalBell from "./GlobalBell";
 
 function Construction() {
   const [sellers, setSellers] = useState([]);
   const [message, setMessage] = useState("");
   const [buyerName, setBuyerName] = useState("");
-  const [buyerId, setBuyerId] = useState("");
+  const [buyerId,setBuyerId]=useState("");
   const [profile, setProfile] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
-  const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
 
-  // Helpers
-  const isVideoFile = (filename) => {
-    if (!filename) return false;
-    return /\.(mp4|webm|ogg|mov)$/i.test(filename);
-  };
+  const navigate = useNavigate();
 
-  const getFileUrl = (path) => {
-    if (!path) return "/placeholder.png";
-    return path.startsWith("http") 
-      ? path 
-      : `https://isonga-backend.onrender.com/uploads/${path}`;
-  };
-
-  // Hide navbar when modal opens
-  useEffect(() => {
-    const navbar = document.querySelector(".Buyer_Dashboard_navbar");
-    if (!navbar) return;
-
-    if (modalMedia.sellerId) {
-      navbar.style.transform = "translateY(-100%)";
-    } else {
-      navbar.style.transform = "translateY(0)";
+  const fetchCartCount = async () => {
+    try {
+      const res = await api.get("/api/cart/count");
+      if (res.data.success) setCartCount(res.data.count);
+    } catch (err) {
+      console.error("Error fetching cart count:", err);
     }
-  }, [modalMedia]);
+  };
 
-  // Hide navbar on scroll
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-
-    const handleScroll = () => {
-      const navbar = document.querySelector(".Buyer_Dashboard_navbar");
-      if (!navbar) return;
-
-      if (window.scrollY > lastScrollY) {
-        navbar.style.transform = "translateY(-100%)";
-      } else {
-        navbar.style.transform = "translateY(0)";
-      }
-
-      lastScrollY = window.scrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    fetchCartCount();
   }, []);
 
-  // Stars
   const renderStars = (avg) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -91,7 +52,6 @@ function Construction() {
     return stars;
   };
 
-  // Auto slider
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => {
@@ -105,37 +65,66 @@ function Construction() {
         return newIndexes;
       });
     }, 5000);
-
     return () => clearInterval(interval);
   }, [sellers]);
 
-  // Fetch data
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSellers = async () => {
       try {
         const res = await api.get("/api/sellers/Construction");
-
         if (!res.data.success) {
           navigate("/buyer_login");
           return;
         }
-
         setSellers(res.data.sellers);
-        setBuyerName(res.data.buyer.name);
         setProfile(res.data.buyer.profile);
+        setBuyerName(res.data.buyer.name);
         setBuyerId(res.data.buyer._id);
-
-        const cartRes = await api.get("/api/cart/count");
-        if (cartRes.data.success) setCartCount(cartRes.data.count);
-
       } catch (error) {
-        console.error("Error fetching Construction data:", error);
-        setMessage("Error loading shops. Please try again later.");
+        console.log(error);
+        setMessage("Error fetching shops");
       }
     };
-
-    fetchData();
+    fetchSellers();
   }, [navigate]);
+
+  const getFileUrl = (path) => {
+    if (!path) return "/placeholder.png";
+    return path.startsWith("http") ? path : `https://isonga-backend.onrender.com/uploads/${path}`;
+  };
+
+  useEffect(() => {
+    const navbar = document.querySelector(".Buyer_Dashboard_navbar");
+    if (!navbar) return;
+
+    if (modalMedia.sellerId) {
+      navbar.style.transform = "translateY(-100%)";
+    } else {
+      navbar.style.transform = "translateY(0)";
+    }
+  }, [modalMedia]);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const navbar = document.querySelector(".Buyer_Dashboard_navbar");
+      if (!navbar) return;
+
+      if (window.scrollY > lastScrollY) {
+        navbar.style.transform = "translateY(-100%)";
+      } else {
+        navbar.style.transform = "translateY(0)";
+      }
+
+      lastScrollY = window.scrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
 
   return (
     <div>
@@ -153,12 +142,10 @@ function Construction() {
 
         <div className="Buyer_Dashboard_user">
           <Link to="/buyer_profile">
-            <img src={getFileUrl(profile)} alt="Profile" />
+            <img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="Profile" />
           </Link>
           <ChatNotification />
         </div>
-
-        <GlobalBell buyerId={buyerId} />
 
         <div className="Buyer_Dashboard_nav">
           <nav>
@@ -170,6 +157,8 @@ function Construction() {
             </ul>
           </nav>
         </div>
+
+        <GlobalBell buyerId={buyerId} />
 
         <Link to="/cart" className="cart-link" style={{ position: "relative" }}>
           <FontAwesomeIcon icon={faCartShopping} size="2x" />
@@ -187,14 +176,14 @@ function Construction() {
 
       {/* Header */}
       <div className="Buyer_Dashboard_Heading">
-        <h1>Welcome back, {buyerName}! 🛍️</h1>
-        <p>Explore high-quality Construction services and materials across Rwanda.</p>
+        <h1>Welcome back, {buyerName}! 🏗️</h1>
+        <p>Explore trusted construction services and materials across Rwanda.</p>
       </div>
 
       {/* Search */}
       <div className="Buyer_Dashboard_search">
-        <input type="search" placeholder="Search Construction Shops..." />
-        <button><FontAwesomeIcon icon={faSearch} /> Search</button>
+        <input type="search" className="searching" placeholder="Search Construction Shops..." />
+        <button><FontAwesomeIcon icon={faSearch} />Search</button>
       </div>
 
       {/* Sellers */}
@@ -204,7 +193,6 @@ function Construction() {
 
           return (
             <div key={seller._id} className="shop-card">
-
               <div className="card-image-section">
                 {seller.files && seller.files.length > 0 ? (
                   <div className="image-slider">
@@ -248,6 +236,7 @@ function Construction() {
                         ))}
                       </div>
                     )}
+
                   </div>
                 ) : (
                   <img src="/placeholder.png" alt="No Images" className="slider-image" />
@@ -256,41 +245,40 @@ function Construction() {
                 <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
                   <img
                     src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"}
-                    alt="Shop Profile"
+                    alt={seller.name}
+                    className="avatar-image"
                   />
                 </Link>
               </div>
 
               <div className="shop-card-info">
-                <h3>{seller.name} Shop</h3>
-                <p>{seller.location}</p>
-                <p>{seller.category} Construction</p>
+                <h3 className="seller-name">{seller.name} Shop</h3>
+                <p className="seller-location">{seller.location}</p>
+                <p className="seller-category">{seller.category} Construction</p>
 
                 <div className="rating">
-                  {renderStars(seller.averageRating || 0)}
-                  <span> ({seller.numReviews || 0})</span>
+                  <p>{renderStars(seller.averageRating || 0)} ({seller.numReviews || 0})</p>
                 </div>
 
-                <p>{seller.description}</p>
+                <p className="seller-description">{seller.description}</p>
 
                 <div className="card-actions">
                   <Link to={`/view_products/${seller._id}`}>
-                    <button>Visit Shop</button>
+                    <button className="visit-btn">Visit Shop</button>
                   </Link>
                   <Link to={`/buyer_chat/${seller._id}`}>
-                    <button>Chat</button>
+                    <button className="chat-btn">Chat</button>
                   </Link>
                 </div>
               </div>
-
             </div>
           );
         })}
       </div>
 
-      {/* MODAL */}
+      {/* Modal */}
       {modalMedia.sellerId && (() => {
-        const seller = sellers.find(s => s._id === modalMedia.sellerId);
+        const seller = sellers.find((s) => s._id === modalMedia.sellerId);
         if (!seller) return null;
 
         const file = seller.files[modalMedia.index];
@@ -306,8 +294,7 @@ function Construction() {
             )}
 
             <div className="modal-controls">
-              <FontAwesomeIcon
-                icon={faChevronLeft}
+              <FontAwesomeIcon icon={faChevronLeft}
                 onClick={(e) => {
                   e.stopPropagation();
                   setModalMedia(p => ({
@@ -316,9 +303,7 @@ function Construction() {
                   }));
                 }}
               />
-
-              <FontAwesomeIcon
-                icon={faChevronRight}
+              <FontAwesomeIcon icon={faChevronRight}
                 onClick={(e) => {
                   e.stopPropagation();
                   setModalMedia(p => ({
