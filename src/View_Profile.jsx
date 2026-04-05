@@ -18,8 +18,11 @@ function View_Profile() {
   const [message, setMessage] = useState("");
   const [loading,setLoading]=useState(false)
   // Socket for live rating updates
+  // Socket for live rating updates
   useEffect(() => {
     const socket = io("https://isonga-backend.onrender.com", { withCredentials: false });
+
+    // Listener for new ratings
     socket.on("sellerRatingUpdated", (data) => {
       if (data.sellerId === id) {
         setAverageRating(data.averageRating);
@@ -27,6 +30,16 @@ function View_Profile() {
         fetchReviews();
       }
     });
+
+    // Listener for seller replies (Moved OUTSIDE the other listener)
+    socket.on("sellerReplyAdded", (data) => {
+      setReviews((prevReviews) =>
+        prevReviews.map((rev) =>
+          rev._id === data.ratingId ? { ...rev, sellerReply: data.sellerReply } : rev
+        )
+      );
+    });
+
     return () => socket.disconnect();
   }, [id]);
 
@@ -166,33 +179,52 @@ if (!seller) {
         </div>
 
         {/* Reviews list */}
-         {reviews.map((r) => (
-          <div key={r._id} className="review-item">
+        {reviews.map((r) => (
+          <div key={r._id} className="review-item" style={{ marginBottom: "20px" }}>
             <h4>{r.buyer?.name || "Anonymous"}</h4>
-            {r.buyer?.profile&& (
+            {r.buyer?.profile && (
               <img
                 src={getFileUrl(r.buyer.profile)}
                 alt="Profile"
                 onClick={() => setSelectedImage(r.buyer.profile)}
-      style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", width: "40px", borderRadius: "50%" }}
               />
             )}
             <div className="review-stars">{renderStars(r.rating)}</div>
             {r.comment && <p>{r.comment}</p>}
+            
+            {r.sellerReply && (
+              <div className="seller-reply-box" style={{ 
+                marginTop: "10px", 
+                padding: "10px", 
+                background: "#f9f9f9", 
+                borderLeft: "4px solid #2563eb",
+                borderRadius: "4px",
+                marginLeft: "20px" 
+              }}>
+                <strong style={{ fontSize: "0.85rem", color: "#2563eb" }}>
+                  Seller's Response:
+                </strong>
+                <p style={{ margin: "5px 0 0 0", fontStyle: "italic" }}>{r.sellerReply}</p>
+              </div>
+            )}
+
             {r.createdAt && (
-              <small>{new Date(r.createdAt).toLocaleDateString()}</small>
+              <small style={{ color: "#888" }}>
+                {new Date(r.createdAt).toLocaleDateString()}
+              </small>
             )}
           </div>
         ))}
-      </div>
-      {selectedImage && (
-  <div className="image-modal" onClick={() => setSelectedImage(null)}>
-    <span className="close-btn">&times;</span>
-    <img src={getFileUrl(selectedImage)} alt="Full view" />
-  </div>
-)}
+      </div> {/* This closes seller-rating */}
 
-    </div>
+      {selectedImage && (
+        <div className="image-modal" onClick={() => setSelectedImage(null)}>
+          <span className="close-btn">&times;</span>
+          <img src={getFileUrl(selectedImage)} alt="Full view" />
+        </div>
+      )}
+    </div> // This closes View_Profile
   );
 }
 
