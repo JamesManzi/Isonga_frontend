@@ -24,6 +24,7 @@ function Seller_Profile() {
 const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the review being replied to
   // Form States (Matching Register Style)
   const [name, setName] = useState("");
+  const [isEditingReply, setIsEditingReply] = useState(false);
   const [location, setLocation] = useState("");
   const [phone, setPhone] = useState("");
   const [description, setDescription] = useState("");
@@ -133,26 +134,43 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
     } catch (err) { alert("Delete failed"); }
   };
 
-  const handleReplySubmit = async (ratingId) => {
+  // Function to handle both NEW and UPDATED replies
+const handleReplySubmit = async (ratingId) => {
   if (!replyText.trim()) return;
-  
   try {
     setLoading(true);
-    // Matches the backend route: /api/ratings/:id/reply
     const res = await api.put(`/api/ratings/${ratingId}/reply`, { reply: replyText });
     
     if (res.data.success) {
       setReplyText("");
       setReplyingTo(null);
-      fetchSeller(); // This refreshes the UI
-      alert("Reply posted successfully!");
+      setIsEditingReply(false);
+      fetchSeller(); 
+      alert(isEditingReply ? "Reply updated!" : "Reply posted!");
     }
   } catch (err) {
-    console.error(err);
-    alert("Could not post reply");
+    alert("Operation failed");
   } finally {
     setLoading(false);
   }
+};
+
+// Function to delete a reply (usually by sending an empty string to the backend)
+const handleDeleteReply = async (ratingId) => {
+  if (!window.confirm("Delete your reply?")) return;
+  try {
+    const res = await api.put(`/api/ratings/${ratingId}/reply`, { reply: "" });
+    if (res.data.success) fetchSeller();
+  } catch (err) {
+    alert("Delete failed");
+  }
+};
+
+// Helper to open the edit box with existing text
+const startEditing = (review) => {
+  setReplyingTo(review._id);
+  setReplyText(review.sellerReply);
+  setIsEditingReply(true);
 };
   if (!seller) {
   return (
@@ -316,62 +334,47 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
         </div>
       )}
 
-     {/* Reviews list */}
-        {reviews.map((r) => (
-  <div key={r._id} className="review-item" style={{ borderBottom: "1px solid #eee", padding: "15px 0" }}>
-    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      {r.buyer?.profile && (
-        <img
-          src={getFileUrl(r.buyer.profile)}
-          alt="Profile"
-          style={{ width: "40px", height: "40px", borderRadius: "50%", cursor: "pointer" }}
-          onClick={() => setSelectedImage(r.buyer.profile)}
-        />
-      )}
-      <h4>{r.buyer?.name || "Anonymous"}</h4>
-    </div>
-    
-    <div className="review-stars">{renderStars(r.rating)}</div>
-    {r.comment && <p>{r.comment}</p>}
-    {r.createdAt && <small>{new Date(r.createdAt).toLocaleDateString()}</small>}
+     {reviews.map((r) => (
+  <div key={r._id} className="review-item">
+    {/* ... (Buyer Info & Comment) ... */}
 
-    {/* DISPLAY EXISTING REPLY */}
-    {r.sellerReply ? (
-      <div className="seller-reply-box" style={{ marginLeft: "30px", marginTop: "10px", padding: "10px", background: "#f9f9f9", borderRadius: "8px", borderLeft: "4px solid #4CAF50" }}>
-        <strong>Your Reply:</strong>
-        <p>{r.sellerReply}</p>
-      </div>
-    ) : (
-      /* REPLY INPUT SECTION */
-      <div style={{ marginTop: "10px" }}>
-        {replyingTo === r._id ? (
-          <div className="reply-form">
-            <textarea
-              placeholder="Write your reply..."
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              style={{ width: "100%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
-            ></textarea>
-            <div style={{ marginTop: "5px", display: "flex", gap: "10px" }}>
-              <button className="modern-submit-btn" style={{ padding: "5px 15px", fontSize: "12px" }} onClick={() => handleReplySubmit(r._id)}>
-                Post Reply
-              </button>
-              <button className="back-btn" style={{ padding: "5px 15px", fontSize: "12px", background: "#999" }} onClick={() => setReplyingTo(null)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button 
-            className="modern-submit-btn" 
-            style={{ padding: "5px 15px", fontSize: "12px", background: "#3498db" }} 
-            onClick={() => setReplyingTo(r._id)}
-          >
-            Reply to Customer
+    {/* REPLY SECTION */}
+    <div style={{ marginLeft: "30px", marginTop: "10px" }}>
+      {replyingTo === r._id ? (
+        <div className="reply-form">
+          <textarea
+            value={replyText}
+            onChange={(e) => setReplyText(e.target.value)}
+            className="reply-textarea"
+          />
+          <button onClick={() => handleReplySubmit(r._id)}>
+            {isEditingReply ? "Update Reply" : "Post Reply"}
           </button>
-        )}
-      </div>
-    )}
+          <button onClick={() => {setReplyingTo(null); setIsEditingReply(false); setReplyText("");}}>
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <>
+          {r.sellerReply ? (
+            <div className="seller-reply-box">
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <strong>Your Reply:</strong>
+                <div>
+                  <button onClick={() => startEditing(r)} style={{ marginRight: "10px", color: "blue" }}>Edit</button>
+                  <button onClick={() => handleDeleteReply(r._id)} style={{ color: "red" }}>Delete</button>
+                </div>
+              </div>
+              <p>{r.sellerReply}</p>
+            </div>
+          ) : (
+            <button onClick={() => {setReplyingTo(r._id); setIsEditingReply(false);}}>
+              Reply to Customer
+            </button>
+          )}
+        </>
+      )}
+    </div>
   </div>
 ))}
 
