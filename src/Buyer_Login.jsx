@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faArrowRight, faLock } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Login.css";
 import api from "./api";
+
 function Buyer_Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,40 +13,66 @@ function Buyer_Login() {
   const [message, setMessage] = useState(null);
   const navigate = useNavigate();
 
+  // --- Login Attempts Logic ---
+  const [attempts, setAttempts] = useState(0);
+  const [lockTime, setLockTime] = useState(0);
+  const MAX_ATTEMPTS = 5;
+
+  // Countdown Timer
+  useEffect(() => {
+    if (lockTime > 0) {
+      const timer = setInterval(() => setLockTime((prev) => prev - 1), 1000);
+      return () => clearInterval(timer);
+    }
+  }, [lockTime]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (lockTime > 0) return;
+
     setLoading(true);
     setMessage(null);
 
     try {
-   const res = await api.post("/api/buyer_login", {
-  email,
-  password
-});
+      const res = await api.post("/api/buyer_login", { email, password });
+
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
-  
-  // Optional: Save user info if you need it for the Navbar
-  localStorage.setItem("user", JSON.stringify(res.data.buyer));
+        localStorage.setItem("user", JSON.stringify(res.data.buyer));
+        setAttempts(0); // Reset attempts on success
         setMessage({ text: "Success! Welcome back.", type: "success" });
         setTimeout(() => navigate("/buyer_dashboard"), 1500);
       } else {
-        setMessage({ text: res.data.message, type: "error" });
-        setLoading(false);
+        // Triggered if the server returns success: false
+        handleFailure(res.data.message);
       }
     } catch (error) {
-      setMessage({ text: "Server error. Try again later.", type: "error" });
-      setLoading(false);
+      // Triggered on network/server error
+      handleFailure("Server error. Please try again later.");
+    }
+  };
+
+  const handleFailure = (errorText) => {
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
+    setLoading(false);
+
+    if (newAttempts >= MAX_ATTEMPTS) {
+      setLockTime(30); // Lock for 30 seconds
+      setMessage({ text: "Too many attempts. Locked for 30s.", type: "error" });
+    } else {
+      setMessage({ 
+        text: `${errorText} (${MAX_ATTEMPTS - newAttempts} attempts left)`, 
+        type: "error" 
+      });
     }
   };
 
   return (
     <div className="buyer-page">
-      {/* Top Loading Bar */}
       {loading && <div className="buyer-top-loading-bar"></div>}
 
       <div className="buyer-card-container">
-        {/* Left Side: Branding/Hero */}
         <div className="buyer-hero-side">
           <div className="buyer-hero-overlay"></div>
           <div className="buyer-hero-content">
@@ -58,7 +85,6 @@ function Buyer_Login() {
           </div>
         </div>
 
-        {/* Right Side: Form */}
         <div className="buyer-form-side">
           <div className="buyer-form-header">
             <h2>Buyer Login</h2>
@@ -73,6 +99,7 @@ function Buyer_Login() {
                 placeholder="yourname@example.com"
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={lockTime > 0}
               />
             </div>
 
@@ -84,6 +111,7 @@ function Buyer_Login() {
                   placeholder="••••••••"
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={lockTime > 0}
                 />
                 <FontAwesomeIcon
                   icon={showPassword ? faEyeSlash : faEye}
@@ -97,8 +125,17 @@ function Buyer_Login() {
               <Link to="/forgot-password">Forgot password?</Link>
             </div>
 
-            <button type="submit" className="buyer-main-btn" disabled={loading}>
-              {loading ? <span className="buyer-loader-dots">Verifying...</span> : (
+            {/* Optimized Button Logic */}
+            <button 
+              type="submit" 
+              className="buyer-main-btn" 
+              disabled={loading || lockTime > 0}
+            >
+              {lockTime > 0 ? (
+                <>Locked ({lockTime}s) <FontAwesomeIcon icon={faLock} /></>
+              ) : loading ? (
+                <span className="buyer-loader-dots">Verifying...</span>
+              ) : (
                 <>
                   Sign In <FontAwesomeIcon icon={faArrowRight} />
                 </>
