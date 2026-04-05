@@ -127,7 +127,7 @@ function Seller_Profile() {
   const deleteImage = async (filename) => {
     if(!window.confirm("Delete this photo?")) return;
     try {
-      await api.delete('api/delete_location_image/${encodeURIComponent(filename)}');
+      await api.delete(`/api/delete_location_image/${encodeURIComponent(filename)}`);
       setSeller(prev => ({ ...prev, files: prev.files.filter(f => f !== filename) }));
     } catch (err) { alert("Delete failed"); }
   };
