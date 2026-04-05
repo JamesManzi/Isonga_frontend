@@ -103,10 +103,10 @@
   box-shadow: 0 10px 20px rgba(0,0,0,0.05);
   transition: transform 0.3s ease;
   
-  /* Flex magic starts here */
   display: flex;
   flex-direction: column;
-  height: 100%; 
+  height: 100%;
+  overflow: hidden; /* 
 }
 
 .productcard:hover {
@@ -117,7 +117,8 @@
 .image-slider {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 250px; /* 🔥 FIX: fixed height */
+  overflow: hidden;
   background: #f1f2f6;
 }
 
@@ -125,7 +126,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  cursor: zoom-in;
+  display: block; /* prevents weird inline spacing */
 }
 
 /* Dots on image */
