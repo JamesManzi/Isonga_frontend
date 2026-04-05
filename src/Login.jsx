@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -12,79 +11,99 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
-  const navigate = useNavigate();
+  const [lockTime, setLockTime] = useState(0);
   const [attempts, setAttempts] = useState(0);
-const [lockTime, setLockTime] = useState(0);
-const MAX_ATTEMPTS = 5;
+  
+  const navigate = useNavigate();
+  const MAX_ATTEMPTS = 5;
+
+  // 1. Initial Load: Check if a lock exists in LocalStorage
+  useEffect(() => {
+    const lockUntil = localStorage.getItem("lockUntil");
+    if (lockUntil) {
+      const remaining = Math.round((parseInt(lockUntil) - Date.now()) / 1000);
+      if (remaining > 0) {
+        setLockTime(remaining);
+      } else {
+        localStorage.removeItem("lockUntil");
+      }
+    }
+  }, []);
+
+  // 2. Timer logic: Countdown the lockTime state
+  useEffect(() => {
+    let timer;
+    if (lockTime > 0) {
+      timer = setInterval(() => {
+        setLockTime((prev) => {
+          if (prev <= 1) {
+            localStorage.removeItem("lockUntil");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [lockTime]);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (lockTime > 0) return; // Block submission if locked
+    e.preventDefault();
+    if (lockTime > 0) return;
 
-  setLoading(true);
-  setMessage(null);
+    setLoading(true);
+    setMessage(null);
 
-  try {
-    const res = await api.post("/api/login", { email, password });
-    
-    if (res.data.success) {
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.seller));
-      setAttempts(0); // Reset on success
-      setMessage({ text: "Success! Welcome back.", type: "success" });
-      setTimeout(() => navigate("/dashboard"), 1500);
-    } else {
-      throw new Error(res.data.message);
+    try {
+      const res = await api.post("/api/login", { email, password });
+
+      if (res.data.success) {
+        // Clear security states on success
+        localStorage.removeItem("lockUntil");
+        setAttempts(0);
+        
+        // Save Auth Data
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.seller));
+        
+        setMessage({ text: "Success! Welcome back.", type: "success" });
+        setTimeout(() => navigate("/dashboard"), 1500);
+      } else {
+        // Logic for failed but reached server (e.g., wrong password)
+        handleFailure(res.data.message || "Invalid credentials");
+      }
+    } catch (error) {
+      // Logic for server errors or rate limiting
+      const errMsg = error.response?.data?.message || "Login failed. Please try again.";
+      handleFailure(errMsg);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
+  };
+
+  const handleFailure = (errorText) => {
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
-    setLoading(false);
 
     if (newAttempts >= MAX_ATTEMPTS) {
-  const expiryTime = Date.now() + 30000; // 30 seconds from now
-  localStorage.setItem("lockUntil", expiryTime);
-  setLockTime(30);
-  setMessage({ text: "Too many attempts. Locked for 30s.", type: "error" });
+      const expiryTime = Date.now() + 30000; // 30 seconds
+      localStorage.setItem("lockUntil", expiryTime);
+      setLockTime(30);
+      setMessage({ text: "Too many attempts. Locked for 30s.", type: "error" });
     } else {
-      setMessage({ text: `Invalid credentials. ${MAX_ATTEMPTS - newAttempts} left.`, type: "error" });
-    }
-  }
-};
-  useEffect(() => {
-  // Check if there's a lock saved in localStorage on mount
-  const lockUntil = localStorage.getItem("lockUntil");
-  if (lockUntil) {
-    const remaining = Math.round((parseInt(lockUntil) - Date.now()) / 1000);
-    if (remaining > 0) {
-      setLockTime(remaining);
-    } else {
-      localStorage.removeItem("lockUntil");
-    }
-  }
-}, []);
-
-useEffect(() => {
-  if (lockTime > 0) {
-    const timer = setInterval(() => {
-      setLockTime((prev) => {
-        if (prev <= 1) {
-          localStorage.removeItem("lockUntil");
-          return 0;
-        }
-        return prev - 1;
+      setMessage({ 
+        text: `${errorText}. ${MAX_ATTEMPTS - newAttempts} attempts remaining.`, 
+        type: "error" 
       });
-    }, 1000);
-    return () => clearInterval(timer);
-  }
-}, [lockTime]);
+    }
+  };
+
   return (
     <div className="login-page">
-      {/* Top Loading Bar */}
       {loading && <div className="top-loading-bar"></div>}
 
       <div className="login-card-container">
-        {/* Left Side: Branding/Hero */}
+        {/* Left Side: Branding */}
         <div className="login-hero-side">
           <div className="hero-overlay"></div>
           <div className="hero-content">
@@ -110,8 +129,10 @@ useEffect(() => {
               <input
                 type="email"
                 placeholder="name@company.com"
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={lockTime > 0}
               />
             </div>
 
@@ -121,8 +142,10 @@ useEffect(() => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
+                  value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={lockTime > 0}
                 />
                 <FontAwesomeIcon
                   icon={showPassword ? faEyeSlash : faEye}
@@ -136,17 +159,21 @@ useEffect(() => {
               <Link to="/forgot-password">Forgot password?</Link>
             </div>
 
-            <button type="submit" className="main-login-btn" disabled={loading || lockTime > 0}>
-  {lockTime > 0 ? (
-    `Locked (${lockTime}s)`
-  ) : loading ? (
-    "Authenticating..."
-  ) : (
-    <>
-      Sign In <FontAwesomeIcon icon={faArrowRight} />
-    </>
-  )}
-</button>
+            <button 
+              type="submit" 
+              className="main-login-btn" 
+              disabled={loading || lockTime > 0}
+            >
+              {lockTime > 0 ? (
+                `Locked (${lockTime}s)`
+              ) : loading ? (
+                "Authenticating..."
+              ) : (
+                <>
+                  Sign In <FontAwesomeIcon icon={faArrowRight} />
+                </>
+              )}
+            </button>
 
             {message && (
               <div className={`modern-alert ${message.type}`}>
