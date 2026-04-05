@@ -288,6 +288,7 @@ function My_Store() {
                   <p>Price: {product.price} Rwf</p>
                   <p>Location: {product.location}</p>
                   <p>Quantity: {product.quantity}</p>
+                  <p>{product.description}</p>
                   <div className="My_Store_btns">
                     <button className="delete" onClick={() => confirmDelete(product._id)}>Delete</button>
                     <button className="update" onClick={() => {
