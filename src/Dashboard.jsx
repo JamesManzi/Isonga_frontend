@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { useState, useEffect, useRef } from "react";
@@ -40,7 +39,7 @@ function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      const res=await api.post("/api/logout");
+      const res = await api.post("/api/logout");
       if (res.data.success) {
         if (socketRef.current) socketRef.current.disconnect();
         navigate("/login");
@@ -248,7 +247,7 @@ function Dashboard() {
 
   }, [seller?._id]);
 
- 
+
 if (!seller) {
   return (
     <div className="beautiful-loading">
@@ -385,14 +384,17 @@ if (!seller) {
           <p className="order_count_main">{todayViews}</p>
         </div>
 
-        <div className="orders">
-          <FontAwesomeIcon icon={faBox} />
-          <h2>{orderTitle}</h2>
-          <div className="order_count_main">
-  <p>Total: {seller.totalOrders}</p>
-  <p>New: {newOrdersCount}</p>
-</div>
-        </div>
+        {/* --- Hide Rentals icon/box for Assets --- */}
+        {sType !== "Asset" && (
+          <div className="orders">
+            <FontAwesomeIcon icon={faBox} />
+            <h2>{orderTitle}</h2>
+            <div className="order_count_main">
+              <p>Total: {seller.totalOrders}</p>
+              <p>New: {newOrdersCount}</p>
+            </div>
+          </div>
+        )}
 
       </div>
 
@@ -428,22 +430,25 @@ if (!seller) {
           </Link>
         </div>
 
-        <div className="viewOrders">
-          <Link to={historyLink}>
-            <FontAwesomeIcon icon={faBox} />
-            <h2>{orderHistory}</h2>
+        {/* --- Hide Rental History icon/box for Assets --- */}
+        {sType !== "Asset" && (
+          <div className="viewOrders">
+            <Link to={historyLink}>
+              <FontAwesomeIcon icon={faBox} />
+              <h2>{orderHistory}</h2>
+            </Link>
+          </div>
+        )}
+
+        <div className="buyer_messages">
+          <Link to="#">
+            <FontAwesomeIcon icon={faBoxOpen} />
+            <h2>{AddType}</h2> 
+            <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
+              {seller?.totalItemsCount || 0}
+            </p>
           </Link>
         </div>
-
-       <div className="buyer_messages">
-  <Link to="#">
-    <FontAwesomeIcon icon={faBoxOpen} />
-    <h2>{AddType}</h2> 
-    <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
-      {seller?.totalItemsCount || 0}
-    </p>
-  </Link>
-</div>
 
       </div>
 
@@ -455,16 +460,18 @@ if (!seller) {
     <h2>Dashboard</h2>
   </Link>
 
-  {/* ✅ Clean Link: No onClick here! The badge stays visible until you open the page */}
-  <Link to={orderLink} className="footer_item">
-    <div style={{ position: "relative", display: "inline-block" }}>
-      <FontAwesomeIcon icon={faBox} />
-      {newOrdersCount > 0 && (
-        <span className="order_badge">{newOrdersCount}</span>
-      )}
-    </div>
-    <h2>{orderTitle}</h2>
-  </Link>
+  {/* ✅ Footer Rental Icon: Hide if sType is Asset */}
+  {sType !== "Asset" && (
+    <Link to={orderLink} className="footer_item">
+      <div style={{ position: "relative", display: "inline-block" }}>
+        <FontAwesomeIcon icon={faBox} />
+        {newOrdersCount > 0 && (
+          <span className="order_badge">{newOrdersCount}</span>
+        )}
+      </div>
+      <h2>{orderTitle}</h2>
+    </Link>
+  )}
 
   <Link to="/SellerConversations" className="footer_item">
     <div style={{ position: "relative", display: "inline-block" }}>
