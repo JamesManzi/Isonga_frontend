@@ -287,11 +287,11 @@ function Hospitality() {
 
                   <div className="card-actions">
                     <Link to={`/Service_products/${seller._id}`}>
-                      <button>Visit Shop</button>
+                      <button className="visit-btn">Visit Shop</button>
                     </Link>
 
                     <Link to={`/buyer_chat/${seller._id}`}>
-                      <button>Chat</button>
+                      <button className="chat-btn">Chat</button>
                     </Link>
                   </div>
                 </div>
