@@ -36,7 +36,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
   /* ---------------- 1. DYNAMIC UI CONFIGURATION ---------------- */
-  // This object maps the SellerType to the correct labels, links, and icons.
+  // This map handles all the logic for Assets, Products, and Services
   const UI_CONFIG = {
     Product: {
       addText: "Add New Product",
@@ -48,7 +48,6 @@ function Dashboard() {
       totalLabel: "Total Products",
       mainIcon: faBox,
       actionIcon: faBoxOpen,
-      notifyIcon: "🛍️"
     },
     Service: {
       addText: "Add New Service",
@@ -60,7 +59,6 @@ function Dashboard() {
       totalLabel: "Total Services",
       mainIcon: faCalendarCheck,
       actionIcon: faTools,
-      notifyIcon: "📅"
     },
     Asset: {
       addText: "Add New Asset",
@@ -72,14 +70,14 @@ function Dashboard() {
       totalLabel: "Total Assets",
       mainIcon: faKey,
       actionIcon: faStore,
-      notifyIcon: "🔑"
     }
   };
 
+  // Safe fallback to Product config
   const sType = seller?.sellerType || "Product";
   const config = UI_CONFIG[sType] || UI_CONFIG.Product;
 
-  /* ---------------- 2. HANDLERS ---------------- */
+  /* ---------------- 2. LOGIC HANDLERS ---------------- */
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const handleLogout = async () => {
@@ -90,16 +88,29 @@ function Dashboard() {
         navigate("/login");
       }
     } catch (error) {
-      console.error("Logout error", error);
+      console.log("Logout error", error);
     }
   };
 
-  /* ---------------- 3. DATA FETCHING ---------------- */
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  /* ---------------- 3. FETCH DATA ---------------- */
+  useEffect(() => {
+    const fetchSellerData = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) return navigate("/login");
+        if (!token) {
+          navigate("/login");
+          return;
+        }
 
         const res = await api.get("/api/dashboard");
 
@@ -110,14 +121,15 @@ function Dashboard() {
             averageRating: s.averageRating ?? 0,
             numReviews: s.numReviews ?? 0,
             totalOrders: s.totalOrders ?? 0,
+            totalSales: s.totalSales ?? 0,
           });
-          setTotalViews(res.data.totalViews ?? 0);
-          setTodayViews(res.data.todayViews ?? 0);
-          setNewOrdersCount(s.newOrders ?? 0);
 
-          // Fetch Messages Unread Count
+          setTotalViews(res.data.totalViews ?? 0);
+          setNewOrdersCount(s.newOrders ?? 0);
+          setTodayViews(res.data.todayViews ?? 0);
+
           const unreadRes = await api.get("/api/seller/conversations");
-          if (unreadRes.data.success) {
+          if (unreadRes.data.success && unreadRes.data.conversations) {
             const count = unreadRes.data.conversations.reduce(
               (sum, conv) => sum + (conv.unreadCount || 0), 0
             );
@@ -125,11 +137,10 @@ function Dashboard() {
           }
         }
       } catch (err) {
-        toast.error("Failed to load dashboard data");
+        toast.error("Server connection failed");
       }
     };
-
-    fetchDashboardData();
+    fetchSellerData();
   }, [navigate]);
 
   /* ---------------- 4. REAL-TIME SOCKETS ---------------- */
@@ -140,22 +151,22 @@ function Dashboard() {
     if (!socketRef.current) {
       socketRef.current = io("https://isonga-backend.onrender.com", {
         transports: ["websocket"],
-        extraHeaders: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
     }
 
     const socket = socketRef.current;
     socket.emit("userOnline", { userId: seller._id, userModel: "Seller" });
 
-    const notify = (msg, icon) => {
+    const handleNewActivity = (msg, icon) => {
       toast.success(msg, { icon });
-      setNewOrdersCount(prev => prev + 1);
       setSeller(prev => ({ ...prev, totalOrders: (prev.totalOrders || 0) + 1 }));
+      setNewOrdersCount(prev => prev + 1);
     };
 
-    socket.on("newOrderNotification", (data) => notify(data.message || "New Order!", "🛍️"));
-    socket.on("newBookingNotification", (data) => notify(data.message || "New Booking!", "📅"));
-    socket.on("newRentalNotification", (data) => notify(data.message || "New Rental Request!", "🔑"));
+    socket.on("newOrderNotification", (data) => handleNewActivity(data.message || "New Order!", "🛍️"));
+    socket.on("newBookingNotification", (data) => handleNewActivity(data.message || "New Booking!", "📅"));
+    socket.on("newRentalNotification", (data) => handleNewActivity(data.message || "New Rental!", "🔑"));
     
     socket.on("newMessageNotification", () => {
       setUnreadCount(prev => prev + 1);
@@ -176,129 +187,132 @@ function Dashboard() {
     };
   }, [seller?._id]);
 
-  /* ---------------- 5. HELPERS ---------------- */
+  if (!seller) return <div className="beautiful-loading">Loading Dashboard...</div>;
+
   const renderStars = (avg = 0) => {
     const stars = [];
-    const rating = Math.round(avg * 2) / 2;
+    const rating = Number(avg);
     for (let i = 1; i <= 5; i++) {
       if (rating >= i) stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" />);
-      else if (rating >= i - 0.5) stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" style={{ opacity: 0.5 }} />);
+      else if (rating >= i - 0.5) stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" style={{ clipPath: "inset(0 50% 0 0)" }} />);
       else stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray" />);
     }
     return stars;
   };
 
-  const getFileUrl = (path) => path ? (path.startsWith("http") ? path : `https://isonga-backend.onrender.com/uploads/${path}`) : "/placeholder.png";
+  const getFileUrl = (path) => {
+    if (!path) return "/placeholder.png";
+    if (path.startsWith("http")) return path;
+    return `https://isonga-backend.onrender.com/uploads/${path}`;
+  };
 
-  if (!seller) return <div className="beautiful-loading">Loading...</div>;
-
-  /* ---------------- 6. RENDER UI ---------------- */
   return (
     <div className="Dashboard">
       <Toaster position="top-center" />
 
       {/* Navbar */}
-      <nav className="Dashboard_navbar">
+      <div className="Dashboard_navbar">
         <div className="Dashboard_bars" onClick={toggleMenu} ref={dropdownRef}>
           <FontAwesomeIcon icon={faBars} />
           {isMenuOpen && (
             <div className="dropdown_list">
               <Link to="/settings">Settings</Link>
-              <Link to="/inventory">My Inventory</Link>
-              <hr />
-              <button onClick={handleLogout} className="logout_btn_mobile">Logout</button>
+              <Link to="/inventory">Inventory</Link>
             </div>
           )}
         </div>
-        <div className="Dashboard_text"><h2>ISONGA MARKET</h2></div>
+        <div className="Dashboard_text"><h2>My Store</h2></div>
         <div className="Dashboard_rightside">
           <Link to="/seller_profile">
-            <img src={getFileUrl(seller.profile)} alt="Profile" className="dashboard_seller-image" />
+            <div className="dashboard_profile">
+              <img src={getFileUrl(seller.profile)} alt="Seller" className="dashboard_seller-image" />
+            </div>
           </Link>
           <button onClick={handleLogout} className="Dashboard_Logout">Logout</button>
         </div>
-      </nav>
+      </div>
 
-      {/* Header */}
-      <header className="Dashboard_heading">
-        <h1>Welcome Back, {seller.name} <FontAwesomeIcon icon={faHand} /></h1>
+      <div className="Dashboard_heading">
+        <h1>Welcome Back {seller.name} <FontAwesomeIcon icon={faHand} /></h1>
         <p>Managing your {sType.toLowerCase()} business</p>
-      </header>
+      </div>
 
-      {/* Stats Grid */}
-      <section className="Dashboard_body1">
-        <div className="stat_card views_card">
+      <div className="Dashboard_body1">
+        <div className="sales">
           <FontAwesomeIcon icon={faEye} />
-          <p>Today's Visibility</p>
-          <p className="order_count_main">{todayViews} Views</p>
+          <p>Today Views</p>
+          <p className="order_count_main">{todayViews}</p>
         </div>
-        <div className="stat_card orders_card">
+        <div className="orders">
           <FontAwesomeIcon icon={config.mainIcon} />
           <h2>{config.orderTitle}</h2>
           <div className="order_count_main">
             <p>Total: {seller.totalOrders}</p>
-            <p className="new_highlight">New: {newOrdersCount}</p>
+            <p>New: {newOrdersCount}</p>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Ratings Section */}
-      <section className="Dashboard_body2">
-        <div className="stat_card total_views">
+      <div className="Dashboard_body2">
+        <div className="views">
           <FontAwesomeIcon icon={faEye} />
-          <h2>Lifetime Views</h2>
+          <h2>Total Views</h2>
           <p>{totalViews}</p>
         </div>
-        <div className="stat_card ratings">
+        <div className="ratings">
           <FontAwesomeIcon icon={faStar} />
-          <h2>Performance</h2>
-          <p>{Number(seller.averageRating).toFixed(1)} / 5.0</p>
+          <h2>Your Ratings</h2>
+          <p>{Number(seller.averageRating).toFixed(1)} ({seller.numReviews} reviews)</p>
           <div className="stars">{renderStars(seller.averageRating)}</div>
         </div>
-      </section>
+      </div>
 
-      {/* Quick Actions */}
-      <section className="Dashboard_body3">
-        <Link to={config.addLink} className="action_card">
+      <div className="Dashboard_body3">
+        <Link to={config.addLink} className="add_product">
           <FontAwesomeIcon icon={faAdd} />
           <h2>{config.addText}</h2>
         </Link>
-        <Link to={config.historyLink} className="action_card">
+        <Link to={config.historyLink} className="viewOrders">
           <FontAwesomeIcon icon={faHistory} />
           <h2>{config.historyTitle}</h2>
         </Link>
-        <Link to="/inventory" className="action_card inventory_accent">
+        <div className="buyer_messages">
           <FontAwesomeIcon icon={config.actionIcon} />
           <h2>{config.totalLabel}</h2>
-          <p className="count_badge">{seller?.totalItemsCount || 0}</p>
-        </Link>
-      </section>
+          <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
+            {seller?.totalItemsCount || 0}
+          </p>
+        </div>
+      </div>
 
-      {/* Fixed Footer Navigation */}
-      <footer className="Dashboard_footer">
-        <Link to="/dashboard" className="footer_item active">
+      {/* Footer Navigation */}
+      <div className="Dashboard_footer">
+        <Link to="/dashboard" className="footer_item">
           <FontAwesomeIcon icon={faHome} />
           <h2>Home</h2>
         </Link>
+
         <Link to={config.orderLink} className="footer_item">
-          <div className="icon_wrapper">
+          <div style={{ position: "relative" }}>
             <FontAwesomeIcon icon={config.mainIcon} />
             {newOrdersCount > 0 && <span className="order_badge">{newOrdersCount}</span>}
           </div>
           <h2>{config.orderTitle}</h2>
         </Link>
+
         <Link to="/SellerConversations" className="footer_item">
-          <div className="icon_wrapper">
+          <div style={{ position: "relative" }}>
             <FontAwesomeIcon icon={faCommentDots} />
             {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
           </div>
-          <h2>Inbox</h2>
+          <h2>Messages</h2>
         </Link>
+
         <Link to="/my_store" className="footer_item">
           <FontAwesomeIcon icon={faStore} />
           <h2>My Store</h2>
         </Link>
-      </footer>
+      </div>
     </div>
   );
 }
