@@ -20,7 +20,8 @@ function Seller_Profile() {
   const [showEdit, setShowEdit] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [message, setMessage] = useState(null);
-
+  const [replyText, setReplyText] = useState("");
+const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the review being replied to
   // Form States (Matching Register Style)
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
@@ -132,6 +133,26 @@ function Seller_Profile() {
     } catch (err) { alert("Delete failed"); }
   };
 
+  const handleReplySubmit = async (reviewId) => {
+  if (!replyText.trim()) return;
+  
+  try {
+    setLoading(true);
+    const res = await api.put(`/api/reviews/${reviewId}/reply`, { reply: replyText });
+    
+    if (res.data.success) {
+      alert("Reply posted!");
+      setReplyText("");
+      setReplyingTo(null);
+      fetchSeller(); // Refresh data to show the new reply
+    }
+  } catch (err) {
+    console.error("Reply error:", err);
+    alert("Failed to post reply");
+  } finally {
+    setLoading(false);
+  }
+};
   if (!seller) {
   return (
     <div className="profile-beautiful-loading">
@@ -295,24 +316,63 @@ function Seller_Profile() {
       )}
 
      {/* Reviews list */}
-         {reviews.map((r) => (
-          <div key={r._id} className="review-item">
-            <h4>{r.buyer?.name || "Anonymous"}</h4>
-            {r.buyer?.profile&& (
-              <img
-                src={getFileUrl(r.buyer.profile)}
-                alt="Profile"
-                onClick={() => setSelectedImage(r.buyer.profile)}
-      style={{ cursor: "pointer" }}
-              />
-            )}
-            <div className="review-stars">{renderStars(r.rating)}</div>
-            {r.comment && <p>{r.comment}</p>}
-            {r.createdAt && (
-              <small>{new Date(r.createdAt).toLocaleDateString()}</small>
-            )}
+        {reviews.map((r) => (
+  <div key={r._id} className="review-item" style={{ borderBottom: "1px solid #eee", padding: "15px 0" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      {r.buyer?.profile && (
+        <img
+          src={getFileUrl(r.buyer.profile)}
+          alt="Profile"
+          style={{ width: "40px", height: "40px", borderRadius: "50%", cursor: "pointer" }}
+          onClick={() => setSelectedImage(r.buyer.profile)}
+        />
+      )}
+      <h4>{r.buyer?.name || "Anonymous"}</h4>
+    </div>
+    
+    <div className="review-stars">{renderStars(r.rating)}</div>
+    {r.comment && <p>{r.comment}</p>}
+    {r.createdAt && <small>{new Date(r.createdAt).toLocaleDateString()}</small>}
+
+    {/* DISPLAY EXISTING REPLY */}
+    {r.sellerReply ? (
+      <div className="seller-reply-box" style={{ marginLeft: "30px", marginTop: "10px", padding: "10px", background: "#f9f9f9", borderRadius: "8px", borderLeft: "4px solid #4CAF50" }}>
+        <strong>Your Reply:</strong>
+        <p>{r.sellerReply}</p>
+      </div>
+    ) : (
+      /* REPLY INPUT SECTION */
+      <div style={{ marginTop: "10px" }}>
+        {replyingTo === r._id ? (
+          <div className="reply-form">
+            <textarea
+              placeholder="Write your reply..."
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              style={{ width: "100%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
+            ></textarea>
+            <div style={{ marginTop: "5px", display: "flex", gap: "10px" }}>
+              <button className="modern-submit-btn" style={{ padding: "5px 15px", fontSize: "12px" }} onClick={() => handleReplySubmit(r._id)}>
+                Post Reply
+              </button>
+              <button className="back-btn" style={{ padding: "5px 15px", fontSize: "12px", background: "#999" }} onClick={() => setReplyingTo(null)}>
+                Cancel
+              </button>
+            </div>
           </div>
-        ))}
+        ) : (
+          <button 
+            className="modern-submit-btn" 
+            style={{ padding: "5px 15px", fontSize: "12px", background: "#3498db" }} 
+            onClick={() => setReplyingTo(r._id)}
+          >
+            Reply to Customer
+          </button>
+        )}
+      </div>
+    )}
+  </div>
+))}
 
       {selectedImage && (
         <div className="image-modal" onClick={() => setSelectedImage(null)}>
