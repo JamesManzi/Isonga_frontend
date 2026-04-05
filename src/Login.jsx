@@ -42,16 +42,39 @@ const MAX_ATTEMPTS = 5;
     setLoading(false);
 
     if (newAttempts >= MAX_ATTEMPTS) {
-      setLockTime(30); // Lock for 30 seconds
-      setMessage({ text: "Too many attempts. Locked for 30s.", type: "error" });
+  const expiryTime = Date.now() + 30000; // 30 seconds from now
+  localStorage.setItem("lockUntil", expiryTime);
+  setLockTime(30);
+  setMessage({ text: "Too many attempts. Locked for 30s.", type: "error" });
     } else {
       setMessage({ text: `Invalid credentials. ${MAX_ATTEMPTS - newAttempts} left.`, type: "error" });
     }
   }
 };
   useEffect(() => {
+  // Check if there's a lock saved in localStorage on mount
+  const lockUntil = localStorage.getItem("lockUntil");
+  if (lockUntil) {
+    const remaining = Math.round((parseInt(lockUntil) - Date.now()) / 1000);
+    if (remaining > 0) {
+      setLockTime(remaining);
+    } else {
+      localStorage.removeItem("lockUntil");
+    }
+  }
+}, []);
+
+useEffect(() => {
   if (lockTime > 0) {
-    const timer = setInterval(() => setLockTime(prev => prev - 1), 1000);
+    const timer = setInterval(() => {
+      setLockTime((prev) => {
+        if (prev <= 1) {
+          localStorage.removeItem("lockUntil");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     return () => clearInterval(timer);
   }
 }, [lockTime]);
