@@ -169,6 +169,7 @@ function Login() {
                 />
                 <FontAwesomeIcon
                   icon={showPassword ? faEyeSlash : faEye}
+                  className="password-toggle"  
                   onClick={() => setShowPassword(!showPassword)}
                 />
               </div>
