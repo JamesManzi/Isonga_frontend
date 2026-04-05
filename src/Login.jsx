@@ -11,17 +11,24 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+
   const [lockTime, setLockTime] = useState(0);
   const [attempts, setAttempts] = useState(0);
-  
+
   const navigate = useNavigate();
   const MAX_ATTEMPTS = 5;
 
-  // 1. Initial Load: Check if a lock exists in LocalStorage
+  // ✅ Load saved attempts + lock on page load
   useEffect(() => {
+    const savedAttempts = localStorage.getItem("attempts");
     const lockUntil = localStorage.getItem("lockUntil");
+
+    if (savedAttempts) {
+      setAttempts(parseInt(savedAttempts));
+    }
+
     if (lockUntil) {
-      const remaining = Math.round((parseInt(lockUntil) - Date.now()) / 1000);
+      const remaining = Math.floor((parseInt(lockUntil) - Date.now()) / 1000);
       if (remaining > 0) {
         setLockTime(remaining);
       } else {
@@ -30,25 +37,34 @@ function Login() {
     }
   }, []);
 
-  // 2. Timer logic: Countdown the lockTime state
+  // ✅ Save attempts whenever they change
+  useEffect(() => {
+    localStorage.setItem("attempts", attempts);
+  }, [attempts]);
+
+  // ✅ Countdown timer
   useEffect(() => {
     let timer;
+
     if (lockTime > 0) {
       timer = setInterval(() => {
         setLockTime((prev) => {
           if (prev <= 1) {
             localStorage.removeItem("lockUntil");
+            localStorage.removeItem("attempts"); // reset attempts after lock ends
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
     }
+
     return () => clearInterval(timer);
   }, [lockTime]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (lockTime > 0) return;
 
     setLoading(true);
@@ -58,23 +74,26 @@ function Login() {
       const res = await api.post("/api/login", { email, password });
 
       if (res.data.success) {
-        // Clear security states on success
+        // ✅ Clear all security data
+        localStorage.removeItem("attempts");
         localStorage.removeItem("lockUntil");
+
         setAttempts(0);
-        
-        // Save Auth Data
+        setLockTime(0);
+
+        // ✅ Save user
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.seller));
-        
+
         setMessage({ text: "Success! Welcome back.", type: "success" });
+
         setTimeout(() => navigate("/dashboard"), 1500);
       } else {
-        // Logic for failed but reached server (e.g., wrong password)
         handleFailure(res.data.message || "Invalid credentials");
       }
     } catch (error) {
-      // Logic for server errors or rate limiting
-      const errMsg = error.response?.data?.message || "Login failed. Please try again.";
+      const errMsg =
+        error.response?.data?.message || "Login failed. Please try again.";
       handleFailure(errMsg);
     } finally {
       setLoading(false);
@@ -87,13 +106,19 @@ function Login() {
 
     if (newAttempts >= MAX_ATTEMPTS) {
       const expiryTime = Date.now() + 30000; // 30 seconds
+
       localStorage.setItem("lockUntil", expiryTime);
+
       setLockTime(30);
-      setMessage({ text: "Too many attempts. Locked for 30s.", type: "error" });
+
+      setMessage({
+        text: "Too many attempts. Locked for 30 seconds.",
+        type: "error",
+      });
     } else {
-      setMessage({ 
-        text: `${errorText}. ${MAX_ATTEMPTS - newAttempts} attempts remaining.`, 
-        type: "error" 
+      setMessage({
+        text: `${errorText}. ${MAX_ATTEMPTS - newAttempts} attempts remaining.`,
+        type: "error",
       });
     }
   };
@@ -103,20 +128,17 @@ function Login() {
       {loading && <div className="top-loading-bar"></div>}
 
       <div className="login-card-container">
-        {/* Left Side: Branding */}
+        {/* Left Side */}
         <div className="login-hero-side">
           <div className="hero-overlay"></div>
           <div className="hero-content">
             <img src="/logo.png" alt="Logo" className="hero-logo" />
             <h1>Isonga Market</h1>
             <p>Empowering Rwandan entrepreneurs to reach more customers, faster.</p>
-            <div className="hero-footer">
-              <span>Trusted by 500+ Local Shops 🇷🇼</span>
-            </div>
           </div>
         </div>
 
-        {/* Right Side: Form */}
+        {/* Right Side */}
         <div className="login-form-side">
           <div className="form-header">
             <h2>Seller Login</h2>
@@ -128,7 +150,6 @@ function Login() {
               <label>Email Address</label>
               <input
                 type="email"
-                placeholder="name@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -141,7 +162,6 @@ function Login() {
               <div className="password-wrapper">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -149,30 +169,25 @@ function Login() {
                 />
                 <FontAwesomeIcon
                   icon={showPassword ? faEyeSlash : faEye}
-                  className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 />
               </div>
             </div>
 
-            <div className="form-options">
-              <Link to="/forgot-password">Forgot password?</Link>
-            </div>
-
-            <button 
-              type="submit" 
-              className="main-login-btn" 
+            <button
+              type="submit"
+              className="main-login-btn"
               disabled={loading || lockTime > 0}
             >
-              {lockTime > 0 ? (
-                `Locked (${lockTime}s)`
-              ) : loading ? (
-                "Authenticating..."
-              ) : (
-                <>
-                  Sign In <FontAwesomeIcon icon={faArrowRight} />
-                </>
-              )}
+              {lockTime > 0
+                ? `Locked (${lockTime}s)`
+                : loading
+                ? "Authenticating..."
+                : (
+                  <>
+                    Sign In <FontAwesomeIcon icon={faArrowRight} />
+                  </>
+                )}
             </button>
 
             {message && (
@@ -185,10 +200,6 @@ function Login() {
               Don't have a shop yet? <Link to="/register">Create Account</Link>
             </div>
           </form>
-
-          <div className="form-footer">
-            <Link to="/">← Back to Home</Link>
-          </div>
         </div>
       </div>
     </div>
