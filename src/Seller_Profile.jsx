@@ -133,22 +133,23 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
     } catch (err) { alert("Delete failed"); }
   };
 
-  const handleReplySubmit = async (reviewId) => {
+  const handleReplySubmit = async (ratingId) => {
   if (!replyText.trim()) return;
   
   try {
     setLoading(true);
-    const res = await api.put(`/api/reviews/${reviewId}/reply`, { reply: replyText });
+    // Matches the backend route: /api/ratings/:id/reply
+    const res = await api.put(`/api/ratings/${ratingId}/reply`, { reply: replyText });
     
     if (res.data.success) {
-      alert("Reply posted!");
       setReplyText("");
       setReplyingTo(null);
-      fetchSeller(); // Refresh data to show the new reply
+      fetchSeller(); // This refreshes the UI
+      alert("Reply posted successfully!");
     }
   } catch (err) {
-    console.error("Reply error:", err);
-    alert("Failed to post reply");
+    console.error(err);
+    alert("Could not post reply");
   } finally {
     setLoading(false);
   }
