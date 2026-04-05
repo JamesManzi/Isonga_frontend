@@ -346,6 +346,7 @@ const startEditing = (review) => {
         <img
           src={getFileUrl(r.buyer.profile)}
           alt="Profile"
+          onClick={() => setSelectedImage(r.buyer.profile)}
           style={{ width: "45px", height: "45px", borderRadius: "50%", objectFit: "cover" }}
         />
       )}
