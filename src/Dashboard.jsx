@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { useState, useEffect, useRef } from "react";
@@ -7,16 +8,14 @@ import {
   faBars,
   faBoxOpen,
   faCommentDots,
+  faDigitalTachograph,
+  faDollarSign,
   faEye,
   faHand,
   faHome,
   faStar,
   faStore,
   faBox,
-  faCalendarCheck,
-  faKey,
-  faTools,
-  faHistory
 } from "@fortawesome/free-solid-svg-icons";
 
 import api from "./api";
@@ -24,65 +23,24 @@ import { io } from "socket.io-client";
 import toast, { Toaster } from "react-hot-toast";
 
 function Dashboard() {
+
   const [seller, setSeller] = useState(null);
   const [totalViews, setTotalViews] = useState(0);
-  const [todayViews, setTodayViews] = useState(0);
+  const [todayViews, setTodayViews] = useState(0); 
   const [unreadCount, setUnreadCount] = useState(0);
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const dropdownRef = useRef(null);
   const socketRef = useRef(null);
+
   const navigate = useNavigate();
 
-  /* ---------------- 1. DYNAMIC UI CONFIGURATION ---------------- */
-  // This map handles all the logic for Assets, Products, and Services
-  const UI_CONFIG = {
-    Product: {
-      addText: "Add New Product",
-      addLink: "/add_product",
-      orderTitle: "Orders",
-      orderLink: "/seller_orders",
-      historyTitle: "Order History",
-      historyLink: "/SellerOrderHistory",
-      totalLabel: "Total Products",
-      mainIcon: faBox,
-      actionIcon: faBoxOpen,
-    },
-    Service: {
-      addText: "Add New Service",
-      addLink: "/add_service",
-      orderTitle: "Bookings",
-      orderLink: "/seller_bookings",
-      historyTitle: "Booking History",
-      historyLink: "/SellerBookingHistory",
-      totalLabel: "Total Services",
-      mainIcon: faCalendarCheck,
-      actionIcon: faTools,
-    },
-    Asset: {
-      addText: "Add New Asset",
-      addLink: "/add_asset",
-      orderTitle: "Rentals",
-      orderLink: "/seller_rentals",
-      historyTitle: "Rental History",
-      historyLink: "/SellerRentalHistory",
-      totalLabel: "Total Assets",
-      mainIcon: faKey,
-      actionIcon: faStore,
-    }
-  };
-
-  // Safe fallback to Product config
-  const sType = seller?.sellerType || "Product";
-  const config = UI_CONFIG[sType] || UI_CONFIG.Product;
-
-  /* ---------------- 2. LOGIC HANDLERS ---------------- */
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const handleLogout = async () => {
     try {
-      const res = await api.post("/api/logout");
+      const res=await api.post("/api/logout");
       if (res.data.success) {
         if (socketRef.current) socketRef.current.disconnect();
         navigate("/login");
@@ -92,229 +50,442 @@ function Dashboard() {
     }
   };
 
+  /* ---------------- SELLER TYPE LOGIC ---------------- */
+  // Fallback to "Product" if seller is null to prevent crashing
+  const sType = seller?.sellerType || "Product";
+
+  const addLink = "/add_product";
+
+  const addText =
+    sType === "Product" ? "Add New Product" :
+    sType === "Service" ? "Add New Service" : 
+    "Add New Asset";
+
+  const orderTitle =
+    sType === "Product" ? "Orders" :
+    sType === "Service" ? "Bookings" : 
+    "Rentals";
+
+  const viewTitle = "Total Views";
+
+  const orderHistory =
+    sType === "Product" ? "Order History" :
+    sType === "Service" ? "Booking History" : 
+    "Asset History";
+
+  const orderLink = 
+    sType === "Product" ? "/seller_orders" : 
+    sType === "Service" ? "/seller_bookings" : 
+    "/seller_rentals";
+
+  const AddType =
+    sType === "Product" ? "Total Products" :
+    sType === "Service" ? "Total Services" : 
+    "Total Assets";
+
+  const historyLink =
+    sType === "Product" ? "/SellerOrderHistory" :
+    sType === "Service" ? "/SellerBookingHistory" : 
+    "none";
+  /* ---------------- END SELLER TYPE LOGIC ---------------- */
+
   useEffect(() => {
+
     const handleClickOutside = (event) => {
+
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
+
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
+
   }, []);
 
-  /* ---------------- 3. FETCH DATA ---------------- */
-  useEffect(() => {
-    const fetchSellerData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/login");
-          return;
-        }
+  /* ---------------- FETCH DASHBOARD DATA ---------------- */
 
-        const res = await api.get("/api/dashboard");
-
-        if (res.data.success && res.data.seller) {
-          const s = res.data.seller;
-          setSeller({
-            ...s,
-            averageRating: s.averageRating ?? 0,
-            numReviews: s.numReviews ?? 0,
-            totalOrders: s.totalOrders ?? 0,
-            totalSales: s.totalSales ?? 0,
-          });
-
-          setTotalViews(res.data.totalViews ?? 0);
-          setNewOrdersCount(s.newOrders ?? 0);
-          setTodayViews(res.data.todayViews ?? 0);
-
-          const unreadRes = await api.get("/api/seller/conversations");
-          if (unreadRes.data.success && unreadRes.data.conversations) {
-            const count = unreadRes.data.conversations.reduce(
-              (sum, conv) => sum + (conv.unreadCount || 0), 0
-            );
-            setUnreadCount(count);
-          }
-        }
-      } catch (err) {
-        toast.error("Server connection failed");
+ useEffect(() => {
+  const fetchSellerData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
       }
-    };
-    fetchSellerData();
-  }, [navigate]);
 
-  /* ---------------- 4. REAL-TIME SOCKETS ---------------- */
+      const res = await api.get("/api/dashboard");
+
+      // 1. Check if the response actually contains the seller data
+      if (res.data.success && res.data.seller) {
+        const s = res.data.seller;
+
+        setSeller({
+          ...s,
+          // Use the Nullish Coalescing Operator (??) for safer defaults
+          averageRating: s.averageRating ?? 0,
+          numReviews: s.numReviews ?? 0,
+          totalOrders: s.totalOrders ?? 0,
+          totalSales: s.totalSales ?? 0,
+        });
+
+        setTotalViews(res.data.totalViews ?? 0);
+        setNewOrdersCount(s.newOrders ?? 0);
+        setTodayViews(res.data.todayViews ?? 0);
+
+        // 2. Only fetch conversations if the dashboard load was successful
+        const unreadRes = await api.get("/api/seller/conversations");
+        if (unreadRes.data.success && unreadRes.data.conversations) {
+          const count = unreadRes.data.conversations.reduce(
+            (sum, conv) => sum + (conv.unreadCount || 0),
+            0
+          );
+          setUnreadCount(count);
+        }
+      } else {
+        // Handle case where success is false (e.g., session expired)
+        console.error("Dashboard error:", res.data.message);
+        toast.error("Session error. Please login again.");
+        // navigate("/login"); 
+      }
+
+    } catch (err) {
+      console.error("Dashboard Fetch Error:", err);
+      // This prevents the UI from staying in a "Loading" state forever if the server is down
+      toast.error("Server connection failed");
+    }
+  };
+
+  fetchSellerData();
+}, [navigate]);
+  /* ---------------- SOCKET REALTIME ---------------- */
+
   useEffect(() => {
-    if (!seller?._id) return;
-    const token = localStorage.getItem("token");
 
+    if (!seller?._id) return;
+    const token = localStorage.getItem("token"); 
     if (!socketRef.current) {
-      socketRef.current = io("https://isonga-backend.onrender.com", {
-        transports: ["websocket"],
-        headers: { Authorization: `Bearer ${token}` },
-      });
+
+      socketRef.current = io("https://isonga-backend.onrender.com", 
+        {
+          withCredentials: false,
+          transports:["websocket"],
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
     }
 
     const socket = socketRef.current;
-    socket.emit("userOnline", { userId: seller._id, userModel: "Seller" });
 
-    const handleNewActivity = (msg, icon) => {
-      toast.success(msg, { icon });
-      setSeller(prev => ({ ...prev, totalOrders: (prev.totalOrders || 0) + 1 }));
-      setNewOrdersCount(prev => prev + 1);
-    };
+    socket.emit("userOnline", {
+      userId: seller._id,
+      userModel: "Seller",
+    });
 
-    socket.on("newOrderNotification", (data) => handleNewActivity(data.message || "New Order!", "🛍️"));
-    socket.on("newBookingNotification", (data) => handleNewActivity(data.message || "New Booking!", "📅"));
-    socket.on("newRentalNotification", (data) => handleNewActivity(data.message || "New Rental!", "🔑"));
-    
+    socket.on("newOrderNotification", (data) => {
+
+      toast.success(data.message || "New Order Received!", { icon: "🛍️" });
+
+      setSeller((prev) => ({
+        ...prev,
+        totalOrders: (prev.totalOrders || 0) + 1,
+      }));
+
+      setNewOrdersCount((prev) => prev + 1);
+
+    });
+    socket.on("newBookingNotification", (data) => {
+  toast.success(data.message || "New Booking Received!", { icon: "📅" });
+
+  setSeller((prev) => ({
+    ...prev,
+    totalOrders: (prev.totalOrders || 0) + 1,
+  }));
+
+  setNewOrdersCount((prev) => prev + 1);
+});
     socket.on("newMessageNotification", () => {
-      setUnreadCount(prev => prev + 1);
+
+      setUnreadCount((prev) => prev + 1);
+
       toast("New message from buyer!", { icon: "💬" });
+
     });
 
     socket.on("newView", (data) => {
-      setTotalViews(data.totalViews);
-      setTodayViews(data.todayViews);
+  setTotalViews(data.totalViews);
+  setTodayViews(data.todayViews);
+  // optional:
+  console.log("Today views:", data.todayViews);
+});
+
+    socket.on("sellerRatingUpdated", (data) => {
+
+      toast.success("You received a new rating ⭐");
+
+      setSeller((prev) => ({
+        ...prev,
+        averageRating: data.averageRating,
+        numReviews: data.numReviews,
+      }));
+
     });
 
     return () => {
+
       socket.off("newOrderNotification");
       socket.off("newBookingNotification");
-      socket.off("newRentalNotification");
       socket.off("newMessageNotification");
       socket.off("newView");
+      socket.off("sellerRatingUpdated");
+
     };
+
   }, [seller?._id]);
 
-  if (!seller) return <div className="beautiful-loading">Loading Dashboard...</div>;
+ 
+if (!seller) {
+  return (
+    <div className="beautiful-loading">
+      <div className="text-center bg-white/20 backdrop-blur-lg p-10 rounded-3xl border border-white/30 shadow-2xl">
+        <div className="loader-dots flex space-x-2 justify-center mb-4">
+           <div className="w-4 h-4 bg-white rounded-full animate-bounce"></div>
+           <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+           <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+        </div>
+        <h2 className="text-white font-bold text-xl tracking-widest">ISONGA MARKET</h2>
+        <p className="text-white/80 text-sm">Preparing your dashboard...</p>
+      </div>
+    </div>
+  );
+}
+  /* ---------------- HELPERS ---------------- */
 
   const renderStars = (avg = 0) => {
+
     const stars = [];
     const rating = Number(avg);
+
     for (let i = 1; i <= 5; i++) {
-      if (rating >= i) stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" />);
-      else if (rating >= i - 0.5) stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" style={{ clipPath: "inset(0 50% 0 0)" }} />);
-      else stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray" />);
+
+      if (rating >= i) {
+        stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" />);
+      }
+
+      else if (rating >= i - 0.5) {
+        stars.push(
+          <FontAwesomeIcon
+            key={i}
+            icon={faStar}
+            color="gold"
+            style={{ clipPath: "inset(0 50% 0 0)" }}
+          />
+        );
+      }
+
+      else {
+        stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray" />);
+      }
+
     }
+
     return stars;
+
   };
 
   const getFileUrl = (path) => {
-    if (!path) return "/placeholder.png";
-    if (path.startsWith("http")) return path;
-    return `https://isonga-backend.onrender.com/uploads/${path}`;
-  };
+  if (!path) return "/placeholder.png";
+  if (path.startsWith("http")) return path;
+  return `https://isonga-backend.onrender.com/uploads/${path}`;
+};
+  /* ---------------- UI ---------------- */
 
   return (
+
     <div className="Dashboard">
+
       <Toaster position="top-center" />
 
       {/* Navbar */}
+
       <div className="Dashboard_navbar">
-        <div className="Dashboard_bars" onClick={toggleMenu} ref={dropdownRef}>
+
+        <div className="Dashboard_bars" onClick={toggleMenu}>
+
           <FontAwesomeIcon icon={faBars} />
+
           {isMenuOpen && (
-            <div className="dropdown_list">
+
+            <div className="dropdown_list" ref={dropdownRef}>
               <Link to="/settings">Settings</Link>
               <Link to="/inventory">Inventory</Link>
+              <hr />
             </div>
+
           )}
+
         </div>
-        <div className="Dashboard_text"><h2>My Store</h2></div>
+
+        <div className="Dashboard_text">
+          <h2>My Store</h2>
+        </div>
+
         <div className="Dashboard_rightside">
+
           <Link to="/seller_profile">
+
             <div className="dashboard_profile">
-              <img src={getFileUrl(seller.profile)} alt="Seller" className="dashboard_seller-image" />
+
+              {seller.profile ? (
+                <img
+                  src={getFileUrl(seller.profile)}
+                  alt="Seller"
+                  className="dashboard_seller-image"
+                />
+              ) : (
+                <div className="placeholder_profile">No Image</div>
+              )}
+
             </div>
+
           </Link>
-          <button onClick={handleLogout} className="Dashboard_Logout">Logout</button>
+
+          <button onClick={handleLogout} className="Dashboard_Logout">
+            Logout
+          </button>
+
         </div>
+
       </div>
+
+      {/* Welcome */}
 
       <div className="Dashboard_heading">
-        <h1>Welcome Back {seller.name} <FontAwesomeIcon icon={faHand} /></h1>
-        <p>Managing your {sType.toLowerCase()} business</p>
+
+        <h1>
+          Welcome Back {seller.name} <FontAwesomeIcon icon={faHand} />
+        </h1>
+
+        <p>Grow Your Business Today</p>
+
       </div>
 
+      {/* Sales */}
+
       <div className="Dashboard_body1">
+
         <div className="sales">
           <FontAwesomeIcon icon={faEye} />
           <p>Today Views</p>
           <p className="order_count_main">{todayViews}</p>
         </div>
+
         <div className="orders">
-          <FontAwesomeIcon icon={config.mainIcon} />
-          <h2>{config.orderTitle}</h2>
+          <FontAwesomeIcon icon={faBox} />
+          <h2>{orderTitle}</h2>
           <div className="order_count_main">
-            <p>Total: {seller.totalOrders}</p>
-            <p>New: {newOrdersCount}</p>
-          </div>
+  <p>Total: {seller.totalOrders}</p>
+  <p>New: {newOrdersCount}</p>
+</div>
         </div>
+
       </div>
 
+      {/* Views + Ratings */}
+
       <div className="Dashboard_body2">
+
         <div className="views">
           <FontAwesomeIcon icon={faEye} />
-          <h2>Total Views</h2>
+          <h2>{viewTitle}</h2>
           <p>{totalViews}</p>
         </div>
+
         <div className="ratings">
           <FontAwesomeIcon icon={faStar} />
           <h2>Your Ratings</h2>
-          <p>{Number(seller.averageRating).toFixed(1)} ({seller.numReviews} reviews)</p>
+          <p>
+            {Number(seller.averageRating).toFixed(1)} ({seller.numReviews} reviews)
+          </p>
           <div className="stars">{renderStars(seller.averageRating)}</div>
         </div>
+
       </div>
+
+      {/* Action Cards */}
 
       <div className="Dashboard_body3">
-        <Link to={config.addLink} className="add_product">
-          <FontAwesomeIcon icon={faAdd} />
-          <h2>{config.addText}</h2>
-        </Link>
-        <Link to={config.historyLink} className="viewOrders">
-          <FontAwesomeIcon icon={faHistory} />
-          <h2>{config.historyTitle}</h2>
-        </Link>
-        <div className="buyer_messages">
-          <FontAwesomeIcon icon={config.actionIcon} />
-          <h2>{config.totalLabel}</h2>
-          <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
-            {seller?.totalItemsCount || 0}
-          </p>
+
+        <div className="add_product">
+          <Link to={addLink}>
+            <FontAwesomeIcon icon={faAdd} />
+            <h2>{addText}</h2>
+          </Link>
         </div>
+
+        <div className="viewOrders">
+          <Link to={historyLink}>
+            <FontAwesomeIcon icon={faBox} />
+            <h2>{orderHistory}</h2>
+          </Link>
+        </div>
+
+       <div className="buyer_messages">
+  <Link to="#">
+    <FontAwesomeIcon icon={faBoxOpen} />
+    <h2>{AddType}</h2> 
+    <p className="order_count_main" style={{ marginTop: "10px", color: "#00d1b2" }}>
+      {seller?.totalItemsCount || 0}
+    </p>
+  </Link>
+</div>
+
       </div>
 
-      {/* Footer Navigation */}
-      <div className="Dashboard_footer">
-        <Link to="/dashboard" className="footer_item">
-          <FontAwesomeIcon icon={faHome} />
-          <h2>Home</h2>
-        </Link>
+      {/* --- Footer (Updated Version) --- */}
+<div className="Dashboard_footer">
 
-        <Link to={config.orderLink} className="footer_item">
-          <div style={{ position: "relative" }}>
-            <FontAwesomeIcon icon={config.mainIcon} />
-            {newOrdersCount > 0 && <span className="order_badge">{newOrdersCount}</span>}
-          </div>
-          <h2>{config.orderTitle}</h2>
-        </Link>
+  <Link to="/dashboard" className="footer_item">
+    <FontAwesomeIcon icon={faHome} />
+    <h2>Dashboard</h2>
+  </Link>
 
-        <Link to="/SellerConversations" className="footer_item">
-          <div style={{ position: "relative" }}>
-            <FontAwesomeIcon icon={faCommentDots} />
-            {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
-          </div>
-          <h2>Messages</h2>
-        </Link>
-
-        <Link to="/my_store" className="footer_item">
-          <FontAwesomeIcon icon={faStore} />
-          <h2>My Store</h2>
-        </Link>
-      </div>
+  {/* ✅ Clean Link: No onClick here! The badge stays visible until you open the page */}
+  <Link to={orderLink} className="footer_item">
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <FontAwesomeIcon icon={faBox} />
+      {newOrdersCount > 0 && (
+        <span className="order_badge">{newOrdersCount}</span>
+      )}
     </div>
+    <h2>{orderTitle}</h2>
+  </Link>
+
+  <Link to="/SellerConversations" className="footer_item">
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <FontAwesomeIcon icon={faCommentDots} />
+      {unreadCount > 0 && (
+        <span className="badge">{unreadCount}</span>
+      )}
+    </div>
+    <h2>Messages</h2>
+  </Link>
+
+  <Link to="/my_store" className="footer_item">
+    <FontAwesomeIcon icon={faStore} />
+    <h2>My Store</h2>
+  </Link>
+
+</div>
+    </div>
+
   );
+
 }
 
 export default Dashboard;
