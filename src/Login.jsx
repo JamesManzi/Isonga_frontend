@@ -12,33 +12,48 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const navigate = useNavigate();
+  const [attempts, setAttempts] = useState(0);
+const [lockTime, setLockTime] = useState(0);
+const MAX_ATTEMPTS = 5;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage(null);
+  e.preventDefault();
+  if (lockTime > 0) return; // Block submission if locked
 
-    try {
-      const res = await api.post("/api/login",
-        { email, password }
-      );
-      if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-  
-  // Optional: Save user info if you need it for the Navbar
-  localStorage.setItem("user", JSON.stringify(res.data.seller));
-        setMessage({ text: "Success! Welcome back.", type: "success" });
-        setTimeout(() => navigate("/dashboard"), 1500);
-      } else {
-        setMessage({ text: res.data.message, type: "error" });
-        setLoading(false);
-      }
-    } catch (error) {
-      setMessage({ text: "Server error. Try again later.", type: "error" });
-      setLoading(false);
+  setLoading(true);
+  setMessage(null);
+
+  try {
+    const res = await api.post("/api/login", { email, password });
+    
+    if (res.data.success) {
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.seller));
+      setAttempts(0); // Reset on success
+      setMessage({ text: "Success! Welcome back.", type: "success" });
+      setTimeout(() => navigate("/dashboard"), 1500);
+    } else {
+      throw new Error(res.data.message);
     }
-  };
+  } catch (error) {
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
+    setLoading(false);
 
+    if (newAttempts >= MAX_ATTEMPTS) {
+      setLockTime(30); // Lock for 30 seconds
+      setMessage({ text: "Too many attempts. Locked for 30s.", type: "error" });
+    } else {
+      setMessage({ text: `Invalid credentials. ${MAX_ATTEMPTS - newAttempts} left.`, type: "error" });
+    }
+  }
+};
+  useEffect(() => {
+  if (lockTime > 0) {
+    const timer = setInterval(() => setLockTime(prev => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }
+}, [lockTime]);
   return (
     <div className="login-page">
       {/* Top Loading Bar */}
@@ -97,13 +112,9 @@ function Login() {
               <Link to="/forgot-password">Forgot password?</Link>
             </div>
 
-            <button type="submit" className="main-login-btn" disabled={loading}>
-              {loading ? <span className="loader-dots">Authenticating...</span> : (
-                <>
-                  Sign In <FontAwesomeIcon icon={faArrowRight} />
-                </>
-              )}
-            </button>
+            <button type="submit" className="main-login-btn" disabled={loading || lockTime > 0}>
+  {lockTime > 0 ? `Locked (${lockTime}s)` : loading ? "Authenticating..." : "Sign In"}
+</button>
 
             {message && (
               <div className={`modern-alert ${message.type}`}>
