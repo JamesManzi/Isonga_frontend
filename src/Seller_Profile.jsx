@@ -334,41 +334,74 @@ const startEditing = (review) => {
         </div>
       )}
 
-     {reviews.map((r) => (
-  <div key={r._id} className="review-item">
-    {/* ... (Buyer Info & Comment) ... */}
+    {/* Reviews list */}
+{reviews.length === 0 && <p style={{ textAlign: 'center', padding: '20px' }}>No reviews yet.</p>}
 
-    {/* REPLY SECTION */}
-    <div style={{ marginLeft: "30px", marginTop: "10px" }}>
+{reviews.map((r) => (
+  <div key={r._id} className="review-item" style={{ borderBottom: "1px solid #eee", padding: "20px 0" }}>
+    
+    {/* 1. BUYER INFO & RATING (The part that was missing) */}
+    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px" }}>
+      {r.buyer?.profile && (
+        <img
+          src={getFileUrl(r.buyer.profile)}
+          alt="Profile"
+          style={{ width: "45px", height: "45px", borderRadius: "50%", objectFit: "cover" }}
+        />
+      )}
+      <div>
+        <h4 style={{ margin: 0 }}>{r.buyer?.name || "Anonymous Customer"}</h4>
+        <div className="review-stars">{renderStars(r.rating)}</div>
+      </div>
+    </div>
+
+    {/* 2. CUSTOMER COMMENT */}
+    <p style={{ margin: "10px 0", color: "#444", fontSize: "15px" }}>{r.comment}</p>
+    {r.createdAt && <small style={{ color: "#888" }}>{new Date(r.createdAt).toLocaleDateString()}</small>}
+
+    {/* 3. REPLY SECTION (With Edit/Update/Delete) */}
+    <div style={{ marginLeft: "30px", marginTop: "15px" }}>
       {replyingTo === r._id ? (
         <div className="reply-form">
           <textarea
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             className="reply-textarea"
+            placeholder="Write your response..."
+            style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #ddd" }}
           />
-          <button onClick={() => handleReplySubmit(r._id)}>
-            {isEditingReply ? "Update Reply" : "Post Reply"}
-          </button>
-          <button onClick={() => {setReplyingTo(null); setIsEditingReply(false); setReplyText("");}}>
-            Cancel
-          </button>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <button className="modern-submit-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => handleReplySubmit(r._id)}>
+              {isEditingReply ? "Update Reply" : "Post Reply"}
+            </button>
+            <button className="back-btn" style={{ padding: "6px 12px", fontSize: "13px", background: "#999" }} onClick={() => {setReplyingTo(null); setIsEditingReply(false); setReplyText("");}}>
+              Cancel
+            </button>
+          </div>
         </div>
       ) : (
         <>
           {r.sellerReply ? (
-            <div className="seller-reply-box">
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <strong>Your Reply:</strong>
-                <div>
-                  <button onClick={() => startEditing(r)} style={{ marginRight: "10px", color: "blue" }}>Edit</button>
-                  <button onClick={() => handleDeleteReply(r._id)} style={{ color: "red" }}>Delete</button>
+            <div className="seller-reply-box" style={{ background: "#f9f9f9", padding: "12px", borderRadius: "8px", borderLeft: "4px solid #3498db" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "5px" }}>
+                <strong style={{ color: "#3498db" }}>Your Reply:</strong>
+                <div style={{ display: "flex", gap: "15px" }}>
+                  <button onClick={() => startEditing(r)} style={{ background: 'none', border: 'none', color: '#3498db', cursor: 'pointer', fontSize: '13px' }}>
+                    <FontAwesomeIcon icon={faEdit || faCheckCircle} /> Edit
+                  </button>
+                  <button onClick={() => handleDeleteReply(r._id)} style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', fontSize: '13px' }}>
+                    <FontAwesomeIcon icon={faTrash} /> Delete
+                  </button>
                 </div>
               </div>
-              <p>{r.sellerReply}</p>
+              <p style={{ margin: 0, color: "#555" }}>{r.sellerReply}</p>
             </div>
           ) : (
-            <button onClick={() => {setReplyingTo(r._id); setIsEditingReply(false);}}>
+            <button 
+              className="modern-submit-btn" 
+              style={{ padding: "6px 15px", fontSize: "12px", background: "#3498db" }} 
+              onClick={() => {setReplyingTo(r._id); setIsEditingReply(false);}}
+            >
               Reply to Customer
             </button>
           )}
@@ -377,7 +410,6 @@ const startEditing = (review) => {
     </div>
   </div>
 ))}
-
       {selectedImage && (
         <div className="image-modal" onClick={() => setSelectedImage(null)}>
           <img src={getFileUrl(selectedImage)} alt="Full" className="full-image" />
