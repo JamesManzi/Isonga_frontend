@@ -115,6 +115,7 @@ const MAX_ATTEMPTS = 5;
 
             <button type="submit" className="main-login-btn" disabled={loading || lockTime > 0}>
   {lockTime > 0 ? `Locked (${lockTime}s)` : loading ? "Authenticating..." : "Sign In"}
+  Sign In <FontAwesomeIcon icon={faArrowRight} />
 </button>
 
             {message && (
