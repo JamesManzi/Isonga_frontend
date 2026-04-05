@@ -313,18 +313,17 @@
 
 .cart-popup {
   position: fixed;
-  bottom: -100px; /* start hidden below */
+  top: 80px; /* 🔥 move it ABOVE (below navbar) */
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -20px); /* start slightly higher */
   
   background: rgba(45, 52, 54, 0.95);
   color: #fff;
   padding: 14px 28px;
   border-radius: 50px;
-  
-  font-weight: 500;
+
   font-size: 14px;
-  letter-spacing: 0.3px;
+  font-weight: 500;
 
   box-shadow: 0 10px 25px rgba(0,0,0,0.25);
   backdrop-filter: blur(10px);
@@ -333,11 +332,10 @@
 
   opacity: 0;
   pointer-events: none;
-
-  transition: all 0.4s ease;
+  transition: all 0.35s ease;
 }
 
 .cart-popup.show {
-  bottom: 40px; /* slides UP */
   opacity: 1;
+  transform: translate(-50%, 0); /* smooth drop-in */
 }
