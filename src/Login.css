@@ -125,7 +125,9 @@ body {
 .password-wrapper {
   position: relative;
 }
-
+.password-wrapper input {
+  padding-right: 40px; /* 👈 THIS is the missing piece */
+}
 .password-toggle {
   position: absolute;
   right: 12px;
