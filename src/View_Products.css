@@ -1,24 +1,22 @@
-/* =========================
-   GLOBAL
-========================= */
-body {
-  margin: 0;
-  font-family: "Inter", "Poppins", sans-serif;
-  background: #f4f6fb;
-  color: #222;
+/* --- Root Layout & Background --- */
+.View_Products {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #2d3436;
 }
 
-/* =========================
-   NAVBAR
-========================= */
+/* --- Navbar Styling --- */
 .View_Products_navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 25px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
+  padding: 1rem 5%;
+  background: #fff;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .View_Products_logo {
@@ -28,270 +26,300 @@ body {
 }
 
 .View_Products_logo img {
-  width: 40px;
+  height: 40px;
 }
 
 .View_Products_heads h1 {
+  font-size: 1.2rem;
   margin: 0;
-  font-size: 18px;
+  color: #ff4757;
+  line-height: 1;
 }
 
 .View_Products_heads h2 {
+  font-size: 0.9rem;
   margin: 0;
-  font-size: 14px;
-  color: #777;
+  font-weight: 400;
+  color: #636e72;
 }
 
-.View_Products_back {
-  font-size: 18px;
-  cursor: pointer;
-}
-
-/* =========================
-   HEADER
-========================= */
+/* --- Header & Search Bar --- */
 .View_Products_body {
   text-align: center;
-  padding: 20px;
-  font-size: 18px;
-  font-weight: 500;
+  padding: 2rem 1rem 1rem;
 }
 
-/* =========================
-   SEARCH
-========================= */
+.View_Products_body p {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3436;
+}
+
 .View_Products_search {
   display: flex;
   justify-content: center;
   gap: 10px;
-  padding: 0 20px 20px;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  padding: 0 1rem;
 }
 
 .View_Products_search input {
-  width: 300px;
-  padding: 10px 15px;
-  border-radius: 25px;
-  border: 1px solid #ddd;
+  flex: 1;
+  padding: 12px 20px;
+  border: 2px solid #dfe6e9;
+  border-radius: 50px;
   outline: none;
+  transition: border-color 0.3s;
+}
+
+.View_Products_search input:focus {
+  border-color: #ff4757;
 }
 
 .View_Products_search button {
-  padding: 10px 18px;
-  border-radius: 25px;
-  border: none;
-  background: #4f46e5;
+  padding: 12px 25px;
+  background: #ff4757;
   color: white;
+  border: none;
+  border-radius: 50px;
   cursor: pointer;
-  transition: 0.3s;
+  font-weight: 600;
 }
 
-.View_Products_search button:hover {
-  background: #4338ca;
-}
-
-/* =========================
-   GRID
-========================= */
+/* --- Products Grid --- */
 .store_container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 20px;
+  gap: 25px;
+  padding: 0 5% 50px;
 }
 
-/* =========================
-   CARD
-========================= */
+/* --- THE CARD (Pinning Buttons to Bottom) --- */
 .productcard {
   background: #fff;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+  
+  /* Flex magic starts here */
   display: flex;
-  flex-direction: column; /* IMPORTANT */
-  height: 100%;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-  transition: 0.3s;
+  flex-direction: column;
+  height: 100%; 
 }
 
 .productcard:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px);
 }
 
-/* =========================
-   IMAGE SLIDER
-========================= */
+/* Image Slider Section */
 .image-slider {
   position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f1f2f6;
 }
 
 .slider-media {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
+  cursor: zoom-in;
 }
 
-/* dots */
+/* Dots on image */
 .slider-dots {
   position: absolute;
-  bottom: 10px;
-  width: 100%;
-  text-align: center;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  background: rgba(0,0,0,0.2);
+  padding: 5px 10px;
+  border-radius: 20px;
 }
 
 .dot {
-  height: 8px;
-  width: 8px;
-  margin: 0 3px;
-  background: #ddd;
+  width: 6px;
+  height: 6px;
+  background: rgba(255,255,255,0.5);
   border-radius: 50%;
-  display: inline-block;
 }
 
 .dot.active {
-  background: #4f46e5;
+  background: #fff;
+  width: 12px;
+  border-radius: 4px;
 }
 
-/* profile avatar */
+/* Profile Avatar Overlap */
 .profile-avatar {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  bottom: -20px;
+  right: 15px;
+  z-index: 10;
 }
 
 .profile-avatar img {
-  width: 35px;
-  height: 35px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  border: 2px solid white;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* =========================
-   PRODUCT INFO
-========================= */
+/* --- Product Info Content --- */
 .product-info {
-  padding: 15px;
+  padding: 25px 20px 15px;
+  /* This pushes the buttons down even if text is short */
+  flex-grow: 1; 
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 .product-info h1 {
-  font-size: 16px;
-  margin: 0;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+  color: #2d3436;
 }
 
 .product-info p {
-  margin: 0;
-  font-size: 14px;
-  color: #555;
+  font-size: 0.9rem;
+  margin: 4px 0;
+  color: #636e72;
 }
 
-/* =========================
-   BUTTONS (FORCED BOTTOM)
-========================= */
+.product-info p strong {
+  color: #2d3436;
+}
+
+/* --- Buttons Container --- */
 .View_Products_btns {
-  margin-top: auto; /* 🔥 THIS PUSHES BUTTONS TO BOTTOM */
+  padding: 15px 20px 20px;
   display: flex;
   gap: 10px;
-  padding: 15px;
+  border-top: 1px solid #f1f2f6;
+}
+
+.View_Products_btns a {
+  flex: 1;
+  text-decoration: none;
 }
 
 .View_Products_btns button {
-  flex: 1;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
+  border: none;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .chat-btn {
-  background: #e5e7eb;
+  background: #f1f2f6;
+  color: #2d3436;
 }
 
 .chat-btn:hover {
-  background: #d1d5db;
+  background: #dfe6e9;
 }
 
-.View_Products_btns button:last-child {
-  background: #4f46e5;
+.View_Products_btns button:not(.chat-btn) {
+  background: #ff4757;
   color: white;
+  flex: 1.5; /* Makes "Add to Cart" wider */
 }
 
-.View_Products_btns button:last-child:hover {
-  background: #4338ca;
+.View_Products_btns button:not(.chat-btn):hover {
+  background: #ff6b81;
 }
 
-/* =========================
-   MODAL
-========================= */
+/* --- Modal Styling --- */
 .media-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.9);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
 }
 
 .full-media {
   max-width: 90%;
   max-height: 80%;
+  border-radius: 8px;
 }
 
 .close-btn {
   position: absolute;
   top: 20px;
   right: 30px;
-  font-size: 30px;
   color: white;
+  font-size: 40px;
   cursor: pointer;
 }
 
 .modal-controls {
   position: absolute;
-  bottom: 30px;
+  width: 100%;
   display: flex;
-  gap: 40px;
+  justify-content: space-between;
+  padding: 0 20px;
+  pointer-events: none;
 }
 
 .modal-arrow {
   color: white;
-  font-size: 30px;
+  font-size: 2rem;
   cursor: pointer;
+  pointer-events: auto;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
 
-/* =========================
-   POPUP
-========================= */
-.cart-popup {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #4f46e5;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.modal-arrow:hover {
+  opacity: 1;
 }
 
-/* =========================
-   LOADING
-========================= */
+/* --- Loading & Popups --- */
 .products-loading {
   height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .products-loader-card {
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
   text-align: center;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.6; transform: scale(0.98); }
+}
+
+.cart-popup {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2d3436;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 50px;
+  z-index: 1001;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
