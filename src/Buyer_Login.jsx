@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react"; // Added useEffect
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faArrowRight, faLock } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Login.css";
@@ -11,23 +11,60 @@ function Buyer_Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
-  const navigate = useNavigate();
 
-  // --- Login Attempts Logic ---
   const [attempts, setAttempts] = useState(0);
   const [lockTime, setLockTime] = useState(0);
+
+  const navigate = useNavigate();
   const MAX_ATTEMPTS = 5;
 
-  // Countdown Timer
+  // ✅ Load saved attempts + lock
   useEffect(() => {
-    if (lockTime > 0) {
-      const timer = setInterval(() => setLockTime((prev) => prev - 1), 1000);
-      return () => clearInterval(timer);
+    const savedAttempts = localStorage.getItem("buyer_attempts");
+    const lockUntil = localStorage.getItem("buyer_lockUntil");
+
+    if (savedAttempts) {
+      setAttempts(parseInt(savedAttempts));
     }
+
+    if (lockUntil) {
+      const remaining = Math.floor((parseInt(lockUntil) - Date.now()) / 1000);
+      if (remaining > 0) {
+        setLockTime(remaining);
+      } else {
+        localStorage.removeItem("buyer_lockUntil");
+      }
+    }
+  }, []);
+
+  // ✅ Save attempts
+  useEffect(() => {
+    localStorage.setItem("buyer_attempts", attempts);
+  }, [attempts]);
+
+  // ✅ Countdown timer
+  useEffect(() => {
+    let timer;
+
+    if (lockTime > 0) {
+      timer = setInterval(() => {
+        setLockTime((prev) => {
+          if (prev <= 1) {
+            localStorage.removeItem("buyer_lockUntil");
+            localStorage.removeItem("buyer_attempts");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(timer);
   }, [lockTime]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (lockTime > 0) return;
 
     setLoading(true);
@@ -37,33 +74,51 @@ function Buyer_Login() {
       const res = await api.post("/api/buyer_login", { email, password });
 
       if (res.data.success) {
+        // ✅ Clear lock + attempts
+        localStorage.removeItem("buyer_attempts");
+        localStorage.removeItem("buyer_lockUntil");
+
+        setAttempts(0);
+        setLockTime(0);
+
+        // ✅ Save user
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.buyer));
-        setAttempts(0); // Reset attempts on success
+
         setMessage({ text: "Success! Welcome back.", type: "success" });
+
         setTimeout(() => navigate("/buyer_dashboard"), 1500);
       } else {
-        // Triggered if the server returns success: false
-        handleFailure(res.data.message);
+        handleFailure(res.data.message || "Invalid credentials");
       }
     } catch (error) {
-      // Triggered on network/server error
-      handleFailure("Server error. Please try again later.");
+      const errMsg =
+        error.response?.data?.message || "Server error. Please try again later.";
+      handleFailure(errMsg);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleFailure = (errorText) => {
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
-    setLoading(false);
 
     if (newAttempts >= MAX_ATTEMPTS) {
-      setLockTime(30); // Lock for 30 seconds
-      setMessage({ text: "Too many attempts. Locked for 30s.", type: "error" });
+      const expiryTime = Date.now() + 30000; // 30 sec
+
+      localStorage.setItem("buyer_lockUntil", expiryTime);
+
+      setLockTime(30);
+
+      setMessage({
+        text: "Too many attempts. Locked for 30 seconds.",
+        type: "error",
+      });
     } else {
-      setMessage({ 
-        text: `${errorText} (${MAX_ATTEMPTS - newAttempts} attempts left)`, 
-        type: "error" 
+      setMessage({
+        text: `${errorText} (${MAX_ATTEMPTS - newAttempts} attempts left)`,
+        type: "error",
       });
     }
   };
@@ -79,9 +134,6 @@ function Buyer_Login() {
             <img src="/logo.png" alt="Logo" className="buyer-hero-logo" />
             <h1>Isonga Market</h1>
             <p>Discover quality products and support local businesses across Rwanda.</p>
-            <div className="buyer-hero-footer">
-              <span>Join 10,000+ Happy Shoppers 🇷🇼</span>
-            </div>
           </div>
         </div>
 
@@ -96,7 +148,6 @@ function Buyer_Login() {
               <label>Email Address</label>
               <input
                 type="email"
-                placeholder="yourname@example.com"
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={lockTime > 0}
@@ -108,7 +159,6 @@ function Buyer_Login() {
               <div className="buyer-password-wrapper">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={lockTime > 0}
@@ -121,20 +171,15 @@ function Buyer_Login() {
               </div>
             </div>
 
-            <div className="buyer-form-options">
-              <Link to="/forgot-password">Forgot password?</Link>
-            </div>
-
-            {/* Optimized Button Logic */}
-            <button 
-              type="submit" 
-              className="buyer-main-btn" 
+            <button
+              type="submit"
+              className="buyer-main-btn"
               disabled={loading || lockTime > 0}
             >
               {lockTime > 0 ? (
                 <>Locked ({lockTime}s) <FontAwesomeIcon icon={faLock} /></>
               ) : loading ? (
-                <span className="buyer-loader-dots">Verifying...</span>
+                "Verifying..."
               ) : (
                 <>
                   Sign In <FontAwesomeIcon icon={faArrowRight} />
@@ -147,15 +192,7 @@ function Buyer_Login() {
                 {message.text}
               </div>
             )}
-
-            <div className="buyer-register-redirect">
-              New to Isonga? <Link to="/buyer_register">Create Account</Link>
-            </div>
           </form>
-
-          <div className="buyer-form-footer">
-            <Link to="/">← Back to Home</Link>
-          </div>
         </div>
       </div>
     </div>
