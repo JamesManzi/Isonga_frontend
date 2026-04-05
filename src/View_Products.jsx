@@ -244,8 +244,10 @@ function View_Products() {
         );
       })()}
 
-      {showCartPopup && <div className="cart-popup">{popupMessage}</div>}
-    </div>
+    <div className={`cart-popup ${showCartPopup ? "show" : ""}`}>
+  {popupMessage}
+  </div>
+  </div>
   );
 }
 

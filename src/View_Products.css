@@ -313,13 +313,31 @@
 
 .cart-popup {
   position: fixed;
-  bottom: 30px;
+  bottom: -100px; /* start hidden below */
   left: 50%;
   transform: translateX(-50%);
-  background: #2d3436;
-  color: white;
-  padding: 12px 25px;
+  
+  background: rgba(45, 52, 54, 0.95);
+  color: #fff;
+  padding: 14px 28px;
   border-radius: 50px;
-  z-index: 1001;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  backdrop-filter: blur(10px);
+
+  z-index: 2000;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: all 0.4s ease;
+}
+
+.cart-popup.show {
+  bottom: 40px; /* slides UP */
+  opacity: 1;
 }
