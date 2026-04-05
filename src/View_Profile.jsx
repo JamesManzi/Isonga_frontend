@@ -179,43 +179,45 @@ if (!seller) {
         </div>
 
         {/* Reviews list */}
-        {reviews.map((r) => (
-          <div key={r._id} className="review-item" style={{ marginBottom: "20px" }}>
-            <h4>{r.buyer?.name || "Anonymous"}</h4>
-            {r.buyer?.profile && (
-              <img
-                src={getFileUrl(r.buyer.profile)}
-                alt="Profile"
-                onClick={() => setSelectedImage(r.buyer.profile)}
-                style={{ cursor: "pointer", width: "40px", borderRadius: "50%" }}
-              />
-            )}
-            <div className="review-stars">{renderStars(r.rating)}</div>
-            {r.comment && <p>{r.comment}</p>}
-            
-            {r.sellerReply && (
-              <div className="seller-reply-box" style={{ 
-                marginTop: "10px", 
-                padding: "10px", 
-                background: "#f9f9f9", 
-                borderLeft: "4px solid #2563eb",
-                borderRadius: "4px",
-                marginLeft: "20px" 
-              }}>
-                <strong style={{ fontSize: "0.85rem", color: "#2563eb" }}>
-                  Seller's Response:
-                </strong>
-                <p style={{ margin: "5px 0 0 0", fontStyle: "italic" }}>{r.sellerReply}</p>
-              </div>
-            )}
+{reviews.map((r) => (
+  <div key={r._id} className="review-item" style={{ marginBottom: "20px" }}>
+    <h4>{r.buyer?.name || "Anonymous"}</h4>
+    {r.buyer?.profile && (
+      <img
+        src={getFileUrl(r.buyer.profile)}
+        alt="Profile"
+        onClick={() => setSelectedImage(r.buyer.profile)}
+        style={{ cursor: "pointer", width: "40px", borderRadius: "50%" }}
+      />
+    )}
+    <div className="review-stars">{renderStars(r.rating)}</div>
+    {r.comment && <p>{r.comment}</p>}
+    
+    {/* --- UPDATED SECTION START --- */}
+    {r.sellerReply && (
+      <div className="seller-reply-box" style={{ 
+        marginTop: "10px", 
+        padding: "10px", 
+        background: "#f9f9f9", 
+        borderLeft: "4px solid #2563eb",
+        borderRadius: "4px",
+        marginLeft: "20px" 
+      }}>
+        <strong style={{ fontSize: "0.85rem", color: "#2563eb", textTransform: "capitalize" }}>
+          {seller?.name || "Seller"}:
+        </strong>
+        <p style={{ margin: "5px 0 0 0", fontStyle: "italic" }}>{r.sellerReply}</p>
+      </div>
+    )}
+    {/* --- UPDATED SECTION END --- */}
 
-            {r.createdAt && (
-              <small style={{ color: "#888" }}>
-                {new Date(r.createdAt).toLocaleDateString()}
-              </small>
-            )}
-          </div>
-        ))}
+    {r.createdAt && (
+      <small style={{ color: "#888" }}>
+        {new Date(r.createdAt).toLocaleDateString()}
+      </small>
+    )}
+  </div>
+))}
       </div> {/* This closes seller-rating */}
 
       {selectedImage && (
