@@ -1,179 +1,276 @@
-/* Seller_Profile.css */
-
-:root {
-  --primary: #3498db;
-  --secondary: #2ecc71;
-  --danger: #e74c3c;
-  --dark: #2c3e50;
-  --light: #f4f7f6;
-  --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+/* =========================
+   GLOBAL
+========================= */
+body {
+  margin: 0;
+  font-family: "Inter", "Poppins", sans-serif;
+  background: #f5f7fb;
+  color: #222;
 }
 
+/* =========================
+   MAIN WRAPPER
+========================= */
 .Seller_Profile {
-  max-width: 1000px;
-  margin: 20px auto;
+  max-width: 1100px;
+  margin: auto;
   padding: 20px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: var:(--shadow);
 }
 
-/* Header & Profile Info */
+/* =========================
+   HEADER PROFILE
+========================= */
 .profile {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
-  border-bottom: 2px solid var(--light);
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  gap: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 .seller-image {
-  width: 150px;
-  height: 150px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid var(--primary);
   cursor: pointer;
-  transition: transform 0.3s ease;
+  border: 3px solid #3498db;
 }
 
-.seller-image:hover {
-  transform: scale(1.05);
+.profile h2 {
+  margin: 0;
+  font-size: 22px;
 }
 
-.Seller_Profile_info {
-  background: var(--light);
-  padding: 20px;
+.sell {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.modern-submit-btn {
+  background: linear-gradient(135deg, #3498db, #6c5ce7);
+  border: none;
+  color: white;
+  padding: 10px 18px;
   border-radius: 10px;
-  margin-bottom: 30px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.modern-submit-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.back-btn {
+  background: #eee;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: #ddd;
+}
+
+/* =========================
+   INFO SECTION
+========================= */
+.Seller_Profile_info {
+  margin-top: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 .Seller_Profile_info p {
   margin: 10px 0;
-  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .description-text {
-  font-style: italic;
-  color: #666;
+  margin-top: 15px;
+  color: #555;
   line-height: 1.6;
 }
 
-/* Buttons */
-.modern-submit-btn {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 10px 25px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.modern-submit-btn:hover {
-  background: #2980b9;
-  transform: translateY(-2px);
-}
-
-.back-btn {
-  background: #95a5a6;
-  color: white;
-  border: none;
-  padding: 10px 25px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* Store Gallery */
+/* =========================
+   GALLERY
+========================= */
 .seller-files {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 15px;
   margin-top: 15px;
 }
 
 .image-wrapper {
   position: relative;
-  height: 120px;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
 .image-wrapper img {
   width: 100%;
-  height: 100%;
+  height: 140px;
   object-fit: cover;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.image-wrapper img:hover {
+  transform: scale(1.05);
 }
 
 .delete-overlay {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  background: rgba(231, 76, 60, 0.8);
-  color: white;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
   border: none;
+  color: white;
+  padding: 6px;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
   cursor: pointer;
 }
 
-/* Review Item & Replies */
+/* =========================
+   MODAL IMAGE VIEW
+========================= */
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.full-image {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+}
+
+/* =========================
+   REVIEW SECTION
+========================= */
 .review-item {
-  background: #fff;
-  transition: background 0.3s;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-top: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
 }
 
 .review-stars {
-  margin-top: 5px;
-  font-size: 0.9rem;
+  color: gold;
 }
 
+/* =========================
+   SELLER REPLY
+========================= */
 .seller-reply-box {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 10px;
-  border-left: 4px solid var(--primary);
   margin-top: 10px;
+  background: #f8fbff;
+  border-left: 4px solid #3498db;
+  padding: 12px;
+  border-radius: 10px;
 }
 
 .reply-textarea {
   width: 100%;
   min-height: 80px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 12px;
-  font-family: inherit;
-  margin-bottom: 10px;
-  resize: vertical;
+  resize: none;
 }
 
-/* Modern Update Modal (Matches Register Style) */
+/* =========================
+   MODERN FORM (EDIT MODAL)
+========================= */
 .modern-reg-wrapper {
-  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(6px);
 }
 
 .modern-reg-container {
   background: white;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  border-radius: 18px;
+  padding: 20px;
 }
 
+.form-header h1 {
+  margin-bottom: 5px;
+}
+
+.form-header p {
+  color: #777;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.modern-input-group {
+  margin-bottom: 15px;
+}
+
+.modern-input-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  background: #f1f3f8;
+  border-radius: 10px;
+  padding: 10px;
+  gap: 10px;
+}
+
+.input-with-icon input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+}
+
+/* =========================
+   GRID
+========================= */
+.modern-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+/* =========================
+   PROFILE UPLOAD
+========================= */
 .profile-circle-upload {
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
-  border: 2px dashed #ccc;
+  background: #f1f3f8;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   overflow: hidden;
-  margin-bottom: 15px;
 }
 
 .profile-circle-upload img {
@@ -182,62 +279,74 @@
   object-fit: cover;
 }
 
-.modern-input-group {
-  margin-bottom: 20px;
-  text-align: left;
+/* =========================
+   MULTI IMAGE UPLOAD
+========================= */
+.modern-multi-upload {
+  margin-top: 20px;
 }
 
-.modern-input-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: var(--dark);
-}
-
-.input-with-icon {
+.multi-upload-trigger {
   display: flex;
   align-items: center;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 0 15px;
-}
-
-.input-with-icon input, .modern-input-group textarea {
-  border: none;
-  background: transparent;
+  gap: 10px;
+  background: #f1f3f8;
   padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.modern-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.gallery-item {
+  position: relative;
+}
+
+.gallery-item img {
   width: 100%;
-  outline: none;
-}
-
-.modern-input-group textarea {
-  border: 1px solid #ddd;
+  height: 90px;
+  object-fit: cover;
   border-radius: 8px;
-  min-height: 100px;
 }
 
-/* Loading Animation */
+.gallery-item button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: red;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* =========================
+   LOADING SCREEN
+========================= */
 .profile-beautiful-loading {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--light);
 }
 
-.wave-loader {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-  margin-bottom: 20px;
+.loading-card {
+  text-align: center;
 }
 
 .wave-loader span {
+  display: inline-block;
   width: 5px;
   height: 20px;
-  background: var(--primary);
-  animation: wave 1s infinite ease-in-out;
+  margin: 3px;
+  background: #3498db;
+  animation: wave 1.2s infinite ease-in-out;
 }
 
 .wave-loader span:nth-child(2) { animation-delay: 0.1s; }
@@ -246,29 +355,20 @@
 .wave-loader span:nth-child(5) { animation-delay: 0.4s; }
 
 @keyframes wave {
-  0%, 40%, 100% { transform: scaleY(0.5); }
-  20% { transform: scaleY(1.5); }
+  0%, 100% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1.5); }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .profile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-/* Image Full View Modal */
-.image-modal {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  cursor: zoom-out;
-}
-
-.full-image {
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 5px;
+  .sell {
+    margin-left: 0;
+  }
 }
