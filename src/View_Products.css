@@ -106,18 +106,17 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden; /* 
+  overflow: hidden; /* prevents overflow issues */
 }
 
 .productcard:hover {
   transform: translateY(-8px);
 }
 
-/* Image Slider Section */
 .image-slider {
   position: relative;
   width: 100%;
-  height: 250px; /* 🔥 FIX: fixed height */
+  height: 250px; /* ✅ FIXED */
   overflow: hidden;
   background: #f1f2f6;
 }
@@ -126,7 +125,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block; /* prevents weird inline spacing */
+  display: block;
 }
 
 /* Dots on image */
