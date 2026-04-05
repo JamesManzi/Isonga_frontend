@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faArrowRight, faLock } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Login.css";
@@ -11,14 +11,14 @@ function Buyer_Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
 
+  // --- Login Attempts Logic ---
   const [attempts, setAttempts] = useState(0);
   const [lockTime, setLockTime] = useState(0);
-
-  const navigate = useNavigate();
   const MAX_ATTEMPTS = 5;
 
-  // ✅ Load saved attempts + lock
+  // --- Load saved attempts/lock (NO REFRESH RESET FIX) ---
   useEffect(() => {
     const savedAttempts = localStorage.getItem("buyer_attempts");
     const lockUntil = localStorage.getItem("buyer_lockUntil");
@@ -29,25 +29,25 @@ function Buyer_Login() {
 
     if (lockUntil) {
       const remaining = Math.floor((parseInt(lockUntil) - Date.now()) / 1000);
+
       if (remaining > 0) {
         setLockTime(remaining);
       } else {
         localStorage.removeItem("buyer_lockUntil");
+        localStorage.removeItem("buyer_attempts");
       }
     }
   }, []);
 
-  // ✅ Save attempts
+  // --- Save attempts ---
   useEffect(() => {
     localStorage.setItem("buyer_attempts", attempts);
   }, [attempts]);
 
-  // ✅ Countdown timer
+  // Countdown Timer
   useEffect(() => {
-    let timer;
-
     if (lockTime > 0) {
-      timer = setInterval(() => {
+      const timer = setInterval(() => {
         setLockTime((prev) => {
           if (prev <= 1) {
             localStorage.removeItem("buyer_lockUntil");
@@ -57,14 +57,13 @@ function Buyer_Login() {
           return prev - 1;
         });
       }, 1000);
-    }
 
-    return () => clearInterval(timer);
+      return () => clearInterval(timer);
+    }
   }, [lockTime]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (lockTime > 0) return;
 
     setLoading(true);
@@ -74,27 +73,21 @@ function Buyer_Login() {
       const res = await api.post("/api/buyer_login", { email, password });
 
       if (res.data.success) {
-        // ✅ Clear lock + attempts
-        localStorage.removeItem("buyer_attempts");
-        localStorage.removeItem("buyer_lockUntil");
-
-        setAttempts(0);
-        setLockTime(0);
-
-        // ✅ Save user
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.buyer));
 
-        setMessage({ text: "Success! Welcome back.", type: "success" });
+        // reset attempts on success
+        setAttempts(0);
+        localStorage.removeItem("buyer_attempts");
+        localStorage.removeItem("buyer_lockUntil");
 
+        setMessage({ text: "Success! Welcome back.", type: "success" });
         setTimeout(() => navigate("/buyer_dashboard"), 1500);
       } else {
-        handleFailure(res.data.message || "Invalid credentials");
+        handleFailure(res.data.message);
       }
     } catch (error) {
-      const errMsg =
-        error.response?.data?.message || "Server error. Please try again later.";
-      handleFailure(errMsg);
+      handleFailure("Server error. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -105,20 +98,19 @@ function Buyer_Login() {
     setAttempts(newAttempts);
 
     if (newAttempts >= MAX_ATTEMPTS) {
-      const expiryTime = Date.now() + 30000; // 30 sec
+      const lockUntil = Date.now() + 30 * 1000; // 30 sec lock
 
-      localStorage.setItem("buyer_lockUntil", expiryTime);
-
+      localStorage.setItem("buyer_lockUntil", lockUntil);
       setLockTime(30);
 
-      setMessage({
-        text: "Too many attempts. Locked for 30 seconds.",
-        type: "error",
+      setMessage({ 
+        text: "Too many attempts. Locked for 30s.", 
+        type: "error" 
       });
     } else {
-      setMessage({
-        text: `${errorText} (${MAX_ATTEMPTS - newAttempts} attempts left)`,
-        type: "error",
+      setMessage({ 
+        text: `${errorText} (${MAX_ATTEMPTS - newAttempts} attempts left)`, 
+        type: "error" 
       });
     }
   };
@@ -148,6 +140,7 @@ function Buyer_Login() {
               <label>Email Address</label>
               <input
                 type="email"
+                placeholder="yourname@example.com"
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={lockTime > 0}
@@ -159,6 +152,7 @@ function Buyer_Login() {
               <div className="buyer-password-wrapper">
                 <input
                   type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={lockTime > 0}
@@ -171,9 +165,13 @@ function Buyer_Login() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="buyer-main-btn"
+            <div className="buyer-form-options">
+              <Link to="/forgot-password">Forgot password?</Link>
+            </div>
+
+            <button 
+              type="submit" 
+              className="buyer-main-btn" 
               disabled={loading || lockTime > 0}
             >
               {lockTime > 0 ? (
@@ -192,7 +190,15 @@ function Buyer_Login() {
                 {message.text}
               </div>
             )}
+
+            <div className="buyer-register-redirect">
+              New to Isonga? <Link to="/buyer_register">Create Account</Link>
+            </div>
           </form>
+
+          <div className="buyer-form-footer">
+            <Link to="/">← Back to Home</Link>
+          </div>
         </div>
       </div>
     </div>
