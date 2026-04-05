@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faStar, faCloudUploadAlt, faStore, faPhone, faMapPin, 
-  faTrash, faChevronRight, faImages, faCheckCircle, faInfoCircle 
+  faTrash, faChevronRight, faImages, faCheckCircle, faInfoCircle,faEdit
 } from "@fortawesome/free-solid-svg-icons";
 import { io } from "socket.io-client";
 import "./Seller_Profile.css"; // Ensure you merge your Register.css styles here
