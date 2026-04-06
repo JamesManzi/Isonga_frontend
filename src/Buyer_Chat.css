@@ -324,22 +324,69 @@
 }
 .bubble-wrapper:hover .reply-btn-icon { opacity: 1; }
 
-/* Quoted Box inside Bubble */
+/* Quoted Message inside the Chat Bubble */
 .quoted-msg {
-  background: rgba(0,0,0,0.05); border-left: 4px solid #06cf9c;
-  padding: 5px 8px; border-radius: 4px; margin-bottom: 5px;
+  background: rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #2563eb;
+  padding: 5px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  max-width: 100%;
+  overflow: hidden;
 }
-.sent .quoted-msg { background: rgba(255,255,255,0.2); border-left-color: white; }
-.quoted-msg small { font-weight: bold; color: #06cf9c; display: block; font-size: 11px; }
-.sent .quoted-msg small { color: white; }
-.quoted-msg p { margin: 0; font-size: 12px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Input Preview Bar */
-.reply-input-preview {
-  display: flex; background: #f0f2f5; padding: 10px 15px;
-  margin: 0 10px; border-radius: 8px 8px 0 0; border-left: 5px solid #06cf9c;
+.quoted-msg small {
+  color: #2563eb;
+  font-weight: bold;
+  display: block;
 }
-.reply-preview-content { flex: 1; }
-.reply-user { font-size: 12px; font-weight: bold; color: #06cf9c; display: block; }
-.reply-text { font-size: 13px; margin: 0; color: #555; }
-.close-reply-btn { background: none; border: none; font-size: 18px; cursor: pointer; }
+
+.quoted-msg p {
+  margin: 0;
+  color: #666;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Reply Preview above the Input Area */
+.reply-input-preview {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 8px 15px;
+  animation: slideUp 0.2s ease-out;
+}
+
+.reply-preview-content {
+  flex: 1;
+  border-left: 4px solid #2563eb;
+  padding-left: 10px;
+}
+
+.reply-user {
+  font-weight: bold;
+  color: #2563eb;
+  font-size: 0.85rem;
+}
+
+.reply-text {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.close-reply-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #94a3b8;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
