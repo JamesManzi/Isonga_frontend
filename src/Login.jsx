@@ -122,7 +122,9 @@ function Login() {
       });
     }
   };
-
+  if (!user.isVerified) {
+    navigate("/verify-email");
+  }
   return (
     <div className="login-page">
       {loading && <div className="top-loading-bar"></div>}
