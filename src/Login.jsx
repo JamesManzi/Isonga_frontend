@@ -80,7 +80,9 @@ function Login() {
 
         setAttempts(0);
         setLockTime(0);
-
+         if (!user.isVerified) {
+    navigate("/verify-email");
+         }
         // ✅ Save user
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.seller));
@@ -122,14 +124,6 @@ function Login() {
       });
     }
   };
-  useEffect(() => {
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
-
-  if (user && !user.isVerified) {
-    navigate("/verify-email");
-  }
-}, [navigate]);
   return (
     <div className="login-page">
       {loading && <div className="top-loading-bar"></div>}
