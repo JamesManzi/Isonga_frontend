@@ -26,10 +26,9 @@ function Buyer_Chat() {
   const [showEmoji, setShowEmoji] = useState(false);
   const [sending, setSending] = useState(false);
   
-  // REPLY STATE
+  // --- NEW: REPLY STATE ---
   const [replyTo, setReplyTo] = useState(null);
 
-  // LIGHTBOX STATE
   const [zoomImage, setZoomImage] = useState(null);
 
   const scrollRef = useRef();
@@ -54,19 +53,15 @@ function Buyer_Chat() {
         return;
       }
       try {
-        // Fetch Buyer Data
         const buyerRes = await api.get("/api/buyer_dashboard");
         const buyerData = buyerRes.data.buyer;
         setBuyer(buyerData);
 
-        // Fetch Seller Data
         const sellerRes = await api.get(`/api/get_seller/${sellerId}`);
         if (sellerRes.data.success) setSeller(sellerRes.data.seller);
 
-        // Define Room ID
         const room = `Buyer_${buyerData._id}__Seller_${sellerId}`;
 
-        // Join Room
         socket.emit("joinRoom", {
           senderId: buyerData._id,
           senderModel: "Buyer",
@@ -74,11 +69,9 @@ function Buyer_Chat() {
           receiverModel: "Seller"
         });
 
-        // Load Previous Messages
         const msgRes = await api.get(`/api/messages/${room}`);
         if (msgRes.data.success) setMessages(msgRes.data.messages);
 
-        // MARK MESSAGES AS READ
         await api.put(`/api/messages/read/${room}`);
         socket.emit("messagesRead", { room });
 
@@ -166,30 +159,18 @@ function Buyer_Chat() {
         message: text,
         files: uploadedFiles,
         productId: productContext?.productId,
-        replyTo: replyTo ? replyTo._id : null, // Send ID of message being replied to
+        replyTo: replyTo ? replyTo._id : null, // --- ATTACH REPLY ID ---
         room
       });
 
       setText(""); 
       setFiles([]);
-      setReplyTo(null); // Clear reply preview
+      setReplyTo(null); // --- CLEAR REPLY PREVIEW ---
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
       console.log(err);
     }
     setSending(false);
-  };
-
-  const renderPreview = () => {
-    return files.map((file, index) => {
-      const url = URL.createObjectURL(file);
-      return (
-        <div key={index} className="preview-item">
-          {file.type.startsWith("image/") ? <img src={url} alt="" /> : <video src={url} controls />}
-          <button type="button" onClick={() => removeFile(index)}>✕</button>
-        </div>
-      );
-    });
   };
 
   return (
@@ -200,7 +181,7 @@ function Buyer_Chat() {
         <h3>{seller?.name || "Loading..."}</h3>
       </div>
 
-      {/* PRODUCT INFO BAR */}
+      {/* PRODUCT CONTEXT BAR */}
       {productContext && (
         <div className="product-context-bar">
           <img src={getFileUrl(productContext.productImage)} alt="Context" />
@@ -217,51 +198,41 @@ function Buyer_Chat() {
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
           return (
-            <div key={i} className={`message ${isMe ? "sent" : "received"}`} onDoubleClick={() => setReplyTo(msg)}>
-              <div className="bubble">
-                {/* REPLIED MESSAGE CONTENT */}
-                {msg.replyTo && (
-                  <div className="reply-preview-in-bubble">
-                    <small>{msg.replyTo.senderModel === "Buyer" ? "You" : seller?.name}</small>
-                    <p>{msg.replyTo.message || "Attachment"}</p>
-                  </div>
-                )}
-
-                {/* PRODUCT TAG */}
-                {msg.productId && (
-                  <div className="msg-product-tag">
-                    <p>Product Inquiry: <strong>{msg.productId.name}</strong></p>
-                  </div>
-                )}
-                
-                {msg.message && <p>{msg.message}</p>}
-                
-                {msg.files && msg.files.map((file, index) => {
-                  const url = getFileUrl(file);
-                  const isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(file);
-                  return isVideo ? (
-                    <video key={index} src={url} controls className="chat-video" />
-                  ) : (
-                    <img
-                      key={index}
-                      src={url}
-                      className="chat-image"
-                      alt="attachment"
-                      onClick={() => setZoomImage(url)}
-                    />
-                  );
-                })}
-
-                <div className="msg-info">
-                  <span className="time">
-                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                  {isMe && (
-                    <span className={`read-status ${msg.read ? "read" : ""}`}>
-                      {msg.read ? " ✓✓" : " ✓"}
-                    </span>
+            <div key={i} className={`message-row ${isMe ? "sent" : "received"}`}>
+              <div className="bubble-wrapper">
+                <div className="bubble" onDoubleClick={() => setReplyTo(msg)}>
+                  
+                  {/* --- DISPLAY QUOTED MESSAGE --- */}
+                  {msg.replyTo && (
+                    <div className="quoted-msg">
+                      <small>{msg.replyTo.sender === buyer?._id ? "You" : seller?.name}</small>
+                      <p>{msg.replyTo.message || "📷 Media"}</p>
+                    </div>
                   )}
+
+                  {msg.productId && (
+                    <div className="msg-product-tag">
+                      <p>Product Inquiry: <strong>{msg.productId.name}</strong></p>
+                    </div>
+                  )}
+                  
+                  {msg.message && <p className="text">{msg.message}</p>}
+                  
+                  {msg.files && msg.files.map((file, index) => {
+                    const url = getFileUrl(file);
+                    return <img key={index} src={url} className="chat-image" alt="" onClick={() => setZoomImage(url)} />;
+                  })}
+
+                  <div className="msg-info">
+                    <span className="time">{new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                    {isMe && <span className={`read-status ${msg.read ? "read" : ""}`}>{msg.read ? " ✓✓" : " ✓"}</span>}
+                  </div>
                 </div>
+
+                {/* --- REPLY ICON (WhatsApp Style) --- */}
+                <button className="reply-btn-icon" onClick={() => setReplyTo(msg)}>
+                  <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 5V1L3 9l9 8v-4.2c6.5 0 9 3.9 10 8-1-6.1-4-11.8-10-11.8z"></path></svg>
+                </button>
               </div>
             </div>
           );
@@ -270,29 +241,29 @@ function Buyer_Chat() {
       </div>
 
       {/* FILE PREVIEW */}
-      {files.length > 0 && <div className="preview-container">{renderPreview()}</div>}
-
-      {/* REPLY INPUT PREVIEW */}
-      {replyTo && (
-        <div className="reply-input-container">
-          <div className="reply-content">
-            <small>Replying to {replyTo.senderModel === "Buyer" ? "yourself" : seller?.name}</small>
-            <p>{replyTo.message || "File attachment"}</p>
+      {files.length > 0 && <div className="preview-container">
+        {files.map((file, index) => (
+          <div key={index} className="preview-item">
+            <img src={URL.createObjectURL(file)} alt="" />
+            <button type="button" onClick={() => removeFile(index)}>✕</button>
           </div>
-          <button onClick={() => setReplyTo(null)}>✕</button>
-        </div>
-      )}
+        ))}
+      </div>}
 
-      {/* EMOJI BOX */}
-      {showEmoji && (
-        <div className="emoji-box" ref={emojiRef}>
-          <Picker onEmojiClick={onEmojiClick} />
+      {/* --- REPLY INPUT PREVIEW (Above text area) --- */}
+      {replyTo && (
+        <div className="reply-input-preview">
+          <div className="reply-preview-content">
+            <span className="reply-user">{replyTo.sender === buyer?._id ? "You" : seller?.name}</span>
+            <p className="reply-text">{replyTo.message || "Media attachment"}</p>
+          </div>
+          <button className="close-reply-btn" onClick={() => setReplyTo(null)}>✕</button>
         </div>
       )}
 
       {/* INPUT AREA */}
       <div className="chat-input">
-        <input type="file" multiple ref={fileInputRef} style={{ display: "none" }} accept="image/*,video/*" onChange={handleFileSelect} />
+        <input type="file" multiple ref={fileInputRef} style={{ display: "none" }} onChange={handleFileSelect} />
         <button type="button" onClick={() => fileInputRef.current.click()}>📎</button>
         <button type="button" onClick={() => setShowEmoji(prev => !prev)}>😊</button>
         <textarea 
@@ -301,18 +272,15 @@ function Buyer_Chat() {
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }} 
         />
-        <button onClick={handleSend} disabled={sending} className="send-btn">
-          {sending ? "..." : "➤"}
-        </button>
+        <button onClick={handleSend} disabled={sending} className="send-btn">{sending ? "..." : "➤"}</button>
       </div>
+
+      {showEmoji && <div className="emoji-box" ref={emojiRef}><Picker onEmojiClick={onEmojiClick} /></div>}
 
       {/* LIGHTBOX */}
       {zoomImage && (
         <div className="lightbox-overlay" onClick={() => setZoomImage(null)}>
-          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <img src={zoomImage} alt="Zoomed" />
-            <button className="close-lightbox" onClick={() => setZoomImage(null)}>✕</button>
-          </div>
+          <div className="lightbox-content"><img src={zoomImage} alt="" /></div>
         </div>
       )}
     </div>
