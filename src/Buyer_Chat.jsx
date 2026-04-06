@@ -180,16 +180,16 @@ function Buyer_Chat() {
         <h3>{seller?.name || "Loading..."}</h3>
       </div>
 
-      {/* PRODUCT CONTEXT BAR - Shows what the buyer clicked on */}
       {productContext && (
-        <div className="product-context-bar">
-          <img src={getFileUrl(productContext.productImage)} alt="Context" />
-          <div className="context-info">
-            <span>Inquiring about:</span>
-            <strong>{productContext.productName}</strong>
-          </div>
-        </div>
-      )}
+  <div className="product-context-bar">
+    <img src={getFileUrl(productContext.productImage)} alt="Context" />
+    <div className="context-info">
+      <strong>{productContext.productName}</strong>
+      <p>{productContext.productPrice} Rwf</p> {/* Added Price */}
+      <span>{productContext.productLocation}</span> {/* Added Location */}
+    </div>
+  </div>
+)}
 
       {/* MESSAGES AREA */}
       <div className="chat-messages">
