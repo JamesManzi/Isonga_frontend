@@ -74,19 +74,19 @@ function Login() {
       const res = await api.post("/api/login", { email, password });
 
       if (res.data.success) {
+        const user = res.data.seller;
         // ✅ Clear all security data
         localStorage.removeItem("attempts");
         localStorage.removeItem("lockUntil");
 
         setAttempts(0);
         setLockTime(0);
-         if (!user.isVerified) {
-    navigate("/verify-email");
-         }
         // ✅ Save user
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.seller));
-
+       if (!user.isVerified) {
+    navigate("/verify-email");
+         }
         setMessage({ text: "Success! Welcome back.", type: "success" });
 
         setTimeout(() => navigate("/dashboard"), 1500);
