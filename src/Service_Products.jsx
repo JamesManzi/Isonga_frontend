@@ -168,7 +168,17 @@ function Service_Products() {
               <p>{product.description}</p>
               </div>
               <div className="service_btns">
-                <Link to={`/buyer_chat/${seller?._id}`}><button className="service_chat_btn">Chat Seller</button></Link>
+                <Link 
+  to={`/buyer_chat/${seller?._id}`} 
+  state={{ 
+    productId: product._id, 
+    productName: product.name, 
+    productImage: product.files[0],
+    productPrice: product.price 
+  }}
+>
+  <button className="service_chat_btn">Chat</button>
+</Link>
                 <Link to={`/book/${product._id}`} className="booking-btn"><button>Book Now</button></Link>
               </div>
             </div>
