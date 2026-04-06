@@ -1,16 +1,21 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import api from "./api";
 import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
 export const socket = io("https://isonga-backend.onrender.com", {
-  transports: ["polling", "websocket"], // ✅ FIXED
+  transports: ["polling", "websocket"],
 });
 
 function Buyer_Chat() {
   const { sellerId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get product info passed from View_Products.js
+  const productContext = location.state || null;
 
   const [buyer, setBuyer] = useState(null);
   const [seller, setSeller] = useState(null);
@@ -21,35 +26,39 @@ function Buyer_Chat() {
   const [showEmoji, setShowEmoji] = useState(false);
   const [sending, setSending] = useState(false);
   
-  // LIGHTBOX STATE
   const [zoomImage, setZoomImage] = useState(null);
 
   const scrollRef = useRef();
   const fileInputRef = useRef();
   const emojiRef = useRef();
 
+  // Helper for file URLs
+  const getFileUrl = (path) => {
+    if (!path) return "";
+    const clean = path.trim().replace(/\\/g, "/");
+    return clean.startsWith("http")
+      ? clean
+      : `https://isonga-backend.onrender.com/${clean.replace(/^\/+/, "")}`;
+  };
+
   // 1. INITIAL LOAD & JOIN ROOM
   useEffect(() => {
     const loadChat = async () => {
       const token = localStorage.getItem("token");
-        if (!token) {
+      if (!token) {
         navigate("/buyer_login");
         return;
       }
       try {
-        // Fetch Buyer Data
-      const buyerRes = await api.get("/api/buyer_dashboard");
+        const buyerRes = await api.get("/api/buyer_dashboard");
         const buyerData = buyerRes.data.buyer;
         setBuyer(buyerData);
 
-        // Fetch Seller Data
         const sellerRes = await api.get(`/api/get_seller/${sellerId}`);
         if (sellerRes.data.success) setSeller(sellerRes.data.seller);
 
-        // Define Room ID
         const room = `Buyer_${buyerData._id}__Seller_${sellerId}`;
 
-        // Join Room
         socket.emit("joinRoom", {
           senderId: buyerData._id,
           senderModel: "Buyer",
@@ -57,11 +66,9 @@ function Buyer_Chat() {
           receiverModel: "Seller"
         });
 
-        // Load Previous Messages
         const msgRes = await api.get(`/api/messages/${room}`);
         if (msgRes.data.success) setMessages(msgRes.data.messages);
 
-        // MARK MESSAGES AS READ (When Buyer opens the chat)
         await api.put(`/api/messages/read/${room}`);
         socket.emit("messagesRead", { room });
 
@@ -70,19 +77,18 @@ function Buyer_Chat() {
       }
     };
     loadChat();
-  }, [sellerId]);
+  }, [sellerId, navigate]);
 
-  // 2. SOCKET LISTENERS (Receive & Read Receipt)
+  // 2. SOCKET LISTENERS
   useEffect(() => {
     const handleReceive = async (msg) => {
       const room = `Buyer_${buyer?._id}__Seller_${sellerId}`;
       if (msg.room === room) {
         setMessages(prev => [...prev, msg]);
 
-        // If a message comes from the seller, mark it as read immediately if chat is open
         if (msg.senderModel === "Seller") {
           try {
-            await api.put(`/api/messages/read/${room}`,{})
+            await api.put(`/api/messages/read/${room}`, {});
             socket.emit("messagesRead", { room });
           } catch (err) {
             console.error("Read update error:", err);
@@ -91,7 +97,6 @@ function Buyer_Chat() {
       }
     };
 
-    // Update ticks from single to double in real-time
     const handleMessagesRead = (data) => {
       const room = `Buyer_${buyer?._id}__Seller_${sellerId}`;
       if (data.room === room) {
@@ -138,7 +143,7 @@ function Buyer_Chat() {
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach(file => formData.append("files", file));
-        const uploadRes = await api.post("/api/chat/upload", formData)
+        const uploadRes = await api.post("/api/chat/upload", formData);
         if (uploadRes.data.success) uploadedFiles = uploadRes.data.files;
       }
 
@@ -150,28 +155,21 @@ function Buyer_Chat() {
         receiverModel: "Seller",
         message: text,
         files: uploadedFiles,
+        productId: productContext?.productId, // Link the message to the product
         room
       });
 
       setText(""); 
       setFiles([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
+      
+      // Optional: Clear product context after first message to prevent tagging every message
+      // navigate(location.pathname, { replace: true, state: null });
+
     } catch (err) {
       console.log(err);
     }
     setSending(false);
-  };
-
-  const renderPreview = () => {
-    return files.map((file, index) => {
-      const url = URL.createObjectURL(file);
-      return (
-        <div key={index} className="preview-item">
-          {file.type.startsWith("image/") ? <img src={url} alt="" /> : <video src={url} controls />}
-          <button type="button" onClick={() => removeFile(index)}>✕</button>
-        </div>
-      );
-    });
   };
 
   return (
@@ -182,6 +180,17 @@ function Buyer_Chat() {
         <h3>{seller?.name || "Loading..."}</h3>
       </div>
 
+      {/* PRODUCT CONTEXT BAR - Shows what the buyer clicked on */}
+      {productContext && (
+        <div className="product-context-bar">
+          <img src={getFileUrl(productContext.productImage)} alt="Context" />
+          <div className="context-info">
+            <span>Inquiring about:</span>
+            <strong>{productContext.productName}</strong>
+          </div>
+        </div>
+      )}
+
       {/* MESSAGES AREA */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
@@ -189,16 +198,18 @@ function Buyer_Chat() {
           return (
             <div key={i} className={`message ${isMe ? "sent" : "received"}`}>
               <div className="bubble">
+                {/* SHOW PRODUCT TAG IN THE BUBBLE IF IT EXISTS */}
+                {msg.productId && (
+                  <div className="msg-product-tag">
+                    <p>Product Inquiry: <strong>{msg.productId.name}</strong></p>
+                  </div>
+                )}
+                
                 {msg.message && <p>{msg.message}</p>}
                 
                 {msg.files && msg.files.map((file, index) => {
-                  const clean = file.trim().replace(/\\/g, "/");
-
-const url = clean.startsWith("http")
-  ? clean
-  : `https://isonga-backend.onrender.com/${clean.replace(/^\/+/, "")}`;
-                  const isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(clean);
-
+                  const url = getFileUrl(file);
+                  const isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(file);
                   return isVideo ? (
                     <video key={index} src={url} controls className="chat-video" />
                   ) : (
@@ -216,7 +227,6 @@ const url = clean.startsWith("http")
                   <span className="time">
                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
-                  {/* TICK LOGIC: Displayed only for messages the buyer sent */}
                   {isMe && (
                     <span className={`read-status ${msg.read ? "read" : ""}`}>
                       {msg.read ? " ✓✓" : " ✓"}
@@ -231,7 +241,14 @@ const url = clean.startsWith("http")
       </div>
 
       {/* FILE PREVIEW */}
-      {files.length > 0 && <div className="preview-container">{renderPreview()}</div>}
+      {files.length > 0 && <div className="preview-container">
+        {files.map((file, index) => (
+          <div key={index} className="preview-item">
+            {file.type.startsWith("image/") ? <img src={URL.createObjectURL(file)} alt="" /> : <video src={URL.createObjectURL(file)} controls />}
+            <button type="button" onClick={() => removeFile(index)}>✕</button>
+          </div>
+        ))}
+      </div>}
 
       {/* EMOJI BOX */}
       {showEmoji && (
