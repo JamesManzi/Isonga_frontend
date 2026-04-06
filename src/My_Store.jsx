@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import api from "./api";
 import "./My_Store.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   faArrowRight,
   faChevronLeft,
@@ -13,9 +12,6 @@ import {
   faMapPin,
   faTag,
   faInfoCircle,
-  faImages,
-  faCheckCircle,
-  faTrash,
   faCloudUploadAlt,
   faLayerGroup,
   faTimes
@@ -23,110 +19,86 @@ import {
 
 function My_Store() {
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [message, setMessage] = useState("");
   const [sellerName, setSellerName] = useState("");
-  const [currentIndex, setCurrentIndex] = useState({}); 
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
-  const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
-  const [productToDelete, setProductToDelete] = useState(null); 
-  const navigate = useNavigate();
-  // Multi-upload states for the modern form
-  const [selectedFiles, setSelectedFiles] = useState([]); 
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewFiles, setPreviewFiles] = useState([]);
 
-  // 1. Fetch Store Data
+  // ✅ CATEGORY OPTIONS
+  const categoryOptions = {
+    Product: ["Agriculture","Fashion","Electronics","Furniture","Food","Construction Materials"],
+    Service: ["Repair","Cleaning","Transport","Construction","IT Services","Consulting"],
+    Asset: ["House","Land","Vehicle","Apartment","Office Space","Farm"]
+  };
+
+  // ✅ FETCH DATA
   useEffect(() => {
     const fetchProducts = async () => {
       setPageLoading(true);
-       const token = localStorage.getItem("token");
-        if (!token) {
+
+      const token = localStorage.getItem("token");
+      if (!token) {
         navigate("/login");
         return;
       }
-      try{
-      const res = await api.get("/api/my_store");
+
+      try {
+        const res = await api.get("/api/my_store");
+
         if (res.data.success) {
           setProducts(res.data.products);
           setFilteredProducts(res.data.products);
           setSellerName(res.data.seller.name);
-
-          const initIndex = {};
-          res.data.products.forEach((p) => {
-            initIndex[p._id] = 0;
-          });
-          setCurrentIndex(initIndex);
         } else {
           setMessage(res.data.message);
         }
       } catch (error) {
-        console.error("Store Fetch Error:", error);
-        setMessage("Could not load your store.");
+        setMessage("Failed to load store");
       } finally {
         setPageLoading(false);
       }
-    }
+    };
+
     fetchProducts();
   }, []);
-  // 2. Search Filter Logic
+
+  // ✅ SEARCH
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredProducts(products);
     } else {
-      const query = searchQuery.toLowerCase();
-      const filtered = products.filter(
-        (p) =>
-          (p.name && p.name.toLowerCase().includes(query)) ||
-          (p.description && p.description.toLowerCase().includes(query)) ||
-          (p.category && p.category.toLowerCase().includes(query))
+      const q = searchQuery.toLowerCase();
+      setFilteredProducts(
+        products.filter(
+          (p) =>
+            p.name?.toLowerCase().includes(q) ||
+            p.category?.toLowerCase().includes(q)
+        )
       );
-      setFilteredProducts(filtered);
     }
   }, [searchQuery, products]);
 
-  // 3. Auto-Slider Logic
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        const newIndexes = { ...prev };
-        filteredProducts.forEach((product) => {
-          if (product.files && product.files.length > 1) {
-            const currentIdx = prev[product._id] || 0;
-            newIndexes[product._id] = (currentIdx + 1) % product.files.length;
-          }
-        });
-        return newIndexes;
-      });
-    }, 5000); 
-    return () => clearInterval(interval);
-  }, [filteredProducts]);
-
-  // --- Helpers ---
-  const isVideoFile = (filename) => {
-    if (!filename) return false;
-    return /\.(mp4|webm|ogg|mov|m4v)$/i.test(filename);
-  };
-
-  const getFileUrl = (path) => {
-    if (!path) return "/placeholder.png";
-    return path.startsWith("blob:") || path.startsWith("http") 
-      ? path 
-      : `https://isonga-backend.onrender.com/uploads/${path}`;
-  };
-
-  // --- File Handling Logic ---
+  // ✅ FILE HANDLING
   const handleFileChange = (e) => {
-    const newFiles = Array.from(e.target.files);
-    setSelectedFiles((prev) => [...prev, ...newFiles]);
-    const newPreviews = newFiles.map(f => ({
-        url: URL.createObjectURL(f),
-        type: f.type
+    const files = Array.from(e.target.files);
+
+    setSelectedFiles((prev) => [...prev, ...files]);
+
+    const previews = files.map((f) => ({
+      url: URL.createObjectURL(f),
+      type: f.type
     }));
-    setPreviewFiles((prev) => [...prev, ...newPreviews]);
+
+    setPreviewFiles((prev) => [...prev, ...previews]);
   };
 
   const removePreview = (index) => {
@@ -134,318 +106,231 @@ function My_Store() {
     setPreviewFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // --- Actions ---
-  const confirmDelete = (productId) => {
-    setProductToDelete(productId);
-  };
-
-  const executeDelete = async () => {
-    if (!productToDelete) return;
-    setLoading(true);
-    try {
-      const res = await api.delete(`/api/products/delete/${productToDelete}`);
-      if (res.data.success) {
-        setProducts((prev) => prev.filter((p) => p._id !== productToDelete));
-        setProductToDelete(null); 
-      } else {
-        alert(res.data.message);
-      }
-    } catch (error) {
-      alert("Delete failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // ✅ UPDATE PRODUCT
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if (!editingProduct) return;
     setLoading(true);
 
     const formData = new FormData();
+
+    formData.append("type", editingProduct.type);
     formData.append("name", editingProduct.name);
-    formData.append("price", Number(editingProduct.price));
+    formData.append("price", editingProduct.price);
     formData.append("location", editingProduct.location);
     formData.append("category", editingProduct.category);
     formData.append("description", editingProduct.description);
-    formData.append("quantity", Number(editingProduct.quantity));
 
-    // Append new multi-selected files
+    if (editingProduct.type === "Product") {
+      formData.append("quantity", editingProduct.quantity);
+    }
+
     selectedFiles.forEach((file) => {
       formData.append("files", file);
     });
 
     try {
-      const res = await api.put(`/api/products/update/${editingProduct._id}`,formData,);
+      const res = await api.put(
+        `/api/products/update/${editingProduct._id}`,
+        formData
+      );
+
       if (res.data.success) {
         setProducts((prev) =>
-          prev.map((p) => (p._id === editingProduct._id ? res.data.UpdatedProduct : p))
+          prev.map((p) =>
+            p._id === editingProduct._id ? res.data.UpdatedProduct : p
+          )
         );
+
         setEditingProduct(null);
         setSelectedFiles([]);
         setPreviewFiles([]);
-        alert("Product updated successfully!");
+
+        alert("Updated successfully!");
       }
-    } catch (error) {
-      setMessage("Updating Product Error");
+    } catch {
+      setMessage("Update failed");
     } finally {
       setLoading(false);
     }
   };
 
-  if (pageLoading) {
-    return (
-      <div className="store-loading">
-        <div className="loading-card">
-          <div className="spinner"></div>
-          <h2>Loading your store...</h2>
-        </div>
-      </div>
-    );
-  }
+  if (pageLoading) return <h2>Loading...</h2>;
 
   return (
     <div className="My_Store">
-      {/* Navbar */}
+      {/* NAVBAR */}
       <div className="My_Store_navbar">
-        <div className="My_Store_logo">
-          <img src="/logo.png" alt="logo" />
-          <div className="My_Store_heads">
-            <h1>Isonga</h1>
-            <h2>Market</h2>
-          </div>
-        </div>
-        <div className="My_Store_back">
-          <Link to="/dashboard">
-            <FontAwesomeIcon icon={faArrowRight} />
-          </Link>
-        </div>
+        <h2>Welcome {sellerName}</h2>
+        <Link to="/dashboard">
+          <FontAwesomeIcon icon={faArrowRight} />
+        </Link>
       </div>
 
-      <div className="My_Store_body">
-        <h1>Welcome Back {sellerName}</h1>
-        <p>Manage Your Inventory Here</p>
-      </div>
+      {/* SEARCH */}
+      <input
+        type="search"
+        placeholder="Search..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
-      <div className="Buyer_Dashboard_search">
-        <input
-          type="search"
-          placeholder="Search items..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button><FontAwesomeIcon icon={faSearch} /> Search</button>
-      </div>
-
+      {/* PRODUCTS */}
       <div className="store_container">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => {
-            const activeIdx = currentIndex[product._id] || 0;
-            const currentFile = product.files[activeIdx];
+        {filteredProducts.map((product) => (
+          <div key={product._id} className="productcard">
+            <h3>{product.name}</h3>
+            <p>{product.price} Rwf</p>
+            <p>{product.type}</p>
+            <p>{product.category}</p>
 
-            return (
-              <div key={product._id} className="productcard">
-                <div className="image-slider">
-                  {product.files?.length > 0 ? (
-                    isVideoFile(currentFile) ? (
-                      <video
-                        key={currentFile}
-                        src={getFileUrl(currentFile)}
-                        muted autoPlay loop playsInline
-                        className="product-media"
-                        onClick={() => setModalMedia({ productId: product._id, index: activeIdx })}
-                      />
-                    ) : (
-                      <img
-                        src={getFileUrl(currentFile)}
-                        alt={product.name}
-                        className="product-media"
-                        onClick={() => setModalMedia({ productId: product._id, index: activeIdx })}
-                      />
-                    )
-                  ) : (
-                    <img src="/placeholder.png" alt="No media" className="product-media" />
-                  )}
+            {product.type === "Product" && (
+              <p>Qty: {product.quantity}</p>
+            )}
 
-                  {product.files?.length > 1 && (
-                    <div className="slider-dots">
-                      {product.files.map((_, idx) => (
-                        <span 
-                          key={idx} 
-                          className={`dot ${idx === activeIdx ? "active" : ""}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCurrentIndex(prev => ({...prev, [product._id]: idx}));
-                          }}
-                        ></span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="product-details">
-                  <h1>{product.name}</h1>
-                  <p>Price: {product.price} Rwf</p>
-                  <p>Location: {product.location}</p>
-                  <p>Quantity: {product.quantity}</p>
-                  <p>{product.description}</p>
-                  <div className="My_Store_btns">
-                    <button className="delete" onClick={() => confirmDelete(product._id)}>Delete</button>
-                    <button className="update" onClick={() => {
-                        setEditingProduct(product);
-                        setSelectedFiles([]);
-                        setPreviewFiles([]);
-                    }}>Update</button>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <p className="no-products">No products found in your inventory.</p>
-        )}
+            <button
+              onClick={() =>
+                setEditingProduct({
+                  ...product,
+                  type: product.type || "Product"
+                })
+              }
+            >
+              Update
+            </button>
+          </div>
+        ))}
       </div>
 
-      {/* Modern Update Product Modal (Register Style) */}
+      {/* ✅ UPDATE MODAL */}
       {editingProduct && (
-        <div className="modern-reg-wrapper" style={{position: 'fixed', top: 0, left: 0, zIndex: 1000, width: '100%', height: '100vh', overflowY: 'auto', background: 'rgba(0,0,0,0.85)'}}>
-            <div className="modern-reg-container" style={{maxWidth: '800px', margin: '40px auto'}}>
-                <div className="modern-reg-main">
-                    <div className="form-content-wrap">
-                        <div className="form-header">
-                            <h1>Update Product</h1>
-                            <p>Refine your product details and media gallery.</p>
-                        </div>
+        <div className="modal">
+          <form onSubmit={handleUpdate}>
+            <h2>Update Item</h2>
 
-                        <form onSubmit={handleUpdate} className="modern-form">
-                            <div className="modern-grid">
-                                <div className="modern-input-group">
-                                    <label>Product Name</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faStore} />
-                                        <input type="text" value={editingProduct.name} onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})} required />
-                                    </div>
-                                </div>
-                                <div className="modern-input-group">
-                                    <label>Price (Rwf)</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faTag} />
-                                        <input type="number" value={editingProduct.price} onChange={(e) => setEditingProduct({...editingProduct, price: e.target.value})} required />
-                                    </div>
-                                </div>
-                            </div>
+            {/* TYPE */}
+            <select
+              value={editingProduct.type}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  type: e.target.value,
+                  category: ""
+                })
+              }
+              required
+            >
+              <option value="">Select Type</option>
+              <option value="Product">Product</option>
+              <option value="Service">Service</option>
+              <option value="Asset">Asset</option>
+            </select>
 
-                            <div className="modern-grid">
-                                <div className="modern-input-group">
-                                    <label>Location</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faMapPin} />
-                                        <input type="text" value={editingProduct.location} onChange={(e) => setEditingProduct({...editingProduct, location: e.target.value})} required />
-                                    </div>
-                                </div>
-                                <div className="modern-input-group">
-                                    <label>Category</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faLayerGroup} />
-                                        <input type="text" value={editingProduct.category} onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})} required />
-                                    </div>
-                                </div>
-                            </div>
+            {/* NAME */}
+            <input
+              type="text"
+              value={editingProduct.name}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  name: e.target.value
+                })
+              }
+            />
 
-                            <div className="modern-input-group">
-                                <label>Quantity Available</label>
-                                <div className="input-with-icon">
-                                    <FontAwesomeIcon icon={faInfoCircle} />
-                                    <input type="number" value={editingProduct.quantity} onChange={(e) => setEditingProduct({...editingProduct, quantity: e.target.value})} required />
-                                </div>
-                            </div>
+            {/* PRICE */}
+            <input
+              type="number"
+              value={editingProduct.price}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  price: e.target.value
+                })
+              }
+            />
 
-                            <div className="modern-input-group">
-                                <label>Description</label>
-                                <textarea value={editingProduct.description} onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})} required></textarea>
-                            </div>
+            {/* LOCATION */}
+            <input
+              type="text"
+              value={editingProduct.location}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  location: e.target.value
+                })
+              }
+            />
 
-                            {/* Multi-Upload Section with Delete Previews */}
-                            <div className="modern-multi-upload">
-                                <label>New Product Media</label>
-                                <div className="multi-upload-trigger" onClick={() => fileInputRef.current.click()}>
-                                    <FontAwesomeIcon icon={faCloudUploadAlt} />
-                                    <span>Browse Photos/Videos</span>
-                                </div>
-                                <input type="file" ref={fileInputRef} hidden multiple accept="image/*,video/*" onChange={handleFileChange} />
-                                
-                                <div className="modern-gallery-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '10px', marginTop: '15px'}}>
-                                    {previewFiles.map((file, i) => (
-                                        <div key={i} className="gallery-item" style={{position: 'relative', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ddd'}}>
-                                            {file.type.startsWith('video') ? (
-                                                <video src={file.url} muted style={{width:'100%', height:'100%', objectFit:'cover'}} />
-                                            ) : (
-                                                <img src={file.url} alt="Preview" style={{width:'100%', height:'100%', objectFit:'cover'}} />
-                                            )}
-                                            <button type="button" onClick={() => removePreview(i)} style={{position: 'absolute', top: '5px', right: '5px', background: '#e74c3c', color: 'white', border: 'none', borderRadius: '50%', width: '25px', height: '25px', cursor: 'pointer'}}>
-                                                <FontAwesomeIcon icon={faTimes} size="xs" />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+            {/* CATEGORY */}
+            <select
+              value={editingProduct.category}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  category: e.target.value
+                })
+              }
+              disabled={!editingProduct.type}
+            >
+              <option value="">Select Category</option>
+              {editingProduct.type &&
+                categoryOptions[editingProduct.type].map((cat, i) => (
+                  <option key={i}>{cat}</option>
+                ))}
+            </select>
 
-                            <div className="form-actions" style={{display: 'flex', gap: '15px', marginTop: '20px'}}>
-                                <button type="submit" className="modern-submit-btn" disabled={loading} style={{flex: 2}}>
-                                    {loading ? "Saving..." : "Save Changes"}
-                                </button>
-                                <button type="button" className="modern-submit-btn" onClick={() => setEditingProduct(null)} style={{flex: 1, background: '#666'}}>Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {productToDelete && (
-        <div className="delete-modal-overlay">
-          <div className="delete-modal-content">
-            <div className="delete-icon">⚠️</div>
-            <h2>Are you sure?</h2>
-            <p>This action cannot be undone.</p>
-            <div className="delete-modal-actions">
-              <button className="cancel-btn" onClick={() => setProductToDelete(null)} disabled={loading}>No, Keep it</button>
-              <button className="confirm-btn" onClick={executeDelete} disabled={loading}>{loading ? "Deleting..." : "Yes, Delete"}</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Media Zoom Modal */}
-      {modalMedia.productId && (() => {
-        const product = products.find((p) => p._id === modalMedia.productId);
-        if (!product) return null; 
-        const file = product.files[modalMedia.index];
-        return (
-          <div className="media-modal" onClick={() => setModalMedia({ productId: null, index: 0 })}>
-            <span className="close-btn">&times;</span>
-            {isVideoFile(file) ? (
-              <video src={getFileUrl(file)} controls autoPlay className="full-media" />
-            ) : (
-              <img src={getFileUrl(file)} alt="Full view" className="full-media" />
+            {/* QUANTITY ONLY FOR PRODUCT */}
+            {editingProduct.type === "Product" && (
+              <input
+                type="number"
+                placeholder="Quantity"
+                value={editingProduct.quantity || ""}
+                onChange={(e) =>
+                  setEditingProduct({
+                    ...editingProduct,
+                    quantity: e.target.value
+                  })
+                }
+              />
             )}
-            <div className="modal-controls">
-              <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
-                e.stopPropagation();
-                setModalMedia(p => ({ ...p, index: (p.index - 1 + product.files.length) % product.files.length }));
-              }} />
-              <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
-                e.stopPropagation();
-                setModalMedia(p => ({ ...p, index: (p.index + 1) % product.files.length }));
-              }} />
-            </div>
-          </div>
-        );
-      })()}
 
-      {message && <div className="error-message">{message}</div>}
+            {/* DESCRIPTION */}
+            <textarea
+              value={editingProduct.description}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  description: e.target.value
+                })
+              }
+            />
+
+            {/* FILE UPLOAD */}
+            <input type="file" multiple onChange={handleFileChange} />
+
+            <div>
+              {previewFiles.map((file, i) => (
+                <div key={i}>
+                  <img src={file.url} width="80" alt="" />
+                  <button type="button" onClick={() => removePreview(i)}>
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button type="submit" disabled={loading}>
+              {loading ? "Saving..." : "Save"}
+            </button>
+
+            <button type="button" onClick={() => setEditingProduct(null)}>
+              Cancel
+            </button>
+          </form>
+        </div>
+      )}
+
+      {message && <p>{message}</p>}
     </div>
   );
 }
