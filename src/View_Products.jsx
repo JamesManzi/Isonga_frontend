@@ -207,16 +207,18 @@ function View_Products() {
                 <p>{product.description}</p>
 </div>
               <div className="View_Products_btns">
-                <Link 
+               // Find your Chat Link and update it to this:
+<Link 
   to={`/buyer_chat/${seller?._id}`} 
   state={{ 
     productId: product._id, 
     productName: product.name, 
-    productPrice: product.price,      // Added
-    productLocation: product.location, // Added
-    productImage: product.files[0] 
+    productImage: product.files[0],
+    productPrice: product.price 
   }}
-></Link>
+>
+  <button className="chat-btn">Chat</button>
+</Link>
                 <button onClick={() => addToCart(product._id, product.name)} disabled={cartLoading === product._id}>
                   {cartLoading === product._id ? "Adding..." : "Add To Cart"} <FontAwesomeIcon icon={faCartShopping} />
                 </button>
