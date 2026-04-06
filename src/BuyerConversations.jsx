@@ -56,7 +56,7 @@ function BuyerConversations() {
   }, [navigate]);
 
   // =========================
-  // REAL-TIME EVENTS
+  // REAL-TIME UPDATES
   // =========================
   useEffect(() => {
     if (!buyerId) return;
@@ -134,7 +134,7 @@ function BuyerConversations() {
   };
 
   // =========================
-  // DELETE CHAT (MATCHES BACKEND SOCKET)
+  // DELETE CHAT
   // =========================
   const deleteChat = (e, room) => {
     e.stopPropagation();
@@ -147,7 +147,7 @@ function BuyerConversations() {
   };
 
   // =========================
-  // SEARCH FILTER
+  // SEARCH
   // =========================
   const filteredChats = conversations.filter((chat) =>
     chat.sellerName
@@ -204,7 +204,9 @@ function BuyerConversations() {
               {/* DELETE BUTTON */}
               <button
                 className="delete-btn"
-                onClick={(e) => deleteChat(e, chat.room)}
+                onClick={(e) =>
+                  deleteChat(e, chat.room)
+                }
               >
                 Delete
               </button>
@@ -224,13 +226,12 @@ function BuyerConversations() {
                 <div className="chat-top">
                   <h4>{chat.sellerName}</h4>
                   <span>
-                    {new Date(chat.updatedAt).toLocaleTimeString(
-                      [],
-                      {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }
-                    )}
+                    {new Date(
+                      chat.updatedAt
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
 
