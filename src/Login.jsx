@@ -86,6 +86,7 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(res.data.seller));
        if (!user.isVerified) {
     navigate("/verify-email");
+    return;
          }
         setMessage({ text: "Success! Welcome back.", type: "success" });
 
