@@ -207,7 +207,6 @@ function View_Products() {
                 <p>{product.description}</p>
 </div>
               <div className="View_Products_btns">
-               // Find your Chat Link and update it to this:
 <Link 
   to={`/buyer_chat/${seller?._id}`} 
   state={{ 
