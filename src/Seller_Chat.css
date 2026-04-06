@@ -235,3 +235,169 @@
     font-size: 1rem;
   }
 }
+
+
+
+/* --- PRODUCT ATTACHMENT TAG --- */
+.msg-product-tag {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-left: 4px solid #2563eb; /* Isonga Blue */
+  max-width: 250px;
+}
+
+.product-tag-flex {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.product-tag-flex img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.product-tag-flex p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-tag-flex span {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+/* --- QUOTED REPLY (Inside Message Bubble) --- */
+.quoted-msg {
+  background: rgba(0, 0, 0, 0.06);
+  border-left: 3px solid #2563eb;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.quoted-msg small {
+  font-weight: bold;
+  color: #2563eb;
+  display: block;
+}
+
+.quoted-msg p {
+  margin: 0;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 20px;
+}
+
+/* --- REPLY PREVIEW (Above Input Bar) --- */
+.reply-input-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 10px 15px;
+  animation: slideUp 0.2s ease-out;
+}
+
+.reply-preview-content {
+  border-left: 4px solid #2563eb;
+  padding-left: 10px;
+  overflow: hidden;
+}
+
+.reply-user {
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: #2563eb;
+  display: block;
+}
+
+.reply-text {
+  font-size: 0.85rem;
+  color: #475569;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.close-reply-btn {
+  background: #e2e8f0;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.close-reply-btn:hover {
+  background: #cbd5e1;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- MESSAGE BUBBLE TWEAKS --- */
+.message-row {
+  display: flex;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.message-row.sent { justify-content: flex-end; }
+.message-row.received { justify-content: flex-start; }
+
+.bubble {
+  max-width: 75%;
+  padding: 10px;
+  border-radius: 12px;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.sent .bubble { background-color: #dcf8c6; border-bottom-right-radius: 2px; }
+.received .bubble { background-color: #ffffff; border-bottom-left-radius: 2px; }
+
+/* Reply Icon on hover (Optional) */
+.bubble-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sent .bubble-wrapper { flex-direction: row-reverse; }
+
+.reply-btn-icon {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.bubble-wrapper:hover .reply-btn-icon {
+  opacity: 1;
+}
