@@ -63,45 +63,54 @@ function Login() {
   }, [lockTime]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  if (lockTime > 0) return;
 
-    if (lockTime > 0) return;
+  setLoading(true);
+  setMessage(null);
 
-    setLoading(true);
-    setMessage(null);
+  try {
+    const res = await api.post("/api/login", { email, password });
 
-    try {
-      const res = await api.post("/api/login", { email, password });
+    if (res.data.success) {
+      const user = res.data.seller;
 
-      if (res.data.success) {
-        const user = res.data.seller;
-        // ✅ Clear all security data
-        localStorage.removeItem("attempts");
-        localStorage.removeItem("lockUntil");
-
-        setAttempts(0);
-        setLockTime(0);
-        // ✅ Save user
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.seller));
-       if (!user.isVerified) {
-    navigate("/verify-email");
-    return;
-         }
-        setMessage({ text: "Success! Welcome back.", type: "success" });
-
-        setTimeout(() => navigate("/dashboard"), 1500);
-      } else {
-        handleFailure(res.data.message || "Invalid credentials");
+      // 1. Handle Unverified Users First
+      if (user.isVerified === false) {
+        // We pass email/role so VerifyEmail page knows who to send the code to
+        navigate("/verify-email", { 
+          state: { email: user.email, role: "seller" } 
+        });
+        return; 
       }
-    } catch (error) {
-      const errMsg =
-        error.response?.data?.message || "Login failed. Please try again.";
-      handleFailure(errMsg);
-    } finally {
-      setLoading(false);
+
+      // 2. Verified User Success Path
+      // Clear security data only for successful, verified logins
+      localStorage.removeItem("attempts");
+      localStorage.removeItem("lockUntil");
+      setAttempts(0);
+      setLockTime(0);
+
+      // Save credentials
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      setMessage({ text: "Success! Welcome back.", type: "success" });
+      
+      // Short delay for the user to see the success message
+      setTimeout(() => navigate("/dashboard"), 1200);
+
+    } else {
+      handleFailure(res.data.message || "Invalid credentials");
     }
-  };
+  } catch (error) {
+    // Check if backend sends 403/401 for unverified users
+    const msg = error.response?.data?.message || "Login failed.";
+    handleFailure(msg);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleFailure = (errorText) => {
     const newAttempts = attempts + 1;
