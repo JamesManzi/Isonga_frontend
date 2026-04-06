@@ -104,7 +104,6 @@ function Buyer_Chat() {
     };
 
     const handleTyping = (data) => {
-      // ✅ FIX: Matching backend property name 'senderId'
       if (data.senderId !== buyer?._id) {
         setIsTyping(true);
       }
@@ -118,10 +117,11 @@ function Buyer_Chat() {
       setMessages(prev =>
         prev.map(msg => {
           if (msg._id === data.messageId) {
+            // If deleted for everyone, replace text but keep object so user can "Delete for Me" later
             if (data.forEveryone) {
-              return { ...msg, message: "This message was deleted", files: [] };
+              return { ...msg, message: "This message was deleted", files: [], isDeletedForEveryone: true };
             }
-            // ✅ FIX: check if the deletion event belongs to current user
+            // If delete for me, return null to remove from state
             if (data.userId === buyer?._id) {
               return null;
             }
@@ -172,7 +172,7 @@ function Buyer_Chat() {
       const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
 
       socket.emit("sendMessage", {
-        sender: buyer._id, // ✅ Match backend field
+        sender: buyer._id,
         senderModel: "Buyer",
         receiver: sellerId,
         receiverModel: "Seller",
@@ -217,20 +217,25 @@ function Buyer_Chat() {
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
+          const isSystemDeleted = msg.message === "This message was deleted";
 
           return (
             <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
 
-                <div className="bubble" onDoubleClick={() => setReplyTo(msg)}>
+                <div className="bubble" onDoubleClick={() => !isSystemDeleted && setReplyTo(msg)}>
 
-                  {msg.replyTo && (
+                  {msg.replyTo && !isSystemDeleted && (
                     <div className="quoted-msg">
                       <p>{msg.replyTo.message || "Media"}</p>
                     </div>
                   )}
 
-                  {msg.message && <p>{msg.message}</p>}
+                  {msg.message && (
+                    <p style={isSystemDeleted ? { fontStyle: "italic", color: "#888" } : {}}>
+                      {msg.message}
+                    </p>
+                  )}
 
                   {msg.files?.map((file, idx) => (
                     <img
@@ -254,11 +259,13 @@ function Buyer_Chat() {
                 </div>
 
                 <div className="message-actions">
+                  {/* Keep "Delete Me" available so user can clear the "This message was deleted" text */}
                   <button onClick={() => handleDeleteMessage(msg._id, false)}>
                     Delete Me
                   </button>
 
-                  {isMe && (
+                  {/* Only show "Delete All" if the message isn't already deleted and I sent it */}
+                  {isMe && !isSystemDeleted && (
                     <button onClick={() => handleDeleteMessage(msg._id, true)}>
                       Delete All
                     </button>
@@ -298,7 +305,7 @@ function Buyer_Chat() {
 
             socket.emit("typing", {
               room: `Buyer_${buyer?._id}__Seller_${sellerId}`,
-              senderId: buyer?._id // ✅ FIX: Use senderId to match backend
+              senderId: buyer?._id 
             });
 
             if (typingTimeout.current) clearTimeout(typingTimeout.current);
@@ -317,7 +324,7 @@ function Buyer_Chat() {
           }}
         />
 
-        <button onClick={handleSend}>
+        <button onClick={handleSend} disabled={sending}>
           {sending ? "..." : "➤"}
         </button>
       </div>
