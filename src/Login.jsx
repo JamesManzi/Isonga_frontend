@@ -122,9 +122,14 @@ function Login() {
       });
     }
   };
-  if (!user.isVerified) {
+  useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
+  if (user && !user.isVerified) {
     navigate("/verify-email");
   }
+}, [navigate]);
   return (
     <div className="login-page">
       {loading && <div className="top-loading-bar"></div>}
