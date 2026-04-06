@@ -50,10 +50,26 @@ function VerifyEmail() {
 
   const handleResend = async () => {
     try {
-      setTimer(59); // Reset visual timer
-      await api.post("/api/resend-verification", { email });
+      setLoading(true); // Reuse your loading state or create a 'resending' state
+      
+      // Send both email AND role if your backend uses it for logic
+      const res = await api.post("/api/resend-verification", { 
+        email, 
+        userType: userRole // match the key your backend expects
+      });
+
+      if (res.data.success) {
+        setTimer(59); // Restart the countdown
+        alert("A new code has been sent to your inbox!"); 
+        setCode(""); // Clear the old, expired code from the input
+      } else {
+        alert(res.data.message || "Could not resend code.");
+      }
     } catch (err) {
-      console.error("Resend failed");
+      console.error("Resend failed", err);
+      alert("Network error. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,14 +121,20 @@ function VerifyEmail() {
           </form>
 
           <div className="resend-section">
-            {timer > 0 ? (
-              <p>Resend code in <span>{timer}s</span></p>
-            ) : (
-              <button onClick={handleResend} className="resend-link">
-                I didn't receive a code
-              </button>
-            )}
-          </div>
+  {timer > 0 ? (
+    <p className="timer-text">
+      Resend code in <span className="timer-seconds">{timer}s</span>
+    </p>
+  ) : (
+    <button 
+      onClick={handleResend} 
+      className="resend-link"
+      disabled={loading} // Prevent double-clicking while the API is calling
+    >
+      {loading ? "Sending..." : "I didn't receive a code"}
+    </button>
+  )}
+</div>
         </div>
 
         <button onClick={() => navigate(-1)} className="back-btn">
