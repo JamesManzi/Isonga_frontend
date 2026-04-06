@@ -5,16 +5,32 @@ import { ShieldCheck, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
 import "./VerifyEmail.css";
 
 function VerifyEmail() {
-  const [code, setCode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(59);
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  // Get data passed from the registration pages
-  const email = state?.email || "your email";
-  const userRole = state?.role || "buyer"; // 'buyer' or 'seller'
+  // --- PERSISTENCE LOGIC ---
+  // If state is lost (refresh), try to get data from sessionStorage
+  const [email] = useState(state?.email || sessionStorage.getItem("pending_email"));
+  const [userRole] = useState(state?.role || sessionStorage.getItem("pending_role") || "buyer");
 
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(59);
+
+  // 1. Sync data to sessionStorage on load and trigger initial code
+  useEffect(() => {
+    if (state?.email) {
+      sessionStorage.setItem("pending_email", state.email);
+      sessionStorage.setItem("pending_role", state.role || "buyer");
+    }
+
+    // Automatically trigger code if we have an email and haven't sent one yet this session
+    if (email && !sessionStorage.getItem("initial_sent")) {
+      autoResend();
+    }
+  }, [state, email]);
+
+  // 2. Countdown Timer
   useEffect(() => {
     const interval = setInterval(() => {
       if (timer > 0) setTimer(timer - 1);
@@ -22,19 +38,34 @@ function VerifyEmail() {
     return () => clearInterval(interval);
   }, [timer]);
 
+  // Hidden auto-resend for the first load
+  const autoResend = async () => {
+    try {
+      await api.post("/api/resend-verification", { 
+        email, 
+        userType: userRole 
+      });
+      sessionStorage.setItem("initial_sent", "true");
+    } catch (err) {
+      console.error("Auto-resend failed", err);
+    }
+  };
+
   const handleVerify = async (e) => {
     e.preventDefault();
     if (code.length < 6) return;
     
     setLoading(true);
     try {
-      // The backend route handles both models now
       const res = await api.post("/api/verify-email", { email, code });
       
       if (res.data.success) {
-        // Decide which login page to send them to
+        // SUCCESS: Clear session data
+        sessionStorage.removeItem("pending_email");
+        sessionStorage.removeItem("pending_role");
+        sessionStorage.removeItem("initial_sent");
+
         const targetPath = userRole === "seller" ? "/login" : "/buyer_login";
-        
         navigate(targetPath, { 
           state: { message: "Account verified! Please login." } 
         });
@@ -50,28 +81,37 @@ function VerifyEmail() {
 
   const handleResend = async () => {
     try {
-      setLoading(true); // Reuse your loading state or create a 'resending' state
-      
-      // Send both email AND role if your backend uses it for logic
+      setLoading(true);
       const res = await api.post("/api/resend-verification", { 
         email, 
-        userType: userRole // match the key your backend expects
+        userType: userRole 
       });
 
       if (res.data.success) {
-        setTimer(59); // Restart the countdown
-        alert("A new code has been sent to your inbox!"); 
-        setCode(""); // Clear the old, expired code from the input
+        setTimer(59);
+        alert("A new code has been sent!"); 
+        setCode(""); 
       } else {
         alert(res.data.message || "Could not resend code.");
       }
     } catch (err) {
-      console.error("Resend failed", err);
-      alert("Network error. Please try again later.");
+      alert("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  // 3. Safety Redirect: If no email is found even in storage, send back to login
+  if (!email || email === "your email") {
+    return (
+      <div className="verify-page-wrapper">
+        <div className="verify-card" style={{ textAlign: 'center' }}>
+          <p>Session expired. Please log in again.</p>
+          <button onClick={() => navigate("/login")} className="submit-btn active">Back to Login</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="verify-page-wrapper">
@@ -89,7 +129,7 @@ function VerifyEmail() {
             <div className="icon-badge">
               <ShieldCheck size={32} />
             </div>
-            <h2>Verify {userRole} Account</h2>
+            <h2>Verify {userRole === "seller" ? "Seller" : "Buyer"} Account</h2>
             <p>
               We’ve sent a 6-digit code to <br />
               <span className="user-email">{email}</span>
@@ -121,20 +161,20 @@ function VerifyEmail() {
           </form>
 
           <div className="resend-section">
-  {timer > 0 ? (
-    <p className="timer-text">
-      Resend code in <span className="timer-seconds">{timer}s</span>
-    </p>
-  ) : (
-    <button 
-      onClick={handleResend} 
-      className="resend-link"
-      disabled={loading} // Prevent double-clicking while the API is calling
-    >
-      {loading ? "Sending..." : "I didn't receive a code"}
-    </button>
-  )}
-</div>
+            {timer > 0 ? (
+              <p className="timer-text">
+                Resend code in <span className="timer-seconds">{timer}s</span>
+              </p>
+            ) : (
+              <button 
+                onClick={handleResend} 
+                className="resend-link"
+                disabled={loading}
+              >
+                {loading ? "Sending..." : "I didn't receive a code"}
+              </button>
+            )}
+          </div>
         </div>
 
         <button onClick={() => navigate(-1)} className="back-btn">
