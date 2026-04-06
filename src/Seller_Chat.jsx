@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Seller_Chat.css";
 
-// ✅ FIX: send token to backend
+// ✅ Token is sent via auth handshake
 export const socket = io("https://isonga-backend.onrender.com", {
   transports: ["polling", "websocket"],
   auth: {
@@ -28,9 +28,11 @@ function Seller_Chat() {
 
   const [replyTo, setReplyTo] = useState(null);
   const [zoomImage, setZoomImage] = useState(null);
+  const [isTyping, setIsTyping] = useState(false); // Added for consistency
 
   const scrollRef = useRef();
   const fileInputRef = useRef();
+  const typingTimeout = useRef(null);
 
   const getFileUrl = (path) => {
     if (!path) return "";
@@ -87,7 +89,8 @@ function Seller_Chat() {
   // SOCKET EVENTS
   // =========================
   useEffect(() => {
-    const room = `Buyer_${buyerId}__Seller_${seller?._id}`;
+    if (!seller) return;
+    const room = `Buyer_${buyerId}__Seller_${seller._id}`;
 
     const handleReceive = (msg) => {
       if (msg.room === room) {
@@ -103,6 +106,17 @@ function Seller_Chat() {
       }
     };
 
+    const handleTyping = (data) => {
+      // ✅ Check if the other person is typing
+      if (data.senderId !== seller._id) {
+        setIsTyping(true);
+      }
+    };
+
+    const handleStopTyping = () => {
+      setIsTyping(false);
+    };
+
     const handleDelete = (data) => {
       setMessages(prev =>
         prev.map(msg => {
@@ -110,8 +124,8 @@ function Seller_Chat() {
             if (data.forEveryone) {
               return { ...msg, message: "This message was deleted", files: [] };
             }
-
-            if (msg.sender === data.userId) {
+            // ✅ Use userId from backend payload
+            if (data.userId === seller?._id) {
               return null;
             }
           }
@@ -122,11 +136,15 @@ function Seller_Chat() {
 
     socket.on("receiveMessage", handleReceive);
     socket.on("messagesRead", handleRead);
+    socket.on("typing", handleTyping);
+    socket.on("stopTyping", handleStopTyping);
     socket.on("messageDeleted", handleDelete);
 
     return () => {
       socket.off("receiveMessage", handleReceive);
       socket.off("messagesRead", handleRead);
+      socket.off("typing", handleTyping);
+      socket.off("stopTyping", handleStopTyping);
       socket.off("messageDeleted", handleDelete);
     };
   }, [buyerId, seller]);
@@ -167,6 +185,7 @@ function Seller_Chat() {
       const room = `Buyer_${buyerId}__Seller_${seller._id}`;
 
       socket.emit("sendMessage", {
+        sender: seller._id, // ✅ Match backend field
         senderModel: "Seller",
         receiver: buyerId,
         receiverModel: "Buyer",
@@ -180,6 +199,8 @@ function Seller_Chat() {
       setFiles([]);
       setReplyTo(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
+      
+      socket.emit("stopTyping", { room });
 
     } catch (err) {
       console.error(err);
@@ -220,7 +241,7 @@ function Seller_Chat() {
           const isMe = msg.sender === seller?._id;
 
           return (
-            <div key={i} className={`message-row ${isMe ? "sent" : "received"}`}>
+            <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
 
                 <div className="bubble" onDoubleClick={() => setReplyTo(msg)}>
@@ -279,6 +300,11 @@ function Seller_Chat() {
         <div ref={scrollRef} />
       </div>
 
+      {/* TYPING INDICATOR */}
+      {isTyping && (
+        <div className="typing-indicator">{buyer?.name} is typing...</div>
+      )}
+
       {/* INPUT */}
       <div className="chat-input">
 
@@ -296,7 +322,17 @@ function Seller_Chat() {
         <textarea
           value={text}
           placeholder="Type message..."
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => {
+            setText(e.target.value);
+            const room = `Buyer_${buyerId}__Seller_${seller?._id}`;
+            
+            socket.emit("typing", { room, senderId: seller?._id });
+
+            if (typingTimeout.current) clearTimeout(typingTimeout.current);
+            typingTimeout.current = setTimeout(() => {
+              socket.emit("stopTyping", { room });
+            }, 2000);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();

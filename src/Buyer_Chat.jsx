@@ -67,7 +67,7 @@ function Buyer_Chat() {
 
         const room = `Buyer_${buyerData._id}__Seller_${sellerId}`;
 
-        socket.emit("userOnline", { userModel: "Buyer" }); // ✅ important
+        socket.emit("userOnline", { userModel: "Buyer" });
 
         socket.emit("joinRoom", {
           senderId: buyerData._id,
@@ -94,7 +94,8 @@ function Buyer_Chat() {
   // SOCKET EVENTS
   // =========================
   useEffect(() => {
-    const room = `Buyer_${buyer?._id}__Seller_${sellerId}`;
+    if (!buyer) return;
+    const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
 
     const handleReceive = (msg) => {
       if (msg.room === room) {
@@ -103,7 +104,8 @@ function Buyer_Chat() {
     };
 
     const handleTyping = (data) => {
-      if (data.sender !== buyer?._id) {
+      // ✅ FIX: Matching backend property name 'senderId'
+      if (data.senderId !== buyer?._id) {
         setIsTyping(true);
       }
     };
@@ -112,18 +114,15 @@ function Buyer_Chat() {
       setIsTyping(false);
     };
 
-    // ✅ FIXED DELETE LOGIC
     const handleDelete = (data) => {
       setMessages(prev =>
         prev.map(msg => {
           if (msg._id === data.messageId) {
-
             if (data.forEveryone) {
               return { ...msg, message: "This message was deleted", files: [] };
             }
-
-            // delete only for current user
-            if (msg.sender === data.userId) {
+            // ✅ FIX: check if the deletion event belongs to current user
+            if (data.userId === buyer?._id) {
               return null;
             }
           }
@@ -173,6 +172,7 @@ function Buyer_Chat() {
       const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
 
       socket.emit("sendMessage", {
+        sender: buyer._id, // ✅ Match backend field
         senderModel: "Buyer",
         receiver: sellerId,
         receiverModel: "Seller",
@@ -214,13 +214,12 @@ function Buyer_Chat() {
         <h3>{seller?.name}</h3>
       </div>
 
-      {/* MESSAGES */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
 
           return (
-            <div key={i} className={`message-row ${isMe ? "sent" : "received"}`}>
+            <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
 
                 <div className="bubble" onDoubleClick={() => setReplyTo(msg)}>
@@ -274,14 +273,12 @@ function Buyer_Chat() {
         <div ref={scrollRef}></div>
       </div>
 
-      {/* TYPING */}
       {isTyping && (
         <div className="typing-indicator">
           {seller?.name} is typing...
         </div>
       )}
 
-      {/* INPUT */}
       <div className="chat-input">
         <input
           type="file"
@@ -301,10 +298,9 @@ function Buyer_Chat() {
 
             socket.emit("typing", {
               room: `Buyer_${buyer?._id}__Seller_${sellerId}`,
-              sender: buyer?._id
+              senderId: buyer?._id // ✅ FIX: Use senderId to match backend
             });
 
-            // ✅ debounce typing
             if (typingTimeout.current) clearTimeout(typingTimeout.current);
 
             typingTimeout.current = setTimeout(() => {
@@ -326,7 +322,6 @@ function Buyer_Chat() {
         </button>
       </div>
 
-      {/* IMAGE ZOOM */}
       {zoomImage && (
         <div className="lightbox-overlay" onClick={() => setZoomImage(null)}>
           <img src={zoomImage} alt="" />
