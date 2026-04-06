@@ -4,26 +4,27 @@ import api from "./api";
 import { io } from "socket.io-client";
 import "./BuyerConversations.css";
 
-const socket = io("https://isonga-backend.onrender.com", { withCredentials: false,
+const socket = io("https://isonga-backend.onrender.com", { 
+  withCredentials: false,
   transports: ["polling", "websocket"],
- });
+});
 
 function BuyerConversations() {
   const [buyerId, setBuyerId] = useState("");
   const [conversations, setConversations] = useState([]);
   const [search, setSearch] = useState("");
-  const [loading,setLoading]=useState(true);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
-        if (!token) {
+      if (!token) {
         navigate("/buyer_login");
         return;
       }
       try {
-      const buyerRes = await api.get("/api/buyer_dashboard");
+        const buyerRes = await api.get("/api/buyer_dashboard");
         setBuyerId(buyerRes.data.buyer._id);
 
         socket.emit("userOnline", { userId: buyerRes.data.buyer._id, userModel: "Buyer" });
@@ -32,8 +33,8 @@ function BuyerConversations() {
         if (convRes.data.success) setConversations(convRes.data.conversations);
       } catch (err) {
         console.error(err);
-      } finally{
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -72,7 +73,7 @@ function BuyerConversations() {
 
   const openChat = async (chat) => {
     try {
-      await api.put(`/api/messages/read/${chat.room}`,{})
+      await api.put(`/api/messages/read/${chat.room}`, {});
       socket.emit("messagesRead", { room: chat.room });
 
       setConversations((prev) => prev.map((c) => (c.room === chat.room ? { ...c, unreadCount: 0 } : c)));
@@ -82,13 +83,37 @@ function BuyerConversations() {
     }
   };
 
+  // =========================
+  // DELETE FULL CONVERSATION
+  // =========================
+  const deleteConversation = async (e, room) => {
+    e.stopPropagation(); // Prevent opening the chat when clicking delete
+    
+    if (!window.confirm("Are you sure you want to delete this chat? It will disappear for you.")) return;
+
+    try {
+      // ✅ API CALL: Ensure your backend has a route like DELETE /api/conversations/:room
+      const res = await api.delete(`/api/conversations/${room}`);
+      
+      if (res.data.success) {
+        // Remove from local state immediately
+        setConversations(prev => prev.filter(c => c.room !== room));
+      }
+    } catch (err) {
+      console.error("Failed to delete conversation", err);
+      alert("Error deleting conversation");
+    }
+  };
+
   const filteredChats = conversations.filter((chat) => chat.sellerName?.toLowerCase().includes(search.toLowerCase()));
- const getFileUrl = (path) => {
-  if (!path) return "/placeholder.png"; // Fallback if no image exists
-  return path.startsWith("http") 
-    ? path 
-    : `https://isonga-backend.onrender.com/uploads/${path}`;
-};
+  
+  const getFileUrl = (path) => {
+    if (!path) return "/placeholder.png";
+    return path.startsWith("http") 
+      ? path 
+      : `https://isonga-backend.onrender.com/uploads/${path}`;
+  };
+
   return (
     <div className="chat-container">
       <div className="chat-header">
@@ -103,8 +128,10 @@ function BuyerConversations() {
       <div className="chat-list">
         {loading ? (
           <div className="loading">Loading Chats...</div>
-         ) :filteredChats.length === 0 ? <div className="empty-state">No conversations yet.</div> 
-           :filteredChats.map((chat) => (
+        ) : filteredChats.length === 0 ? (
+          <div className="empty-state">No conversations yet.</div> 
+        ) : (
+          filteredChats.map((chat) => (
             <div key={chat.room} className="chat-item" onClick={() => openChat(chat)}>
               <div className="avatar">
                 <img src={chat.sellerProfile ? getFileUrl(chat.sellerProfile) : "/placeholder.png"} alt={chat.sellerName} />
@@ -115,12 +142,25 @@ function BuyerConversations() {
                   <span>{new Date(chat.updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                 </div>
                 <div className="chat-bottom">
-                  <p className={chat.unreadCount > 0 ? "unread-text" : ""}>{chat.lastMessage}</p>
-                  {chat.unreadCount > 0 && <span className="unread-badge">{chat.unreadCount}</span>}
+                  <p className={chat.unreadCount > 0 ? "unread-text" : ""}>
+                    {chat.lastMessage || "Media"}
+                  </p>
+                  
+                  <div className="chat-meta">
+                    {chat.unreadCount > 0 && <span className="unread-badge">{chat.unreadCount}</span>}
+                    {/* DELETE BUTTON */}
+                    <button 
+                      className="delete-conv-btn" 
+                      onClick={(e) => deleteConversation(e, chat.room)}
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          ))}
+          ))
+        )}
       </div>
     </div>
   );
