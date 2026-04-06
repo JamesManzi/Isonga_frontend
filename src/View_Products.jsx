@@ -212,11 +212,11 @@ function View_Products() {
   state={{ 
     productId: product._id, 
     productName: product.name, 
+    productPrice: product.price,      // Added
+    productLocation: product.location, // Added
     productImage: product.files[0] 
   }}
->
-  <button className="chat-btn">Chat</button>
-</Link>
+></Link>
                 <button onClick={() => addToCart(product._id, product.name)} disabled={cartLoading === product._id}>
                   {cartLoading === product._id ? "Adding..." : "Add To Cart"} <FontAwesomeIcon icon={faCartShopping} />
                 </button>
