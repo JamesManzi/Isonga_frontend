@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "./api";
 import { ShieldCheck, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
@@ -8,49 +8,71 @@ function VerifyEmail() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  // --- PERSISTENCE LOGIC ---
-  // If state is lost (refresh), try to get data from sessionStorage
-  const [email] = useState(state?.email || sessionStorage.getItem("pending_email"));
-  const [userRole] = useState(state?.role || sessionStorage.getItem("pending_role") || "buyer");
+  // --- 1. PERSISTENCE LAYER (DATA RECOVERY) ---
+  // We initialize state directly from sessionStorage if the router state is missing (on refresh)
+  const [email] = useState(() => state?.email || sessionStorage.getItem("pending_email"));
+  const [userRole] = useState(() => state?.role || sessionStorage.getItem("pending_role") || "buyer");
 
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(59);
 
-  // 1. Sync data to sessionStorage on load and trigger initial code
+  // --- 2. TIMER PERSISTENCE LOGIC ---
+  // Calculate remaining seconds based on a future timestamp stored in storage
+  const calculateRemaining = () => {
+    const expiry = sessionStorage.getItem("timer_expiry");
+    if (!expiry) return 0;
+    const remaining = Math.floor((parseInt(expiry) - Date.now()) / 1000);
+    return remaining > 0 ? remaining : 0;
+  };
+
+  const [timer, setTimer] = useState(calculateRemaining);
+
+  // Function to set a future expiry time (Current Time + 59 seconds)
+  const startTimer = useCallback((seconds) => {
+    const expiryTime = Date.now() + seconds * 1000;
+    sessionStorage.setItem("timer_expiry", expiryTime.toString());
+    setTimer(seconds);
+  }, []);
+
+  // --- 3. INITIALIZATION & AUTO-SEND ---
   useEffect(() => {
+    // If we just arrived from Login/Register, save data immediately
     if (state?.email) {
       sessionStorage.setItem("pending_email", state.email);
       sessionStorage.setItem("pending_role", state.role || "buyer");
     }
 
-    // Automatically trigger code if we have an email and haven't sent one yet this session
-    if (email && !sessionStorage.getItem("initial_sent")) {
-      autoResend();
-    }
-  }, [state, email]);
+    // Trigger the initial code delivery ONLY ONCE per session
+    const autoSend = async () => {
+      if (email && !sessionStorage.getItem("initial_sent")) {
+        try {
+          await api.post("/api/resend-verification", { 
+            email, 
+            userType: userRole 
+          });
+          sessionStorage.setItem("initial_sent", "true");
+          startTimer(59); // Start the persistent countdown
+        } catch (err) {
+          console.error("Auto-send failed", err);
+        }
+      }
+    };
 
-  // 2. Countdown Timer
+    autoSend();
+  }, [state, email, userRole, startTimer]);
+
+  // --- 4. COUNTDOWN INTERVAL ---
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (timer > 0) setTimer(timer - 1);
-    }, 1000);
+    let interval;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
     return () => clearInterval(interval);
   }, [timer]);
 
-  // Hidden auto-resend for the first load
-  const autoResend = async () => {
-    try {
-      await api.post("/api/resend-verification", { 
-        email, 
-        userType: userRole 
-      });
-      sessionStorage.setItem("initial_sent", "true");
-    } catch (err) {
-      console.error("Auto-resend failed", err);
-    }
-  };
-
+  // --- 5. ACTION HANDLERS ---
   const handleVerify = async (e) => {
     e.preventDefault();
     if (code.length < 6) return;
@@ -60,10 +82,11 @@ function VerifyEmail() {
       const res = await api.post("/api/verify-email", { email, code });
       
       if (res.data.success) {
-        // SUCCESS: Clear session data
+        // Clear all verification data from storage on success
         sessionStorage.removeItem("pending_email");
         sessionStorage.removeItem("pending_role");
         sessionStorage.removeItem("initial_sent");
+        sessionStorage.removeItem("timer_expiry");
 
         const targetPath = userRole === "seller" ? "/login" : "/buyer_login";
         navigate(targetPath, { 
@@ -79,7 +102,7 @@ function VerifyEmail() {
     }
   };
 
-  const handleResend = async () => {
+  const handleManualResend = async () => {
     try {
       setLoading(true);
       const res = await api.post("/api/resend-verification", { 
@@ -88,7 +111,7 @@ function VerifyEmail() {
       });
 
       if (res.data.success) {
-        setTimer(59);
+        startTimer(59); // Reset the persistent timer
         alert("A new code has been sent!"); 
         setCode(""); 
       } else {
@@ -101,13 +124,19 @@ function VerifyEmail() {
     }
   };
 
-  // 3. Safety Redirect: If no email is found even in storage, send back to login
+  // --- 6. SAFETY REDIRECT ---
   if (!email || email === "your email") {
     return (
       <div className="verify-page-wrapper">
-        <div className="verify-card" style={{ textAlign: 'center' }}>
-          <p>Session expired. Please log in again.</p>
-          <button onClick={() => navigate("/login")} className="submit-btn active">Back to Login</button>
+        <div className="verify-card" style={{ textAlign: "center", padding: "40px" }}>
+          <p>Session expired or invalid access.</p>
+          <button 
+            onClick={() => navigate("/login")} 
+            className="submit-btn active"
+            style={{ marginTop: "20px" }}
+          >
+            Back to Login
+          </button>
         </div>
       </div>
     );
@@ -131,8 +160,10 @@ function VerifyEmail() {
             </div>
             <h2>Verify {userRole === "seller" ? "Seller" : "Buyer"} Account</h2>
             <p>
-              We’ve sent a 6-digit code to <br />
-              <span className="user-email">{email}</span>
+              Enter the 6-digit code sent to <br />
+              <span className="user-email" style={{ fontWeight: "bold", color: "#2563eb" }}>
+                {email}
+              </span>
             </p>
           </div>
 
@@ -167,7 +198,7 @@ function VerifyEmail() {
               </p>
             ) : (
               <button 
-                onClick={handleResend} 
+                onClick={handleManualResend} 
                 className="resend-link"
                 disabled={loading}
               >
