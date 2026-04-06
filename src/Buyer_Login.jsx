@@ -73,26 +73,44 @@ function Buyer_Login() {
       const res = await api.post("/api/buyer_login", { email, password });
 
       if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.buyer));
+        const user = res.data.buyer;
 
-        // reset attempts on success
-        setAttempts(0);
+        // 1. Handle Unverified Buyers First
+        if (user.isVerified === false) {
+          // Pass the email and role to the VerifyEmail page
+          navigate("/verify-email", { 
+            state: { email: user.email, role: "buyer" } 
+          });
+          return; // Stop execution here
+        }
+
+        // 2. Verified Buyer Success Path
+        // Clear security data
         localStorage.removeItem("buyer_attempts");
         localStorage.removeItem("buyer_lockUntil");
+        setAttempts(0);
+        setLockTime(0);
+
+        // Save session data
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(user));
 
         setMessage({ text: "Success! Welcome back.", type: "success" });
-        setTimeout(() => navigate("/buyer_dashboard"), 1500);
+        
+        // Navigate to buyer dashboard after a short delay
+        setTimeout(() => navigate("/buyer_dashboard"), 1200);
+
       } else {
-        handleFailure(res.data.message);
+        handleFailure(res.data.message || "Invalid credentials");
       }
     } catch (error) {
-      handleFailure("Server error. Please try again later.");
+      // Check for specific backend messages regarding verification
+      const errMsg = error.response?.data?.message || "Login failed. Please try again.";
+      handleFailure(errMsg);
     } finally {
       setLoading(false);
     }
   };
-
   const handleFailure = (errorText) => {
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
