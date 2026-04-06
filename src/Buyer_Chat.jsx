@@ -26,6 +26,10 @@ function Buyer_Chat() {
   const [showEmoji, setShowEmoji] = useState(false);
   const [sending, setSending] = useState(false);
   
+  // REPLY STATE
+  const [replyTo, setReplyTo] = useState(null);
+
+  // LIGHTBOX STATE
   const [zoomImage, setZoomImage] = useState(null);
 
   const scrollRef = useRef();
@@ -50,15 +54,19 @@ function Buyer_Chat() {
         return;
       }
       try {
+        // Fetch Buyer Data
         const buyerRes = await api.get("/api/buyer_dashboard");
         const buyerData = buyerRes.data.buyer;
         setBuyer(buyerData);
 
+        // Fetch Seller Data
         const sellerRes = await api.get(`/api/get_seller/${sellerId}`);
         if (sellerRes.data.success) setSeller(sellerRes.data.seller);
 
+        // Define Room ID
         const room = `Buyer_${buyerData._id}__Seller_${sellerId}`;
 
+        // Join Room
         socket.emit("joinRoom", {
           senderId: buyerData._id,
           senderModel: "Buyer",
@@ -66,9 +74,11 @@ function Buyer_Chat() {
           receiverModel: "Seller"
         });
 
+        // Load Previous Messages
         const msgRes = await api.get(`/api/messages/${room}`);
         if (msgRes.data.success) setMessages(msgRes.data.messages);
 
+        // MARK MESSAGES AS READ
         await api.put(`/api/messages/read/${room}`);
         socket.emit("messagesRead", { room });
 
@@ -155,21 +165,31 @@ function Buyer_Chat() {
         receiverModel: "Seller",
         message: text,
         files: uploadedFiles,
-        productId: productContext?.productId, // Link the message to the product
+        productId: productContext?.productId,
+        replyTo: replyTo ? replyTo._id : null, // Send ID of message being replied to
         room
       });
 
       setText(""); 
       setFiles([]);
+      setReplyTo(null); // Clear reply preview
       if (fileInputRef.current) fileInputRef.current.value = "";
-      
-      // Optional: Clear product context after first message to prevent tagging every message
-      // navigate(location.pathname, { replace: true, state: null });
-
     } catch (err) {
       console.log(err);
     }
     setSending(false);
+  };
+
+  const renderPreview = () => {
+    return files.map((file, index) => {
+      const url = URL.createObjectURL(file);
+      return (
+        <div key={index} className="preview-item">
+          {file.type.startsWith("image/") ? <img src={url} alt="" /> : <video src={url} controls />}
+          <button type="button" onClick={() => removeFile(index)}>✕</button>
+        </div>
+      );
+    });
   };
 
   return (
@@ -180,25 +200,34 @@ function Buyer_Chat() {
         <h3>{seller?.name || "Loading..."}</h3>
       </div>
 
+      {/* PRODUCT INFO BAR */}
       {productContext && (
-  <div className="product-context-bar">
-    <img src={getFileUrl(productContext.productImage)} alt="Context" />
-    <div className="context-info">
-      <strong>{productContext.productName}</strong>
-      <p>{productContext.productPrice} Rwf</p> {/* Added Price */}
-      <span>{productContext.productLocation}</span> {/* Added Location */}
-    </div>
-  </div>
-)}
+        <div className="product-context-bar">
+          <img src={getFileUrl(productContext.productImage)} alt="Context" />
+          <div className="context-info">
+            <strong>{productContext.productName}</strong>
+            <p>{productContext.productPrice} Rwf</p>
+            <span>{productContext.productLocation}</span>
+          </div>
+        </div>
+      )}
 
       {/* MESSAGES AREA */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
           return (
-            <div key={i} className={`message ${isMe ? "sent" : "received"}`}>
+            <div key={i} className={`message ${isMe ? "sent" : "received"}`} onDoubleClick={() => setReplyTo(msg)}>
               <div className="bubble">
-                {/* SHOW PRODUCT TAG IN THE BUBBLE IF IT EXISTS */}
+                {/* REPLIED MESSAGE CONTENT */}
+                {msg.replyTo && (
+                  <div className="reply-preview-in-bubble">
+                    <small>{msg.replyTo.senderModel === "Buyer" ? "You" : seller?.name}</small>
+                    <p>{msg.replyTo.message || "Attachment"}</p>
+                  </div>
+                )}
+
+                {/* PRODUCT TAG */}
                 {msg.productId && (
                   <div className="msg-product-tag">
                     <p>Product Inquiry: <strong>{msg.productId.name}</strong></p>
@@ -241,14 +270,18 @@ function Buyer_Chat() {
       </div>
 
       {/* FILE PREVIEW */}
-      {files.length > 0 && <div className="preview-container">
-        {files.map((file, index) => (
-          <div key={index} className="preview-item">
-            {file.type.startsWith("image/") ? <img src={URL.createObjectURL(file)} alt="" /> : <video src={URL.createObjectURL(file)} controls />}
-            <button type="button" onClick={() => removeFile(index)}>✕</button>
+      {files.length > 0 && <div className="preview-container">{renderPreview()}</div>}
+
+      {/* REPLY INPUT PREVIEW */}
+      {replyTo && (
+        <div className="reply-input-container">
+          <div className="reply-content">
+            <small>Replying to {replyTo.senderModel === "Buyer" ? "yourself" : seller?.name}</small>
+            <p>{replyTo.message || "File attachment"}</p>
           </div>
-        ))}
-      </div>}
+          <button onClick={() => setReplyTo(null)}>✕</button>
+        </div>
+      )}
 
       {/* EMOJI BOX */}
       {showEmoji && (
