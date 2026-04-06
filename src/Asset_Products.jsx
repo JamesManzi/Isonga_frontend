@@ -189,7 +189,17 @@ function Asset_Products() {
                 <p>{product.description}</p>
 
                 <div className="View_Products_btns">
-                  <Link to={`/buyer_chat/${seller?._id}`}><button className="chat-btn">Chat Seller</button></Link>
+                  <Link 
+  to={`/buyer_chat/${seller?._id}`} 
+  state={{ 
+    productId: product._id, 
+    productName: product.name, 
+    productImage: product.files[0],
+    productPrice: product.price 
+  }}
+>
+  <button className="chat_btn">Chat</button>
+</Link>
                 </div>
               </div>
             );
