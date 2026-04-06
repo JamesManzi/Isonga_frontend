@@ -28,7 +28,7 @@ function Seller_Chat() {
 
   const [replyTo, setReplyTo] = useState(null);
   const [zoomImage, setZoomImage] = useState(null);
-  const [isTyping, setIsTyping] = useState(false); // Added for consistency
+  const [isTyping, setIsTyping] = useState(false); 
 
   const scrollRef = useRef();
   const fileInputRef = useRef();
@@ -107,7 +107,6 @@ function Seller_Chat() {
     };
 
     const handleTyping = (data) => {
-      // ✅ Check if the other person is typing
       if (data.senderId !== seller._id) {
         setIsTyping(true);
       }
@@ -121,10 +120,11 @@ function Seller_Chat() {
       setMessages(prev =>
         prev.map(msg => {
           if (msg._id === data.messageId) {
+            // Case 1: Deleted for everyone - replace content with placeholder
             if (data.forEveryone) {
-              return { ...msg, message: "This message was deleted", files: [] };
+              return { ...msg, message: "This message was deleted", files: [], isSystemDeleted: true };
             }
-            // ✅ Use userId from backend payload
+            // Case 2: Deleted for me - remove from array entirely
             if (data.userId === seller?._id) {
               return null;
             }
@@ -185,7 +185,7 @@ function Seller_Chat() {
       const room = `Buyer_${buyerId}__Seller_${seller._id}`;
 
       socket.emit("sendMessage", {
-        sender: seller._id, // ✅ Match backend field
+        sender: seller._id,
         senderModel: "Seller",
         receiver: buyerId,
         receiverModel: "Buyer",
@@ -209,9 +209,6 @@ function Seller_Chat() {
     setSending(false);
   };
 
-  // =========================
-  // DELETE
-  // =========================
   const handleDeleteMessage = (id, forEveryone) => {
     socket.emit("deleteMessage", {
       messageId: id,
@@ -220,9 +217,6 @@ function Seller_Chat() {
     });
   };
 
-  // =========================
-  // UI
-  // =========================
   return (
     <div className="chat-container">
 
@@ -235,24 +229,28 @@ function Seller_Chat() {
         </div>
       </div>
 
-      {/* MESSAGES */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === seller?._id;
+          const isPlaceholder = msg.message === "This message was deleted";
 
           return (
             <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
 
-                <div className="bubble" onDoubleClick={() => setReplyTo(msg)}>
+                <div className="bubble" onDoubleClick={() => !isPlaceholder && setReplyTo(msg)}>
 
-                  {msg.replyTo && (
+                  {msg.replyTo && !isPlaceholder && (
                     <div className="quoted-msg">
                       <p>{msg.replyTo.message || "Media"}</p>
                     </div>
                   )}
 
-                  {msg.message && <p>{msg.message}</p>}
+                  {msg.message && (
+                    <p style={isPlaceholder ? { fontStyle: "italic", color: "#999" } : {}}>
+                      {msg.message}
+                    </p>
+                  )}
 
                   {msg.files?.map((file, idx) => (
                     <img
@@ -272,7 +270,7 @@ function Seller_Chat() {
                       })}
                     </span>
 
-                    {isMe && (
+                    {isMe && !isPlaceholder && (
                       <span className={`read-status ${msg.read ? "read" : ""}`}>
                         {msg.read ? " ✓✓" : " ✓"}
                       </span>
@@ -282,11 +280,13 @@ function Seller_Chat() {
                 </div>
 
                 <div className="message-actions">
+                  {/* "Delete Me" stays available to empty the chat of placeholders */}
                   <button onClick={() => handleDeleteMessage(msg._id, false)}>
                     Delete Me
                   </button>
 
-                  {isMe && (
+                  {/* "Delete All" only appears if I sent it and it's not already deleted */}
+                  {isMe && !isPlaceholder && (
                     <button onClick={() => handleDeleteMessage(msg._id, true)}>
                       Delete All
                     </button>
@@ -300,14 +300,11 @@ function Seller_Chat() {
         <div ref={scrollRef} />
       </div>
 
-      {/* TYPING INDICATOR */}
       {isTyping && (
         <div className="typing-indicator">{buyer?.name} is typing...</div>
       )}
 
-      {/* INPUT */}
       <div className="chat-input">
-
         <input
           type="file"
           multiple
@@ -352,7 +349,6 @@ function Seller_Chat() {
         </div>
       )}
 
-      {/* IMAGE ZOOM */}
       {zoomImage && (
         <div className="lightbox-overlay" onClick={() => setZoomImage(null)}>
           <img src={zoomImage} alt="" />
