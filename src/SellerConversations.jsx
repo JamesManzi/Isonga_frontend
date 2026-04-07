@@ -1,13 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "./api";
 import { io } from "socket.io-client";
 import "./SellerConversations.css";
 
-// Initialize socket outside component to prevent multiple connections
-const socket = io("https://isonga-backend.onrender.com", {
-  transports: ["polling", "websocket"],
-});
+const BACKEND_URL = "https://isonga-backend.onrender.com";
 
 function SellerConversations() {
   const [sellerId, setSellerId] = useState("");
@@ -15,82 +12,115 @@ function SellerConversations() {
   const [filteredChats, setFilteredChats] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
-  // 1. Fetch Seller Data and Conversations
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const token = localStorage.getItem("token");
-        if (!token) {
-        navigate("/login");
-        return;
+  const navigate = useNavigate();
+  const socketRef = useRef(null);
+  const mountedRef = useRef(false);
+
+  // =========================
+  // FETCH INITIAL DATA
+  // =========================
+  const fetchConversations = async () => {
+    try {
+      const res = await api.get("/api/seller/conversations");
+      if (res.data.success) {
+        setConversations(res.data.conversations || []);
       }
+    } catch (err) {
+      console.error("Fetch conversations error:", err);
+    }
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
+
       try {
-        // Fetch seller profile to get ID
-      const sellerRes = await api.get("/api/dashboard");
-        if (!sellerRes.data.success) {
-          setLoading(false);
-          return navigate("/login");
-        }
+        const sellerRes = await api.get("/api/dashboard");
+        if (!sellerRes.data.success) return navigate("/login");
 
         const id = sellerRes.data.seller._id;
         setSellerId(id);
 
-        // Identify to Socket server
-        socket.emit("userOnline", { userId: id, userModel: "Seller" });
-
-        // Fetch conversation list from backend
-       const convRes = await api.get("/api/seller/conversations");
-        if (convRes.data.success) {
-          setConversations(convRes.data.conversations || []);
-        }
+        await fetchConversations();
         setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+
+        // socket init
+        const socket = io(BACKEND_URL, {
+          transports: ["websocket"],
+          auth: { token },
+        });
+
+        socketRef.current = socket;
+
+        socket.emit("userOnline", {
+          userId: id,
+          userModel: "Seller",
+        });
+
+        // NEW MESSAGE
+        socket.on("newMessageNotification", (data) => {
+          setConversations((prev) => {
+            const exists = prev.find((c) => c.room === data.room);
+
+            if (!exists) {
+              fetchConversations();
+              return prev;
+            }
+
+            return prev
+              .map((c) =>
+                c.room === data.room
+                  ? {
+                      ...c,
+                      lastMessage: data.message,
+                      updatedAt: new Date().toISOString(),
+                      unreadCount: data.unreadCount,
+                    }
+                  : c
+              )
+              .sort(
+                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+              );
+          });
+        });
+
+        // READ UPDATE
+        socket.on("messagesRead", ({ room }) => {
+          setConversations((prev) =>
+            prev.map((c) =>
+              c.room === room ? { ...c, unreadCount: 0 } : c
+            )
+          );
+        });
+
+        // 🚨 DELETE FIX (IMPORTANT)
+        socket.on("conversationDeleted", ({ room }) => {
+          setConversations((prev) =>
+            prev.filter((c) => c.room !== room)
+          );
+        });
+      } catch (err) {
+        console.error(err);
         setLoading(false);
       }
     };
 
-    fetchInitialData();
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      init();
+    }
+
+    return () => {
+      socketRef.current?.disconnect();
+      mountedRef.current = false;
+    };
   }, [navigate]);
 
-  // 2. Real-time Listener
-  useEffect(() => {
-    if (!sellerId) return;
-
-    const handleNewNotification = (data) => {
-      // data: { room, message, sender, senderModel, unreadCount }
-      setConversations((prev) => {
-        const existingIndex = prev.findIndex((c) => c.room === data.room);
-
-        if (existingIndex !== -1) {
-          const updated = [...prev];
-          updated[existingIndex] = {
-            ...updated[existingIndex],
-            lastMessage: data.message,
-            updatedAt: new Date().toISOString(),
-            unreadCount: data.unreadCount,
-          };
-          return updated.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-        } else {
-          // If it's a completely new buyer messaging for the first time
-          // We trigger a re-fetch to get buyer details (name/profile) from DB
-          fetchLatestConversations();
-          return prev;
-        }
-      });
-    };
-
-    socket.on("newMessageNotification", handleNewNotification);
-    return () => socket.off("newMessageNotification");
-  }, [sellerId]);
-
-  const fetchLatestConversations = async () => {
-      const res = await api.get("/api/seller/conversations");
-    if (res.data.success) setConversations(res.data.conversations);
-  };
-
-  // 3. Search logic
+  // =========================
+  // SEARCH
+  // =========================
   useEffect(() => {
     const filtered = conversations.filter((chat) =>
       chat.buyerName?.toLowerCase().includes(search.toLowerCase())
@@ -98,32 +128,45 @@ function SellerConversations() {
     setFilteredChats(filtered);
   }, [search, conversations]);
 
+  // =========================
+  // OPEN CHAT
+  // =========================
   const openChat = async (chat) => {
     try {
-      // Mark messages in this room as read
-    await api.put(`/api/messages/read/${chat.room}`);
-      // Navigate to the individual chat page
-      // Note: We use buyerId here as the param for the Chat window
+      await api.put(`/api/messages/read/${chat.room}`);
       navigate(`/seller_chat/${chat.buyerId}`);
-    } catch (error) {
-      console.error("Error opening chat:", error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
+  // =========================
+  // HELPERS
+  // =========================
   const formatTime = (date) => {
     if (!date) return "";
-    return new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return new Date(date).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
-const getFileUrl = (path) => {
-  if (!path) return "/placeholder.png"; // Fallback if no image exists
-  return path.startsWith("http") 
-    ? path 
-    : `https://isonga-backend.onrender.com/uploads/${path}`;
-};
+
+  const getFileUrl = (path) => {
+    if (!path) return "/placeholder.png";
+    return path.startsWith("http")
+      ? path
+      : `${BACKEND_URL}/uploads/${path}`;
+  };
+
+  // =========================
+  // UI
+  // =========================
   return (
     <div className="chat-container">
       <div className="chat-header">
-        <Link to="/dashboard" className="back-button">←</Link>
+        <Link to="/dashboard" className="back-button">
+          ←
+        </Link>
         <h2>Messages</h2>
       </div>
 
@@ -143,26 +186,43 @@ const getFileUrl = (path) => {
           <div className="empty-state">No conversations yet.</div>
         ) : (
           filteredChats.map((chat) => (
-            <div key={chat.room} className="chat-item" onClick={() => openChat(chat)}>
+            <div
+              key={chat.room}
+              className="chat-item"
+              onClick={() => openChat(chat)}
+            >
               <div className="avatar">
                 <img
-                  src={chat.buyerProfile ? getFileUrl(chat.buyerProfile) : "/placeholder.png"}
+                  src={
+                    chat.buyerProfile
+                      ? getFileUrl(chat.buyerProfile)
+                      : "/placeholder.png"
+                  }
                   alt={chat.buyerName}
-                  onError={(e) => { e.target.src = "https://via.placeholder.com/50"; }}
                 />
               </div>
 
               <div className="chat-details">
                 <div className="chat-top">
                   <h4>{chat.buyerName}</h4>
-                  <span className="chat-time">{formatTime(chat.updatedAt)}</span>
+                  <span className="chat-time">
+                    {formatTime(chat.updatedAt)}
+                  </span>
                 </div>
+
                 <div className="chat-bottom">
-                  <p className={chat.unreadCount > 0 ? "unread-text" : ""}>
+                  <p
+                    className={
+                      chat.unreadCount > 0 ? "unread-text" : ""
+                    }
+                  >
                     {chat.lastMessage}
                   </p>
+
                   {chat.unreadCount > 0 && (
-                    <span className="unread-badge">{chat.unreadCount}</span>
+                    <span className="unread-badge">
+                      {chat.unreadCount}
+                    </span>
                   )}
                 </div>
               </div>
