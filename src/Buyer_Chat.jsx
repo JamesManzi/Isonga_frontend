@@ -18,7 +18,7 @@ function Buyer_Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ Get product info from URL parameters
+  // ✅ ADDED: Get product info from URL parameters
   const queryParams = new URLSearchParams(location.search);
   const pName = queryParams.get("productName");
   const pImage = queryParams.get("productImage");
@@ -40,14 +40,6 @@ function Buyer_Chat() {
   const scrollRef = useRef();
   const fileInputRef = useRef();
   const typingTimeout = useRef(null);
-
-  // ✅ NEW: Clear URL params after initial load so header doesn't persist forever
-  useEffect(() => {
-    if (pName) {
-      // Replaces current URL with the clean path, keeping state in variables above
-      navigate(location.pathname, { replace: true });
-    }
-  }, []);
 
   // =========================
   // EMOJI
@@ -176,7 +168,7 @@ function Buyer_Chat() {
   }, [messages]);
 
   // =========================
-  // SEND MESSAGE
+  // SEND MESSAGE (FIXED TO ATTACH PRODUCT INFO)
   // =========================
   const handleSend = async () => {
     if (!buyer || (!text.trim() && files.length === 0)) return;
@@ -195,12 +187,22 @@ function Buyer_Chat() {
 
       const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
 
+      // ✅ FIX: If there is a product in the URL, attach it to the message text
+      let messageToSend = text;
+      if (pName) {
+        const productInfo = `[Product Inquiry: ${decodeURIComponent(pName)} - ${pPrice} Rwf]`;
+        messageToSend = `${productInfo}\n${text}`;
+        
+        // Remove the product info from URL after sending once
+        navigate(location.pathname, { replace: true });
+      }
+
       socket.emit("sendMessage", {
         sender: buyer._id,
         senderModel: "Buyer",
         receiver: sellerId,
         receiverModel: "Seller",
-        message: text,
+        message: messageToSend, // ✅ Now sends the product text
         files: uploadedFiles,
         replyTo: replyTo?._id || null,
         room
@@ -240,7 +242,7 @@ function Buyer_Chat() {
         </div>
       </div>
 
-      {/* PRODUCT CONTEXT */}
+      {/* PRODUCT CONTEXT VISUAL */}
       {pName && (
         <div className="product-context-header">
           <div className="context-card">
@@ -287,7 +289,8 @@ function Buyer_Chat() {
                     </div>
                   )}
 
-                  <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : {}}>
+                  {/* ✅ Added whiteSpace style to show product info and message on separate lines */}
+                  <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : { whiteSpace: "pre-wrap" }}>
                     {msg.message}
                   </p>
 
