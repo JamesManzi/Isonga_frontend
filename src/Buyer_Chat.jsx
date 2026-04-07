@@ -18,7 +18,7 @@ function Buyer_Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ ADDED: Get product info from URL parameters
+  // ✅ Get product info from URL parameters
   const queryParams = new URLSearchParams(location.search);
   const pName = queryParams.get("productName");
   const pImage = queryParams.get("productImage");
@@ -40,6 +40,14 @@ function Buyer_Chat() {
   const scrollRef = useRef();
   const fileInputRef = useRef();
   const typingTimeout = useRef(null);
+
+  // ✅ NEW: Clear URL params after initial load so header doesn't persist forever
+  useEffect(() => {
+    if (pName) {
+      // Replaces current URL with the clean path, keeping state in variables above
+      navigate(location.pathname, { replace: true });
+    }
+  }, []);
 
   // =========================
   // EMOJI
@@ -232,7 +240,7 @@ function Buyer_Chat() {
         </div>
       </div>
 
-      {/* ✅ FIXED PRODUCT CONTEXT (Updated to use URL params) */}
+      {/* PRODUCT CONTEXT */}
       {pName && (
         <div className="product-context-header">
           <div className="context-card">
@@ -283,7 +291,6 @@ function Buyer_Chat() {
                     {msg.message}
                   </p>
 
-                  {/* FILES DISPLAY (Added to match Seller chat) */}
                   {msg.files?.map((file, idx) => (
                     <img
                       key={idx}
@@ -336,7 +343,7 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* INPUT (Added file attachment button to match Seller Chat) */}
+      {/* INPUT */}
       <div className="chat-input">
         <input
           type="file"
