@@ -208,7 +208,12 @@ function Buyer_Chat() {
 
   return (
     <div className="chat-container">
-      {/* ✅ Product Context Header */}
+
+      <div className="chat-header">
+        <Link to="/BuyerConversations">←</Link>
+        <h3>{seller?.name}</h3>
+      </div>
+            {/* ✅ Product Context Header */}
 {productContext && (
   <div className="product-chat-context">
     <div className="context-card">
@@ -230,11 +235,6 @@ function Buyer_Chat() {
     </div>
   </div>
 )}
-      <div className="chat-header">
-        <Link to="/BuyerConversations">←</Link>
-        <h3>{seller?.name}</h3>
-      </div>
-
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
