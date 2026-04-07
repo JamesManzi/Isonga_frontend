@@ -97,7 +97,12 @@ function Buyer_Dashboard() {
     if (!buyerId) return;
 
     // Connect to your production backend
-    const socket = io("https://isonga-backend.onrender.com");
+    const socket = io("https://isonga-backend.onrender.com", {
+  transports: ["polling", "websocket"],
+  auth: {
+    token: localStorage.getItem("token"),
+  },
+});
 
     // Register user as online so the server knows where to send notifications
     socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
