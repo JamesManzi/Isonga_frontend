@@ -1,22 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  useParams,
-  Link,
-  useNavigate,
-  useLocation,
-  useSearchParams
-} from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import api from "./api";
 import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
-// ✅ Socket
+// ✅ FIX: Send token to backend
 export const socket = io("https://isonga-backend.onrender.com", {
   transports: ["polling", "websocket"],
   auth: {
-    token: localStorage.getItem("token"),
-  },
+    token: localStorage.getItem("token")
+  }
 });
 
 function Buyer_Chat() {
@@ -24,7 +18,7 @@ function Buyer_Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ NEW: get product from URL
+  // ✅ FIX: use URL params instead of state
   const [searchParams] = useSearchParams();
 
   const productContext = {
@@ -34,18 +28,18 @@ function Buyer_Chat() {
     productPrice: searchParams.get("productPrice"),
   };
 
-  const hasProduct = productContext.productId;
-
   const [buyer, setBuyer] = useState(null);
   const [seller, setSeller] = useState(null);
   const [messages, setMessages] = useState([]);
 
   const [text, setText] = useState("");
   const [files, setFiles] = useState([]);
+  const [showEmoji, setShowEmoji] = useState(false);
   const [sending, setSending] = useState(false);
 
   const [replyTo, setReplyTo] = useState(null);
   const [zoomImage, setZoomImage] = useState(null);
+
   const [isTyping, setIsTyping] = useState(false);
 
   const scrollRef = useRef();
@@ -105,42 +99,62 @@ function Buyer_Chat() {
   }, [sellerId, navigate]);
 
   // =========================
+  // ✅ AUTO SEND PRODUCT (NEW)
+  // =========================
+  useEffect(() => {
+    if (!buyer || !productContext.productId) return;
+
+    const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
+
+    socket.emit("sendMessage", {
+      sender: buyer._id,
+      senderModel: "Buyer",
+      receiver: sellerId,
+      receiverModel: "Seller",
+      message: "I'm interested in this product",
+      files: [],
+      productId: productContext.productId, // ✅ IMPORTANT
+      room
+    });
+
+  }, [buyer]);
+
+  // =========================
   // SOCKET EVENTS
   // =========================
   useEffect(() => {
     if (!buyer) return;
-
     const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
 
     const handleReceive = (msg) => {
       if (msg.room === room) {
-        setMessages((prev) => [...prev, msg]);
+        setMessages(prev => [...prev, msg]);
       }
     };
 
     const handleTyping = (data) => {
-      if (data.senderId !== buyer._id) setIsTyping(true);
+      if (data.senderId !== buyer?._id) {
+        setIsTyping(true);
+      }
     };
 
-    const handleStopTyping = () => setIsTyping(false);
+    const handleStopTyping = () => {
+      setIsTyping(false);
+    };
 
     const handleDelete = (data) => {
-      setMessages((prev) =>
-        prev
-          .map((msg) => {
-            if (msg._id === data.messageId) {
-              if (data.forEveryone) {
-                return {
-                  ...msg,
-                  message: "This message was deleted",
-                  files: [],
-                };
-              }
-              if (data.userId === buyer._id) return null;
+      setMessages(prev =>
+        prev.map(msg => {
+          if (msg._id === data.messageId) {
+            if (data.forEveryone) {
+              return { ...msg, message: "This message was deleted", files: [], isDeletedForEveryone: true };
             }
-            return msg;
-          })
-          .filter(Boolean)
+            if (data.userId === buyer?._id) {
+              return null;
+            }
+          }
+          return msg;
+        }).filter(Boolean)
       );
     };
 
@@ -176,7 +190,7 @@ function Buyer_Chat() {
     try {
       if (files.length > 0) {
         const formData = new FormData();
-        files.forEach((file) => formData.append("files", file));
+        files.forEach(file => formData.append("files", file));
 
         const res = await api.post("/api/chat/upload", formData);
         if (res.data.success) uploadedFiles = res.data.files;
@@ -191,8 +205,9 @@ function Buyer_Chat() {
         receiverModel: "Seller",
         message: text,
         files: uploadedFiles,
+        productId: null, // ✅ NORMAL MESSAGE
         replyTo: replyTo?._id || null,
-        room,
+        room
       });
 
       setText("");
@@ -200,6 +215,7 @@ function Buyer_Chat() {
       setReplyTo(null);
 
       socket.emit("stopTyping", { room });
+
     } catch (err) {
       console.error(err);
     }
@@ -208,19 +224,16 @@ function Buyer_Chat() {
   };
 
   // =========================
-  // DELETE MESSAGE
+  // DELETE
   // =========================
   const handleDeleteMessage = (id, forEveryone) => {
     socket.emit("deleteMessage", {
       messageId: id,
       room: `Buyer_${buyer._id}__Seller_${sellerId}`,
-      forEveryone,
+      forEveryone
     });
   };
 
-  // =========================
-  // UI
-  // =========================
   return (
     <div className="chat-container">
 
@@ -230,52 +243,46 @@ function Buyer_Chat() {
       </div>
 
       {/* ✅ PRODUCT CONTEXT */}
-      {hasProduct && (
+      {productContext.productId && (
         <div className="product-chat-context">
           <div className="context-card">
-            <img
-              src={getFileUrl(productContext.productImage)}
-              alt={productContext.productName}
-              className="context-img"
-            />
-            <div className="context-details">
+            <img src={getFileUrl(productContext.productImage)} alt="" />
+            <div>
               <h4>{productContext.productName}</h4>
               <p>{productContext.productPrice} Rwf</p>
             </div>
-
-            <button
-              className="close-context"
-              onClick={() => {
-                window.history.replaceState({}, document.title, location.pathname);
-              }}
-            >
-              ×
-            </button>
           </div>
         </div>
       )}
 
-      {/* MESSAGES */}
       <div className="chat-messages">
-        {messages.map((msg) => {
+        {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
 
           return (
-            <div key={msg._id} className={`message-row ${isMe ? "sent" : "received"}`}>
+            <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
 
                 <div className="bubble">
+
+                  {/* ✅ REPLY */}
+                  {msg.replyTo && (
+                    <div className="quoted-msg">
+                      <p>{msg.replyTo.message || "Media"}</p>
+                    </div>
+                  )}
+
+                  {/* ✅ PRODUCT MESSAGE */}
+                  {msg.productId && (
+                    <div className="product-message">
+                      <img src={getFileUrl(msg.productId.files?.[0])} />
+                      <h4>{msg.productId.name}</h4>
+                      <p>{msg.productId.price} Rwf</p>
+                    </div>
+                  )}
+
                   {msg.message && <p>{msg.message}</p>}
 
-                  {msg.files?.map((file, idx) => (
-                    <img
-                      key={idx}
-                      src={getFileUrl(file)}
-                      className="chat-image"
-                      onClick={() => setZoomImage(getFileUrl(file))}
-                      alt=""
-                    />
-                  ))}
                 </div>
 
                 <div className="message-actions">
@@ -298,25 +305,13 @@ function Buyer_Chat() {
         <div ref={scrollRef}></div>
       </div>
 
-      {/* TYPING */}
       {isTyping && (
         <div className="typing-indicator">
           {seller?.name} is typing...
         </div>
       )}
 
-      {/* INPUT */}
       <div className="chat-input">
-        <input
-          type="file"
-          multiple
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          onChange={(e) => setFiles(Array.from(e.target.files))}
-        />
-
-        <button onClick={() => fileInputRef.current.click()}>📎</button>
-
         <textarea
           value={text}
           placeholder="Type message..."
@@ -325,14 +320,14 @@ function Buyer_Chat() {
 
             socket.emit("typing", {
               room: `Buyer_${buyer?._id}__Seller_${sellerId}`,
-              senderId: buyer?._id,
+              senderId: buyer?._id
             });
 
             if (typingTimeout.current) clearTimeout(typingTimeout.current);
 
             typingTimeout.current = setTimeout(() => {
               socket.emit("stopTyping", {
-                room: `Buyer_${buyer?._id}__Seller_${sellerId}`,
+                room: `Buyer_${buyer?._id}__Seller_${sellerId}`
               });
             }, 1500);
           }}
@@ -342,13 +337,6 @@ function Buyer_Chat() {
           {sending ? "..." : "➤"}
         </button>
       </div>
-
-      {/* IMAGE ZOOM */}
-      {zoomImage && (
-        <div className="lightbox-overlay" onClick={() => setZoomImage(null)}>
-          <img src={zoomImage} alt="" />
-        </div>
-      )}
 
     </div>
   );
