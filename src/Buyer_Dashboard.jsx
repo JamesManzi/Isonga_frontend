@@ -32,15 +32,16 @@ function Buyer_Dashboard() {
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
-  const productCategories = ["Fashion", "Electronics", "Furniture", "Construction","Food"];
+  const productCategories = ["Fashion", "Electronics", "Furniture", "Construction", "Food"];
   const serviceCategories = ["services", "Hospitality"];
   const assetCategories = ["RealEstate", "Vehicles", "Livestock"];
+
   const [notifications, setNotifications] = useState([]);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [orderNotifications, setOrderNotifications] = useState([]);
   const [chatNotifications, setChatNotifications] = useState([]);
   const [unreadChatCount, setUnreadChatCount] = useState(0);
-  
+
   const socketRef = useRef(null);
 
   const getSellerRoute = (category, id) => {
@@ -50,16 +51,15 @@ function Buyer_Dashboard() {
     return `/view_products/${id}`;
   };
 
-  // Improved Fetchers to accept ID directly (prevents waiting for state update)
-  const fetchOrderNotifications = async (id) => {
-    const activeId = id || buyerId;
-    if (!activeId) return;
+  const fetchOrderNotifications = async () => {
+    if (!buyerId) return;
     try {
-      const res = await api.get(`/api/notifications?t=${Date.now()}`); 
+      const res = await api.get(`/api/notifications?t=${Date.now()}`);
       if (res.data.success) {
         const fetchedNotifs = res.data.notifications;
         setOrderNotifications(fetchedNotifs);
-        const unreadOrderCount = fetchedNotifs.filter(n => !n.read).length; 
+
+        const unreadOrderCount = fetchedNotifs.filter(n => !n.read).length;
         setUnreadNotifCount(unreadOrderCount);
       }
     } catch (err) {
@@ -78,63 +78,26 @@ function Buyer_Dashboard() {
     }
   };
 
-  // Main Data Fetch - This is the "Engine" that prevents the refresh requirement
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/buyer_login");
-          return;
-        }
+    if (buyerId) fetchCartCount();
+  }, [buyerId]);
 
-        // 1. Get Dashboard & Buyer Info
-        const res = await api.get("/api/buyer_dashboard");
-        if (res.data.success) {
-          const { buyer, sellers } = res.data;
-          setBuyerName(buyer.name);
-          setProfile(buyer.profile);
-          setBuyerId(buyer._id);
-
-          const sellersWithRatings = sellers.map(s => ({
-            ...s,
-            averageRating: s.averageRating || 0,
-            numReviews: s.numReviews || 0
-          }));
-          setSellers(sellersWithRatings);
-          setFilteredSellers(sellersWithRatings);
-
-          const indexes = {};
-          sellersWithRatings.forEach(s => { indexes[s._id] = 0; });
-          setCurrentImageIndex(indexes);
-
-          // 2. IMMEDIATELY Fetch Chat Count (No refresh needed)
-          const unreadRes = await api.get("/api/buyer/conversations");
-          if (unreadRes.data.success && unreadRes.data.conversations) {
-            const count = unreadRes.data.conversations.reduce(
-              (sum, conv) => sum + (conv.unreadCount || 0),
-              0
-            );
-            setUnreadChatCount(count);
-          }
-
-          // 3. IMMEDIATELY Fetch other counts
-          fetchOrderNotifications(buyer._id);
-          fetchCartCount();
-        }
-      } catch (err) {
-        console.error("Dashboard Fetch Error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [navigate]);
-
-  // Socket Logic
   useEffect(() => {
     if (!buyerId) return;
+
+    fetchOrderNotifications();
+
+    const handleFocus = () => {
+      fetchOrderNotifications();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [buyerId]);
+
+  useEffect(() => {
+    if (!buyerId) return;
+
     const token = localStorage.getItem("token");
 
     if (!socketRef.current) {
@@ -145,15 +108,26 @@ function Buyer_Dashboard() {
     }
 
     const socket = socketRef.current;
+
     const handleConnect = () => {
-      socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
+      console.log("Socket connected");
+
+      socket.emit("userOnline", {
+        userId: buyerId,
+        userModel: "Buyer",
+      });
     };
 
     socket.on("connect", handleConnect);
+
     socket.off("newMessageNotification");
+
     socket.on("newMessageNotification", (data) => {
+      console.log("REALTIME MESSAGE:", data);
+
       setChatNotifications((prev) => [data, ...prev]);
-      setUnreadChatCount((prev) => prev + 1); 
+      setUnreadChatCount((prev) => prev + 1);
+
       if (document.hidden && Notification.permission === "granted") {
         new Notification("New Message", { body: data.message });
       }
@@ -167,8 +141,10 @@ function Buyer_Dashboard() {
 
   const handleBellClick = async () => {
     setUnreadNotifCount(0);
+
     try {
       const res = await api.put("/api/notifications/mark-read");
+
       if (res.data.success) {
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
       }
@@ -179,6 +155,17 @@ function Buyer_Dashboard() {
     }
   };
 
+  useEffect(() => {
+    if (buyerId) {
+      fetchOrderNotifications();
+    }
+
+    const handlePageShow = () => fetchOrderNotifications();
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, [buyerId]);
+
   const handleLogout = async () => {
     try {
       const res = await api.post("/api/logout");
@@ -187,6 +174,7 @@ function Buyer_Dashboard() {
         navigate("/buyer_login");
       }
     } catch (err) {
+      console.error("Logout error:", err);
       localStorage.removeItem("token");
       navigate("/buyer_login");
     }
@@ -198,7 +186,14 @@ function Buyer_Dashboard() {
       if (avg >= i) {
         stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" />);
       } else if (avg >= i - 0.5) {
-        stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gold" style={{ clipPath: "inset(0 50% 0 0)" }} />);
+        stars.push(
+          <FontAwesomeIcon
+            key={i}
+            icon={faStar}
+            color="gold"
+            style={{ clipPath: "inset(0 50% 0 0)" }}
+          />
+        );
       } else {
         stars.push(<FontAwesomeIcon key={i} icon={faStar} color="gray" />);
       }
@@ -206,13 +201,57 @@ function Buyer_Dashboard() {
     return stars;
   };
 
-  // Search Logic
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/buyer_login");
+          return;
+        }
+
+        const res = await api.get("/api/buyer_dashboard");
+        if (res.data.success) {
+          const { buyer, sellers } = res.data;
+
+          setBuyerName(buyer.name);
+          setProfile(buyer.profile);
+          setBuyerId(buyer._id);
+
+          const sellersWithRatings = sellers.map(s => ({
+            ...s,
+            averageRating: s.averageRating || 0,
+            numReviews: s.numReviews || 0
+          }));
+
+          setSellers(sellersWithRatings);
+          setFilteredSellers(sellersWithRatings);
+
+          const indexes = {};
+          sellersWithRatings.forEach(s => {
+            indexes[s._id] = 0;
+          });
+          setCurrentImageIndex(indexes);
+        }
+      } catch (err) {
+        console.error("Dashboard Fetch Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [navigate]);
+
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredSellers(sellers);
       return;
     }
+
     const q = searchQuery.toLowerCase();
+
     setFilteredSellers(
       sellers.filter(s =>
         (s.name && s.name.toLowerCase().includes(q)) ||
@@ -223,45 +262,62 @@ function Buyer_Dashboard() {
     );
   }, [searchQuery, sellers]);
 
-  // Slider Auto-play
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => {
         const newIndexes = { ...prev };
+
         filteredSellers.forEach((seller) => {
           if (seller.files && seller.files.length > 1) {
             const currentIndex = prev[seller._id] || 0;
-            newIndexes[seller._id] = (currentIndex + 1) % seller.files.length;
+            newIndexes[seller._id] =
+              (currentIndex + 1) % seller.files.length;
           }
         });
+
         return newIndexes;
       });
     }, 5000);
+
     return () => clearInterval(interval);
   }, [filteredSellers]);
 
-  const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
+  const isVideoFile = (filename) =>
+    /\.(mp4|webm|ogg|mov)$/i.test(filename);
+
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
     if (path.startsWith("http")) return path;
     return `https://isonga-backend.onrender.com/uploads/${path}`;
   };
 
-  // Navbar Logic
   useEffect(() => {
     const navbar = document.querySelector(".Buyer_Dashboard_navbar");
     if (!navbar) return;
-    navbar.style.transform = modalMedia.sellerId ? "translateY(-100%)" : "translateY(0)";
+
+    if (modalMedia.sellerId) {
+      navbar.style.transform = "translateY(-100%)";
+    } else {
+      navbar.style.transform = "translateY(0)";
+    }
   }, [modalMedia]);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
+
     const handleScroll = () => {
       const navbar = document.querySelector(".Buyer_Dashboard_navbar");
       if (!navbar) return;
-      navbar.style.transform = window.scrollY > lastScrollY ? "translateY(-100%)" : "translateY(0)";
+
+      if (window.scrollY > lastScrollY) {
+        navbar.style.transform = "translateY(-100%)";
+      } else {
+        navbar.style.transform = "translateY(0)";
+      }
+
       lastScrollY = window.scrollY;
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -275,7 +331,12 @@ function Buyer_Dashboard() {
             <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
             <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
           </div>
-          <h2 className="text-white font-bold text-xl tracking-widest">ISONGA MARKET</h2>
+          <h2 className="text-white font-bold text-xl tracking-widest">
+            ISONGA MARKET
+          </h2>
+          <p className="text-white/80 text-sm">
+            Preparing your dashboard...
+          </p>
         </div>
       </div>
     );
@@ -284,30 +345,70 @@ function Buyer_Dashboard() {
   return (
     <div className="Buyer_Dashboard">
       <div className="Buyer_Dashboard_navbar">
-        <div className="Buyer_Dashboard_logos"><img src="/logo.png" alt="Logo" /></div>
-        <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
-        <div className="Buyer_Dashboard_user">
-          <Link to="/buyer_profile"><img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="profile" /></Link>
-          <ChatNotification unreadCount={unreadChatCount} />
-        </div>
-        <div className="Buyer_Dashboard_nav">
-          <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
+        <div className="Buyer_Dashboard_logos">
+          <img src="/logo.png" alt="Logo" />
         </div>
 
-        <div className="notification-container nav-icon-link" style={{ position: "relative", cursor: "pointer" }} onClick={handleBellClick}>
+        <div className="Buyer_Dashboard_heads">
+          <h1>Isonga</h1>
+          <h2>Market</h2>
+        </div>
+
+        <div className="Buyer_Dashboard_user">
+          <Link to="/buyer_profile">
+            <img src={profile ? getFileUrl(profile) : "/placeholder.png"} />
+          </Link>
+
+          <ChatNotification unreadCount={unreadChatCount} />
+        </div>
+
+        <div className="Buyer_Dashboard_nav">
+          <nav>
+            <ul>
+              <li><Link to="/fashion">Products</Link></li>
+              <li><Link to="/services">Services</Link></li>
+              <li><Link to="/RealEstate">Assets</Link></li>
+            </ul>
+          </nav>
+        </div>
+
+        <div
+          className="notification-container nav-icon-link"
+          style={{ position: "relative", cursor: "pointer" }}
+          onClick={handleBellClick}
+        >
           <FontAwesomeIcon icon={faBell} size="2x" />
           {unreadNotifCount > 0 && (
-            <span className="notification-badge">{unreadNotifCount}</span>
+            <span className="notification-badge">
+              {unreadNotifCount}
+            </span>
           )}
         </div>
 
         <Link to="/cart" style={{ position: "relative" }}>
           <FontAwesomeIcon icon={faCartShopping} size="2x" />
           {cartCount > 0 && (
-            <span style={{ position: "absolute", top: "-5px", right: "-5px", background: "red", color: "white", borderRadius: "50%", padding: "2px 6px", fontSize: "12px", fontWeight: "bold" }}>{cartCount}</span>
+            <span
+              style={{
+                position: "absolute",
+                top: "-5px",
+                right: "-5px",
+                background: "red",
+                color: "white",
+                borderRadius: "50%",
+                padding: "2px 6px",
+                fontSize: "12px",
+                fontWeight: "bold"
+              }}
+            >
+              {cartCount}
+            </span>
           )}
         </Link>
-        <div className="Buyer_Dashboard_Logout"><button onClick={handleLogout}>Logout</button></div>
+
+        <div className="Buyer_Dashboard_Logout">
+          <button onClick={handleLogout}>Logout</button>
+        </div>
       </div>
 
       <div className="Buyer_Dashboard_Heading">
@@ -316,84 +417,96 @@ function Buyer_Dashboard() {
       </div>
 
       <div className="Buyer_Dashboard_search">
-        <input type="text" placeholder="Search sellers..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-        <button><FontAwesomeIcon icon={faSearch} /></button>
+        <input
+          type="text"
+          placeholder="Search sellers..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button>
+          <FontAwesomeIcon icon={faSearch} />
+        </button>
       </div>
 
       <div className="shop-grid">
         {filteredSellers.length > 0 ? (
           filteredSellers.map((seller) => {
             const activeIdx = currentImageIndex[seller._id] || 0;
+
             return (
               <div key={seller._id} className="shop-card">
                 <div className="card-image-section">
                   {seller.files && seller.files.length > 0 ? (
                     <div className="image-slider">
                       {isVideoFile(seller.files[activeIdx]) ? (
-                        <video src={getFileUrl(seller.files[activeIdx])} muted autoPlay loop className="slider-image" onClick={(e) => { e.stopPropagation(); setModalMedia({ sellerId: seller._id, index: activeIdx }); }} />
+                        <video
+                          src={getFileUrl(seller.files[activeIdx])}
+                          muted
+                          autoPlay
+                          loop
+                          className="slider-image"
+                        />
                       ) : (
-                        <img src={getFileUrl(seller.files[activeIdx])} alt={seller.name} className="slider-image" onClick={(e) => { e.stopPropagation(); setModalMedia({ sellerId: seller._id, index: activeIdx }); }} />
-                      )}
-                      {seller.files.length > 1 && (
-                        <div className="slider-dots">
-                          {seller.files.map((_, idx) => (
-                            <span key={idx} className={`dot ${idx === activeIdx ? "active" : ""}`} onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => ({ ...prev, [seller._id]: idx })); }}></span>
-                          ))}
-                        </div>
+                        <img
+                          src={getFileUrl(seller.files[activeIdx])}
+                          className="slider-image"
+                        />
                       )}
                     </div>
                   ) : (
-                    <img src="/placeholder.png" alt="no image" className="slider-image" />
+                    <img src="/placeholder.png" className="slider-image" />
                   )}
                 </div>
-                <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
-                  <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image" />
+
+                <Link
+                  to={`/view_profile/${seller._id}`}
+                  className="profile-avatar"
+                >
+                  <img
+                    src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"}
+                  />
                 </Link>
+
                 <div className="shop-card-info">
                   <h3>{seller.name} Shop</h3>
                   <p>{seller.location}</p>
-                  <div className="rating">{renderStars(seller.averageRating)}<span>({seller.numReviews})</span></div>
+                  <p>{seller.category} Shop</p>
+
+                  <div className="rating">
+                    {renderStars(seller.averageRating)}
+                    <span>({seller.numReviews})</span>
+                  </div>
+
+                  <p>{seller.description}</p>
+
                   <div className="card-actions">
-                    <Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">Visit</button></Link>
-                    <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
+                    <Link to={getSellerRoute(seller.category, seller._id)}>
+                      <button className="visit-btn">Visit</button>
+                    </Link>
+
+                    <Link to={`/buyer_chat/${seller._id}`}>
+                      <button className="chat-btn">Chat</button>
+                    </Link>
                   </div>
                 </div>
               </div>
-            )
+            );
           })
         ) : (
           <p className="no-sellers-msg">No sellers found</p>
         )}
       </div>
 
-      {modalMedia.sellerId && createPortal(
-        (() => {
-          const seller = sellers.find(s => s._id === modalMedia.sellerId);
-          if (!seller) return null;
-          const file = seller.files[modalMedia.index];
-          return (
-            <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
-              <span className="close-btn" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>&times;</span>
-              {isVideoFile(file) ? (
-                <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
-              ) : (
-                <img src={getFileUrl(file)} alt="Full view" className="full-media" onClick={(e) => e.stopPropagation()} />
-              )}
-              <div className="modal-controls">
-                <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => { e.stopPropagation(); setModalMedia((p) => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length })); }} />
-                <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => { e.stopPropagation(); setModalMedia((p) => ({ ...p, index: (p.index + 1) % seller.files.length })); }} />
-              </div>
-            </div>
-          );
-        })(), document.body
-      )}
-
       <footer className="Buyer_Footer">
         <div className="Footer_Container">
           <div className="Footer_Section">
-            <div className="Footer_Logo"><img src="/logo.png" alt="Isonga Logo" /><h3>Isonga Market</h3></div>
+            <div className="Footer_Logo">
+              <img src="/logo.png" />
+              <h3>Isonga Market</h3>
+            </div>
             <p>The leading digital marketplace in Rwanda.</p>
           </div>
+
           <div className="Footer_Section">
             <h4>Quick Links</h4>
             <ul>
@@ -403,6 +516,7 @@ function Buyer_Dashboard() {
               <li><Link to="/cart">My Cart</Link></li>
             </ul>
           </div>
+
           <div className="Footer_Section">
             <h4>Support</h4>
             <ul>
@@ -411,6 +525,7 @@ function Buyer_Dashboard() {
               <li><Link to="/privacy">Privacy Policy</Link></li>
             </ul>
           </div>
+
           <div className="Footer_Section">
             <h4>Secure Payments</h4>
             <div className="Payment_Methods">
@@ -420,7 +535,10 @@ function Buyer_Dashboard() {
             <p className="Secure_Note">🔒 SSL Secure Transactions</p>
           </div>
         </div>
-        <div className="Footer_Bottom"><p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved. Designed for Rwanda 🇷🇼</p></div>
+
+        <div className="Footer_Bottom">
+          <p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved. Designed for Rwanda 🇷🇼</p>
+        </div>
       </footer>
     </div>
   );
