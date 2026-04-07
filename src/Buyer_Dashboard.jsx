@@ -37,7 +37,8 @@ function Buyer_Dashboard() {
   const assetCategories = ["RealEstate", "Vehicles", "Livestock"];
   const [notifications, setNotifications] = useState([]);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
-
+  const [orderNotifications, setOrderNotifications] = useState([]);
+const [chatNotifications, setChatNotifications] = useState([]);
   const getSellerRoute = (category, id) => {
     if (productCategories.includes(category)) return `/view_products/${id}`;
     if (serviceCategories.includes(category)) return `/Service_Products/${id}`;
@@ -51,11 +52,11 @@ function Buyer_Dashboard() {
     const res = await api.get(`/api/notifications?t=${Date.now()}`); 
     if (res.data.success) {
       const fetchedNotifs = res.data.notifications;
-      setNotifications(fetchedNotifs);
+      setOrderNotifications(fetchedNotifs);
       
       // ✅ FIX: Match the backend 'read' boolean
-      const unreadCount = fetchedNotifs.filter(n => !n.read).length; 
-      setUnreadNotifCount(unreadCount);
+      const unreadOrderCount = orderNotifications.filter(n => !n.read).length; 
+      setUnreadNotifCount(unreadOrderCount);
     }
   } catch (err) {
     console.error("Notif Error:", err);
@@ -127,7 +128,7 @@ useEffect(() => {
   socket.on("newMessageNotification", (data) => {
     console.log("REALTIME MESSAGE:", data);
 
-    setNotifications((prev) => [data, ...prev]);
+    setChatNotifications((prev) => [data, ...prev]);
     setUnreadNotifCount((prev) => prev + 1);
 
     if (document.hidden && Notification.permission === "granted") {

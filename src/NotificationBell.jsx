@@ -17,7 +17,7 @@ const NotificationBell = ({ buyerId }) => {
       const res = await api.get(`/api/notifications?t=${Date.now()}`);
       if (res.data.success) {
         const fetchedNotifs = res.data.notifications;
-        setNotifications(fetchedNotifs);
+        setOrderNotifications(fetchedNotifs);
         setUnreadNotifCount(fetchedNotifs.filter((n) => !n.read).length);
       }
     } catch (err) {
