@@ -32,7 +32,7 @@ function Buyer_Dashboard() {
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
-  const productCategories = ["Fashion", "Electronics", "Furniture", "Construction", "Food"];
+  const productCategories = ["Fashion", "Electronics", "Furniture", "Construction","Food"];
   const serviceCategories = ["services", "Hospitality"];
   const assetCategories = ["RealEstate", "Vehicles", "Livestock"];
   const [notifications, setNotifications] = useState([]);
@@ -40,6 +40,8 @@ function Buyer_Dashboard() {
   const [orderNotifications, setOrderNotifications] = useState([]);
   const [chatNotifications, setChatNotifications] = useState([]);
   const [unreadChatCount, setUnreadChatCount] = useState(0);
+  
+  const socketRef = useRef(null);
 
   const getSellerRoute = (category, id) => {
     if (productCategories.includes(category)) return `/view_products/${id}`;
@@ -48,14 +50,16 @@ function Buyer_Dashboard() {
     return `/view_products/${id}`;
   };
 
-  const fetchOrderNotifications = async () => {
-    if (!buyerId) return;
+  // Improved Fetchers to accept ID directly (prevents waiting for state update)
+  const fetchOrderNotifications = async (id) => {
+    const activeId = id || buyerId;
+    if (!activeId) return;
     try {
-      const res = await api.get(`/api/notifications?t=${Date.now()}`);
+      const res = await api.get(`/api/notifications?t=${Date.now()}`); 
       if (res.data.success) {
         const fetchedNotifs = res.data.notifications;
         setOrderNotifications(fetchedNotifs);
-        const unreadOrderCount = fetchedNotifs.filter(n => !n.read).length;
+        const unreadOrderCount = fetchedNotifs.filter(n => !n.read).length; 
         setUnreadNotifCount(unreadOrderCount);
       }
     } catch (err) {
@@ -74,47 +78,87 @@ function Buyer_Dashboard() {
     }
   };
 
+  // Main Data Fetch - This is the "Engine" that prevents the refresh requirement
   useEffect(() => {
-    if (buyerId) fetchCartCount();
-  }, [buyerId]);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/buyer_login");
+          return;
+        }
 
-  useEffect(() => {
-    if (!buyerId) return;
-    fetchOrderNotifications();
-    const handleFocus = () => {
-      fetchOrderNotifications();
+        // 1. Get Dashboard & Buyer Info
+        const res = await api.get("/api/buyer_dashboard");
+        if (res.data.success) {
+          const { buyer, sellers } = res.data;
+          setBuyerName(buyer.name);
+          setProfile(buyer.profile);
+          setBuyerId(buyer._id);
+
+          const sellersWithRatings = sellers.map(s => ({
+            ...s,
+            averageRating: s.averageRating || 0,
+            numReviews: s.numReviews || 0
+          }));
+          setSellers(sellersWithRatings);
+          setFilteredSellers(sellersWithRatings);
+
+          const indexes = {};
+          sellersWithRatings.forEach(s => { indexes[s._id] = 0; });
+          setCurrentImageIndex(indexes);
+
+          // 2. IMMEDIATELY Fetch Chat Count (No refresh needed)
+          const unreadRes = await api.get("/api/buyer/conversations");
+          if (unreadRes.data.success && unreadRes.data.conversations) {
+            const count = unreadRes.data.conversations.reduce(
+              (sum, conv) => sum + (conv.unreadCount || 0),
+              0
+            );
+            setUnreadChatCount(count);
+          }
+
+          // 3. IMMEDIATELY Fetch other counts
+          fetchOrderNotifications(buyer._id);
+          fetchCartCount();
+        }
+      } catch (err) {
+        console.error("Dashboard Fetch Error:", err);
+      } finally {
+        setLoading(false);
+      }
     };
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [buyerId]);
+    fetchData();
+  }, [navigate]);
 
-  const socketRef = useRef(null);
-
+  // Socket Logic
   useEffect(() => {
     if (!buyerId) return;
     const token = localStorage.getItem("token");
+
     if (!socketRef.current) {
       socketRef.current = io("https://isonga-backend.onrender.com", {
         transports: ["polling", "websocket"],
         auth: { token },
       });
     }
+
     const socket = socketRef.current;
     const handleConnect = () => {
-      socket.emit("userOnline", {
-        userId: buyerId,
-        userModel: "Buyer",
-      });
+      socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
     };
+
     socket.on("connect", handleConnect);
     socket.off("newMessageNotification");
     socket.on("newMessageNotification", (data) => {
       setChatNotifications((prev) => [data, ...prev]);
-      setUnreadChatCount((prev) => prev + 1);
+      setUnreadChatCount((prev) => prev + 1); 
       if (document.hidden && Notification.permission === "granted") {
         new Notification("New Message", { body: data.message });
       }
     });
+
     return () => {
       socket.off("connect", handleConnect);
       socket.off("newMessageNotification");
@@ -135,15 +179,6 @@ function Buyer_Dashboard() {
     }
   };
 
-  useEffect(() => {
-    if (buyerId) {
-      fetchOrderNotifications();
-    }
-    const handlePageShow = () => fetchOrderNotifications();
-    window.addEventListener("pageshow", handlePageShow);
-    return () => window.removeEventListener("pageshow", handlePageShow);
-  }, [buyerId]);
-
   const handleLogout = async () => {
     try {
       const res = await api.post("/api/logout");
@@ -152,7 +187,6 @@ function Buyer_Dashboard() {
         navigate("/buyer_login");
       }
     } catch (err) {
-      console.error("Logout error:", err);
       localStorage.removeItem("token");
       navigate("/buyer_login");
     }
@@ -172,55 +206,7 @@ function Buyer_Dashboard() {
     return stars;
   };
 
-  // Main Data Fetch - UPDATED TO MATCH SELLER DASHBOARD LOGIC
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/buyer_login");
-          return;
-        }
-
-        const res = await api.get("/api/buyer_dashboard");
-        if (res.data.success) {
-          const { buyer, sellers } = res.data;
-          setBuyerName(buyer.name);
-          setProfile(buyer.profile);
-          setBuyerId(buyer._id);
-
-          const sellersWithRatings = sellers.map(s => ({
-            ...s,
-            averageRating: s.averageRating || 0,
-            numReviews: s.numReviews || 0
-          }));
-          setSellers(sellersWithRatings);
-          setFilteredSellers(sellersWithRatings);
-
-          const indexes = {};
-          sellersWithRatings.forEach(s => { indexes[s._id] = 0; });
-          setCurrentImageIndex(indexes);
-
-          // 🔥 FIXED: Fetch initial unread chat count immediately (Just like Seller Dashboard)
-          const unreadRes = await api.get("/api/buyer/conversations");
-          if (unreadRes.data.success && unreadRes.data.conversations) {
-            const count = unreadRes.data.conversations.reduce(
-              (sum, conv) => sum + (conv.unreadCount || 0),
-              0
-            );
-            setUnreadChatCount(count);
-          }
-        }
-      } catch (err) {
-        console.error("Dashboard Fetch Error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [navigate]);
-
+  // Search Logic
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredSellers(sellers);
@@ -237,6 +223,7 @@ function Buyer_Dashboard() {
     );
   }, [searchQuery, sellers]);
 
+  // Slider Auto-play
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => {
@@ -254,21 +241,17 @@ function Buyer_Dashboard() {
   }, [filteredSellers]);
 
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
-
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
     if (path.startsWith("http")) return path;
     return `https://isonga-backend.onrender.com/uploads/${path}`;
   };
 
+  // Navbar Logic
   useEffect(() => {
     const navbar = document.querySelector(".Buyer_Dashboard_navbar");
     if (!navbar) return;
-    if (modalMedia.sellerId) {
-      navbar.style.transform = "translateY(-100%)";
-    } else {
-      navbar.style.transform = "translateY(0)";
-    }
+    navbar.style.transform = modalMedia.sellerId ? "translateY(-100%)" : "translateY(0)";
   }, [modalMedia]);
 
   useEffect(() => {
@@ -276,11 +259,7 @@ function Buyer_Dashboard() {
     const handleScroll = () => {
       const navbar = document.querySelector(".Buyer_Dashboard_navbar");
       if (!navbar) return;
-      if (window.scrollY > lastScrollY) {
-        navbar.style.transform = "translateY(-100%)";
-      } else {
-        navbar.style.transform = "translateY(0)";
-      }
+      navbar.style.transform = window.scrollY > lastScrollY ? "translateY(-100%)" : "translateY(0)";
       lastScrollY = window.scrollY;
     };
     window.addEventListener("scroll", handleScroll);
@@ -297,7 +276,6 @@ function Buyer_Dashboard() {
             <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
           </div>
           <h2 className="text-white font-bold text-xl tracking-widest">ISONGA MARKET</h2>
-          <p className="text-white/80 text-sm">Preparing your dashboard...</p>
         </div>
       </div>
     );
@@ -318,7 +296,9 @@ function Buyer_Dashboard() {
 
         <div className="notification-container nav-icon-link" style={{ position: "relative", cursor: "pointer" }} onClick={handleBellClick}>
           <FontAwesomeIcon icon={faBell} size="2x" />
-          {unreadNotifCount > 0 && <span className="notification-badge">{unreadNotifCount}</span>}
+          {unreadNotifCount > 0 && (
+            <span className="notification-badge">{unreadNotifCount}</span>
+          )}
         </div>
 
         <Link to="/cart" style={{ position: "relative" }}>
@@ -372,16 +352,14 @@ function Buyer_Dashboard() {
                 <div className="shop-card-info">
                   <h3>{seller.name} Shop</h3>
                   <p>{seller.location}</p>
-                  <p>{seller.category} Shop</p>
                   <div className="rating">{renderStars(seller.averageRating)}<span>({seller.numReviews})</span></div>
-                  <p>{seller.description}</p>
                   <div className="card-actions">
                     <Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">Visit</button></Link>
                     <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
                   </div>
                 </div>
               </div>
-            );
+            )
           })
         ) : (
           <p className="no-sellers-msg">No sellers found</p>
