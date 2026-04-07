@@ -39,6 +39,7 @@ function Buyer_Dashboard() {
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [orderNotifications, setOrderNotifications] = useState([]);
 const [chatNotifications, setChatNotifications] = useState([]);
+const [unreadChatCount, setUnreadChatCount] = useState(0);
   const getSellerRoute = (category, id) => {
     if (productCategories.includes(category)) return `/view_products/${id}`;
     if (serviceCategories.includes(category)) return `/Service_Products/${id}`;
@@ -126,15 +127,16 @@ useEffect(() => {
   socket.off("newMessageNotification");
 
   socket.on("newMessageNotification", (data) => {
-    console.log("REALTIME MESSAGE:", data);
+  console.log("REALTIME MESSAGE:", data);
 
-    setChatNotifications((prev) => [data, ...prev]);
-    setUnreadNotifCount((prev) => prev + 1);
+  setChatNotifications((prev) => [data, ...prev]);
+  // Update the CHAT count, not the BELL count
+  setUnreadChatCount((prev) => prev + 1); 
 
-    if (document.hidden && Notification.permission === "granted") {
-      new Notification("New Message", { body: data.message });
-    }
-  });
+  if (document.hidden && Notification.permission === "granted") {
+    new Notification("New Message", { body: data.message });
+  }
+});
 
   return () => {
     socket.off("connect", handleConnect);
@@ -336,7 +338,7 @@ useEffect(() => {
         <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
         <div className="Buyer_Dashboard_user">
           <Link to="/buyer_profile"><img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="profile" /></Link>
-          <ChatNotification />
+          <ChatNotification unreadCount={unreadChatCount} />
         </div>
         <div className="Buyer_Dashboard_nav">
           <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
