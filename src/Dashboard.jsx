@@ -160,93 +160,78 @@ function Dashboard() {
   fetchSellerData();
 }, [navigate]);
   /* ---------------- SOCKET REALTIME ---------------- */
+useEffect(() => {
+  if (!seller?._id) return;
 
-  useEffect(() => {
+  const token = localStorage.getItem("token");
 
-    if (!seller?._id) return;
-    const token = localStorage.getItem("token"); 
-    if (!socketRef.current) {
-
-      socketRef.current = io("https://isonga-backend.onrender.com", 
-        {
-          withCredentials: false,
-          transports:["websocket"],
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-    }
-
-    const socket = socketRef.current;
-
-    socket.emit("userOnline", {
-      userId: seller._id,
-      userModel: "Seller",
+  // Only initialize if not already connected
+  if (!socketRef.current || !socketRef.current.connected) {
+    socketRef.current = io("https://isonga-backend.onrender.com", {
+      withCredentials: false,
+      transports: ["websocket"],
+      auth: { token },
     });
+  }
 
-    socket.on("newOrderNotification", (data) => {
+  const socket = socketRef.current;
 
-      toast.success(data.message || "New Order Received!", { icon: "🛍️" });
+  socket.emit("userOnline", {
+    userId: seller._id,
+    userModel: "seller",
+  });
 
-      setSeller((prev) => ({
-        ...prev,
-        totalOrders: (prev.totalOrders || 0) + 1,
-      }));
+  // --- Listeners ---
 
-      setNewOrdersCount((prev) => prev + 1);
+  socket.on("newOrderNotification", (data) => {
+    toast.success(data.message || "New Order Received!", { icon: "🛍️" });
+    setSeller((prev) => ({
+      ...prev,
+      totalOrders: (prev?.totalOrders || 0) + 1,
+    }));
+    setNewOrdersCount((prev) => prev + 1);
+  });
 
-    });
-    socket.on("newBookingNotification", (data) => {
-  toast.success(data.message || "New Booking Received!", { icon: "📅" });
+  socket.on("newBookingNotification", (data) => {
+    toast.success(data.message || "New Booking Received!", { icon: "📅" });
+    setSeller((prev) => ({
+      ...prev,
+      totalOrders: (prev?.totalOrders || 0) + 1,
+    }));
+    setNewOrdersCount((prev) => prev + 1);
+  });
 
-  setSeller((prev) => ({
-    ...prev,
-    totalOrders: (prev.totalOrders || 0) + 1,
-  }));
+  socket.on("newMessageNotification", () => {
+    setUnreadCount((prev) => prev + 1);
+    toast("New message from buyer!", { icon: "💬" });
+  });
 
-  setNewOrdersCount((prev) => prev + 1);
-});
-    socket.on("newMessageNotification", () => {
+  socket.on("newView", (data) => {
+    setTotalViews(data.totalViews || 0);
+    setTodayViews(data.todayViews || 0);
+  });
 
-      setUnreadCount((prev) => prev + 1);
+  socket.on("sellerRatingUpdated", (data) => {
+    toast.success("You received a new rating ⭐");
+    setSeller((prev) => ({
+      ...prev,
+      averageRating: data.averageRating,
+      numReviews: data.numReviews,
+    }));
+  });
 
-      toast("New message from buyer!", { icon: "💬" });
-
-    });
-
-    socket.on("newView", (data) => {
-  setTotalViews(data.totalViews);
-  setTodayViews(data.todayViews);
-  // optional:
-  console.log("Today views:", data.todayViews);
-});
-
-    socket.on("sellerRatingUpdated", (data) => {
-
-      toast.success("You received a new rating ⭐");
-
-      setSeller((prev) => ({
-        ...prev,
-        averageRating: data.averageRating,
-        numReviews: data.numReviews,
-      }));
-
-    });
-
-    return () => {
-
-      socket.off("newOrderNotification");
-      socket.off("newBookingNotification");
-      socket.off("newMessageNotification");
-      socket.off("newView");
-      socket.off("sellerRatingUpdated");
-
-    };
-
-  }, [seller?._id]);
-
+  // --- Cleanup ---
+  return () => {
+    socket.off("newOrderNotification");
+    socket.off("newBookingNotification");
+    socket.off("newMessageNotification");
+    socket.off("newView");
+    socket.off("sellerRatingUpdated");
+    
+    // Optional: Only disconnect if you want to close connection on unmount
+    // socket.disconnect(); 
+  };
+}, [seller?._id]);
 
 if (!seller) {
   return (
