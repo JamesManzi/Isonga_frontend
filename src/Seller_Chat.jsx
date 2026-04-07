@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import api from "./api";
 import io from "socket.io-client";
 import Picker from "emoji-picker-react";
@@ -17,6 +17,7 @@ function Seller_Chat() {
   const { buyerId } = useParams();
   const navigate = useNavigate();
 
+  const location = useLocation();
   const [seller, setSeller] = useState(null);
   const [buyer, setBuyer] = useState(null);
   const [messages, setMessages] = useState([]);
