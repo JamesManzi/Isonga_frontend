@@ -92,50 +92,52 @@ function Buyer_Dashboard() {
     return () => window.removeEventListener("focus", handleFocus);
   }, [buyerId]);
 
-  // For Socket.io
+ // 1. Add useRef to your imports
+const socketRef = useRef(null);
+
+// 2. Update the Socket useEffect
 useEffect(() => {
   if (!buyerId) return;
 
-  const socket = io("https://isonga-backend.onrender.com", {
-    transports: ["polling", "websocket"],
-    auth: {
-      token: localStorage.getItem("token"),
-    },
-  });
+  const token = localStorage.getItem("token");
+  
+  // Use a ref to prevent multiple connections
+  if (!socketRef.current) {
+    socketRef.current = io("https://isonga-backend.onrender.com", {
+      transports: ["polling", "websocket"],
+      auth: { token },
+    });
+  }
+
+  const socket = socketRef.current;
 
   socket.on("connect", () => {
-    console.log("Connected to Socket.io Server");
-    // Register user as online
     socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
   });
 
-  // ✅ LISTEN: Matches backend "newMessageNotification"
   socket.on("newMessageNotification", (data) => {
-    console.log("Real-time notification received!", data);
+    console.log("Real-time message received!");
     
-    // 1. Update UI State
+    // This updates the local state instantly
     setNotifications((prev) => [data, ...prev]);
     setUnreadNotifCount((prev) => prev + 1);
+    
+    // If you have a separate state for 'message envelope' specifically:
+    // setUnreadMessages(prev => prev + 1); 
 
-    // 2. Desktop Notification (if tab is hidden)
-    if (document.hidden) {
-      if (Notification.permission === "granted") {
-        new Notification("New Message on Isonga", {
-          body: data.message || "You have a new message",
-          icon: "/logo.png"
-        });
-      } else if (Notification.permission !== "denied") {
-        Notification.requestPermission();
-      }
+    if (document.hidden && Notification.permission === "granted") {
+      new Notification("New Message", { body: data.message });
     }
   });
 
-  // Cleanup on unmount
   return () => {
-    socket.off("newMessageNotification"); // ✅ MATCHED NAME
-    socket.disconnect();
+    socket.off("newMessageNotification");
+    // Don't disconnect here if you want it to stay alive while navigating sub-menus
   };
 }, [buyerId]);
+
+// 3. Update the JSX to pass data to your notification component
+// <ChatNotification unreadCount={unreadNotifCount} />
   
   const handleBellClick = async () => {
   // 1. Instant UI feedback
