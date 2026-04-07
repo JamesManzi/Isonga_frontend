@@ -48,9 +48,10 @@ function BuyerConversations() {
     }
 
     const socket = io(BACKEND_URL, {
-      transports: ["websocket"],
-      auth: { token },
-    });
+  // Remove transports: ["websocket"] or add "polling"
+  transports: ["polling", "websocket"], 
+  auth: { token },
+});
 
     socketRef.current = socket;
 
