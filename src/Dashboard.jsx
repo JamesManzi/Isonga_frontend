@@ -218,10 +218,13 @@ function Dashboard() {
     toast("New message from buyer!", { icon: "💬" });
   });
 
-  socket.on("newView", (data) => {
-    setTotalViews(data.totalViews || 0);
-    setTodayViews(data.todayViews || 0);
-  });
+ // Updated code
+socket.on("viewUpdate", (data) => {
+  console.log("Live view received:", data); // Helpful for debugging
+  setTotalViews(data.totalViews || 0);
+  // If your backend isn't sending todayViews yet, it will default to 0
+  if (data.todayViews) setTodayViews(data.todayViews); 
+});
 
   socket.on("sellerRatingUpdated", (data) => {
     console.log("Rating Update Received:", data);
