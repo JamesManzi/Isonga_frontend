@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import api from "./api";
 import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
-// ✅ FIX: Send token to backend
+// Socket
 export const socket = io("https://isonga-backend.onrender.com", {
   transports: ["polling", "websocket"],
   auth: {
@@ -18,15 +18,6 @@ function Buyer_Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [searchParams] = useSearchParams();
-
-  const productContext = {
-    productId: searchParams.get("productId"),
-    productName: searchParams.get("productName"),
-    productImage: searchParams.get("productImage"),
-    productPrice: searchParams.get("productPrice"),
-  };
-
   const [buyer, setBuyer] = useState(null);
   const [seller, setSeller] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -38,7 +29,6 @@ function Buyer_Chat() {
 
   const [replyTo, setReplyTo] = useState(null);
   const [zoomImage, setZoomImage] = useState(null);
-
   const [isTyping, setIsTyping] = useState(false);
 
   const scrollRef = useRef();
@@ -46,7 +36,7 @@ function Buyer_Chat() {
   const typingTimeout = useRef(null);
 
   // =========================
-  // FIX ADDED: EMOJI HANDLER
+  // EMOJI
   // =========================
   const onEmojiClick = (emojiData) => {
     setText(prev => prev + emojiData.emoji);
@@ -67,10 +57,7 @@ function Buyer_Chat() {
   useEffect(() => {
     const loadChat = async () => {
       const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/buyer_login");
-        return;
-      }
+      if (!token) return navigate("/buyer_login");
 
       try {
         const buyerRes = await api.get("/api/buyer_dashboard");
@@ -88,7 +75,7 @@ function Buyer_Chat() {
           senderId: buyerData._id,
           senderModel: "Buyer",
           receiverId: sellerId,
-          receiverModel: "Seller",
+          receiverModel: "Seller"
         });
 
         const msgRes = await api.get(`/api/messages/${room}`);
@@ -103,7 +90,7 @@ function Buyer_Chat() {
     };
 
     loadChat();
-  }, [sellerId, navigate]);
+  }, [sellerId]);
 
   // =========================
   // SOCKET EVENTS
@@ -120,9 +107,7 @@ function Buyer_Chat() {
     };
 
     const handleTyping = (data) => {
-      if (data.senderId !== buyer._id) {
-        setIsTyping(true);
-      }
+      if (data.senderId !== buyer._id) setIsTyping(true);
     };
 
     const handleStopTyping = () => setIsTyping(false);
@@ -157,7 +142,7 @@ function Buyer_Chat() {
     try {
       if (files.length > 0) {
         const formData = new FormData();
-        files.forEach(file => formData.append("files", file));
+        files.forEach(f => formData.append("files", f));
 
         const res = await api.post("/api/chat/upload", formData);
         if (res.data.success) uploadedFiles = res.data.files;
@@ -172,14 +157,19 @@ function Buyer_Chat() {
         receiverModel: "Seller",
         message: text,
         files: uploadedFiles,
-        productId: productContext.productId || null,
+
+        // ✅ MATCH SELLER CHAT
         replyTo: replyTo?._id || null,
+
         room
       });
 
       setText("");
       setFiles([]);
       setReplyTo(null);
+
+      if (fileInputRef.current) fileInputRef.current.value = "";
+
       socket.emit("stopTyping", { room });
 
     } catch (err) {
@@ -189,9 +179,6 @@ function Buyer_Chat() {
     setSending(false);
   };
 
-  // =========================
-  // DELETE
-  // =========================
   const handleDeleteMessage = (id, forEveryone) => {
     socket.emit("deleteMessage", {
       messageId: id,
@@ -209,67 +196,80 @@ function Buyer_Chat() {
       </div>
 
       {/* PRODUCT CONTEXT */}
-      {productContext.productId && (
-        <div className="product-chat-context">
+      {location.state?.productName && (
+        <div className="product-context-header">
           <div className="context-card">
-            <img src={getFileUrl(productContext.productImage)} alt="" />
+            <img
+              src={getFileUrl(location.state.productImage)}
+              className="context-thumbnail"
+              alt=""
+            />
             <div>
-              <h4>{productContext.productName}</h4>
-              <p>{productContext.productPrice} Rwf</p>
+              <p>Inquiring about:</p>
+              <h4>{location.state.productName}</h4>
+              <span>{location.state.productPrice} Rwf</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* REPLY PREVIEW (FIX ADDED) */}
+      {/* REPLY PREVIEW */}
       {replyTo && (
         <div className="reply-preview">
-          <p>
-            Replying to: {replyTo.message || "Media"}
-          </p>
+          <p>Replying to: {replyTo.message || "Media"}</p>
           <button onClick={() => setReplyTo(null)}>✖</button>
         </div>
       )}
 
-      {/* CHAT MESSAGES */}
+      {/* MESSAGES */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
+          const isDeleted = msg.message === "This message was deleted";
 
           return (
             <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
 
-                {/* FIX ADDED: REPLY TRIGGER */}
+                {/* REPLY TRIGGER */}
                 <div
                   className="bubble"
-                  onDoubleClick={() => setReplyTo(msg)}
+                  onDoubleClick={() => !isDeleted && setReplyTo(msg)}
                 >
 
                   {/* REPLY DISPLAY */}
-                  {msg.replyTo && (
+                  {msg.replyTo && !isDeleted && (
                     <div className="quoted-msg">
                       <p>{msg.replyTo.message || "Media"}</p>
                     </div>
                   )}
 
-                  {/* PRODUCT */}
-                  {msg.productId && (
-                    <div className="product-message">
-                      <h4>{msg.productId.name}</h4>
-                      <p>{msg.productId.price} Rwf</p>
-                    </div>
-                  )}
-
-                  <p>{msg.message}</p>
+                  {/* MESSAGE */}
+                  <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : {}}>
+                    {msg.message}
+                  </p>
 
                 </div>
+
+                {/* DELETE */}
+                <div className="message-actions">
+                  <button onClick={() => handleDeleteMessage(msg._id, false)}>
+                    Delete Me
+                  </button>
+
+                  {isMe && !isDeleted && (
+                    <button onClick={() => handleDeleteMessage(msg._id, true)}>
+                      Delete All
+                    </button>
+                  )}
+                </div>
+
               </div>
             </div>
           );
         })}
 
-        <div ref={scrollRef}></div>
+        <div ref={scrollRef} />
       </div>
 
       {/* TYPING */}
@@ -282,28 +282,11 @@ function Buyer_Chat() {
       {/* INPUT */}
       <div className="chat-input">
 
-        {/* FIX ADDED: EMOJI BUTTON */}
         <button onClick={() => setShowEmoji(!showEmoji)}>😊</button>
 
         <textarea
           value={text}
-          placeholder="Type message..."
-          onChange={(e) => {
-            setText(e.target.value);
-
-            const room = `Buyer_${buyer?._id}__Seller_${sellerId}`;
-
-            socket.emit("typing", {
-              room,
-              senderId: buyer?._id
-            });
-
-            if (typingTimeout.current) clearTimeout(typingTimeout.current);
-
-            typingTimeout.current = setTimeout(() => {
-              socket.emit("stopTyping", { room });
-            }, 1500);
-          }}
+          onChange={(e) => setText(e.target.value)}
         />
 
         <button onClick={handleSend} disabled={sending}>
@@ -311,7 +294,7 @@ function Buyer_Chat() {
         </button>
       </div>
 
-      {/* FIX ADDED: EMOJI PICKER */}
+      {/* EMOJI */}
       {showEmoji && (
         <div className="emoji-box">
           <Picker onEmojiClick={onEmojiClick} />
