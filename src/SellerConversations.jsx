@@ -9,7 +9,6 @@ const BACKEND_URL = "https://isonga-backend.onrender.com";
 function SellerConversations() {
   const [sellerId, setSellerId] = useState("");
   const [conversations, setConversations] = useState([]);
-  const [filteredChats, setFilteredChats] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -18,35 +17,50 @@ function SellerConversations() {
   const mountedRef = useRef(false);
 
   // =========================
-  // FETCH INITIAL DATA
+  // FETCH CONVERSATIONS
   // =========================
   const fetchConversations = async () => {
     try {
+      setLoading(true);
+
       const res = await api.get("/api/seller/conversations");
+
       if (res.data.success) {
         setConversations(res.data.conversations || []);
       }
     } catch (err) {
-      console.error("Fetch conversations error:", err);
+      console.error("Error fetching conversations:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // =========================
+  // INIT SOCKET + LOAD DATA
+  // =========================
   useEffect(() => {
-    const init = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return navigate("/login");
+    if (mountedRef.current) return;
+    mountedRef.current = true;
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    const init = async () => {
       try {
+        // Get seller profile
         const sellerRes = await api.get("/api/dashboard");
         if (!sellerRes.data.success) return navigate("/login");
 
         const id = sellerRes.data.seller._id;
         setSellerId(id);
 
+        // Load conversations
         await fetchConversations();
-        setLoading(false);
 
-        // socket init
+        // SOCKET
         const socket = io(BACKEND_URL, {
           transports: ["websocket"],
           auth: { token },
@@ -59,7 +73,9 @@ function SellerConversations() {
           userModel: "Seller",
         });
 
+        // =========================
         // NEW MESSAGE
+        // =========================
         socket.on("newMessageNotification", (data) => {
           setConversations((prev) => {
             const exists = prev.find((c) => c.room === data.room);
@@ -75,7 +91,7 @@ function SellerConversations() {
                   ? {
                       ...c,
                       lastMessage: data.message,
-                      updatedAt: new Date().toISOString(),
+                      updatedAt: data.createdAt,
                       unreadCount: data.unreadCount,
                     }
                   : c
@@ -86,7 +102,9 @@ function SellerConversations() {
           });
         });
 
-        // READ UPDATE
+        // =========================
+        // READ RECEIPT
+        // =========================
         socket.on("messagesRead", ({ room }) => {
           setConversations((prev) =>
             prev.map((c) =>
@@ -95,25 +113,31 @@ function SellerConversations() {
           );
         });
 
-        // 🚨 DELETE FIX (IMPORTANT)
+        // =========================
+        // DELETE SYNC (IMPORTANT FIX)
+        // =========================
         socket.on("conversationDeleted", ({ room }) => {
           setConversations((prev) =>
             prev.filter((c) => c.room !== room)
           );
         });
+
       } catch (err) {
         console.error(err);
         setLoading(false);
       }
     };
 
-    if (!mountedRef.current) {
-      mountedRef.current = true;
-      init();
-    }
+    init();
 
     return () => {
+      socketRef.current?.off("newMessageNotification");
+      socketRef.current?.off("messagesRead");
+      socketRef.current?.off("conversationDeleted");
+
       socketRef.current?.disconnect();
+      socketRef.current = null;
+
       mountedRef.current = false;
     };
   }, [navigate]);
@@ -121,12 +145,9 @@ function SellerConversations() {
   // =========================
   // SEARCH
   // =========================
-  useEffect(() => {
-    const filtered = conversations.filter((chat) =>
-      chat.buyerName?.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredChats(filtered);
-  }, [search, conversations]);
+  const filteredChats = conversations.filter((chat) =>
+    chat.buyerName?.toLowerCase().includes(search.toLowerCase())
+  );
 
   // =========================
   // OPEN CHAT
@@ -216,7 +237,7 @@ function SellerConversations() {
                       chat.unreadCount > 0 ? "unread-text" : ""
                     }
                   >
-                    {chat.lastMessage}
+                    {chat.lastMessage || "No messages yet"}
                   </p>
 
                   {chat.unreadCount > 0 && (
