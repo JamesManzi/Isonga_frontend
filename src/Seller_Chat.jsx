@@ -192,7 +192,7 @@ function Seller_Chat() {
         receiverModel: "Buyer",
         message: text,
         files: uploadedFiles,
-        replyTo: replyTo?._id || null,
+        replyTo: replyTo?._id || null, // ✅ Properly sending the reply link
         room
       });
 
@@ -248,6 +248,14 @@ function Seller_Chat() {
         </div>
       )}
 
+      {/* ✅ NEW: REPLY PREVIEW (Shows what you are about to reply to) */}
+      {replyTo && (
+        <div className="reply-preview">
+          <p>Replying to: {replyTo.message || "📎 Media"}</p>
+          <button onClick={() => setReplyTo(null)}>✖</button>
+        </div>
+      )}
+
       {/* MESSAGES */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
@@ -260,7 +268,7 @@ function Seller_Chat() {
 
                 <div className="bubble" onDoubleClick={() => !isDeleted && setReplyTo(msg)}>
 
-                  {/* ✅ PRODUCT FROM MESSAGE */}
+                  {/* PRODUCT FROM MESSAGE */}
                   {msg.productId && (
                     <div className="product-in-chat">
                       <img
@@ -275,7 +283,7 @@ function Seller_Chat() {
                     </div>
                   )}
 
-                  {/* ✅ REPLY */}
+                  {/* ✅ REPLY DISPLAY (Shows the quoted text inside the bubble) */}
                   {msg.replyTo && !isDeleted && (
                     <div className="quoted-msg">
                       <p>
@@ -288,14 +296,14 @@ function Seller_Chat() {
                     </div>
                   )}
 
-                  {/* MESSAGE */}
+                  {/* MESSAGE TEXT */}
                   {msg.message && (
-                    <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : {}}>
+                    <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : { whiteSpace: "pre-wrap" }}>
                       {msg.message}
                     </p>
                   )}
 
-                  {/* FILES */}
+                  {/* FILES/IMAGES */}
                   {msg.files?.map((file, idx) => (
                     <img
                       key={idx}
@@ -324,13 +332,18 @@ function Seller_Chat() {
                 </div>
 
                 <div className="message-actions">
+                  {/* ✅ Added explicit Reply button */}
+                  {!isDeleted && (
+                    <button onClick={() => setReplyTo(msg)}>Reply</button>
+                  )}
+                  
                   <button onClick={() => handleDeleteMessage(msg._id, false)}>
-                    Delete Me
+                    Delete
                   </button>
 
                   {isMe && !isDeleted && (
                     <button onClick={() => handleDeleteMessage(msg._id, true)}>
-                      Delete All
+                      All
                     </button>
                   )}
                 </div>
