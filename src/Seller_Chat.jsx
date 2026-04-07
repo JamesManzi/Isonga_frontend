@@ -228,7 +228,23 @@ function Seller_Chat() {
           <h3>{buyer?.name || "Loading..."}</h3>
         </div>
       </div>
-
+      {/* ✅ Product Context Header for Seller */}
+{location.state?.productName && (
+  <div className="product-context-header">
+    <div className="context-card">
+      <img 
+        src={getFileUrl(location.state.productImage)} 
+        className="context-thumbnail" 
+        alt="" 
+      />
+      <div className="context-text">
+        <p className="context-label">Inquiring about:</p>
+        <h4>{location.state.productName}</h4>
+        <span>{location.state.productPrice} Rwf</span>
+      </div>
+    </div>
+  </div>
+)}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === seller?._id;
@@ -323,8 +339,11 @@ function Seller_Chat() {
             setText(e.target.value);
             const room = `Buyer_${buyerId}__Seller_${seller?._id}`;
             
-            socket.emit("typing", { room, senderId: seller?._id });
-
+            socket.emit("typing", { 
+  room, 
+  senderId: seller?._id, 
+  senderModel: "Seller" // Good for backend logging
+});
             if (typingTimeout.current) clearTimeout(typingTimeout.current);
             typingTimeout.current = setTimeout(() => {
               socket.emit("stopTyping", { room });
