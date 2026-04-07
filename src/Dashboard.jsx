@@ -169,7 +169,7 @@ useEffect(() => {
   if (!socketRef.current || !socketRef.current.connected) {
     socketRef.current = io("https://isonga-backend.onrender.com", {
       withCredentials: false,
-      transports: ["websocket"],
+      transports: ["polling", "websocket"],
       auth: { token },
     });
   }
@@ -177,9 +177,9 @@ useEffect(() => {
   const socket = socketRef.current;
 
   socket.emit("userOnline", {
-    userId: seller._id,
-    userModel: "seller",
-  });
+  userId: seller._id,
+  userModel: "Seller", // ✅ FIXED
+});
 
   // --- Listeners ---
 
