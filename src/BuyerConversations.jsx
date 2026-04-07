@@ -7,7 +7,7 @@ import "./BuyerConversations.css";
 const socket = io("https://isonga-backend.onrender.com", {
   transports: ["polling", "websocket"],
   auth: {
-    token: localStorage.getItem("token"), // ✅ send token for socket auth
+    token: localStorage.getItem("token"),
   },
 });
 
@@ -20,10 +20,27 @@ function BuyerConversations() {
   const navigate = useNavigate();
 
   // =========================
-  // FETCH DATA
+  // FETCH CONVERSATIONS
+  // =========================
+  const fetchConversations = async () => {
+    try {
+      const res = await api.get("/api/buyer/conversations");
+
+      if (res.data.success) {
+        setConversations(res.data.conversations);
+      }
+    } catch (err) {
+      console.error("Fetch conversations error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // =========================
+  // INIT
   // =========================
   useEffect(() => {
-    const fetchData = async () => {
+    const init = async () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -33,30 +50,23 @@ function BuyerConversations() {
 
       try {
         const buyerRes = await api.get("/api/buyer_dashboard");
-
         const buyer = buyerRes.data.buyer;
+
         setBuyerId(buyer._id);
 
-        // ✅ mark user online
+        // socket online
         socket.emit("userOnline", {
           userId: buyer._id,
           userModel: "Buyer",
         });
 
-        // ✅ fetch conversations
-        const convRes = await api.get("/api/buyer/conversations");
-
-        if (convRes.data.success) {
-          setConversations(convRes.data.conversations);
-        }
+        await fetchConversations();
       } catch (err) {
-        console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
+        console.error(err);
       }
     };
 
-    fetchData();
+    init();
   }, [navigate]);
 
   // =========================
@@ -65,7 +75,6 @@ function BuyerConversations() {
   useEffect(() => {
     if (!buyerId) return;
 
-    // NEW MESSAGE
     const handleNewMessage = (data) => {
       setConversations((prev) => {
         const index = prev.findIndex((c) => c.room === data.room);
@@ -89,7 +98,6 @@ function BuyerConversations() {
       });
     };
 
-    // MESSAGES READ
     const handleMessagesRead = ({ room }) => {
       setConversations((prev) =>
         prev.map((c) =>
@@ -98,11 +106,9 @@ function BuyerConversations() {
       );
     };
 
-    // DELETE CONVERSATION
-    const handleConversationDeleted = ({ room }) => {
-      setConversations((prev) =>
-        prev.filter((c) => c.room !== room)
-      );
+    // IMPORTANT FIX: refresh from backend after delete
+    const handleConversationDeleted = async () => {
+      await fetchConversations();
     };
 
     socket.on("newMessageNotification", handleNewMessage);
@@ -121,7 +127,7 @@ function BuyerConversations() {
   // =========================
   const openChat = async (chat) => {
     try {
-      await api.put(`/api/messages/read/${chat.room}`, {});
+      await api.put(`/api/messages/read/${chat.room}`);
 
       socket.emit("messagesRead", { room: chat.room });
 
@@ -133,7 +139,7 @@ function BuyerConversations() {
 
       navigate(`/buyer_chat/${chat.sellerId}`);
     } catch (err) {
-      console.error("Open chat error:", err);
+      console.error(err);
     }
   };
 
@@ -144,11 +150,6 @@ function BuyerConversations() {
     if (!window.confirm("Delete this conversation?")) return;
 
     socket.emit("deleteConversation", { room });
-
-    // optimistic update
-    setConversations((prev) =>
-      prev.filter((c) => c.room !== room)
-    );
   };
 
   // =========================
@@ -174,6 +175,7 @@ function BuyerConversations() {
   // =========================
   return (
     <div className="chat-container">
+
       {/* HEADER */}
       <div className="chat-header">
         <Link to="/buyer_dashboard" className="back-button">
@@ -201,12 +203,9 @@ function BuyerConversations() {
         ) : (
           filteredChats.map((chat) => (
             <div key={chat.room} className="chat-item">
-              
+
               {/* AVATAR */}
-              <div
-                className="avatar"
-                onClick={() => openChat(chat)}
-              >
+              <div className="avatar" onClick={() => openChat(chat)}>
                 <img
                   src={
                     chat.sellerProfile
@@ -218,10 +217,7 @@ function BuyerConversations() {
               </div>
 
               {/* DETAILS */}
-              <div
-                className="chat-details"
-                onClick={() => openChat(chat)}
-              >
+              <div className="chat-details" onClick={() => openChat(chat)}>
                 <div className="chat-top">
                   <h4>{chat.sellerName}</h4>
                   <span>
@@ -233,11 +229,7 @@ function BuyerConversations() {
                 </div>
 
                 <div className="chat-bottom">
-                  <p
-                    className={
-                      chat.unreadCount > 0 ? "unread-text" : ""
-                    }
-                  >
+                  <p className={chat.unreadCount > 0 ? "unread-text" : ""}>
                     {chat.lastMessage}
                   </p>
 
@@ -249,7 +241,7 @@ function BuyerConversations() {
                 </div>
               </div>
 
-              {/* DELETE BUTTON */}
+              {/* DELETE */}
               <button
                 className="delete-btn"
                 onClick={(e) => {
@@ -259,6 +251,7 @@ function BuyerConversations() {
               >
                 🗑
               </button>
+
             </div>
           ))
         )}
