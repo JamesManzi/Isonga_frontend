@@ -160,13 +160,14 @@ function Dashboard() {
   fetchSellerData();
 }, [navigate]);
   /* ---------------- SOCKET REALTIME ---------------- */
-useEffect(() => {
-  if (!seller?._id) return;
 
+  useEffect(() => {
+  // 1. Guard: Wait for seller data and token
   const token = localStorage.getItem("token");
+  if (!seller?._id || !token) return;
 
-  // Only initialize if not already connected
-  if (!socketRef.current || !socketRef.current.connected) {
+  // 2. Initialize socket if it doesn't exist
+  if (!socketRef.current) {
     socketRef.current = io("https://isonga-backend.onrender.com", {
       withCredentials: false,
       transports: ["polling", "websocket"],
@@ -176,29 +177,40 @@ useEffect(() => {
 
   const socket = socketRef.current;
 
-  socket.emit("userOnline", {
-  userId: seller._id,
-  userModel: "Seller", // ✅ FIXED
-});
+  // 3. Define the registration function
+  // We put this in a function so we can call it on "connect" AND on initial load
+  const registerUser = () => {
+    console.log("Registering seller as online:", seller._id);
+    socket.emit("userOnline", {
+      userId: seller._id,
+      userModel: "Seller",
+    });
+  };
 
-  // --- Listeners ---
+  // 4. Handle connection logic
+  if (socket.connected) {
+    registerUser();
+  }
+  
+  socket.on("connect", registerUser);
 
+  // 5. --- Listeners ---
   socket.on("newOrderNotification", (data) => {
     toast.success(data.message || "New Order Received!", { icon: "🛍️" });
+    setNewOrdersCount((prev) => prev + 1);
     setSeller((prev) => ({
       ...prev,
       totalOrders: (prev?.totalOrders || 0) + 1,
     }));
-    setNewOrdersCount((prev) => prev + 1);
   });
 
   socket.on("newBookingNotification", (data) => {
     toast.success(data.message || "New Booking Received!", { icon: "📅" });
+    setNewOrdersCount((prev) => prev + 1);
     setSeller((prev) => ({
       ...prev,
       totalOrders: (prev?.totalOrders || 0) + 1,
     }));
-    setNewOrdersCount((prev) => prev + 1);
   });
 
   socket.on("newMessageNotification", () => {
@@ -212,6 +224,7 @@ useEffect(() => {
   });
 
   socket.on("sellerRatingUpdated", (data) => {
+    console.log("Rating Update Received:", data);
     toast.success("You received a new rating ⭐");
     setSeller((prev) => ({
       ...prev,
@@ -220,19 +233,17 @@ useEffect(() => {
     }));
   });
 
-  // --- Cleanup ---
+  // 6. --- Cleanup ---
   return () => {
+    socket.off("connect", registerUser);
     socket.off("newOrderNotification");
     socket.off("newBookingNotification");
     socket.off("newMessageNotification");
     socket.off("newView");
     socket.off("sellerRatingUpdated");
-    
-    // Optional: Only disconnect if you want to close connection on unmount
-    // socket.disconnect(); 
+    // We don't disconnect here to keep the socket alive across dashboard sub-renders
   };
-}, [seller?._id]);
-
+}, [seller?._id]); // Re-run only if the seller ID changes
 if (!seller) {
   return (
     <div className="beautiful-loading">
