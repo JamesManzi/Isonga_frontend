@@ -206,7 +206,7 @@ function View_Products() {
                 <p><strong>Quantity:</strong> {product.quantity}</p>
                 <p>{product.description}</p>
 </div>
-              <div className="View_Products_btns">
+              
 <div className="View_Products_btns">
   <Link
     to={`/buyer_chat/${seller?._id}?productId=${product._id}&productName=${encodeURIComponent(product.name)}&productImage=${encodeURIComponent(product.files[0])}&productPrice=${product.price}`}
@@ -218,7 +218,6 @@ function View_Products() {
                   {cartLoading === product._id ? "Adding..." : "Add To Cart"} <FontAwesomeIcon icon={faCartShopping} />
                 </button>
               </div>
-            </div>
           );
         })}
       </div>
