@@ -71,21 +71,30 @@ function View_Profile() {
   };
 
   const submitRating = async () => {
-    if (!rating) { setMessage("Select a rating!"); return; }
-    setLoading(true)
-    try {
-      const res = await api.post(`/api/rate_seller/${id}`, { rating, comment });
-      if (res.data.success) {
-        setMessage("Rating submitted!");
-        setRating(0);
-        setComment("");
-        setAverageRating(res.data.averageRating);
-        setNumReviews(res.data.numReviews);
-        fetchReviews();
-      }
-    } catch (err) { console.log(err); setMessage("Error submitting rating"); 
-  } finally{
-    setLoading(false)
+  if (!rating) { setMessage("Select a rating!"); return; }
+  setLoading(true);
+  try {
+    // REMOVE ${id} from the URL and put it in the body object instead
+    const res = await api.post(`/api/rate_seller`, { 
+      sellerId: id, // Pass the id here
+      rating, 
+      comment 
+    });
+
+    if (res.data.success) {
+      setMessage("Rating submitted!");
+      setRating(0);
+      setComment("");
+      // Note: Ensure your backend actually returns these values in the response!
+      if(res.data.averageRating) setAverageRating(res.data.averageRating);
+      if(res.data.numReviews) setNumReviews(res.data.numReviews);
+      fetchReviews();
+    }
+  } catch (err) {
+    console.error(err);
+    setMessage("Error submitting rating");
+  } finally {
+    setLoading(false);
   }
 };
 
