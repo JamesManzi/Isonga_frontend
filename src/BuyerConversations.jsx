@@ -1,15 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "./api";
 import { io } from "socket.io-client";
 import "./BuyerConversations.css";
-
-const socket = io("https://isonga-backend.onrender.com", {
-  transports: ["polling", "websocket"],
-  auth: {
-    token: localStorage.getItem("token"),
-  },
-});
 
 function BuyerConversations() {
   const [buyerId, setBuyerId] = useState("");
@@ -18,6 +11,7 @@ function BuyerConversations() {
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+  const socketRef = useRef(null);
 
   // =========================
   // FETCH CONVERSATIONS
@@ -37,7 +31,7 @@ function BuyerConversations() {
   };
 
   // =========================
-  // INIT
+  // INIT + SOCKET SETUP
   // =========================
   useEffect(() => {
     const init = async () => {
@@ -54,73 +48,74 @@ function BuyerConversations() {
 
         setBuyerId(buyer._id);
 
-        // socket online
+        await fetchConversations();
+
+        // ✅ SOCKET CREATED INSIDE EFFECT (FIX)
+        const socket = io("https://isonga-backend.onrender.com", {
+          transports: ["polling", "websocket"],
+          auth: { token },
+        });
+
+        socketRef.current = socket;
+
         socket.emit("userOnline", {
           userId: buyer._id,
           userModel: "Buyer",
         });
 
-        await fetchConversations();
+        // =========================
+        // SOCKET EVENTS
+        // =========================
+
+        socket.on("newMessageNotification", (data) => {
+          setConversations((prev) => {
+            const index = prev.findIndex((c) => c.room === data.room);
+
+            if (index !== -1) {
+              const updated = [...prev];
+
+              updated[index] = {
+                ...updated[index],
+                lastMessage: data.message,
+                updatedAt: data.createdAt,
+                unreadCount: data.unreadCount,
+              };
+
+              return updated.sort(
+                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+              );
+            }
+
+            return prev;
+          });
+        });
+
+        socket.on("messagesRead", ({ room }) => {
+          setConversations((prev) =>
+            prev.map((c) =>
+              c.room === room ? { ...c, unreadCount: 0 } : c
+            )
+          );
+        });
+
+        // ✅ FIXED DELETE HANDLER (SAFE + REFRESH)
+        socket.on("conversationDeleted", async () => {
+          await fetchConversations();
+        });
+
       } catch (err) {
         console.error(err);
       }
     };
 
     init();
-  }, [navigate]);
-
-  // =========================
-  // SOCKET EVENTS
-  // =========================
-  useEffect(() => {
-    if (!buyerId) return;
-
-    const handleNewMessage = (data) => {
-      setConversations((prev) => {
-        const index = prev.findIndex((c) => c.room === data.room);
-
-        if (index !== -1) {
-          const updated = [...prev];
-
-          updated[index] = {
-            ...updated[index],
-            lastMessage: data.message,
-            updatedAt: data.createdAt,
-            unreadCount: data.unreadCount,
-          };
-
-          return updated.sort(
-            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-          );
-        }
-
-        return prev;
-      });
-    };
-
-    const handleMessagesRead = ({ room }) => {
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.room === room ? { ...c, unreadCount: 0 } : c
-        )
-      );
-    };
-
-    // IMPORTANT FIX: refresh from backend after delete
-    const handleConversationDeleted = async () => {
-      await fetchConversations();
-    };
-
-    socket.on("newMessageNotification", handleNewMessage);
-    socket.on("messagesRead", handleMessagesRead);
-    socket.on("conversationDeleted", handleConversationDeleted);
 
     return () => {
-      socket.off("newMessageNotification", handleNewMessage);
-      socket.off("messagesRead", handleMessagesRead);
-      socket.off("conversationDeleted", handleConversationDeleted);
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
     };
-  }, [buyerId]);
+  }, [navigate]);
 
   // =========================
   // OPEN CHAT
@@ -129,7 +124,7 @@ function BuyerConversations() {
     try {
       await api.put(`/api/messages/read/${chat.room}`);
 
-      socket.emit("messagesRead", { room: chat.room });
+      socketRef.current?.emit("messagesRead", { room: chat.room });
 
       setConversations((prev) =>
         prev.map((c) =>
@@ -144,12 +139,21 @@ function BuyerConversations() {
   };
 
   // =========================
-  // DELETE CONVERSATION
+  // DELETE CONVERSATION (FIXED)
   // =========================
   const deleteConversation = (room) => {
     if (!window.confirm("Delete this conversation?")) return;
 
-    socket.emit("deleteConversation", { room });
+    // 🔥 instant UI update
+    setConversations((prev) =>
+      prev.filter((c) => c.room !== room)
+    );
+
+    // 🔥 socket emit
+    socketRef.current?.emit("deleteConversation", { room });
+
+    // 🔥 safety sync fallback
+    setTimeout(fetchConversations, 500);
   };
 
   // =========================
