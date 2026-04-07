@@ -18,7 +18,6 @@ function Buyer_Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ FIX: use URL params instead of state
   const [searchParams] = useSearchParams();
 
   const productContext = {
@@ -45,6 +44,14 @@ function Buyer_Chat() {
   const scrollRef = useRef();
   const fileInputRef = useRef();
   const typingTimeout = useRef(null);
+
+  // =========================
+  // FIX ADDED: EMOJI HANDLER
+  // =========================
+  const onEmojiClick = (emojiData) => {
+    setText(prev => prev + emojiData.emoji);
+    setShowEmoji(false);
+  };
 
   const getFileUrl = (path) => {
     if (!path) return "";
@@ -99,31 +106,11 @@ function Buyer_Chat() {
   }, [sellerId, navigate]);
 
   // =========================
-  // ✅ AUTO SEND PRODUCT (NEW)
-  // =========================
-  useEffect(() => {
-    if (!buyer || !productContext.productId) return;
-
-    const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
-
-    socket.emit("sendMessage", {
-      sender: buyer._id,
-      senderModel: "Buyer",
-      receiver: sellerId,
-      receiverModel: "Seller",
-      message: "I'm interested in this product",
-      files: [],
-      productId: productContext.productId, // ✅ IMPORTANT
-      room
-    });
-
-  }, [buyer]);
-
-  // =========================
   // SOCKET EVENTS
   // =========================
   useEffect(() => {
     if (!buyer) return;
+
     const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
 
     const handleReceive = (msg) => {
@@ -133,41 +120,21 @@ function Buyer_Chat() {
     };
 
     const handleTyping = (data) => {
-      if (data.senderId !== buyer?._id) {
+      if (data.senderId !== buyer._id) {
         setIsTyping(true);
       }
     };
 
-    const handleStopTyping = () => {
-      setIsTyping(false);
-    };
-
-    const handleDelete = (data) => {
-      setMessages(prev =>
-        prev.map(msg => {
-          if (msg._id === data.messageId) {
-            if (data.forEveryone) {
-              return { ...msg, message: "This message was deleted", files: [], isDeletedForEveryone: true };
-            }
-            if (data.userId === buyer?._id) {
-              return null;
-            }
-          }
-          return msg;
-        }).filter(Boolean)
-      );
-    };
+    const handleStopTyping = () => setIsTyping(false);
 
     socket.on("receiveMessage", handleReceive);
     socket.on("typing", handleTyping);
     socket.on("stopTyping", handleStopTyping);
-    socket.on("messageDeleted", handleDelete);
 
     return () => {
       socket.off("receiveMessage", handleReceive);
       socket.off("typing", handleTyping);
       socket.off("stopTyping", handleStopTyping);
-      socket.off("messageDeleted", handleDelete);
     };
   }, [buyer, sellerId]);
 
@@ -205,7 +172,7 @@ function Buyer_Chat() {
         receiverModel: "Seller",
         message: text,
         files: uploadedFiles,
-        productId: null, // ✅ NORMAL MESSAGE
+        productId: productContext.productId || null,
         replyTo: replyTo?._id || null,
         room
       });
@@ -213,7 +180,6 @@ function Buyer_Chat() {
       setText("");
       setFiles([]);
       setReplyTo(null);
-
       socket.emit("stopTyping", { room });
 
     } catch (err) {
@@ -242,7 +208,7 @@ function Buyer_Chat() {
         <h3>{seller?.name}</h3>
       </div>
 
-      {/* ✅ PRODUCT CONTEXT */}
+      {/* PRODUCT CONTEXT */}
       {productContext.productId && (
         <div className="product-chat-context">
           <div className="context-card">
@@ -255,6 +221,17 @@ function Buyer_Chat() {
         </div>
       )}
 
+      {/* REPLY PREVIEW (FIX ADDED) */}
+      {replyTo && (
+        <div className="reply-preview">
+          <p>
+            Replying to: {replyTo.message || "Media"}
+          </p>
+          <button onClick={() => setReplyTo(null)}>✖</button>
+        </div>
+      )}
+
+      {/* CHAT MESSAGES */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
@@ -263,40 +240,30 @@ function Buyer_Chat() {
             <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
 
-                <div className="bubble">
+                {/* FIX ADDED: REPLY TRIGGER */}
+                <div
+                  className="bubble"
+                  onDoubleClick={() => setReplyTo(msg)}
+                >
 
-                  {/* ✅ REPLY */}
+                  {/* REPLY DISPLAY */}
                   {msg.replyTo && (
                     <div className="quoted-msg">
                       <p>{msg.replyTo.message || "Media"}</p>
                     </div>
                   )}
 
-                  {/* ✅ PRODUCT MESSAGE */}
+                  {/* PRODUCT */}
                   {msg.productId && (
                     <div className="product-message">
-                      <img src={getFileUrl(msg.productId.files?.[0])} />
                       <h4>{msg.productId.name}</h4>
                       <p>{msg.productId.price} Rwf</p>
                     </div>
                   )}
 
-                  {msg.message && <p>{msg.message}</p>}
+                  <p>{msg.message}</p>
 
                 </div>
-
-                <div className="message-actions">
-                  <button onClick={() => handleDeleteMessage(msg._id, false)}>
-                    Delete Me
-                  </button>
-
-                  {isMe && (
-                    <button onClick={() => handleDeleteMessage(msg._id, true)}>
-                      Delete All
-                    </button>
-                  )}
-                </div>
-
               </div>
             </div>
           );
@@ -305,38 +272,51 @@ function Buyer_Chat() {
         <div ref={scrollRef}></div>
       </div>
 
+      {/* TYPING */}
       {isTyping && (
         <div className="typing-indicator">
           {seller?.name} is typing...
         </div>
       )}
 
+      {/* INPUT */}
       <div className="chat-input">
+
+        {/* FIX ADDED: EMOJI BUTTON */}
+        <button onClick={() => setShowEmoji(!showEmoji)}>😊</button>
+
         <textarea
           value={text}
           placeholder="Type message..."
           onChange={(e) => {
             setText(e.target.value);
 
+            const room = `Buyer_${buyer?._id}__Seller_${sellerId}`;
+
             socket.emit("typing", {
-              room: `Buyer_${buyer?._id}__Seller_${sellerId}`,
+              room,
               senderId: buyer?._id
             });
 
             if (typingTimeout.current) clearTimeout(typingTimeout.current);
 
             typingTimeout.current = setTimeout(() => {
-              socket.emit("stopTyping", {
-                room: `Buyer_${buyer?._id}__Seller_${sellerId}`
-              });
+              socket.emit("stopTyping", { room });
             }, 1500);
           }}
         />
 
         <button onClick={handleSend} disabled={sending}>
-          {sending ? "..." : "➤"}
+          ➤
         </button>
       </div>
+
+      {/* FIX ADDED: EMOJI PICKER */}
+      {showEmoji && (
+        <div className="emoji-box">
+          <Picker onEmojiClick={onEmojiClick} />
+        </div>
+      )}
 
     </div>
   );
