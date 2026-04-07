@@ -206,21 +206,24 @@ function View_Products() {
                 <p><strong>Quantity:</strong> {product.quantity}</p>
                 <p>{product.description}</p>
 </div>
-              
+              // ... existing code inside filteredProducts.map
 <div className="View_Products_btns">
   <Link
-    to={`/buyer_chat/${seller?._id}?productId=${product._id}&productName=${encodeURIComponent(product.name)}&productImage=${encodeURIComponent(product.files[0])}&productPrice=${product.price}`}
+    to={`/buyer_chat/${seller?._id}?productId=${product._id}&productName=${encodeURIComponent(product.name)}&productImage=${encodeURIComponent(product.files[0] || "")}&productPrice=${product.price}`}
   >
     <button className="chat-btn">Chat</button>
   </Link>
+  <button onClick={() => addToCart(product._id, product.name)} disabled={cartLoading === product._id}>
+    {cartLoading === product._id ? "Adding..." : "Add To Cart"} <FontAwesomeIcon icon={faCartShopping} />
+  </button>
 </div>
-                <button onClick={() => addToCart(product._id, product.name)} disabled={cartLoading === product._id}>
-                  {cartLoading === product._id ? "Adding..." : "Add To Cart"} <FontAwesomeIcon icon={faCartShopping} />
-                </button>
-              </div>
+
+{/* ADD THESE TWO LINES BELOW TO CLOSE THE MAP PROPERLY */}
+            </div> 
           );
-        })}
+        })} 
       </div>
+{/* ... rest of the component */}
 
       {/* Media Zoom Modal - ICONS ONLY APPEAR HERE */}
       {modalMedia.productId && (() => {
