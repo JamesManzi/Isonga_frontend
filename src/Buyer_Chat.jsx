@@ -208,7 +208,28 @@ function Buyer_Chat() {
 
   return (
     <div className="chat-container">
-
+      {/* ✅ Product Context Header */}
+{productContext && (
+  <div className="product-chat-context">
+    <div className="context-card">
+      <img 
+        src={getFileUrl(productContext.productImage)} 
+        alt={productContext.productName} 
+        className="context-img" 
+      />
+      <div className="context-details">
+        <h4>{productContext.productName}</h4>
+        <p>{productContext.productPrice} Rwf</p>
+      </div>
+      <button 
+        className="close-context" 
+        onClick={() => navigate(location.pathname, { replace: true, state: null })}
+      >
+        ×
+      </button>
+    </div>
+  </div>
+)}
       <div className="chat-header">
         <Link to="/BuyerConversations">←</Link>
         <h3>{seller?.name}</h3>
