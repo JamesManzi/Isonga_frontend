@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Seller_Chat.css";
 
-// ✅ Token is sent via auth handshake
+// ✅ Socket
 export const socket = io("https://isonga-backend.onrender.com", {
   transports: ["polling", "websocket"],
   auth: {
@@ -16,8 +16,8 @@ export const socket = io("https://isonga-backend.onrender.com", {
 function Seller_Chat() {
   const { buyerId } = useParams();
   const navigate = useNavigate();
-
   const location = useLocation();
+
   const [seller, setSeller] = useState(null);
   const [buyer, setBuyer] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -29,7 +29,7 @@ function Seller_Chat() {
 
   const [replyTo, setReplyTo] = useState(null);
   const [zoomImage, setZoomImage] = useState(null);
-  const [isTyping, setIsTyping] = useState(false); 
+  const [isTyping, setIsTyping] = useState(false);
 
   const scrollRef = useRef();
   const fileInputRef = useRef();
@@ -91,6 +91,7 @@ function Seller_Chat() {
   // =========================
   useEffect(() => {
     if (!seller) return;
+
     const room = `Buyer_${buyerId}__Seller_${seller._id}`;
 
     const handleReceive = (msg) => {
@@ -102,7 +103,7 @@ function Seller_Chat() {
     const handleRead = (data) => {
       if (data.room === room) {
         setMessages(prev =>
-          prev.map(m => m.read === false ? { ...m, read: true } : m)
+          prev.map(m => !m.read ? { ...m, read: true } : m)
         );
       }
     };
@@ -113,22 +114,21 @@ function Seller_Chat() {
       }
     };
 
-    const handleStopTyping = () => {
-      setIsTyping(false);
-    };
+    const handleStopTyping = () => setIsTyping(false);
 
     const handleDelete = (data) => {
       setMessages(prev =>
         prev.map(msg => {
           if (msg._id === data.messageId) {
-            // Case 1: Deleted for everyone - replace content with placeholder
             if (data.forEveryone) {
-              return { ...msg, message: "This message was deleted", files: [], isSystemDeleted: true };
+              return {
+                ...msg,
+                message: "This message was deleted",
+                files: [],
+                isSystemDeleted: true
+              };
             }
-            // Case 2: Deleted for me - remove from array entirely
-            if (data.userId === seller?._id) {
-              return null;
-            }
+            if (data.userId === seller._id) return null;
           }
           return msg;
         }).filter(Boolean)
@@ -200,7 +200,7 @@ function Seller_Chat() {
       setFiles([]);
       setReplyTo(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-      
+
       socket.emit("stopTyping", { room });
 
     } catch (err) {
@@ -229,46 +229,73 @@ function Seller_Chat() {
           <h3>{buyer?.name || "Loading..."}</h3>
         </div>
       </div>
-      {/* ✅ Product Context Header for Seller */}
-{location.state?.productName && (
-  <div className="product-context-header">
-    <div className="context-card">
-      <img 
-        src={getFileUrl(location.state.productImage)} 
-        className="context-thumbnail" 
-        alt="" 
-      />
-      <div className="context-text">
-        <p className="context-label">Inquiring about:</p>
-        <h4>{location.state.productName}</h4>
-        <span>{location.state.productPrice} Rwf</span>
-      </div>
-    </div>
-  </div>
-)}
+
+      {/* PRODUCT FROM NAVIGATION */}
+      {location.state?.productName && (
+        <div className="product-context-header">
+          <div className="context-card">
+            <img 
+              src={getFileUrl(location.state.productImage)} 
+              className="context-thumbnail" 
+              alt="" 
+            />
+            <div className="context-text">
+              <p>Inquiring about:</p>
+              <h4>{location.state.productName}</h4>
+              <span>{location.state.productPrice} Rwf</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MESSAGES */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === seller?._id;
-          const isPlaceholder = msg.message === "This message was deleted";
+          const isDeleted = msg.message === "This message was deleted";
 
           return (
             <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
 
-                <div className="bubble" onDoubleClick={() => !isPlaceholder && setReplyTo(msg)}>
+                <div className="bubble" onDoubleClick={() => !isDeleted && setReplyTo(msg)}>
 
-                  {msg.replyTo && !isPlaceholder && (
-                    <div className="quoted-msg">
-                      <p>{msg.replyTo.message || "Media"}</p>
+                  {/* ✅ PRODUCT FROM MESSAGE */}
+                  {msg.productId && (
+                    <div className="product-in-chat">
+                      <img
+                        src={getFileUrl(msg.productId.files?.[0])}
+                        className="chat-product-img"
+                        alt=""
+                      />
+                      <div>
+                        <p>{msg.productId.name}</p>
+                        <span>{msg.productId.price} Rwf</span>
+                      </div>
                     </div>
                   )}
 
+                  {/* ✅ REPLY */}
+                  {msg.replyTo && !isDeleted && (
+                    <div className="quoted-msg">
+                      <p>
+                        {msg.replyTo.message
+                          ? msg.replyTo.message
+                          : msg.replyTo.files?.length
+                          ? "📎 Media"
+                          : "Message"}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* MESSAGE */}
                   {msg.message && (
-                    <p style={isPlaceholder ? { fontStyle: "italic", color: "#999" } : {}}>
+                    <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : {}}>
                       {msg.message}
                     </p>
                   )}
 
+                  {/* FILES */}
                   {msg.files?.map((file, idx) => (
                     <img
                       key={idx}
@@ -287,7 +314,7 @@ function Seller_Chat() {
                       })}
                     </span>
 
-                    {isMe && !isPlaceholder && (
+                    {isMe && !isDeleted && (
                       <span className={`read-status ${msg.read ? "read" : ""}`}>
                         {msg.read ? " ✓✓" : " ✓"}
                       </span>
@@ -297,13 +324,11 @@ function Seller_Chat() {
                 </div>
 
                 <div className="message-actions">
-                  {/* "Delete Me" stays available to empty the chat of placeholders */}
                   <button onClick={() => handleDeleteMessage(msg._id, false)}>
                     Delete Me
                   </button>
 
-                  {/* "Delete All" only appears if I sent it and it's not already deleted */}
-                  {isMe && !isPlaceholder && (
+                  {isMe && !isDeleted && (
                     <button onClick={() => handleDeleteMessage(msg._id, true)}>
                       Delete All
                     </button>
@@ -314,13 +339,16 @@ function Seller_Chat() {
             </div>
           );
         })}
+
         <div ref={scrollRef} />
       </div>
 
+      {/* TYPING */}
       {isTyping && (
         <div className="typing-indicator">{buyer?.name} is typing...</div>
       )}
 
+      {/* INPUT */}
       <div className="chat-input">
         <input
           type="file"
@@ -338,23 +366,19 @@ function Seller_Chat() {
           placeholder="Type message..."
           onChange={(e) => {
             setText(e.target.value);
+
             const room = `Buyer_${buyerId}__Seller_${seller?._id}`;
-            
-            socket.emit("typing", { 
-  room, 
-  senderId: seller?._id, 
-  senderModel: "Seller" // Good for backend logging
-});
+
+            socket.emit("typing", {
+              room,
+              senderId: seller?._id
+            });
+
             if (typingTimeout.current) clearTimeout(typingTimeout.current);
+
             typingTimeout.current = setTimeout(() => {
               socket.emit("stopTyping", { room });
             }, 2000);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSend();
-            }
           }}
         />
 
