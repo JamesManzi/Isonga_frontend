@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
-// ✅ Socket Connection
+// Socket
 export const socket = io("https://isonga-backend.onrender.com", {
   transports: ["polling", "websocket"],
   auth: {
@@ -35,6 +35,14 @@ function Buyer_Chat() {
   const fileInputRef = useRef();
   const typingTimeout = useRef(null);
 
+  // =========================
+  // EMOJI & HELPERS
+  // =========================
+  const onEmojiClick = (emojiData) => {
+    setText(prev => prev + emojiData.emoji);
+    setShowEmoji(false);
+  };
+
   const getFileUrl = (path) => {
     if (!path) return "";
     const clean = path.trim().replace(/\\/g, "/");
@@ -44,7 +52,7 @@ function Buyer_Chat() {
   };
 
   // =========================
-  // LOAD CHAT DATA
+  // LOAD CHAT
   // =========================
   useEffect(() => {
     const loadChat = async () => {
@@ -73,12 +81,11 @@ function Buyer_Chat() {
         const msgRes = await api.get(`/api/messages/${room}`);
         if (msgRes.data.success) setMessages(msgRes.data.messages);
 
-        // Mark messages as read
         await api.put(`/api/messages/read/${room}`);
         socket.emit("messagesRead", { room });
 
       } catch (err) {
-        console.error("Error loading chat:", err);
+        console.error(err);
       }
     };
 
@@ -86,7 +93,7 @@ function Buyer_Chat() {
   }, [sellerId, navigate]);
 
   // =========================
-  // SOCKET EVENT LISTENERS
+  // SOCKET EVENTS (FIXED: Added Read/Delete listeners)
   // =========================
   useEffect(() => {
     if (!buyer) return;
@@ -148,17 +155,15 @@ function Buyer_Chat() {
   }, [buyer, sellerId]);
 
   // =========================
-  // ACTIONS
+  // AUTO SCROLL
   // =========================
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const onEmojiClick = (emojiData) => {
-    setText(prev => prev + emojiData.emoji);
-    setShowEmoji(false);
-  };
-
+  // =========================
+  // SEND MESSAGE
+  // =========================
   const handleSend = async () => {
     if (!buyer || (!text.trim() && files.length === 0)) return;
 
@@ -169,6 +174,7 @@ function Buyer_Chat() {
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach(f => formData.append("files", f));
+
         const res = await api.post("/api/chat/upload", formData);
         if (res.data.success) uploadedFiles = res.data.files;
       }
@@ -189,12 +195,15 @@ function Buyer_Chat() {
       setText("");
       setFiles([]);
       setReplyTo(null);
+
       if (fileInputRef.current) fileInputRef.current.value = "";
+
       socket.emit("stopTyping", { room });
 
     } catch (err) {
-      console.error("Send error:", err);
+      console.error(err);
     }
+
     setSending(false);
   };
 
@@ -208,7 +217,7 @@ function Buyer_Chat() {
 
   return (
     <div className="chat-container">
-      {/* HEADER */}
+
       <div className="chat-header">
         <Link to="/BuyerConversations">←</Link>
         <div className="header-user-info">
@@ -217,11 +226,15 @@ function Buyer_Chat() {
         </div>
       </div>
 
-      {/* PRODUCT CONTEXT */}
+      {/* PRODUCT CONTEXT (FIXED: Added proper image path handling) */}
       {location.state?.productName && (
         <div className="product-context-header">
           <div className="context-card">
-            <img src={getFileUrl(location.state.productImage)} className="context-thumbnail" alt="" />
+            <img
+              src={getFileUrl(location.state.productImage)}
+              className="context-thumbnail"
+              alt=""
+            />
             <div className="context-text">
               <p>Inquiring about:</p>
               <h4>{location.state.productName}</h4>
@@ -239,7 +252,7 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* MESSAGES LIST */}
+      {/* MESSAGES */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
@@ -248,23 +261,21 @@ function Buyer_Chat() {
           return (
             <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
+
                 <div className="bubble" onDoubleClick={() => !isDeleted && setReplyTo(msg)}>
-                  
-                  {/* QUOTED MSG */}
+
                   {msg.replyTo && !isDeleted && (
                     <div className="quoted-msg">
-                      <p>{msg.replyTo.message ? msg.replyTo.message : "📎 Media"}</p>
+                      <p>{msg.replyTo.message || "📎 Media"}</p>
                     </div>
                   )}
 
-                  {/* TEXT CONTENT */}
                   {msg.message && (
                     <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : {}}>
                       {msg.message}
                     </p>
                   )}
 
-                  {/* IMAGES */}
                   {msg.files?.map((file, idx) => (
                     <img
                       key={idx}
@@ -276,7 +287,12 @@ function Buyer_Chat() {
                   ))}
 
                   <div className="msg-info">
-                    <span>{new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                    <span>
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
+                    </span>
                     {isMe && !isDeleted && (
                       <span className={`read-status ${msg.read ? "read" : ""}`}>
                         {msg.read ? " ✓✓" : " ✓"}
@@ -291,6 +307,7 @@ function Buyer_Chat() {
                     <button onClick={() => handleDeleteMessage(msg._id, true)}>Delete All</button>
                   )}
                 </div>
+
               </div>
             </div>
           );
@@ -298,10 +315,14 @@ function Buyer_Chat() {
         <div ref={scrollRef} />
       </div>
 
-      {/* TYPING INDICATOR */}
-      {isTyping && <div className="typing-indicator">{seller?.name} is typing...</div>}
+      {/* TYPING */}
+      {isTyping && (
+        <div className="typing-indicator">
+          {seller?.name} is typing...
+        </div>
+      )}
 
-      {/* INPUT AREA */}
+      {/* INPUT (FIXED: Added File Input & Typing Emit) */}
       <div className="chat-input">
         <input
           type="file"
@@ -310,6 +331,7 @@ function Buyer_Chat() {
           style={{ display: "none" }}
           onChange={(e) => setFiles(Array.from(e.target.files))}
         />
+
         <button onClick={() => fileInputRef.current.click()}>📎</button>
         <button onClick={() => setShowEmoji(!showEmoji)}>😊</button>
 
@@ -318,7 +340,7 @@ function Buyer_Chat() {
           placeholder="Type message..."
           onChange={(e) => {
             setText(e.target.value);
-            const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
+            const room = `Buyer_${buyer?._id}__Seller_${sellerId}`;
             socket.emit("typing", { room, senderId: buyer?._id });
 
             if (typingTimeout.current) clearTimeout(typingTimeout.current);
@@ -333,17 +355,20 @@ function Buyer_Chat() {
         </button>
       </div>
 
+      {/* EMOJI */}
       {showEmoji && (
         <div className="emoji-box">
           <Picker onEmojiClick={onEmojiClick} />
         </div>
       )}
 
+      {/* LIGHTBOX */}
       {zoomImage && (
         <div className="lightbox-overlay" onClick={() => setZoomImage(null)}>
           <img src={zoomImage} alt="" />
         </div>
       )}
+
     </div>
   );
 }
