@@ -100,8 +100,7 @@ useEffect(() => {
   if (!buyerId) return;
 
   const token = localStorage.getItem("token");
-  
-  // Use a ref to prevent multiple connections
+
   if (!socketRef.current) {
     socketRef.current = io("https://isonga-backend.onrender.com", {
       transports: ["polling", "websocket"],
@@ -111,19 +110,25 @@ useEffect(() => {
 
   const socket = socketRef.current;
 
-  socket.on("connect", () => {
-    socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
-  });
+  const handleConnect = () => {
+    console.log("Socket connected");
+
+    socket.emit("userOnline", {
+      userId: buyerId,
+      userModel: "Buyer",
+    });
+  };
+
+  socket.on("connect", handleConnect);
+
+  // 🔥 IMPORTANT: remove old listeners first
+  socket.off("newMessageNotification");
 
   socket.on("newMessageNotification", (data) => {
-    console.log("Real-time message received!");
-    
-    // This updates the local state instantly
+    console.log("REALTIME MESSAGE:", data);
+
     setNotifications((prev) => [data, ...prev]);
     setUnreadNotifCount((prev) => prev + 1);
-    
-    // If you have a separate state for 'message envelope' specifically:
-    // setUnreadMessages(prev => prev + 1); 
 
     if (document.hidden && Notification.permission === "granted") {
       new Notification("New Message", { body: data.message });
@@ -131,8 +136,8 @@ useEffect(() => {
   });
 
   return () => {
+    socket.off("connect", handleConnect);
     socket.off("newMessageNotification");
-    // Don't disconnect here if you want it to stay alive while navigating sub-menus
   };
 }, [buyerId]);
 
