@@ -1,78 +1,73 @@
-/* =========================
-   GENERAL LAYOUT
-========================= */
+/* ====== Chat Container ====== */
 .chat-container {
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #efeae2;
-  font-family: "Segoe UI", Arial, sans-serif;
+  height: 100vh;
+  background: #f9f9f9;
+  font-family: Arial, sans-serif;
 }
 
-/* =========================
-   HEADER (WhatsApp style)
-========================= */
+/* ====== Header ====== */
 .chat-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  background: #075e54;
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
+  padding: 12px;
+  background: #0077cc;
+  color: #fff;
 }
 
 .chat-header a {
-  color: white;
+  color: #fff;
   text-decoration: none;
+  margin-right: 12px;
   font-size: 20px;
 }
 
-/* =========================
-   PRODUCT CONTEXT CARD
-========================= */
+.chat-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+/* ====== Product Context ====== */
 .product-chat-context {
+  background: #fff;
+  border-bottom: 1px solid #ddd;
   padding: 10px;
-  background: #f0f0f0;
 }
 
 .context-card {
   display: flex;
-  gap: 10px;
-  background: white;
-  padding: 8px;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  align-items: center;
 }
 
 .context-card img {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
+  width: 60px;
+  height: 60px;
   object-fit: cover;
+  border-radius: 6px;
+  margin-right: 10px;
 }
 
-/* =========================
-   MESSAGES AREA
-========================= */
+.context-card h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.context-card p {
+  margin: 2px 0 0;
+  color: #555;
+}
+
+/* ====== Messages ====== */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
   padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background-image: url("https://i.imgur.com/5Qf6z3v.png");
-  background-size: cover;
 }
 
-/* =========================
-   MESSAGE ROWS
-========================= */
 .message-row {
   display: flex;
-  width: 100%;
+  margin-bottom: 10px;
 }
 
 .message-row.sent {
@@ -83,143 +78,121 @@
   justify-content: flex-start;
 }
 
-/* =========================
-   BUBBLES
-========================= */
 .bubble-wrapper {
   max-width: 70%;
-  display: flex;
-  flex-direction: column;
 }
 
 .bubble {
-  padding: 8px 10px;
+  background: #e6f3ff;
+  padding: 10px;
   border-radius: 8px;
-  font-size: 14px;
   position: relative;
   word-wrap: break-word;
 }
 
-/* Sent messages */
-.sent .bubble {
-  background: #dcf8c6;
-  border-top-right-radius: 0;
+.message-row.sent .bubble {
+  background: #0077cc;
+  color: #fff;
 }
 
-/* Received messages */
-.received .bubble {
-  background: white;
-  border-top-left-radius: 0;
-}
-
-/* =========================
-   QUOTED MESSAGE (reply)
-========================= */
 .quoted-msg {
   font-size: 12px;
-  background: rgba(0,0,0,0.05);
-  padding: 5px;
-  border-left: 3px solid #25d366;
-  margin-bottom: 5px;
-  border-radius: 5px;
+  color: #555;
+  border-left: 3px solid #ccc;
+  padding-left: 6px;
+  margin-bottom: 6px;
 }
 
-/* =========================
-   PRODUCT INSIDE MESSAGE
-========================= */
 .product-message {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  background: #f7f7f7;
-  padding: 5px;
-  border-radius: 8px;
-  margin-bottom: 5px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px;
+  margin-bottom: 6px;
 }
 
 .product-message img {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
-  object-fit: cover;
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 6px;
 }
 
-/* =========================
-   MESSAGE ACTIONS
-========================= */
 .message-actions {
   display: flex;
-  gap: 5px;
-  margin-top: 3px;
+  gap: 6px;
+  margin-top: 4px;
 }
 
 .message-actions button {
-  font-size: 11px;
-  border: none;
   background: transparent;
+  border: none;
   color: #888;
+  font-size: 12px;
   cursor: pointer;
 }
 
 .message-actions button:hover {
-  color: #e74c3c;
+  color: #d00;
 }
 
-/* =========================
-   TYPING INDICATOR
-========================= */
+/* ====== Typing Indicator ====== */
 .typing-indicator {
-  font-size: 12px;
-  padding: 5px 10px;
-  color: #555;
+  font-size: 13px;
+  color: #666;
+  padding: 6px 12px;
   font-style: italic;
 }
 
-/* =========================
-   INPUT AREA
-========================= */
+/* ====== Input Area ====== */
 .chat-input {
   display: flex;
   align-items: center;
   padding: 10px;
-  background: #f0f0f0;
-  gap: 8px;
+  border-top: 1px solid #ddd;
+  background: #fff;
 }
 
 .chat-input textarea {
   flex: 1;
   resize: none;
-  height: 40px;
-  border-radius: 20px;
-  border: none;
-  padding: 10px 15px;
-  outline: none;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
   font-size: 14px;
+  min-height: 40px;
+  max-height: 100px;
+  overflow-y: auto;
 }
 
 .chat-input button {
+  margin-left: 8px;
+  background: #0077cc;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  border: none;
-  background: #075e54;
-  color: white;
   font-size: 18px;
   cursor: pointer;
 }
 
 .chat-input button:disabled {
   background: #aaa;
+  cursor: not-allowed;
 }
 
-/* =========================
-   SCROLLBAR (optional)
-========================= */
-.chat-messages::-webkit-scrollbar {
-  width: 6px;
-}
+/* ====== Mobile Optimizations ====== */
+@media (max-width: 600px) {
+  .bubble-wrapper {
+    max-width: 85%;
+  }
 
-.chat-messages::-webkit-scrollbar-thumb {
-  background: #bbb;
-  border-radius: 10px;
+  .context-card img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .chat-header h3 {
+    font-size: 16px;
+  }
 }
