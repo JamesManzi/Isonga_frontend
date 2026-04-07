@@ -242,7 +242,7 @@ socket.on("viewUpdate", (data) => {
     socket.off("newOrderNotification");
     socket.off("newBookingNotification");
     socket.off("newMessageNotification");
-    socket.off("newView");
+    socket.off("viewUpdate");
     socket.off("sellerRatingUpdated");
     // We don't disconnect here to keep the socket alive across dashboard sub-renders
   };
