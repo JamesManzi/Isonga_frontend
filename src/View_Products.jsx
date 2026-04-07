@@ -207,17 +207,13 @@ function View_Products() {
                 <p>{product.description}</p>
 </div>
               <div className="View_Products_btns">
-<Link 
-  to={`/buyer_chat/${seller?._id}`} 
-  state={{ 
-    productId: product._id, 
-    productName: product.name, 
-    productImage: product.files[0],
-    productPrice: product.price 
-  }}
->
-  <button className="chat-btn">Chat</button>
-</Link>
+<div className="View_Products_btns">
+  <Link
+    to={`/buyer_chat/${seller?._id}?productId=${product._id}&productName=${encodeURIComponent(product.name)}&productImage=${encodeURIComponent(product.files[0])}&productPrice=${product.price}`}
+  >
+    <button className="chat-btn">Chat</button>
+  </Link>
+</div>
                 <button onClick={() => addToCart(product._id, product.name)} disabled={cartLoading === product._id}>
                   {cartLoading === product._id ? "Adding..." : "Add To Cart"} <FontAwesomeIcon icon={faCartShopping} />
                 </button>
