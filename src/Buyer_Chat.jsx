@@ -18,6 +18,12 @@ function Buyer_Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // ✅ ADDED: Get product info from URL parameters
+  const queryParams = new URLSearchParams(location.search);
+  const pName = queryParams.get("productName");
+  const pImage = queryParams.get("productImage");
+  const pPrice = queryParams.get("productPrice");
+
   const [buyer, setBuyer] = useState(null);
   const [seller, setSeller] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -36,7 +42,7 @@ function Buyer_Chat() {
   const typingTimeout = useRef(null);
 
   // =========================
-  // EMOJI & HELPERS
+  // EMOJI
   // =========================
   const onEmojiClick = (emojiData) => {
     setText(prev => prev + emojiData.emoji);
@@ -93,7 +99,7 @@ function Buyer_Chat() {
   }, [sellerId, navigate]);
 
   // =========================
-  // SOCKET EVENTS (FIXED: Added Read/Delete listeners)
+  // SOCKET EVENTS
   // =========================
   useEffect(() => {
     if (!buyer) return;
@@ -109,7 +115,7 @@ function Buyer_Chat() {
     const handleRead = (data) => {
       if (data.room === room) {
         setMessages(prev =>
-          prev.map(m => (!m.read ? { ...m, read: true } : m))
+          prev.map(m => !m.read ? { ...m, read: true } : m)
         );
       }
     };
@@ -226,19 +232,19 @@ function Buyer_Chat() {
         </div>
       </div>
 
-      {/* PRODUCT CONTEXT (FIXED: Added proper image path handling) */}
-      {location.state?.productName && (
+      {/* ✅ FIXED PRODUCT CONTEXT (Updated to use URL params) */}
+      {pName && (
         <div className="product-context-header">
           <div className="context-card">
             <img
-              src={getFileUrl(location.state.productImage)}
+              src={getFileUrl(decodeURIComponent(pImage))}
               className="context-thumbnail"
               alt=""
             />
-            <div className="context-text">
+            <div>
               <p>Inquiring about:</p>
-              <h4>{location.state.productName}</h4>
-              <span>{location.state.productPrice} Rwf</span>
+              <h4>{decodeURIComponent(pName)}</h4>
+              <span>{pPrice} Rwf</span>
             </div>
           </div>
         </div>
@@ -247,7 +253,7 @@ function Buyer_Chat() {
       {/* REPLY PREVIEW */}
       {replyTo && (
         <div className="reply-preview">
-          <p>Replying to: {replyTo.message || "📎 Media"}</p>
+          <p>Replying to: {replyTo.message || "Media"}</p>
           <button onClick={() => setReplyTo(null)}>✖</button>
         </div>
       )}
@@ -262,20 +268,22 @@ function Buyer_Chat() {
             <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
 
-                <div className="bubble" onDoubleClick={() => !isDeleted && setReplyTo(msg)}>
+                <div
+                  className="bubble"
+                  onDoubleClick={() => !isDeleted && setReplyTo(msg)}
+                >
 
                   {msg.replyTo && !isDeleted && (
                     <div className="quoted-msg">
-                      <p>{msg.replyTo.message || "📎 Media"}</p>
+                      <p>{msg.replyTo.message || "Media"}</p>
                     </div>
                   )}
 
-                  {msg.message && (
-                    <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : {}}>
-                      {msg.message}
-                    </p>
-                  )}
+                  <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : {}}>
+                    {msg.message}
+                  </p>
 
+                  {/* FILES DISPLAY (Added to match Seller chat) */}
                   {msg.files?.map((file, idx) => (
                     <img
                       key={idx}
@@ -302,9 +310,14 @@ function Buyer_Chat() {
                 </div>
 
                 <div className="message-actions">
-                  <button onClick={() => handleDeleteMessage(msg._id, false)}>Delete Me</button>
+                  <button onClick={() => handleDeleteMessage(msg._id, false)}>
+                    Delete Me
+                  </button>
+
                   {isMe && !isDeleted && (
-                    <button onClick={() => handleDeleteMessage(msg._id, true)}>Delete All</button>
+                    <button onClick={() => handleDeleteMessage(msg._id, true)}>
+                      Delete All
+                    </button>
                   )}
                 </div>
 
@@ -312,6 +325,7 @@ function Buyer_Chat() {
             </div>
           );
         })}
+
         <div ref={scrollRef} />
       </div>
 
@@ -322,7 +336,7 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* INPUT (FIXED: Added File Input & Typing Emit) */}
+      {/* INPUT (Added file attachment button to match Seller Chat) */}
       <div className="chat-input">
         <input
           type="file"
@@ -331,7 +345,6 @@ function Buyer_Chat() {
           style={{ display: "none" }}
           onChange={(e) => setFiles(Array.from(e.target.files))}
         />
-
         <button onClick={() => fileInputRef.current.click()}>📎</button>
         <button onClick={() => setShowEmoji(!showEmoji)}>😊</button>
 
@@ -355,14 +368,13 @@ function Buyer_Chat() {
         </button>
       </div>
 
-      {/* EMOJI */}
       {showEmoji && (
         <div className="emoji-box">
           <Picker onEmojiClick={onEmojiClick} />
         </div>
       )}
 
-      {/* LIGHTBOX */}
+      {/* LIGHTBOX FOR ZOOMED IMAGES */}
       {zoomImage && (
         <div className="lightbox-overlay" onClick={() => setZoomImage(null)}>
           <img src={zoomImage} alt="" />
