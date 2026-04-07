@@ -233,3 +233,42 @@
   from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+
+
+.product-context-header {
+  background: #f9f9f9;
+  border-bottom: 1px solid #eee;
+  padding: 8px 15px;
+}
+
+.context-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.context-thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.context-label {
+  font-size: 10px;
+  color: #888;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.context-text h4 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.context-text span {
+  font-size: 12px;
+  color: #27ae60;
+  font-weight: bold;
+}
