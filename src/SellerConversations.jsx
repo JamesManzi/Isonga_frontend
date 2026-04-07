@@ -43,24 +43,21 @@ function SellerConversations() {
     mountedRef.current = true;
 
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    if (!token) return navigate("/login");
 
     const init = async () => {
       try {
-        // Get seller profile
+        // GET SELLER
         const sellerRes = await api.get("/api/dashboard");
         if (!sellerRes.data.success) return navigate("/login");
 
         const id = sellerRes.data.seller._id;
         setSellerId(id);
 
-        // Load conversations
+        // LOAD DATA FIRST
         await fetchConversations();
 
-        // SOCKET
+        // SOCKET INIT
         const socket = io(BACKEND_URL, {
           transports: ["websocket"],
           auth: { token },
@@ -114,7 +111,7 @@ function SellerConversations() {
         });
 
         // =========================
-        // DELETE SYNC (IMPORTANT FIX)
+        // DELETE SYNC
         // =========================
         socket.on("conversationDeleted", ({ room }) => {
           setConversations((prev) =>
@@ -159,6 +156,22 @@ function SellerConversations() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  // =========================
+  // DELETE CONVERSATION
+  // =========================
+  const handleDelete = (e, room) => {
+    e.stopPropagation();
+
+    if (!window.confirm("Delete this conversation?")) return;
+
+    // instant UI update
+    setConversations((prev) =>
+      prev.filter((c) => c.room !== room)
+    );
+
+    socketRef.current?.emit("deleteConversation", { room });
   };
 
   // =========================
@@ -247,6 +260,14 @@ function SellerConversations() {
                   )}
                 </div>
               </div>
+
+              {/* ✅ DELETE BUTTON (NOW INCLUDED LIKE BUYER) */}
+              <button
+                className="delete-btn"
+                onClick={(e) => handleDelete(e, chat.room)}
+              >
+                🗑
+              </button>
             </div>
           ))
         )}
