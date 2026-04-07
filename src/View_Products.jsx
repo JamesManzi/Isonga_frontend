@@ -206,7 +206,6 @@ function View_Products() {
                 <p><strong>Quantity:</strong> {product.quantity}</p>
                 <p>{product.description}</p>
 </div>
-              // ... existing code inside filteredProducts.map
 <div className="View_Products_btns">
   <Link
     to={`/buyer_chat/${seller?._id}?productId=${product._id}&productName=${encodeURIComponent(product.name)}&productImage=${encodeURIComponent(product.files[0] || "")}&productPrice=${product.price}`}

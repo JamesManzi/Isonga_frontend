@@ -246,13 +246,20 @@ useEffect(() => {
                   </div>
                   <p className="seller-description">{seller.description}</p>
                   <div className="card-actions">
-                    <Link to={`/Service_Products/${seller._id}`}>
-                      <button className="visit-btn">Visit Shop</button>
-                    </Link>
-                    <Link to={`/buyer_chat/${seller._id}`}>
-                      <button className="chat-btn">Chat</button>
-                    </Link>
-                  </div>
+  {/* Visit Shop Link */}
+  <Link to={`/Asset_products/${seller._id}`}>
+    <button className="visit-btn">Visit Shop</button>
+  </Link>
+
+  {/* Chat Link - Using Seller info because 'product' is not defined in this file */}
+  <Link 
+    to={`/buyer_chat/${seller._id}?productName=${encodeURIComponent(seller.name + " Services")}&productImage=${encodeURIComponent(seller.profile || "")}`}
+  >
+    <button className="chat-btn">Chat</button>
+  </Link>
+</div>
+
+{/* CLOSING TAGS - Ensure these are exactly like this */}
                 </div>
               </div>
             );
