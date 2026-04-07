@@ -93,47 +93,49 @@ function Buyer_Dashboard() {
   }, [buyerId]);
 
   // For Socket.io
-  useEffect(() => {
-    if (!buyerId) return;
+useEffect(() => {
+  if (!buyerId) return;
 
-    // Connect to your production backend
-    const socket = io("https://isonga-backend.onrender.com", {
-  transports: ["polling", "websocket"],
-  auth: {
-    token: localStorage.getItem("token"),
-  },
-});
+  const socket = io("https://isonga-backend.onrender.com", {
+    transports: ["polling", "websocket"],
+    auth: {
+      token: localStorage.getItem("token"),
+    },
+  });
 
-    // Register user as online so the server knows where to send notifications
+  socket.on("connect", () => {
+    console.log("Connected to Socket.io Server");
+    // Register user as online
     socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
+  });
 
-    socket.on("new_notification", (data) => {
-      // 1. Add the new notification to the top of the state array
-      setNotifications((prev) => [data, ...prev]);
+  // ✅ LISTEN: Matches backend "newMessageNotification"
+  socket.on("newMessageNotification", (data) => {
+    console.log("Real-time notification received!", data);
+    
+    // 1. Update UI State
+    setNotifications((prev) => [data, ...prev]);
+    setUnreadNotifCount((prev) => prev + 1);
 
-      // 2. ✅ UPDATE: Use the exact count from the server if it exists
-      // This prevents the badge from getting "out of sync"
-      if (data.unreadCount !== undefined) {
-        setUnreadNotifCount(data.unreadCount);
-      } else {
-        setUnreadNotifCount(prev => prev + 1);
-      }
-
-      // 3. Browser Desktop Notification (if tab is minimized)
-      if (document.hidden && Notification.permission === "granted") {
-        new Notification("Isonga Market Update", { 
-          body: data.message,
-          icon: "/logo.png" // Added icon for a professional look
+    // 2. Desktop Notification (if tab is hidden)
+    if (document.hidden) {
+      if (Notification.permission === "granted") {
+        new Notification("New Message on Isonga", {
+          body: data.message || "You have a new message",
+          icon: "/logo.png"
         });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission();
       }
-    });
+    }
+  });
 
-    // Cleanup on unmount or buyerId change
-    return () => {
-      socket.off("new_notification");
-      socket.disconnect();
-    };
-  }, [buyerId]);
+  // Cleanup on unmount
+  return () => {
+    socket.off("newMessageNotification"); // ✅ MATCHED NAME
+    socket.disconnect();
+  };
+}, [buyerId]);
   
   const handleBellClick = async () => {
   // 1. Instant UI feedback
