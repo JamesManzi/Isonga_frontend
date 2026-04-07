@@ -168,7 +168,7 @@ function Buyer_Chat() {
   }, [messages]);
 
   // =========================
-  // SEND MESSAGE (FIXED: PHOTO + TEXT INCLUDED)
+  // SEND MESSAGE
   // =========================
   const handleSend = async () => {
     if (!buyer || (!text.trim() && files.length === 0 && !pName)) return;
@@ -177,7 +177,6 @@ function Buyer_Chat() {
     let uploadedFiles = [];
 
     try {
-      // 1. Handle any new files the user manually attached
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach(f => formData.append("files", f));
@@ -188,19 +187,15 @@ function Buyer_Chat() {
 
       const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
 
-      // ✅ FIX: If pName exists, combine it with text AND add pImage to files
       let finalMessage = text;
       if (pName) {
-        // Build clear text description
         const productDetails = `📦 PRODUCT INQUIRY:\nName: ${decodeURIComponent(pName)}\nPrice: ${pPrice} Rwf\n\n`;
         finalMessage = productDetails + text;
 
-        // If there is an image in the URL, add it to the message files
         if (pImage) {
           uploadedFiles.unshift(decodeURIComponent(pImage));
         }
 
-        // Clean URL so it only sends once
         navigate(location.pathname, { replace: true });
       }
 
@@ -209,9 +204,9 @@ function Buyer_Chat() {
         senderModel: "Buyer",
         receiver: sellerId,
         receiverModel: "Seller",
-        message: finalMessage, // Sends formatted text
-        files: uploadedFiles,   // Sends product photo + any attached files
-        replyTo: replyTo?._id || null,
+        message: finalMessage,
+        files: uploadedFiles,
+        replyTo: replyTo?._id || null, // ✅ Sends the ID of message being replied to
         room
       });
 
@@ -249,7 +244,6 @@ function Buyer_Chat() {
         </div>
       </div>
 
-      {/* ✅ Keep Original Visual Header */}
       {pName && (
         <div className="product-context-header">
           <div className="context-card">
@@ -267,7 +261,7 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* REPLY PREVIEW */}
+      {/* REPLY PREVIEW UI */}
       {replyTo && (
         <div className="reply-preview">
           <p>Replying to: {replyTo.message || "Media"}</p>
@@ -290,13 +284,13 @@ function Buyer_Chat() {
                   onDoubleClick={() => !isDeleted && setReplyTo(msg)}
                 >
 
+                  {/* DISPLAY QUOTED MESSAGE */}
                   {msg.replyTo && !isDeleted && (
                     <div className="quoted-msg">
                       <p>{msg.replyTo.message || "Media"}</p>
                     </div>
                   )}
 
-                  {/* ✅ Added pre-wrap so the product details display on separate lines */}
                   <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : { whiteSpace: "pre-wrap" }}>
                     {msg.message}
                   </p>
@@ -327,13 +321,18 @@ function Buyer_Chat() {
                 </div>
 
                 <div className="message-actions">
+                  {/* ✅ Added explicit Reply button */}
+                  {!isDeleted && (
+                    <button onClick={() => setReplyTo(msg)}>Reply</button>
+                  )}
+                  
                   <button onClick={() => handleDeleteMessage(msg._id, false)}>
-                    Delete Me
+                    Delete
                   </button>
 
                   {isMe && !isDeleted && (
                     <button onClick={() => handleDeleteMessage(msg._id, true)}>
-                      Delete All
+                      All
                     </button>
                   )}
                 </div>
@@ -346,14 +345,12 @@ function Buyer_Chat() {
         <div ref={scrollRef} />
       </div>
 
-      {/* TYPING */}
       {isTyping && (
         <div className="typing-indicator">
           {seller?.name} is typing...
         </div>
       )}
 
-      {/* INPUT */}
       <div className="chat-input">
         <input
           type="file"
@@ -391,7 +388,6 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* LIGHTBOX FOR ZOOMED IMAGES */}
       {zoomImage && (
         <div className="lightbox-overlay" onClick={() => setZoomImage(null)}>
           <img src={zoomImage} alt="" />
