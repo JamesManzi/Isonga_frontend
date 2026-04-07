@@ -5,8 +5,10 @@ import { io } from "socket.io-client";
 import "./BuyerConversations.css";
 
 const socket = io("https://isonga-backend.onrender.com", {
-  withCredentials: false,
   transports: ["polling", "websocket"],
+  auth: {
+    token: localStorage.getItem("token"), // ✅ send token for socket auth
+  },
 });
 
 function BuyerConversations() {
@@ -14,8 +16,12 @@ function BuyerConversations() {
   const [conversations, setConversations] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
+  // =========================
+  // FETCH DATA
+  // =========================
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
@@ -28,24 +34,23 @@ function BuyerConversations() {
       try {
         const buyerRes = await api.get("/api/buyer_dashboard");
 
-        const id = buyerRes.data.buyer._id;
-        setBuyerId(id);
+        const buyer = buyerRes.data.buyer;
+        setBuyerId(buyer._id);
 
-        // KEEP THIS SIMPLE (IMPORTANT)
+        // ✅ mark user online
         socket.emit("userOnline", {
-          userId: id,
+          userId: buyer._id,
           userModel: "Buyer",
         });
 
+        // ✅ fetch conversations
         const convRes = await api.get("/api/buyer/conversations");
 
-        console.log("CONVERSATIONS:", convRes.data);
-
         if (convRes.data.success) {
-          setConversations(convRes.data.conversations || []);
+          setConversations(convRes.data.conversations);
         }
       } catch (err) {
-        console.error("Error:", err);
+        console.error("Fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -54,9 +59,13 @@ function BuyerConversations() {
     fetchData();
   }, [navigate]);
 
+  // =========================
+  // SOCKET EVENTS
+  // =========================
   useEffect(() => {
     if (!buyerId) return;
 
+    // NEW MESSAGE
     const handleNewMessage = (data) => {
       setConversations((prev) => {
         const index = prev.findIndex((c) => c.room === data.room);
@@ -80,31 +89,100 @@ function BuyerConversations() {
       });
     };
 
+    // MESSAGES READ
+    const handleMessagesRead = ({ room }) => {
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.room === room ? { ...c, unreadCount: 0 } : c
+        )
+      );
+    };
+
+    // DELETE CONVERSATION
+    const handleConversationDeleted = ({ room }) => {
+      setConversations((prev) =>
+        prev.filter((c) => c.room !== room)
+      );
+    };
+
     socket.on("newMessageNotification", handleNewMessage);
+    socket.on("messagesRead", handleMessagesRead);
+    socket.on("conversationDeleted", handleConversationDeleted);
 
     return () => {
       socket.off("newMessageNotification", handleNewMessage);
+      socket.off("messagesRead", handleMessagesRead);
+      socket.off("conversationDeleted", handleConversationDeleted);
     };
   }, [buyerId]);
 
+  // =========================
+  // OPEN CHAT
+  // =========================
+  const openChat = async (chat) => {
+    try {
+      await api.put(`/api/messages/read/${chat.room}`, {});
+
+      socket.emit("messagesRead", { room: chat.room });
+
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.room === chat.room ? { ...c, unreadCount: 0 } : c
+        )
+      );
+
+      navigate(`/buyer_chat/${chat.sellerId}`);
+    } catch (err) {
+      console.error("Open chat error:", err);
+    }
+  };
+
+  // =========================
+  // DELETE CONVERSATION
+  // =========================
+  const deleteConversation = (room) => {
+    if (!window.confirm("Delete this conversation?")) return;
+
+    socket.emit("deleteConversation", { room });
+
+    // optimistic update
+    setConversations((prev) =>
+      prev.filter((c) => c.room !== room)
+    );
+  };
+
+  // =========================
+  // FILTER
+  // =========================
   const filteredChats = conversations.filter((chat) =>
     chat.sellerName?.toLowerCase().includes(search.toLowerCase())
   );
 
+  // =========================
+  // IMAGE HELPER
+  // =========================
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
+
     return path.startsWith("http")
       ? path
       : `https://isonga-backend.onrender.com/uploads/${path}`;
   };
 
+  // =========================
+  // UI
+  // =========================
   return (
     <div className="chat-container">
+      {/* HEADER */}
       <div className="chat-header">
-        <Link to="/buyer_dashboard" className="back-button">←</Link>
+        <Link to="/buyer_dashboard" className="back-button">
+          ←
+        </Link>
         <h2>Messages</h2>
       </div>
 
+      {/* SEARCH */}
       <div className="chat-search">
         <input
           type="text"
@@ -114,6 +192,7 @@ function BuyerConversations() {
         />
       </div>
 
+      {/* CHAT LIST */}
       <div className="chat-list">
         {loading ? (
           <div className="loading">Loading Chats...</div>
@@ -122,7 +201,12 @@ function BuyerConversations() {
         ) : (
           filteredChats.map((chat) => (
             <div key={chat.room} className="chat-item">
-              <div className="avatar">
+              
+              {/* AVATAR */}
+              <div
+                className="avatar"
+                onClick={() => openChat(chat)}
+              >
                 <img
                   src={
                     chat.sellerProfile
@@ -133,15 +217,48 @@ function BuyerConversations() {
                 />
               </div>
 
-              <div className="chat-details">
+              {/* DETAILS */}
+              <div
+                className="chat-details"
+                onClick={() => openChat(chat)}
+              >
                 <div className="chat-top">
                   <h4>{chat.sellerName}</h4>
+                  <span>
+                    {new Date(chat.updatedAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
                 </div>
 
                 <div className="chat-bottom">
-                  <p>{chat.lastMessage}</p>
+                  <p
+                    className={
+                      chat.unreadCount > 0 ? "unread-text" : ""
+                    }
+                  >
+                    {chat.lastMessage}
+                  </p>
+
+                  {chat.unreadCount > 0 && (
+                    <span className="unread-badge">
+                      {chat.unreadCount}
+                    </span>
+                  )}
                 </div>
               </div>
+
+              {/* DELETE BUTTON */}
+              <button
+                className="delete-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteConversation(chat.room);
+                }}
+              >
+                🗑
+              </button>
             </div>
           ))
         )}
