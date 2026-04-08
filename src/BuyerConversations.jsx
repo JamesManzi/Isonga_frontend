@@ -33,111 +33,100 @@ function BuyerConversations() {
     }
   };
 
-  // =========================
-  // INIT SOCKET + LOAD DATA
-  // =========================
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/buyer_login");
-      return;
+  const token = localStorage.getItem("token");
+  if (!token) {
+    navigate("/buyer_login");
+    return;
+  }
+
+  let isActive = true;
+
+  const socket = io(BACKEND_URL, {
+    transports: ["websocket", "polling"],
+    auth: { token },
+  });
+
+  socketRef.current = socket;
+
+  const init = async () => {
+    try {
+      const profileRes = await api.get("/api/buyer/profile");
+      if (!isActive) return;
+
+      if (!profileRes.data.success) {
+        navigate("/buyer_login");
+        return;
+      }
+
+      const id = profileRes.data.buyer._id;
+      setBuyerId(id);
+
+      // connect first
+      socket.on("connect", () => {
+        socket.emit("userOnline", {
+          userId: id,
+          userModel: "Buyer",
+        });
+      });
+
+      await fetchConversations();
+      if (!isActive) return;
+
+      socket.on("newMessageNotification", (data) => {
+        console.log("SOCKET DATA:", data);
+
+        setConversations((prev) => {
+          const exists = prev.find(
+            (c) => String(c.room) === String(data.room)
+          );
+
+          if (!exists) {
+            fetchConversations();
+            return prev;
+          }
+
+          return prev.map((c) =>
+            String(c.room) === String(data.room)
+              ? {
+                  ...c,
+                  lastMessage: data.message,
+                  unreadCount:
+                    data.roomUnreadCount ?? data.unreadChatCount ?? 0,
+                }
+              : c
+          );
+        });
+      });
+
+      socket.on("messagesRead", ({ room }) => {
+        setConversations((prev) =>
+          prev.map((c) =>
+            String(c.room) === String(room)
+              ? { ...c, unreadCount: 0 }
+              : c
+          )
+        );
+      });
+
+      socket.on("conversationDeleted", ({ room }) => {
+        setConversations((prev) =>
+          prev.filter((c) => String(c.room) !== String(room))
+        );
+      });
+
+    } catch (err) {
+      console.error(err);
     }
+  };
 
-    let isSubscribed = true;
+  init();
 
-    const init = async () => {
-      try {
-        // 1. GET BUYER (Sequential logic like Seller)
-        const profileRes = await api.get("/api/buyer/profile");
-        if (!isSubscribed) return;
-
-        if (!profileRes.data.success) {
-          return navigate("/buyer_login");
-        }
-
-        const id = profileRes.data.buyer._id;
-        setBuyerId(id);
-
-        // 2. LOAD DATA FIRST
-        await fetchConversations();
-        if (!isSubscribed) return;
-
-        // 3. SOCKET INIT
-        const socket = io(BACKEND_URL, {
-          transports: ["websocket", "polling"],
-          auth: { token },
-        });
-
-        socketRef.current = socket;
-
-        // Emit online status immediately after connection
-        socket.on("connect", () => {
-          socket.emit("userOnline", {
-            userId: id,
-            userModel: "Buyer",
-          });
-        });
-
-        // =========================
-        // REAL-TIME UPDATES
-        // =========================
-        socket.on("newMessageNotification", (data) => {
-          setConversations((prev) => {
-            // Use String conversion to ensure ID matching works
-            const exists = prev.find((c) => String(c.room) === String(data.room));
-
-            if (!exists) {
-              fetchConversations();
-              return prev;
-            }
-
-            return prev
-              .map((c) =>
-                String(c.room) === String(data.room)
-                  ? {
-                      ...c,
-                      lastMessage: data.message,
-                      updatedAt: data.createdAt,
-                      // Matching the 'roomUnreadCount' key from backend
-                      unreadCount: data.roomUnreadCount,
-                    }
-                  : c
-              )
-              .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-          });
-        });
-
-        socket.on("messagesRead", ({ room }) => {
-          setConversations((prev) =>
-            prev.map((c) =>
-              String(c.room) === String(room) ? { ...c, unreadCount: 0 } : c
-            )
-          );
-        });
-
-        socket.on("conversationDeleted", ({ room }) => {
-          setConversations((prev) =>
-            prev.filter((c) => String(c.room) !== String(room))
-          );
-        });
-
-      } catch (err) {
-        console.error("Socket Init Error:", err);
-        if (isSubscribed) setLoading(false);
-      }
-    };
-
-    init();
-
-    return () => {
-      isSubscribed = false;
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, [navigate]);
-
+  return () => {
+    isActive = false;
+    socket.disconnect();
+  };
+}, [navigate]);
   // =========================
   // ACTIONS & HELPERS
   // =========================
