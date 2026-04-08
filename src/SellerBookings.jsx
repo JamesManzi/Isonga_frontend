@@ -10,7 +10,7 @@ function SellerBookings() {
   const [loading, setLoading] = useState(false);
  const [actionLoading, setActionLoading] = useState(null);
   // 1. Move fetch logic into a function usable by useEffect
-  // ✅ SellerBookings.js - Filter update
+  //  SellerBookings.js - Filter update
 const getBookings = async () => {
   setLoading(true);
   try {
@@ -113,7 +113,7 @@ const getBookings = async () => {
               </section>
             </div>
 
-            {/* ✅ ACTION BUTTONS */}
+            {/*  ACTION BUTTONS */}
               <div style={btnContainer}>
   <button
     onClick={() => updateStatus(booking._id, "Accepted")}
@@ -135,7 +135,7 @@ const getBookings = async () => {
         ))
       )}
 
-      {/* ✅ IMAGE MODAL */}
+      {/*  IMAGE MODAL */}
       {selectedImg && (
         <div
           style={modalOverlayStyle}

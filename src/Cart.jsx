@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "./api"; // ✅ Fixed: Using your api instance
+import api from "./api"; //  Fixed: Using your api instance
 import "./Cart.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,7 +18,7 @@ function Cart() {
   const fetchCart = async () => {
     setLoading(true);
     try {
-      // ✅ Fixed: api handles the token and base URL automatically
+      //  Fixed: api handles the token and base URL automatically
       const res = await api.get("/api/cart");
 
       if (res.data.success) {
@@ -48,7 +48,7 @@ function Cart() {
         return { ...prev, items: updatedItems, totalPrice: newTotal };
       });
 
-      // ✅ Fixed: Using api.delete
+      //  Fixed: Using api.delete
       await api.delete(`/api/cart/remove/${productId}`);
     } catch (error) {
       console.log("Remove Item Error:", error);
@@ -76,7 +76,7 @@ function Cart() {
         }, 0),
       }));
 
-      // ✅ Fixed: Using api.put
+      //  Fixed: Using api.put
       await api.put("/api/cart/update", { productId, quantity });
     } catch (error) {
       console.log("Update Quantity Error:", error);
@@ -87,7 +87,7 @@ function Cart() {
   const logout = async () => {
     setLoading(true);
     try {
-      // ✅ Fixed: Using api.post
+      //  Fixed: Using api.post
       await api.post("/api/logout");
       localStorage.removeItem("token"); 
       navigate("/buyer_login");

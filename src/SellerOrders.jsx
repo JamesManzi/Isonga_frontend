@@ -131,7 +131,7 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* ✅ ACTION BUTTONS */}
+            {/*  ACTION BUTTONS */}
             <div style={btnContainer}>
               <button
   onClick={() => updateStatus(order._id, "Accepted")}
@@ -153,7 +153,7 @@ useEffect(() => {
         ))
       )}
 
-      {/* ✅ IMAGE MODAL */}
+      {/*  IMAGE MODAL */}
       {selectedImg && (
         <div
           style={modalOverlayStyle}

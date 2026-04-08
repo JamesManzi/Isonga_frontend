@@ -52,8 +52,8 @@ function Register() {
             if (res.data.success) setTimeout(() => navigate("/verify-email", { state: { email: email, role: "seller" } 
 }), 2000);
         } catch (error) {
-    console.log("🔥 ERROR:", error);
-    console.log("🔥 RESPONSE:", error.response);
+    console.log(" ERROR:", error);
+    console.log(" RESPONSE:", error.response);
 
     setMessage({
         text: error.response?.data?.message || error.message || "Server error",

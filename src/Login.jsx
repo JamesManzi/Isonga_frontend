@@ -18,7 +18,7 @@ function Login() {
   const navigate = useNavigate();
   const MAX_ATTEMPTS = 5;
 
-  // ✅ Load saved attempts + lock on page load
+  //  Load saved attempts + lock on page load
   useEffect(() => {
     const savedAttempts = localStorage.getItem("attempts");
     const lockUntil = localStorage.getItem("lockUntil");
@@ -37,12 +37,12 @@ function Login() {
     }
   }, []);
 
-  // ✅ Save attempts whenever they change
+  //  Save attempts whenever they change
   useEffect(() => {
     localStorage.setItem("attempts", attempts);
   }, [attempts]);
 
-  // ✅ Countdown timer
+  //  Countdown timer
   useEffect(() => {
     let timer;
 

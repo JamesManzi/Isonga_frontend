@@ -18,7 +18,7 @@ function Buyer_Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ Keep Original Logic: Get product info from URL parameters
+  //  Keep Original Logic: Get product info from URL parameters
   const queryParams = new URLSearchParams(location.search);
   const pName = queryParams.get("productName");
   const pImage = queryParams.get("productImage");
@@ -189,7 +189,7 @@ function Buyer_Chat() {
 
       let finalMessage = text;
       if (pName) {
-        const productDetails = `📦 PRODUCT INQUIRY:\nName: ${decodeURIComponent(pName)}\nPrice: ${pPrice} Rwf\n\n`;
+        const productDetails = ` PRODUCT INQUIRY:\nName: ${decodeURIComponent(pName)}\nPrice: ${pPrice} Rwf\n\n`;
         finalMessage = productDetails + text;
 
         if (pImage) {
@@ -206,7 +206,7 @@ function Buyer_Chat() {
         receiverModel: "Seller",
         message: finalMessage,
         files: uploadedFiles,
-        replyTo: replyTo?._id || null, // ✅ Sends the ID of message being replied to
+        replyTo: replyTo?._id || null, //  Sends the ID of message being replied to
         room
       });
 
@@ -321,7 +321,7 @@ function Buyer_Chat() {
                 </div>
 
                 <div className="message-actions">
-                  {/* ✅ Added explicit Reply button */}
+                  {/*  Added explicit Reply button */}
                   {!isDeleted && (
                     <button onClick={() => setReplyTo(msg)}>Reply</button>
                   )}

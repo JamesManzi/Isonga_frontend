@@ -459,7 +459,7 @@ if (!seller) {
     <h2>Dashboard</h2>
   </Link>
 
-  {/* ✅ Footer Rental Icon: Hide if sType is Asset */}
+  {/*  Footer Rental Icon: Hide if sType is Asset */}
   {sType !== "Asset" && (
     <Link to={orderLink} className="footer_item">
       <div style={{ position: "relative", display: "inline-block" }}>

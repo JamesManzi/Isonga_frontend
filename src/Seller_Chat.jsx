@@ -60,7 +60,7 @@ function Seller_Chat() {
 
       const room = `Buyer_${buyerId}__Seller_${sellerData._id}`;
 
-      // ✅ FIX: Define a function to emit events safely
+      //  FIX: Define a function to emit events safely
       const joinChat = () => {
         socket.emit("userOnline", { userModel: "Seller", userId: sellerData._id });
         socket.emit("joinRoom", {
@@ -72,7 +72,7 @@ function Seller_Chat() {
         socket.emit("messagesRead", { room });
       };
 
-      // ✅ FIX: Check connection status before emitting
+      //  FIX: Check connection status before emitting
       if (socket.connected) {
         joinChat();
       } else {
@@ -202,7 +202,7 @@ function Seller_Chat() {
         receiverModel: "Buyer",
         message: text,
         files: uploadedFiles,
-        replyTo: replyTo?._id || null, // ✅ Properly sending the reply link
+        replyTo: replyTo?._id || null, //  Properly sending the reply link
         room
       });
 
@@ -258,7 +258,7 @@ function Seller_Chat() {
         </div>
       )}
 
-      {/* ✅ NEW: REPLY PREVIEW (Shows what you are about to reply to) */}
+      {/*  NEW: REPLY PREVIEW (Shows what you are about to reply to) */}
       {replyTo && (
         <div className="reply-preview">
           <p>Replying to: {replyTo.message || "📎 Media"}</p>
@@ -293,7 +293,7 @@ function Seller_Chat() {
                     </div>
                   )}
 
-                  {/* ✅ REPLY DISPLAY (Shows the quoted text inside the bubble) */}
+                  {/*  REPLY DISPLAY (Shows the quoted text inside the bubble) */}
                   {msg.replyTo && !isDeleted && (
                     <div className="quoted-msg">
                       <p>
@@ -342,7 +342,7 @@ function Seller_Chat() {
                 </div>
 
                 <div className="message-actions">
-                  {/* ✅ Added explicit Reply button */}
+                  {/*  Added explicit Reply button */}
                   {!isDeleted && (
                     <button onClick={() => setReplyTo(msg)}>Reply</button>
                   )}

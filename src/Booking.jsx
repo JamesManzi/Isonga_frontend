@@ -21,7 +21,7 @@ function Booking() {
   const [paymentImage, setPaymentImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  // ✅ ADDED: Function to handle text input changes
+  //  ADDED: Function to handle text input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -30,7 +30,7 @@ function Booking() {
     }));
   };
 
-  // ✅ ADDED: Function to handle file uploads and image preview
+  //  ADDED: Function to handle file uploads and image preview
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -92,13 +92,13 @@ function Booking() {
       <div className="booking-header">
         <h2>Book Service</h2>
         <div className="booking-actions">
-          {/* ✅ Updated to return to previous page */}
+          {/*  Updated to return to previous page */}
           <button onClick={() => navigate(-1)} className="btn-back">Back</button>
           <Link to="/login" className="btn-logout">Logout</Link>
         </div>
       </div>
 
-      {/* ✅ Fixed: Changed 'error' to 'message' to match your state */}
+      {/*  Fixed: Changed 'error' to 'message' to match your state */}
       {message && message.type === "error" && (
         <p className="booking-error">{message.text}</p>
       )}

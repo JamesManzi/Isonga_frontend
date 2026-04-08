@@ -103,7 +103,7 @@ function SellerConversations() {
                       ...c,
                       lastMessage: data.message,
                       updatedAt: data.createdAt,
-                      // ✅ KEY FIX: Matching your backend's 'roomUnreadCount'
+                      //  KEY FIX: Matching your backend's 'roomUnreadCount'
                       unreadCount: data.roomUnreadCount, 
                     }
                   : c
@@ -272,7 +272,7 @@ function SellerConversations() {
                 </div>
               </div>
 
-              {/* ✅ DELETE BUTTON (NOW INCLUDED LIKE BUYER) */}
+              {/*  DELETE BUTTON (NOW INCLUDED LIKE BUYER) */}
               <button
                 className="delete-btn"
                 onClick={(e) => handleDelete(e, chat.room)}
