@@ -70,6 +70,7 @@ const [unreadChatCount, setUnreadChatCount] = useState(0);
       const res = await api.get("/api/cart/count");
       if (res.data.success) {
         setCartCount(res.data.count);
+        fetchUnreadMessageCount();
       }
     } catch (err) {
       console.error("Cart count error:", err);
@@ -161,6 +162,19 @@ useEffect(() => {
     socket.off("newMessageNotification");
   };
 }, [buyerId]);
+
+const fetchUnreadMessageCount = async () => {
+  if (!buyerId) return;
+  try {
+    // You'll need to ensure this route exists on your backend
+    const res = await api.get("/api/messages/unread-count"); 
+    if (res.data.success) {
+      setUnreadChatCount(res.data.count);
+    }
+  } catch (err) {
+    console.error("Error fetching message count:", err);
+  }
+};
 
 // 3. Update the JSX to pass data to your notification component
 // <ChatNotification unreadCount={unreadNotifCount} />
