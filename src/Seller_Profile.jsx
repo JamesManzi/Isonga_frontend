@@ -73,29 +73,30 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
   useEffect(() => { fetchSeller(); }, []);
 
   useEffect(() => {
-  if (!seller?._id) return;
+  const currentId = seller?._id || id; // Handle whichever ID is available
+  if (!currentId) return;
 
   const socket = io("https://isonga-backend.onrender.com", { 
     transports: ["websocket"] 
   });
 
-  // ✅ MATCH THE BACKEND: Add the "Seller_" prefix
-  const sellerRoom = `Seller_${seller._id}`;
-  socket.emit("joinSellerRoom", sellerRoom); 
+  // Use the SAME room name pattern everywhere
+  const room = `Seller_${currentId}`;
+  
+  socket.emit("joinSellerRoom", room); 
 
   socket.on("sellerRatingUpdated", (data) => {
-    if (data.sellerId === seller._id) {
+    if (data.sellerId === currentId) {
+      // Update local numbers immediately
       setAverageRating(data.averageRating);
       setNumReviews(data.numReviews);
-      fetchSeller(); // Refresh the reviews list
+      // Fetch the new list items
+      fetchSeller(); 
     }
   });
 
-  return () => {
-    socket.off("sellerRatingUpdated");
-    socket.disconnect();
-  };
-}, [seller?._id]);
+  return () => socket.disconnect();
+}, [seller?._id, id]);
 
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
