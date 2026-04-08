@@ -49,7 +49,7 @@ const [unreadChatCount, setUnreadChatCount] = useState(0);
     return `/view_products/${id}`;
   };
 
-  const fetchOrderNotifications = async () => {
+ const fetchOrderNotifications = async () => {
   if (!buyerId) return;
   try {
     const res = await api.get(`/api/notifications?t=${Date.now()}`); 
@@ -57,15 +57,14 @@ const [unreadChatCount, setUnreadChatCount] = useState(0);
       const fetchedNotifs = res.data.notifications;
       setOrderNotifications(fetchedNotifs);
       
-      // ✅ FIX: Match the backend 'read' boolean
-      const unreadOrderCount = orderNotifications.filter(n => !n.read).length; 
+      // Calculate count directly from the FRESH response data
+      const unreadOrderCount = fetchedNotifs.filter(n => !n.read).length; 
       setUnreadNotifCount(unreadOrderCount);
     }
   } catch (err) {
     console.error("Notif Error:", err);
   }
 };
-
   const fetchCartCount = async () => {
     try {
       const res = await api.get("/api/cart/count");
@@ -99,7 +98,7 @@ const [unreadChatCount, setUnreadChatCount] = useState(0);
  // 1. Add useRef to your imports
 const socketRef = useRef(null);
 
-// 2. Update the Socket useEffect
+// Inside your Socket useEffect (Buyer_Dashboard.js)
 useEffect(() => {
   if (!buyerId) return;
 
@@ -115,8 +114,6 @@ useEffect(() => {
   const socket = socketRef.current;
 
   const handleConnect = () => {
-    console.log("Socket connected");
-
     socket.emit("userOnline", {
       userId: buyerId,
       userModel: "Buyer",
@@ -125,23 +122,34 @@ useEffect(() => {
 
   socket.on("connect", handleConnect);
 
-  // 🔥 IMPORTANT: remove old listeners first
+  // --- NEW LISTENER FOR ORDER NOTIFICATIONS ---
+  socket.off("notification"); // Prevent duplicate listeners
+  socket.on("notification", (data) => {
+    console.log("🔔 REAL-TIME NOTIFICATION:", data);
+    
+    // 1. Update the list immediately
+    setOrderNotifications((prev) => [data, ...prev]);
+    
+    // 2. Update the red bubble count immediately
+    // If the backend sends 'unreadCount', use it. Otherwise, increment by 1.
+    setUnreadNotifCount((prev) => data.unreadCount !== undefined ? data.unreadCount : prev + 1);
+
+    // 3. Browser alert if the tab is hidden
+    if (document.hidden && Notification.permission === "granted") {
+      new Notification("Isonga Market Update", { body: data.message });
+    }
+  });
+
+  // --- CHAT LISTENER ---
   socket.off("newMessageNotification");
-
   socket.on("newMessageNotification", (data) => {
-  console.log("REALTIME MESSAGE:", data);
-
-  setChatNotifications((prev) => [data, ...prev]);
-  // Update the CHAT count, not the BELL count
-  setUnreadChatCount((prev) => prev + 1); 
-
-  if (document.hidden && Notification.permission === "granted") {
-    new Notification("New Message", { body: data.message });
-  }
-});
+    setChatNotifications((prev) => [data, ...prev]);
+    setUnreadChatCount((prev) => prev + 1); 
+  });
 
   return () => {
     socket.off("connect", handleConnect);
+    socket.off("notification"); // Clean up
     socket.off("newMessageNotification");
   };
 }, [buyerId]);
