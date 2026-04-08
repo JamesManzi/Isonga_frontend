@@ -38,96 +38,92 @@ function BuyerConversations() {
   // INIT SOCKET + LOAD DATA
   // =========================
   useEffect(() => {
-    if (mountedRef.current) return;
-    mountedRef.current = true;
-
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/buyer_login");
       return;
     }
 
-    const socket = io(BACKEND_URL, {
-  // Remove transports: ["websocket"] or add "polling"
-  transports: ["polling", "websocket"], 
-  auth: { token },
-});
+    let isSubscribed = true;
 
-    socketRef.current = socket;
+    const init = async () => {
+      try {
+        // 1. Fetch initial data
+        await fetchConversations();
+        if (!isSubscribed) return;
 
-    // initial load
-    fetchConversations();
+        // 2. Initialize Socket with polling fallback
+        const socket = io(BACKEND_URL, {
+          transports: ["polling", "websocket"],
+          auth: { token },
+        });
+        socketRef.current = socket;
 
-    // =========================
-    // NEW MESSAGE UPDATE
-    // =========================
-    socket.on("newMessageNotification", (data) => {
-      setConversations((prev) => {
-        const exists = prev.find((c) => c.room === data.room);
+        // 3. Register Buyer with backend (Crucial for Real-time)
+        socket.on("connect", async () => {
+          try {
+            const res = await api.get("/api/buyer/profile");
+            if (res.data.success && isSubscribed) {
+              socket.emit("userOnline", {
+                userId: res.data.buyer._id,
+                userModel: "Buyer",
+              });
+            }
+          } catch (err) {
+            console.error("Profile fetch error for socket:", err);
+          }
+        });
 
-        if (!exists) {
-          fetchConversations();
-          return prev;
-        }
+        // 4. Real-time New Message Update
+        socket.on("newMessageNotification", (data) => {
+          setConversations((prev) => {
+            const exists = prev.find((c) => c.room === data.room);
 
-        const updated = prev.map((c) =>
-          c.room === data.room
-            ? {
-                ...c,
-                lastMessage: data.message,
-                updatedAt: data.createdAt,
-                unreadCount: data.unreadCount,
-              }
-            : c
-        );
+            if (!exists) {
+              fetchConversations(); // If new seller messaged, refresh list
+              return prev;
+            }
 
-        return updated.sort(
-          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-        );
-      });
-    });
+            return prev.map((c) =>
+              c.room === data.room
+                ? {
+                    ...c,
+                    lastMessage: data.message,
+                    updatedAt: data.createdAt,
+                    unreadCount: data.roomUnreadCount, // Match backend key
+                  }
+                : c
+            ).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+          });
+        });
 
-    // =========================
-    // READ RECEIPT
-    // =========================
-    socket.on("messagesRead", ({ room }) => {
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.room === room ? { ...c, unreadCount: 0 } : c
-        )
-      );
-    });
+        // 5. Real-time Read Status
+        socket.on("messagesRead", ({ room }) => {
+          setConversations((prev) =>
+            prev.map((c) => (c.room === room ? { ...c, unreadCount: 0 } : c))
+          );
+        });
 
-    // =========================
-    // DELETE SYNC (IMPORTANT FIX)
-    // =========================
-    socket.on("conversationDeleted", ({ room }) => {
-      setConversations((prev) =>
-        prev.filter((c) => c.room !== room)
-      );
-    });
+        // 6. Real-time Delete Sync
+        socket.on("conversationDeleted", ({ room }) => {
+          setConversations((prev) => prev.filter((c) => c.room !== room));
+        });
+
+      } catch (err) {
+        console.error("Socket Init Error:", err);
+      }
+    };
+
+    init();
 
     return () => {
-      socket.disconnect();
-      mountedRef.current = false;
+      isSubscribed = false;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [navigate]);
-
-  // =========================
-  // DELETE CONVERSATION
-  // =========================
-  const handleDelete = (e, room) => {
-    e.stopPropagation();
-
-    if (!window.confirm("Delete this conversation?")) return;
-
-    // instant UI remove
-    setConversations((prev) =>
-      prev.filter((c) => c.room !== room)
-    );
-
-    socketRef.current?.emit("deleteConversation", { room });
-  };
 
   // =========================
   // HELPERS
