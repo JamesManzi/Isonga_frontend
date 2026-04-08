@@ -44,34 +44,32 @@ function ChatNotification() {
 
     const handleNotification = (data) => {
 
-      setConversations(prev => {
+  setConversations(prev => {
 
-        const index = prev.findIndex(c => c._id === data.room);
+    const index = prev.findIndex(c => c._id === data.room);
 
-        if (index !== -1) {
+    if (index !== -1) {
 
-          const updated = [...prev];
+      const updated = [...prev];
 
-          updated[index] = {
-            ...updated[index],
-            unreadCount: (updated[index].unreadCount || 0) + 1
-          };
+      updated[index] = {
+        ...updated[index],
+        unreadCount: data.unreadChatCount // ✅ USE BACKEND COUNT
+      };
 
-          return updated;
+      return updated;
+    }
 
-        }
+    return [
+      {
+        _id: data.room,
+        unreadCount: data.unreadChatCount // ✅ ALSO HERE
+      },
+      ...prev
+    ];
+  });
 
-        return [
-          {
-            _id: data.room,
-            unreadCount: 1
-          },
-          ...prev
-        ];
-
-      });
-
-    };
+};
 
     socket.on("newMessageNotification", handleNotification);
 
