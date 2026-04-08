@@ -41,6 +41,7 @@ import ForgotPassword from "./ForgotPassword";
 import Notifications_Page from "./Notifications_Page";
 import BuyerOrderDetails from "./BuyerOrderDetails";
 import BuyerBookingDetails from "./BuyerBookingDetails";
+import SellerForgotPassword from "./SellerForgotPassword";
 import Food from "./Food";
 function App(){
   return(
@@ -90,6 +91,7 @@ function App(){
          <Route path="/buyer/order/:id" element={<BuyerOrderDetails />} />
          <Route path="/buyer/booking/:id" element={<BuyerBookingDetails />} />
          <Route path="/Food" element={<Food/>}/>
+         <Route path="/SellerForgotPassword" element={<SellerForgotPassword/>}/>
       </Routes>
       </BrowserRouter>
     </div>
