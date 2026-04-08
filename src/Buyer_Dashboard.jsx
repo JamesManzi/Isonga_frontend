@@ -122,34 +122,42 @@ useEffect(() => {
 
   socket.on("connect", handleConnect);
 
-  // --- NEW LISTENER FOR ORDER NOTIFICATIONS ---
-  socket.off("notification"); // Prevent duplicate listeners
+  // --- ORDER NOTIFICATIONS (BELL) ---
+  socket.off("notification"); 
   socket.on("notification", (data) => {
-    console.log("🔔 REAL-TIME NOTIFICATION:", data);
-    
-    // 1. Update the list immediately
+    console.log("🔔 ORDER UPDATE:", data);
     setOrderNotifications((prev) => [data, ...prev]);
-    
-    // 2. Update the red bubble count immediately
-    // If the backend sends 'unreadCount', use it. Otherwise, increment by 1.
+    // Use unreadCount from backend if available
     setUnreadNotifCount((prev) => data.unreadCount !== undefined ? data.unreadCount : prev + 1);
 
-    // 3. Browser alert if the tab is hidden
     if (document.hidden && Notification.permission === "granted") {
       new Notification("Isonga Market Update", { body: data.message });
     }
   });
 
-  // --- CHAT LISTENER ---
+  // --- CHAT NOTIFICATIONS (MESSAGE ICON) ---
   socket.off("newMessageNotification");
   socket.on("newMessageNotification", (data) => {
+    console.log("📩 NEW MESSAGE:", data);
+    
     setChatNotifications((prev) => [data, ...prev]);
-    setUnreadChatCount((prev) => prev + 1); 
+
+    // ✅ FIX: Use the total unread count sent from your backend sendMessage update
+    if (data.unreadChatCount !== undefined) {
+      setUnreadChatCount(data.unreadChatCount);
+    } else {
+      // Fallback: if backend doesn't send count, increment by 1
+      setUnreadChatCount((prev) => prev + 1); 
+    }
+
+    if (document.hidden && Notification.permission === "granted") {
+      new Notification("New Message", { body: data.message });
+    }
   });
 
   return () => {
     socket.off("connect", handleConnect);
-    socket.off("notification"); // Clean up
+    socket.off("notification");
     socket.off("newMessageNotification");
   };
 }, [buyerId]);
