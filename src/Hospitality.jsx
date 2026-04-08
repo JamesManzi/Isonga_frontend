@@ -158,7 +158,7 @@ function Hospitality() {
           <Link to="/buyer_profile">
             <img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="Profile" />
           </Link>
-          <ChatNotification />
+          <ChatNotification userId={buyerId} />
         </div>
 
         <GlobalBell buyerId={buyerId} />

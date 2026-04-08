@@ -141,7 +141,7 @@ function RealEstate() {
           <Link to="/buyer_profile">
             <img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="Profile" />
           </Link>
-          <ChatNotification />
+          <ChatNotification userId={buyerId} />
         </div>
         <GlobalBell buyerId={buyerId} />
         <div className="Buyer_Dashboard_nav">

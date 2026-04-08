@@ -147,7 +147,7 @@ useEffect(() => {
           <Link to="/buyer_profile">
             <img src={getFileUrl(profile)} alt="Profile" />
           </Link>
-          <ChatNotification />
+          <ChatNotification userId={buyerId} />
         </div>
         <GlobalBell buyerId={buyerId} />
         <div className="Buyer_Dashboard_nav">
