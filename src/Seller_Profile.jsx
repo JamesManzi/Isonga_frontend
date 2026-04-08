@@ -72,19 +72,19 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
 
   useEffect(() => { fetchSeller(); }, []);
 const socketRef = useRef(null);
-
+const sellerIdRef = useRef(null);
 useEffect(() => {
   socketRef.current = io("https://isonga-backend.onrender.com", {
     transports: ["websocket"],
   });
 
   socketRef.current.on("sellerRatingUpdated", (data) => {
-  if (data.sellerId === seller?._id) {
-    setAverageRating(data.averageRating);
-    setNumReviews(data.numReviews);
-    fetchSeller();
-  }
-});
+    if (data.sellerId === sellerIdRef.current) {
+      setAverageRating(data.averageRating);
+      setNumReviews(data.numReviews);
+      fetchSeller();
+    }
+  });
 
   socketRef.current.on("sellerReplyAdded", (data) => {
     setReviews((prev) =>
