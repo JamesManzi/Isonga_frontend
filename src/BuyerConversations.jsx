@@ -11,18 +11,29 @@ function BuyerConversations() {
   const [conversations, setConversations] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [unreadChatCount, setUnreadChatCount] = useState(0); // Added state
 
   const navigate = useNavigate();
   const socketRef = useRef(null);
 
   // =========================
-  // FETCH CONVERSATIONS
+  // MISSING FUNCTION FIXED
   // =========================
+  const fetchUnreadMessageCount = async () => {
+    try {
+      const res = await api.get("/api/messages/unread-count");
+      if (res.data.success) {
+        setUnreadChatCount(res.data.count);
+      }
+    } catch (err) {
+      console.error("Error fetching message count:", err);
+    }
+  };
+
   const fetchConversations = async () => {
     try {
       setLoading(true);
       const res = await api.get("/api/buyer/conversations");
-
       if (res.data.success) {
         setConversations(res.data.conversations || []);
       }
@@ -34,102 +45,89 @@ function BuyerConversations() {
   };
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    navigate("/buyer_login");
-    return;
-  }
-
-  let isActive = true;
-
-  const socket = io(BACKEND_URL, {
-    transports: ["websocket", "polling"],
-    auth: { token },
-  });
-
-  socketRef.current = socket;
-
-  const init = async () => {
-    try {
-      const profileRes = await api.get("/api/buyer/profile");
-      if (!isActive) return;
-
-      if (!profileRes.data.success) {
-        navigate("/buyer_login");
-        return;
-      }
-
-      const id = profileRes.data.buyer._id;
-      setBuyerId(id);
-
-      // connect first
-      socket.on("connect", () => {
-        socket.emit("userOnline", {
-          userId: id,
-          userModel: "Buyer",
-        });
-      });
-
-      await fetchConversations();
-      if (!isActive) return;
-
-      socket.on("newMessageNotification", (data) => {
-        console.log("SOCKET DATA:", data);
-
-        setConversations((prev) => {
-          const exists = prev.find(
-            (c) => String(c.room) === String(data.room)
-          );
-
-          if (!exists) {
-            fetchConversations();
-            return prev;
-          }
-
-          return prev.map((c) =>
-            String(c.room) === String(data.room)
-              ? {
-                  ...c,
-                  lastMessage: data.message,
-                  unreadCount:
-                    data.roomUnreadCount ?? data.unreadChatCount ?? 0,
-                }
-              : c
-          );
-        });
-      });
-
-      socket.on("messagesRead", ({ room }) => {
-        setConversations((prev) =>
-          prev.map((c) =>
-            String(c.room) === String(room)
-              ? { ...c, unreadCount: 0 }
-              : c
-          )
-        );
-      });
-
-      socket.on("conversationDeleted", ({ room }) => {
-        setConversations((prev) =>
-          prev.filter((c) => String(c.room) !== String(room))
-        );
-      });
-
-    } catch (err) {
-      console.error(err);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/buyer_login");
+      return;
     }
-  };
 
-  init();
+    let isActive = true;
+    const socket = io(BACKEND_URL, {
+      transports: ["websocket", "polling"],
+      auth: { token },
+    });
+    socketRef.current = socket;
 
-  return () => {
-    isActive = false;
-    socket.disconnect();
-  };
-}, [navigate]);
-  // =========================
-  // ACTIONS & HELPERS
-  // =========================
+    const init = async () => {
+      try {
+        // CHANGED: Using buyer_dashboard route because /buyer/profile was 404
+        const profileRes = await api.get("/api/buyer_dashboard");
+        if (!isActive) return;
+
+        if (!profileRes.data.success) {
+          navigate("/buyer_login");
+          return;
+        }
+
+        const id = profileRes.data.buyer._id;
+        setBuyerId(id);
+
+        socket.on("connect", () => {
+          socket.emit("userOnline", {
+            userId: id,
+            userModel: "Buyer",
+          });
+        });
+
+        await fetchConversations();
+        await fetchUnreadMessageCount(); // Call the fixed function
+
+        socket.on("newMessageNotification", (data) => {
+          if (data.unreadChatCount !== undefined) {
+            setUnreadChatCount(data.unreadChatCount);
+          }
+          
+          setConversations((prev) => {
+            const exists = prev.find((c) => String(c.room) === String(data.room));
+            if (!exists) {
+              fetchConversations();
+              return prev;
+            }
+            return prev.map((c) =>
+              String(c.room) === String(data.room)
+                ? {
+                    ...c,
+                    lastMessage: data.message,
+                    unreadCount: data.roomUnreadCount ?? data.unreadChatCount ?? 0,
+                    updatedAt: new Date().toISOString()
+                  }
+                : c
+            );
+          });
+        });
+
+        // Rest of your socket listeners...
+        socket.on("messagesRead", ({ room }) => {
+          setConversations((prev) =>
+            prev.map((c) => (String(c.room) === String(room) ? { ...c, unreadCount: 0 } : c))
+          );
+          fetchUnreadMessageCount();
+        });
+
+      } catch (err) {
+        console.error("Init Error:", err);
+      }
+    };
+
+    init();
+
+    return () => {
+      isActive = false;
+      socket.disconnect();
+    };
+  }, [navigate]);
+
+  // Actions...
   const openChat = async (chat) => {
     try {
       await api.put(`/api/messages/read/${chat.room}`);
@@ -142,35 +140,24 @@ function BuyerConversations() {
   const handleDelete = (e, room) => {
     e.stopPropagation();
     if (!window.confirm("Delete this conversation?")) return;
-
-    setConversations((prev) =>
-      prev.filter((c) => String(c.room) !== String(room))
-    );
-
+    setConversations((prev) => prev.filter((c) => String(c.room) !== String(room)));
     socketRef.current?.emit("deleteConversation", { room });
   };
 
   const getProfileImg = (path) => {
     if (!path) return "/placeholder.png";
-    return path.startsWith("http")
-      ? path
-      : `${BACKEND_URL}/uploads/${path}`;
+    return path.startsWith("http") ? path : `${BACKEND_URL}/uploads/${path}`;
   };
 
   const filteredChats = conversations.filter((chat) =>
     chat.sellerName?.toLowerCase().includes(search.toLowerCase())
   );
 
-  // =========================
-  // UI
-  // =========================
   return (
     <div className="chat-container">
       <div className="chat-header">
-        <Link to="/buyer_dashboard" className="back-button">
-          ←
-        </Link>
-        <h2>Messages</h2>
+        <Link to="/buyer_dashboard" className="back-button">←</Link>
+        <h2>Messages {unreadChatCount > 0 && `(${unreadChatCount})`}</h2>
       </div>
 
       <div className="chat-search">
@@ -189,16 +176,9 @@ function BuyerConversations() {
           <div className="empty-state">No conversations yet.</div>
         ) : (
           filteredChats.map((chat) => (
-            <div
-              key={chat.room}
-              className="chat-item"
-              onClick={() => openChat(chat)}
-            >
+            <div key={chat.room} className="chat-item" onClick={() => openChat(chat)}>
               <div className="avatar">
-                <img
-                  src={getProfileImg(chat.sellerProfile)}
-                  alt={chat.sellerName}
-                />
+                <img src={getProfileImg(chat.sellerProfile)} alt={chat.sellerName} />
               </div>
 
               <div className="chat-details">
@@ -216,21 +196,12 @@ function BuyerConversations() {
                   <p className={chat.unreadCount > 0 ? "unread-text" : ""}>
                     {chat.lastMessage || "No messages yet"}
                   </p>
-
                   {chat.unreadCount > 0 && (
-                    <span className="unread-badge">
-                      {chat.unreadCount}
-                    </span>
+                    <span className="unread-badge">{chat.unreadCount}</span>
                   )}
                 </div>
               </div>
-
-              <button
-                className="delete-btn"
-                onClick={(e) => handleDelete(e, chat.room)}
-              >
-                🗑
-              </button>
+              <button className="delete-btn" onClick={(e) => handleDelete(e, chat.room)}>🗑</button>
             </div>
           ))
         )}
