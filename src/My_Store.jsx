@@ -177,7 +177,7 @@ function My_Store() {
       const res = await api.put(`/api/products/update/${editingProduct._id}`, formData);
       if (res.data.success) {
         setProducts((prev) =>
-          prev.map((p) => (p._id === editingProduct._id ? res.data.UpdatedProduct : p))
+          prev.map((p) => (p._id === editingProduct._id ? res.data.updatedProduct : p))
         );
         setEditingProduct(null);
         setSelectedFiles([]);
