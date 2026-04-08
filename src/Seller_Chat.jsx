@@ -43,49 +43,59 @@ function Seller_Chat() {
       : `https://isonga-backend.onrender.com/${clean.replace(/^\/+/, "")}`;
   };
 
-  // =========================
-  // LOAD CHAT
-  // =========================
   useEffect(() => {
-    const loadChat = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return navigate("/login");
+  const loadChat = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return navigate("/login");
 
-      try {
-        const sellerRes = await api.get("/api/dashboard");
-        if (!sellerRes.data.success) return;
+    try {
+      const sellerRes = await api.get("/api/dashboard");
+      if (!sellerRes.data.success) return;
 
-        const sellerData = sellerRes.data.seller;
-        setSeller(sellerData);
+      const sellerData = sellerRes.data.seller;
+      setSeller(sellerData);
 
-        const buyerRes = await api.get(`/api/get_buyer/${buyerId}`);
-        if (buyerRes.data.success) setBuyer(buyerRes.data.buyer);
+      const buyerRes = await api.get(`/api/get_buyer/${buyerId}`);
+      if (buyerRes.data.success) setBuyer(buyerRes.data.buyer);
 
-        const room = `Buyer_${buyerId}__Seller_${sellerData._id}`;
+      const room = `Buyer_${buyerId}__Seller_${sellerData._id}`;
 
-        socket.emit("userOnline", { userModel: "Seller" });
-
+      // ✅ FIX: Define a function to emit events safely
+      const joinChat = () => {
+        socket.emit("userOnline", { userModel: "Seller", userId: sellerData._id });
         socket.emit("joinRoom", {
           senderId: sellerData._id,
           senderModel: "Seller",
           receiverId: buyerId,
           receiverModel: "Buyer"
         });
-
-        const msgRes = await api.get(`/api/messages/${room}`);
-        if (msgRes.data.success) setMessages(msgRes.data.messages);
-
-        await api.put(`/api/messages/read/${room}`);
         socket.emit("messagesRead", { room });
+      };
 
-      } catch (err) {
-        console.error(err);
+      // ✅ FIX: Check connection status before emitting
+      if (socket.connected) {
+        joinChat();
+      } else {
+        socket.once("connect", joinChat);
       }
-    };
 
-    loadChat();
-  }, [buyerId, navigate]);
+      const msgRes = await api.get(`/api/messages/${room}`);
+      if (msgRes.data.success) setMessages(msgRes.data.messages);
 
+      await api.put(`/api/messages/read/${room}`);
+
+    } catch (err) {
+      console.error("Load Chat Error:", err);
+    }
+  };
+
+  loadChat();
+  
+  // Cleanup listener on unmount
+  return () => {
+    socket.off("connect");
+  };
+}, [buyerId, navigate]);
   // =========================
   // SOCKET EVENTS
   // =========================
