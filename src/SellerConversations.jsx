@@ -35,53 +35,67 @@ function SellerConversations() {
     }
   };
 
-  // =========================
+ // =========================
   // INIT SOCKET + LOAD DATA
   // =========================
   useEffect(() => {
-    if (mountedRef.current) return;
-    mountedRef.current = true;
-
     const token = localStorage.getItem("token");
-    if (!token) return navigate("/login");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    // A flag to prevent state updates if the component unmounts during async calls
+    let isSubscribed = true;
 
     const init = async () => {
       try {
-        // GET SELLER
+        // 1. GET SELLER
         const sellerRes = await api.get("/api/dashboard");
-        if (!sellerRes.data.success) return navigate("/login");
+        if (!isSubscribed) return;
+        
+        if (!sellerRes.data.success) {
+          return navigate("/login");
+        }
 
         const id = sellerRes.data.seller._id;
         setSellerId(id);
 
-        // LOAD DATA FIRST
+        // 2. LOAD DATA FIRST
         await fetchConversations();
+        if (!isSubscribed) return;
 
-        // SOCKET INIT
+        // 3. SOCKET INIT 
+        // Note: Added 'polling' for stability on Render.com
         const socket = io(BACKEND_URL, {
-          transports: ["websocket"],
+          transports: ["websocket", "polling"],
           auth: { token },
         });
 
         socketRef.current = socket;
 
-        socket.emit("userOnline", {
-          userId: id,
-          userModel: "Seller",
+        // Emit online status only after connection is established
+        socket.on("connect", () => {
+          socket.emit("userOnline", {
+            userId: id,
+            userModel: "Seller",
+          });
         });
 
         // =========================
-        // NEW MESSAGE
+        // NEW MESSAGE NOTIFICATION
         // =========================
         socket.on("newMessageNotification", (data) => {
           setConversations((prev) => {
             const exists = prev.find((c) => c.room === data.room);
 
+            // If it's a completely new buyer, refresh the full list
             if (!exists) {
               fetchConversations();
               return prev;
             }
 
+            // Otherwise, update the existing conversation item in the list
             return prev
               .map((c) =>
                 c.room === data.room
@@ -89,13 +103,12 @@ function SellerConversations() {
                       ...c,
                       lastMessage: data.message,
                       updatedAt: data.createdAt,
-                      unreadCount: data.unreadCount,
+                      // ✅ KEY FIX: Matching your backend's 'roomUnreadCount'
+                      unreadCount: data.roomUnreadCount, 
                     }
                   : c
               )
-              .sort(
-                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-              );
+              .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
           });
         });
 
@@ -120,22 +133,20 @@ function SellerConversations() {
         });
 
       } catch (err) {
-        console.error(err);
-        setLoading(false);
+        console.error("Socket Init Error:", err);
+        if (isSubscribed) setLoading(false);
       }
     };
 
     init();
 
+    // CLEANUP: Disconnect correctly when leaving the page
     return () => {
-      socketRef.current?.off("newMessageNotification");
-      socketRef.current?.off("messagesRead");
-      socketRef.current?.off("conversationDeleted");
-
-      socketRef.current?.disconnect();
-      socketRef.current = null;
-
-      mountedRef.current = false;
+      isSubscribed = false;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [navigate]);
 
