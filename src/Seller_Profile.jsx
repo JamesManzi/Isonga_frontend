@@ -72,20 +72,30 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
 
   useEffect(() => { fetchSeller(); }, []);
 
-  // Socket for live updates
   useEffect(() => {
-    if (!seller?._id) return;
-    const socket = io("https://isonga-backend.onrender.com", { withCredentials: false });
-    socket.emit("joinSellerRoom", seller._id);
-    socket.on("sellerRatingUpdated", (data) => {
-      if (data.sellerId === seller._id) {
-        setAverageRating(data.averageRating);
-        setNumReviews(data.numReviews);
-        fetchSeller();
-      }
-    });
-    return () => socket.disconnect();
-  }, [seller?._id]);
+  if (!seller?._id) return;
+
+  const socket = io("https://isonga-backend.onrender.com", { 
+    transports: ["websocket"] 
+  });
+
+  // ✅ MATCH THE BACKEND: Add the "Seller_" prefix
+  const sellerRoom = `Seller_${seller._id}`;
+  socket.emit("joinSellerRoom", sellerRoom); 
+
+  socket.on("sellerRatingUpdated", (data) => {
+    if (data.sellerId === seller._id) {
+      setAverageRating(data.averageRating);
+      setNumReviews(data.numReviews);
+      fetchSeller(); // Refresh the reviews list
+    }
+  });
+
+  return () => {
+    socket.off("sellerRatingUpdated");
+    socket.disconnect();
+  };
+}, [seller?._id]);
 
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
