@@ -1,5 +1,4 @@
 
-
 import { useState, useEffect,useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -38,10 +37,7 @@ function Buyer_Dashboard() {
   const serviceCategories = ["services", "Hospitality"];
   const assetCategories = ["RealEstate", "Vehicles", "Livestock"];
   const [notifications, setNotifications] = useState([]);
-  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [orderNotifications, setOrderNotifications] = useState([]);
-const [chatNotifications, setChatNotifications] = useState([]);
-const [unreadChatCount, setUnreadChatCount] = useState(0);
   const getSellerRoute = (category, id) => {
     if (productCategories.includes(category)) return `/view_products/${id}`;
     if (serviceCategories.includes(category)) return `/Service_Products/${id}`;
@@ -81,7 +77,6 @@ const [unreadChatCount, setUnreadChatCount] = useState(0);
   useEffect(() => {
   if (buyerId) {
     fetchCartCount();
-    fetchUnreadMessageCount(); // Load unread messages immediately on login
     fetchOrderNotifications();
   }
 }, [buyerId]);
@@ -118,7 +113,6 @@ useEffect(() => {
   const socket = socketRef.current;
 
   const handleConnect = () => {
-    console.log("Connected to Socket");
     socket.emit("userOnline", {
       userId: buyerId,
       userModel: "Buyer",
@@ -126,48 +120,21 @@ useEffect(() => {
   };
 
   socket.on("connect", handleConnect);
-  // If already connected, emit immediately
+
   if (socket.connected) handleConnect();
 
-  // --- ORDER NOTIFICATIONS ---
-  socket.off("notification"); 
+  // ONLY ORDER NOTIFICATIONS HERE
   socket.on("notification", (data) => {
-    setUnreadNotifCount((prev) => data.unreadCount !== undefined ? data.unreadCount : prev + 1);
-  });
-
-  // --- CHAT NOTIFICATIONS ---
-  socket.off("newMessageNotification");
-  socket.on("newMessageNotification", (data) => {
-    console.log("📩 New Real-time Message:", data);
-    
-    // This is the line that kills the need for refresh:
-    if (data.unreadChatCount !== undefined) {
-      setUnreadChatCount(data.unreadChatCount);
-    } else {
-      setUnreadChatCount(prev => prev + 1);
-    }
+    setUnreadNotifCount((prev) =>
+      data.unreadCount !== undefined ? data.unreadCount : prev + 1
+    );
   });
 
   return () => {
     socket.off("connect", handleConnect);
     socket.off("notification");
-    socket.off("newMessageNotification");
   };
-}, [buyerId]); // Adding buyerId as the anchor
-
-const fetchUnreadMessageCount = async () => {
-  if (!buyerId) return;
-  try {
-    // You'll need to ensure this route exists on your backend
-    const res = await api.get("/api/messages/unread-count"); 
-    if (res.data.success) {
-      setUnreadChatCount(res.data.count);
-    }
-  } catch (err) {
-    console.error("Error fetching message count:", err);
-  }
-};
-
+}, [buyerId]);
 // 3. Update the JSX to pass data to your notification component
 // <ChatNotification unreadCount={unreadNotifCount} />
   
@@ -362,9 +329,7 @@ useEffect(() => {
         <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
         <div className="Buyer_Dashboard_user">
           <Link to="/buyer_profile"><img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="profile" /></Link>
-          <div onClick={() => setUnreadChatCount(0)} style={{ cursor: 'pointer' }}>
-  <ChatNotification unreadCount={unreadChatCount} />
-</div>
+          <ChatNotification userId={buyerId} />
         </div>
         <div className="Buyer_Dashboard_nav">
           <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
