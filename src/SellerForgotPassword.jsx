@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "./api"; // Your axios instance
+import api from "./api"; 
 import { Mail, ShieldCheck, ArrowLeft, Loader2, Eye, EyeOff, KeyRound } from "lucide-react";
 import "./VerifyEmail.css"; 
 
 function SellerForgotPassword() {
-  const [step, setStep] = useState(1); // 1: Email, 2: Code, 3: New Password
+  const [step, setStep] = useState(1); 
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -13,31 +13,31 @@ function SellerForgotPassword() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // STEP 1: Request Code (Uses your shared backend route)
+  // STEP 1: Request Code (Updated to Seller path)
   const handleRequestCode = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await api.post("/api/forgot-password", { email });
+      const res = await api.post("/api/seller/forgot-password", { email });
       if (res.data.success) {
         setStep(2);
       } else {
         alert(res.data.message);
       }
     } catch (err) {
-      alert("Error connection to server.");
+      alert("Error connecting to server.");
     } finally {
       setLoading(false);
     }
   };
 
-  // STEP 2: Verify Code (Uses your shared backend route)
+  // STEP 2: Verify Code (Updated to Seller path)
   const handleVerifyCode = async (e) => {
     e.preventDefault();
     if (code.length < 6) return;
     setLoading(true);
     try {
-      const res = await api.post("/api/verify-reset-code", { email, code });
+      const res = await api.post("/api/seller/verify-reset-code", { email, code });
       if (res.data.success) {
         setStep(3);
       } else {
@@ -50,15 +50,15 @@ function SellerForgotPassword() {
     }
   };
 
-  // STEP 3: Save New Password (Uses your shared backend route)
+  // STEP 3: Save New Password (Updated to Seller path)
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await api.post("/api/reset-password", { email, code, newPassword });
+      const res = await api.post("/api/seller/reset-password", { email, code, newPassword });
       if (res.data.success) {
         alert("Seller password updated! Please login.");
-        navigate("/login"); // <--- Crucial: Redirect to Seller Login
+        navigate("/seller_login"); // Ensure this matches your seller login route
       } else {
         alert(res.data.message);
       }
@@ -102,7 +102,6 @@ function SellerForgotPassword() {
             </p>
           </div>
 
-          {/* Form Step logic same as Buyer, but directing to Seller actions */}
           {step === 1 && (
             <form onSubmit={handleRequestCode} className="verify-form">
               <div className="input-group">
@@ -146,7 +145,7 @@ function SellerForgotPassword() {
               <div className="input-group" style={{ position: 'relative' }}>
                 <input
                   type={showPass ? "text" : "password"}
-                  placeholder="New Password"
+                  placeholder="New Seller Password"
                   required
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
@@ -174,7 +173,7 @@ function SellerForgotPassword() {
           </div>
         </div>
 
-        <button onClick={() => navigate("/login")} className="back-btn">
+        <button onClick={() => navigate("/seller_login")} className="back-btn">
           <ArrowLeft size={18} />
           Back to Login
         </button>
