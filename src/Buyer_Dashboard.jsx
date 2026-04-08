@@ -374,7 +374,9 @@ useEffect(() => {
         <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
         <div className="Buyer_Dashboard_user">
           <Link to="/buyer_profile"><img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="profile" /></Link>
-          <ChatNotification unreadCount={unreadChatCount} />
+          <div onClick={() => setUnreadChatCount(0)} style={{ cursor: 'pointer' }}>
+  <ChatNotification unreadCount={unreadChatCount} />
+</div>
         </div>
         <div className="Buyer_Dashboard_nav">
           <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
