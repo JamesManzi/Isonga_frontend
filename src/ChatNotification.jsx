@@ -1,99 +1,64 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "./api";
-import { socket } from "./Socket";
+import { io } from "socket.io-client"; // Import directly or from your Socket config
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 
-function ChatNotification() {
-
+function ChatNotification({ userId }) {
   const [conversations, setConversations] = useState([]);
-  const [buyerId, setBuyerId] = useState("");
 
   useEffect(() => {
+    if (!userId) return;
 
-    const fetchUser = async () => {
+    const fetchConversations = async () => {
       try {
-        const res = await api.get("/api/buyer_dashboard");
-        if (!res.data.success) return;
-
-        const buyer = res.data.buyer;
-        setBuyerId(buyer._id);
-
-        socket.emit("userOnline", {
-          userId: buyer._id,
-          userModel: "Buyer"
-        });
-
         const convRes = await api.get("/api/buyer/conversations");
-
         if (convRes.data.success) {
           setConversations(convRes.data.conversations);
         }
-
       } catch (err) {
-        console.log(err);
+        console.error("Error fetching conversations:", err);
       }
     };
 
-    fetchUser();
+    fetchConversations();
 
-  }, []);
-
-  useEffect(() => {
+    // Use the existing socket connection logic
+    const socket = io("https://isonga-backend.onrender.com", {
+      auth: { token: localStorage.getItem("token") },
+    });
 
     const handleNotification = (data) => {
-
-  setConversations(prev => {
-
-    const index = prev.findIndex(c => c._id === data.room);
-
-    if (index !== -1) {
-
-      const updated = [...prev];
-
-      updated[index] = {
-        ...updated[index],
-        unreadCount: data.unreadChatCount // ✅ USE BACKEND COUNT
-      };
-
-      return updated;
-    }
-
-    return [
-      {
-        _id: data.room,
-        unreadCount: data.unreadChatCount // ✅ ALSO HERE
-      },
-      ...prev
-    ];
-  });
-
-};
+      setConversations((prev) => {
+        const index = prev.findIndex((c) => c._id === data.room);
+        if (index !== -1) {
+          const updated = [...prev];
+          updated[index] = {
+            ...updated[index],
+            unreadCount: data.unreadChatCount,
+          };
+          return updated;
+        }
+        return [{ _id: data.room, unreadCount: data.unreadChatCount }, ...prev];
+      });
+    };
 
     socket.on("newMessageNotification", handleNotification);
 
     return () => {
       socket.off("newMessageNotification", handleNotification);
+      socket.disconnect();
     };
+  }, [userId]);
 
-  }, []);
-
-  const totalUnread = conversations.reduce(
-    (acc, c) => acc + (c.unreadCount || 0),
-    0
-  );
+  const totalUnread = conversations.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
 
   return (
-
     <Link to="/BuyerConversations">
-
       <div style={{ position: "relative" }}>
-
-        <FontAwesomeIcon icon={faEnvelope} size="lg"  className="faEnvelope"/>
-
+        <FontAwesomeIcon icon={faEnvelope} size="lg" className="faEnvelope" />
         {totalUnread > 0 && (
-
           <span
             style={{
               position: "absolute",
@@ -103,18 +68,14 @@ function ChatNotification() {
               color: "white",
               borderRadius: "50%",
               padding: "2px 6px",
-              fontSize: "11px"
+              fontSize: "11px",
             }}
           >
             {totalUnread}
           </span>
-
         )}
-
       </div>
-
     </Link>
-
   );
 }
 
