@@ -36,7 +36,7 @@ function BuyerConversations() {
 
   // =========================
   // INIT SOCKET + LOAD DATA
-  // =========================
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -48,26 +48,29 @@ function BuyerConversations() {
 
     const init = async () => {
       try {
-        // 1. Fetch initial data
+        // 1. Fetch initial list from DB
         await fetchConversations();
         if (!isSubscribed) return;
 
-        // 2. Initialize Socket with polling fallback
+        // 2. Initialize Socket
         const socket = io(BACKEND_URL, {
           transports: ["polling", "websocket"],
           auth: { token },
         });
         socketRef.current = socket;
 
-        // 3. Register Buyer with backend (Crucial for Real-time)
+        // 3. Register Buyer (THE KEY TO REAL-TIME)
         socket.on("connect", async () => {
+          console.log("✅ Socket Connected:", socket.id);
           try {
             const res = await api.get("/api/buyer/profile");
             if (res.data.success && isSubscribed) {
+              // Ensure we send "Buyer" to match the backend's .toUpperCase() logic
               socket.emit("userOnline", {
                 userId: res.data.buyer._id,
                 userModel: "Buyer",
               });
+              console.log("📡 Buyer Registered for Notifications:", res.data.buyer._id);
             }
           } catch (err) {
             console.error("Profile fetch error for socket:", err);
@@ -76,21 +79,26 @@ function BuyerConversations() {
 
         // 4. Real-time New Message Update
         socket.on("newMessageNotification", (data) => {
+          console.log("🔔 New message notification received:", data);
+          
           setConversations((prev) => {
-            const exists = prev.find((c) => c.room === data.room);
+            // Use String() to prevent ID mismatch errors
+            const exists = prev.find((c) => String(c.room) === String(data.room));
 
             if (!exists) {
-              fetchConversations(); // If new seller messaged, refresh list
+              console.log("🆕 New conversation detected, re-fetching list...");
+              fetchConversations(); 
               return prev;
             }
 
             return prev.map((c) =>
-              c.room === data.room
+              String(c.room) === String(data.room)
                 ? {
                     ...c,
                     lastMessage: data.message,
                     updatedAt: data.createdAt,
-                    unreadCount: data.roomUnreadCount, // Match backend key
+                    // Use || to fall back if one key is missing
+                    unreadCount: data.roomUnreadCount !== undefined ? data.roomUnreadCount : data.unreadChatCount,
                   }
                 : c
             ).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
@@ -100,13 +108,13 @@ function BuyerConversations() {
         // 5. Real-time Read Status
         socket.on("messagesRead", ({ room }) => {
           setConversations((prev) =>
-            prev.map((c) => (c.room === room ? { ...c, unreadCount: 0 } : c))
+            prev.map((c) => (String(c.room) === String(room) ? { ...c, unreadCount: 0 } : c))
           );
         });
 
         // 6. Real-time Delete Sync
         socket.on("conversationDeleted", ({ room }) => {
-          setConversations((prev) => prev.filter((c) => c.room !== room));
+          setConversations((prev) => prev.filter((c) => String(c.room) !== String(room)));
         });
 
       } catch (err) {
@@ -124,7 +132,6 @@ function BuyerConversations() {
       }
     };
   }, [navigate]);
-
   // =========================
   // HELPERS
   // =========================
