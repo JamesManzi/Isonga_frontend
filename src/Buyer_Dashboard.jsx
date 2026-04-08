@@ -137,20 +137,24 @@ useEffect(() => {
   });
 
   // --- CHAT NOTIFICATIONS (MESSAGE ICON) ---
+  // --- CHAT NOTIFICATIONS (MESSAGE ICON) ---
   socket.off("newMessageNotification");
   socket.on("newMessageNotification", (data) => {
-    console.log("📩 NEW MESSAGE:", data);
+    console.log("📩 NEW REAL-TIME MESSAGE:", data);
     
+    // 1. Add to the list of notifications
     setChatNotifications((prev) => [data, ...prev]);
 
-    // ✅ FIX: Use the total unread count sent from your backend sendMessage update
+    // 2. Update the red bubble count
     if (data.unreadChatCount !== undefined) {
+      // Best case: Backend tells us exactly how many are unread
       setUnreadChatCount(data.unreadChatCount);
     } else {
-      // Fallback: if backend doesn't send count, increment by 1
+      // Fallback: Just add 1 to whatever we have
       setUnreadChatCount((prev) => prev + 1); 
     }
 
+    // 3. Optional: Trigger a browser-level notification
     if (document.hidden && Notification.permission === "granted") {
       new Notification("New Message", { body: data.message });
     }
