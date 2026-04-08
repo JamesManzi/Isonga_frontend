@@ -185,7 +185,9 @@ function Login() {
                 />
               </div>
             </div>
-
+             <div className="buyer-form-options">
+              <Link to="/forgot-password">Forgot password?</Link>
+            </div>
             <button
               type="submit"
               className="main-login-btn"
