@@ -79,8 +79,12 @@ const [unreadChatCount, setUnreadChatCount] = useState(0);
 
   // For Cart
   useEffect(() => {
-    if (buyerId) fetchCartCount();
-  }, [buyerId]);
+  if (buyerId) {
+    fetchCartCount();
+    fetchUnreadMessageCount(); // Load unread messages immediately on login
+    fetchOrderNotifications();
+  }
+}, [buyerId]);
 
   // For Notifications & Focus Logic
   useEffect(() => {
@@ -99,7 +103,6 @@ const [unreadChatCount, setUnreadChatCount] = useState(0);
  // 1. Add useRef to your imports
 const socketRef = useRef(null);
 
-// Inside your Socket useEffect (Buyer_Dashboard.js)
 useEffect(() => {
   if (!buyerId) return;
 
@@ -115,6 +118,7 @@ useEffect(() => {
   const socket = socketRef.current;
 
   const handleConnect = () => {
+    console.log("Connected to Socket");
     socket.emit("userOnline", {
       userId: buyerId,
       userModel: "Buyer",
@@ -122,41 +126,25 @@ useEffect(() => {
   };
 
   socket.on("connect", handleConnect);
+  // If already connected, emit immediately
+  if (socket.connected) handleConnect();
 
-  // --- ORDER NOTIFICATIONS (BELL) ---
+  // --- ORDER NOTIFICATIONS ---
   socket.off("notification"); 
   socket.on("notification", (data) => {
-    console.log("🔔 ORDER UPDATE:", data);
-    setOrderNotifications((prev) => [data, ...prev]);
-    // Use unreadCount from backend if available
     setUnreadNotifCount((prev) => data.unreadCount !== undefined ? data.unreadCount : prev + 1);
-
-    if (document.hidden && Notification.permission === "granted") {
-      new Notification("Isonga Market Update", { body: data.message });
-    }
   });
 
-  // --- CHAT NOTIFICATIONS (MESSAGE ICON) ---
-  // --- CHAT NOTIFICATIONS (MESSAGE ICON) ---
+  // --- CHAT NOTIFICATIONS ---
   socket.off("newMessageNotification");
   socket.on("newMessageNotification", (data) => {
-    console.log("📩 NEW REAL-TIME MESSAGE:", data);
+    console.log("📩 New Real-time Message:", data);
     
-    // 1. Add to the list of notifications
-    setChatNotifications((prev) => [data, ...prev]);
-
-    // 2. Update the red bubble count
+    // This is the line that kills the need for refresh:
     if (data.unreadChatCount !== undefined) {
-      // Best case: Backend tells us exactly how many are unread
       setUnreadChatCount(data.unreadChatCount);
     } else {
-      // Fallback: Just add 1 to whatever we have
-      setUnreadChatCount((prev) => prev + 1); 
-    }
-
-    // 3. Optional: Trigger a browser-level notification
-    if (document.hidden && Notification.permission === "granted") {
-      new Notification("New Message", { body: data.message });
+      setUnreadChatCount(prev => prev + 1);
     }
   });
 
@@ -165,7 +153,7 @@ useEffect(() => {
     socket.off("notification");
     socket.off("newMessageNotification");
   };
-}, [buyerId]);
+}, [buyerId]); // Adding buyerId as the anchor
 
 const fetchUnreadMessageCount = async () => {
   if (!buyerId) return;
