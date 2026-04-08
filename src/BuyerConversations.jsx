@@ -7,13 +7,13 @@ import "./BuyerConversations.css";
 const BACKEND_URL = "https://isonga-backend.onrender.com";
 
 function BuyerConversations() {
+  const [buyerId, setBuyerId] = useState("");
   const [conversations, setConversations] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
   const socketRef = useRef(null);
-  const mountedRef = useRef(false);
 
   // =========================
   // FETCH CONVERSATIONS
@@ -21,7 +21,6 @@ function BuyerConversations() {
   const fetchConversations = async () => {
     try {
       setLoading(true);
-
       const res = await api.get("/api/buyer/conversations");
 
       if (res.data.success) {
@@ -36,7 +35,7 @@ function BuyerConversations() {
 
   // =========================
   // INIT SOCKET + LOAD DATA
-  
+  // =========================
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -48,77 +47,83 @@ function BuyerConversations() {
 
     const init = async () => {
       try {
-        // 1. Fetch initial list from DB
+        // 1. GET BUYER (Sequential logic like Seller)
+        const profileRes = await api.get("/api/buyer/profile");
+        if (!isSubscribed) return;
+
+        if (!profileRes.data.success) {
+          return navigate("/buyer_login");
+        }
+
+        const id = profileRes.data.buyer._id;
+        setBuyerId(id);
+
+        // 2. LOAD DATA FIRST
         await fetchConversations();
         if (!isSubscribed) return;
 
-        // 2. Initialize Socket
+        // 3. SOCKET INIT
         const socket = io(BACKEND_URL, {
-          transports: ["polling", "websocket"],
+          transports: ["websocket", "polling"],
           auth: { token },
         });
+
         socketRef.current = socket;
 
-        // 3. Register Buyer (THE KEY TO REAL-TIME)
-        socket.on("connect", async () => {
-          console.log("✅ Socket Connected:", socket.id);
-          try {
-            const res = await api.get("/api/buyer/profile");
-            if (res.data.success && isSubscribed) {
-              // Ensure we send "Buyer" to match the backend's .toUpperCase() logic
-              socket.emit("userOnline", {
-                userId: res.data.buyer._id,
-                userModel: "Buyer",
-              });
-              console.log("📡 Buyer Registered for Notifications:", res.data.buyer._id);
-            }
-          } catch (err) {
-            console.error("Profile fetch error for socket:", err);
-          }
-        });
-
-        // 4. Real-time New Message Update
-        socket.on("newMessageNotification", (data) => {
-          console.log("🔔 New message notification received:", data);
-          
-          setConversations((prev) => {
-            // Use String() to prevent ID mismatch errors
-            const exists = prev.find((c) => String(c.room) === String(data.room));
-
-            if (!exists) {
-              console.log("🆕 New conversation detected, re-fetching list...");
-              fetchConversations(); 
-              return prev;
-            }
-
-            return prev.map((c) =>
-              String(c.room) === String(data.room)
-                ? {
-                    ...c,
-                    lastMessage: data.message,
-                    updatedAt: data.createdAt,
-                    // Use || to fall back if one key is missing
-                    unreadCount: data.roomUnreadCount !== undefined ? data.roomUnreadCount : data.unreadChatCount,
-                  }
-                : c
-            ).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        // Emit online status immediately after connection
+        socket.on("connect", () => {
+          socket.emit("userOnline", {
+            userId: id,
+            userModel: "Buyer",
           });
         });
 
-        // 5. Real-time Read Status
+        // =========================
+        // REAL-TIME UPDATES
+        // =========================
+        socket.on("newMessageNotification", (data) => {
+          setConversations((prev) => {
+            // Use String conversion to ensure ID matching works
+            const exists = prev.find((c) => String(c.room) === String(data.room));
+
+            if (!exists) {
+              fetchConversations();
+              return prev;
+            }
+
+            return prev
+              .map((c) =>
+                String(c.room) === String(data.room)
+                  ? {
+                      ...c,
+                      lastMessage: data.message,
+                      updatedAt: data.createdAt,
+                      // Matching the 'roomUnreadCount' key from backend
+                      unreadCount: data.roomUnreadCount,
+                    }
+                  : c
+              )
+              .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+          });
+        });
+
         socket.on("messagesRead", ({ room }) => {
           setConversations((prev) =>
-            prev.map((c) => (String(c.room) === String(room) ? { ...c, unreadCount: 0 } : c))
+            prev.map((c) =>
+              String(c.room) === String(room) ? { ...c, unreadCount: 0 } : c
+            )
           );
         });
 
-        // 6. Real-time Delete Sync
         socket.on("conversationDeleted", ({ room }) => {
-          setConversations((prev) => prev.filter((c) => String(c.room) !== String(room)));
+          setConversations((prev) =>
+            prev.filter((c) => String(c.room) !== String(room))
+          );
         });
 
       } catch (err) {
         console.error("Socket Init Error:", err);
+        if (isSubscribed) setLoading(false);
       }
     };
 
@@ -132,9 +137,30 @@ function BuyerConversations() {
       }
     };
   }, [navigate]);
+
   // =========================
-  // HELPERS
+  // ACTIONS & HELPERS
   // =========================
+  const openChat = async (chat) => {
+    try {
+      await api.put(`/api/messages/read/${chat.room}`);
+      navigate(`/buyer_chat/${chat.sellerId}`);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = (e, room) => {
+    e.stopPropagation();
+    if (!window.confirm("Delete this conversation?")) return;
+
+    setConversations((prev) =>
+      prev.filter((c) => String(c.room) !== String(room))
+    );
+
+    socketRef.current?.emit("deleteConversation", { room });
+  };
+
   const getProfileImg = (path) => {
     if (!path) return "/placeholder.png";
     return path.startsWith("http")
@@ -169,17 +195,15 @@ function BuyerConversations() {
 
       <div className="chat-list">
         {loading ? (
-          <div className="loading-spinner">Loading...</div>
+          <div className="loading">Loading Chats...</div>
         ) : filteredChats.length === 0 ? (
-          <div className="empty-state">No messages found.</div>
+          <div className="empty-state">No conversations yet.</div>
         ) : (
           filteredChats.map((chat) => (
             <div
               key={chat.room}
               className="chat-item"
-              onClick={() =>
-                navigate(`/buyer_chat/${chat.sellerId}`)
-              }
+              onClick={() => openChat(chat)}
             >
               <div className="avatar">
                 <img
@@ -192,22 +216,15 @@ function BuyerConversations() {
                 <div className="chat-top">
                   <h4>{chat.sellerName}</h4>
                   <span className="chat-time">
-                    {new Date(chat.updatedAt).toLocaleTimeString(
-                      [],
-                      {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }
-                    )}
+                    {new Date(chat.updatedAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
 
                 <div className="chat-bottom">
-                  <p
-                    className={
-                      chat.unreadCount > 0 ? "unread-text" : ""
-                    }
-                  >
+                  <p className={chat.unreadCount > 0 ? "unread-text" : ""}>
                     {chat.lastMessage || "No messages yet"}
                   </p>
 
