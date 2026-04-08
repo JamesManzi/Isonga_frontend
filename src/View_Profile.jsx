@@ -1,5 +1,5 @@
 import "./View_Profile.css";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams,useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -17,31 +17,37 @@ function View_Profile() {
   const [numReviews, setNumReviews] = useState(0);
   const [message, setMessage] = useState("");
   const [loading,setLoading]=useState(false)
+
+  const navigate = useNavigate();
   // Socket for live rating updates
   // Socket for live rating updates
   useEffect(() => {
-    const socket = io("https://isonga-backend.onrender.com", { withCredentials: false });
+  const socket = io("https://isonga-backend.onrender.com", { withCredentials: false });
 
-    // Listener for new ratings
-    socket.on("sellerRatingUpdated", (data) => {
-      if (data.sellerId === id) {
-        setAverageRating(data.averageRating);
-        setNumReviews(data.numReviews);
-        fetchReviews();
-      }
-    });
+  // --- ADD THIS LINE ---
+  // This puts the buyer's current view into the seller's real-time room
+  socket.emit("userOnline", { userId: id, userModel: "Seller" });
 
-    // Listener for seller replies (Moved OUTSIDE the other listener)
-    socket.on("sellerReplyAdded", (data) => {
-      setReviews((prevReviews) =>
-        prevReviews.map((rev) =>
-          rev._id === data.ratingId ? { ...rev, sellerReply: data.sellerReply } : rev
-        )
-      );
-    });
+  // Listener for new ratings
+  socket.on("sellerRatingUpdated", (data) => {
+    // console.log("Live rating received:", data); // Good for debugging
+    if (data.sellerId === id) {
+      setAverageRating(data.averageRating);
+      setNumReviews(data.numReviews);
+      fetchReviews(); // Refresh the list to show the new/updated comment
+    }
+  });
 
-    return () => socket.disconnect();
-  }, [id]);
+  socket.on("sellerReplyAdded", (data) => {
+    setReviews((prevReviews) =>
+      prevReviews.map((rev) =>
+        rev._id === data.ratingId ? { ...rev, sellerReply: data.sellerReply } : rev
+      )
+    );
+  });
+
+  return () => socket.disconnect();
+}, [id]);
 
   useEffect(() => {
     const fetchSeller = async () => {
