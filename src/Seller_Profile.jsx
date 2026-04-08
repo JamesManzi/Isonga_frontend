@@ -71,38 +71,44 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
   };
 
   useEffect(() => { fetchSeller(); }, []);
+const socketRef = useRef(null);
 
-  useEffect(() => {
-  const currentId = seller?._id;
-  if (!currentId) return;
-
-  const socket = io("https://isonga-backend.onrender.com", { 
-    transports: ["websocket"] 
+useEffect(() => {
+  socketRef.current = io("https://isonga-backend.onrender.com", {
+    transports: ["websocket"],
   });
 
-  // CHANGE THIS: Use the same event name that worked in View_Profile
-  socket.emit("userOnline", { userId: currentId, userModel: "Seller" });
+  socketRef.current.on("sellerRatingUpdated", (data) => {
+  if (data.sellerId === seller?._id) {
+    setAverageRating(data.averageRating);
+    setNumReviews(data.numReviews);
+    fetchSeller();
+  }
+});
 
-  // Listener for ratings
-  socket.on("sellerRatingUpdated", (data) => {
-    if (data.sellerId === currentId) {
-      setAverageRating(data.averageRating);
-      setNumReviews(data.numReviews);
-      fetchSeller(); // This pulls the new reviews into the list
-    }
-  });
-
-  // Listener for replies (optional, if you want to see replies update live too)
-  socket.on("sellerReplyAdded", (data) => {
-    setReviews((prevReviews) =>
-      prevReviews.map((rev) =>
-        rev._id === data.ratingId ? { ...rev, sellerReply: data.sellerReply } : rev
+  socketRef.current.on("sellerReplyAdded", (data) => {
+    setReviews((prev) =>
+      prev.map((rev) =>
+        rev._id === data.ratingId
+          ? { ...rev, sellerReply: data.sellerReply }
+          : rev
       )
     );
   });
 
-  return () => socket.disconnect();
-}, [seller?._id]);
+  return () => socketRef.current.disconnect();
+}, []);
+
+useEffect(() => {
+  if (seller?._id) {
+    sellerIdRef.current = seller._id;
+
+    socketRef.current.emit("userOnline", {
+      userId: seller._id,
+      userModel: "Seller",
+    });
+  }
+}, [seller]);
 
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
