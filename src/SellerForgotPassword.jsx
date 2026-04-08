@@ -58,7 +58,7 @@ function SellerForgotPassword() {
       const res = await api.post("/api/reset-password", { email, code, newPassword });
       if (res.data.success) {
         alert("Seller password updated! Please login.");
-        navigate("/seller_login"); // <--- Crucial: Redirect to Seller Login
+        navigate("/login"); // <--- Crucial: Redirect to Seller Login
       } else {
         alert(res.data.message);
       }
@@ -174,7 +174,7 @@ function SellerForgotPassword() {
           </div>
         </div>
 
-        <button onClick={() => navigate("/seller_login")} className="back-btn">
+        <button onClick={() => navigate("/login")} className="back-btn">
           <ArrowLeft size={18} />
           Back to Login
         </button>
