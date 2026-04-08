@@ -73,28 +73,36 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
   useEffect(() => { fetchSeller(); }, []);
 
   useEffect(() => {
-  // Use the seller's ID from the fetched profile data
-  const currentId = seller?._id; 
-  
-  if (!currentId) return; // Exit if seller data hasn't loaded yet
+  const currentId = seller?._id;
+  if (!currentId) return;
 
   const socket = io("https://isonga-backend.onrender.com", { 
     transports: ["websocket"] 
   });
 
-  const room = `Seller_${currentId}`;
-  socket.emit("joinSellerRoom", room); 
+  // CHANGE THIS: Use the same event name that worked in View_Profile
+  socket.emit("userOnline", { userId: currentId, userModel: "Seller" });
 
+  // Listener for ratings
   socket.on("sellerRatingUpdated", (data) => {
     if (data.sellerId === currentId) {
       setAverageRating(data.averageRating);
       setNumReviews(data.numReviews);
-      fetchSeller(); 
+      fetchSeller(); // This pulls the new reviews into the list
     }
   });
 
+  // Listener for replies (optional, if you want to see replies update live too)
+  socket.on("sellerReplyAdded", (data) => {
+    setReviews((prevReviews) =>
+      prevReviews.map((rev) =>
+        rev._id === data.ratingId ? { ...rev, sellerReply: data.sellerReply } : rev
+      )
+    );
+  });
+
   return () => socket.disconnect();
-}, [seller?._id]); // Only re-run when seller._id is actually available
+}, [seller?._id]);
 
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
