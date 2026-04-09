@@ -152,8 +152,7 @@ function My_Store() {
       setLoading(false);
     }
   };
-
-  const handleUpdate = async (e) => {
+const handleUpdate = async (e) => {
   e.preventDefault();
   if (!editingProduct) return;
   setLoading(true);
@@ -174,17 +173,17 @@ function My_Store() {
 
   try {
     const res = await api.put(`/api/products/update/${editingProduct._id}`, formData);
-    console.log("FULL BACKEND RESPONSE:", res.data);
-    // Check if res.data.updatedProduct exists to avoid the 'undefined' error
-    if (res.data.success && res.data.updatedProduct) {
-      const updatedItem = res.data.updatedProduct;
+    
+    // Check for res.data.product to match your backend response
+    if (res.data.success && res.data.product) {
+      const updatedItem = res.data.product; // Use the 'product' key from your backend
 
       // 1. Update the products array
       setProducts((prev) =>
         prev.map((p) => (p._id === editingProduct._id ? updatedItem : p))
       );
 
-      // 2. IMPORTANT: Sync the slider index for the updated product ID
+      // 2. Sync the slider index for the updated product ID
       setCurrentIndex((prev) => ({
         ...prev,
         [updatedItem._id]: prev[updatedItem._id] || 0
@@ -196,8 +195,7 @@ function My_Store() {
       setPreviewFiles([]);
       alert("Updated successfully!");
     } else {
-      // If the backend succeeded but didn't return the product object
-      console.error("Update succeeded but no product data returned.");
+      console.error("Data mismatch: res.data.product is undefined");
       setMessage("Update error: Missing product data from server.");
     }
   } catch (error) {
