@@ -174,7 +174,7 @@ function My_Store() {
 
   try {
     const res = await api.put(`/api/products/update/${editingProduct._id}`, formData);
-    
+    console.log("FULL BACKEND RESPONSE:", res.data);
     // Check if res.data.updatedProduct exists to avoid the 'undefined' error
     if (res.data.success && res.data.updatedProduct) {
       const updatedItem = res.data.updatedProduct;
