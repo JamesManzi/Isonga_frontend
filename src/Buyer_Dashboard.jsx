@@ -66,7 +66,6 @@ function Buyer_Dashboard() {
       const res = await api.get("/api/cart/count");
       if (res.data.success) {
         setCartCount(res.data.count);
-        fetchUnreadMessageCount();
       }
     } catch (err) {
       console.error("Cart count error:", err);

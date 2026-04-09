@@ -125,7 +125,7 @@ function Register() {
                                     <label>Shop Name</label>
                                     <div className="input-with-icon">
                                         <FontAwesomeIcon icon={faStore} />
-                                        <input type="text" placeholder="e.g. Kigali Tech Hub" onChange={(e) => setName(e.target.value)} required />
+                                        <input type="text" placeholder="e.g.  Tech Hub" onChange={(e) => setName(e.target.value)} required />
                                     </div>
                                 </div>
                                 <div className="modern-input-group">
