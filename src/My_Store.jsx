@@ -154,43 +154,59 @@ function My_Store() {
   };
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
-    if (!editingProduct) return;
-    setLoading(true);
+  e.preventDefault();
+  if (!editingProduct) return;
+  setLoading(true);
 
-    const formData = new FormData();
-    formData.append("type", editingProduct.type);
-    formData.append("name", editingProduct.name);
-    formData.append("price", Number(editingProduct.price));
-    formData.append("location", editingProduct.location);
-    formData.append("category", editingProduct.category);
-    formData.append("description", editingProduct.description);
+  const formData = new FormData();
+  formData.append("type", editingProduct.type);
+  formData.append("name", editingProduct.name);
+  formData.append("price", Number(editingProduct.price));
+  formData.append("location", editingProduct.location);
+  formData.append("category", editingProduct.category);
+  formData.append("description", editingProduct.description);
+  
+  if (editingProduct.type === "Product") {
+    formData.append("quantity", Number(editingProduct.quantity));
+  }
+
+  selectedFiles.forEach((file) => formData.append("files", file));
+
+  try {
+    const res = await api.put(`/api/products/update/${editingProduct._id}`, formData);
     
-    // Only append quantity if the type is Product
-    if (editingProduct.type === "Product") {
-      formData.append("quantity", Number(editingProduct.quantity));
+    // Check if res.data.updatedProduct exists to avoid the 'undefined' error
+    if (res.data.success && res.data.updatedProduct) {
+      const updatedItem = res.data.updatedProduct;
+
+      // 1. Update the products array
+      setProducts((prev) =>
+        prev.map((p) => (p._id === editingProduct._id ? updatedItem : p))
+      );
+
+      // 2. IMPORTANT: Sync the slider index for the updated product ID
+      setCurrentIndex((prev) => ({
+        ...prev,
+        [updatedItem._id]: prev[updatedItem._id] || 0
+      }));
+
+      // 3. Reset UI states
+      setEditingProduct(null);
+      setSelectedFiles([]);
+      setPreviewFiles([]);
+      alert("Updated successfully!");
+    } else {
+      // If the backend succeeded but didn't return the product object
+      console.error("Update succeeded but no product data returned.");
+      setMessage("Update error: Missing product data from server.");
     }
-
-    selectedFiles.forEach((file) => formData.append("files", file));
-
-    try {
-      const res = await api.put(`/api/products/update/${editingProduct._id}`, formData);
-      if (res.data.success) {
-        setProducts((prev) =>
-          prev.map((p) => (p._id === editingProduct._id ? res.data.updatedProduct : p))
-        );
-        setEditingProduct(null);
-        setSelectedFiles([]);
-        setPreviewFiles([]);
-        alert("Updated successfully!");
-      }
-    } catch (error) {
-      setMessage("Update Failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  } catch (error) {
+    console.error("Update Error:", error);
+    setMessage("Update Failed. Please check your connection.");
+  } finally {
+    setLoading(false);
+  }
+};
   if (pageLoading) {
     return (
       <div className="store-loading">
