@@ -2,6 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://api.isongamarket.com",
+  withCredentials:true
 });
 
 // 🔥 REQUEST INTERCEPTOR (attach token automatically)
