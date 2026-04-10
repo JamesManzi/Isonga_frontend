@@ -6,7 +6,7 @@ import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
 // Socket
-export const socket = io("https://isonga-backend.onrender.com", {
+export const socket = io("https://api.isongamarket.com", {
   transports: ["polling", "websocket"],
   auth: {
     token: localStorage.getItem("token")
@@ -54,7 +54,7 @@ function Buyer_Chat() {
     const clean = path.trim().replace(/\\/g, "/");
     return clean.startsWith("http")
       ? clean
-      : `https://isonga-backend.onrender.com/${clean.replace(/^\/+/, "")}`;
+      : `https://api.isongamarket.com/${clean.replace(/^\/+/, "")}`;
   };
 
   // =========================

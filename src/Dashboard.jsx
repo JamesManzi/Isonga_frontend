@@ -168,7 +168,7 @@ function Dashboard() {
 
   // 2. Initialize socket if it doesn't exist
   if (!socketRef.current) {
-    socketRef.current = io("https://isonga-backend.onrender.com", {
+    socketRef.current = io("https://api.isongamarket.com", {
       withCredentials: false,
       transports: ["polling", "websocket"],
       auth: { token },
@@ -299,7 +299,7 @@ if (!seller) {
   const getFileUrl = (path) => {
   if (!path) return "/placeholder.png";
   if (path.startsWith("http")) return path;
-  return `https://isonga-backend.onrender.com/uploads/${path}`;
+  return `https://api.isongamarket.com/uploads/${path}`;
 };
   /* ---------------- UI ---------------- */
 

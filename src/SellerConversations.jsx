@@ -4,7 +4,7 @@ import api from "./api";
 import { io } from "socket.io-client";
 import "./SellerConversations.css";
 
-const BACKEND_URL = "https://isonga-backend.onrender.com";
+const BACKEND_URL = "https://api.isongamarket.com";
 
 function SellerConversations() {
   const [sellerId, setSellerId] = useState("");

@@ -1,7 +1,7 @@
 // socket.js
 import { io } from "socket.io-client";
 
-export const socket = io("https://isonga-backend.onrender.com", {
+export const socket = io("https://api.isongamarket.com", {
   transports: ["polling", "websocket"],
   autoConnect: true,
 });

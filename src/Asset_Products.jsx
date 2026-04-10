@@ -103,7 +103,7 @@ function Asset_Products() {
 
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
-    return path.startsWith("http") ? path : `https://isonga-backend.onrender.com/uploads/${path}`;
+    return path.startsWith("http") ? path : `https://api.isongamarket.com/uploads/${path}`;
   };
 
   if (loading) {

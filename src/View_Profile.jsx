@@ -22,7 +22,7 @@ function View_Profile() {
   // Socket for live rating updates
   // Socket for live rating updates
   useEffect(() => {
-  const socket = io("https://isonga-backend.onrender.com", { withCredentials: false });
+  const socket = io("https://api.isongamarket.com", { withCredentials: false });
 
   // --- ADD THIS LINE ---
   // This puts the buyer's current view into the seller's real-time room
@@ -140,7 +140,7 @@ if (!seller) {
   if (!path) return "/placeholder.png"; // Fallback if no image exists
   return path.startsWith("http") 
     ? path 
-    : `https://isonga-backend.onrender.com/uploads/${path}`;
+    : `https://api.isongamarket.com/uploads/${path}`;
 };
 
   return (

@@ -15,7 +15,7 @@ function ChatPage() {
   useEffect(() => {
     // Fetch buyer info (or seller info depending on role)
     const fetchUser = async () => {
-      const res = await axios.get("https://isonga-backend.onrender.com/api/current_user", {
+      const res = await axios.get("https://api.isongamarket.com/api/current_user", {
         withCredentials: false,
       });
       setBuyer(res.data.user);
@@ -27,7 +27,7 @@ function ChatPage() {
     if (!buyer) return;
 
     // Connect socket
-    socketRef.current = io("https://isonga-backend.onrender.com", {
+    socketRef.current = io("https://api.isongamarket.com", {
       withCredentials: false,
       transports: ["websocket"],
     });
@@ -46,7 +46,7 @@ function ChatPage() {
     // Load chat history
     const fetchMessages = async () => {
       const res = await axios.get(
-        `https://isonga-backend.onrender.com/api/messages/${buyer._id}/${sellerId}`,
+        `https://api.isongamarket.com/api/messages/${buyer._id}/${sellerId}`,
         { withCredentials: false }
       );
       setMessages(res.data.messages || []);

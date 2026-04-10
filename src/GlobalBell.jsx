@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import api from "./api";
 
-const SOCKET_URL = "https://isonga-backend.onrender.com";
+const SOCKET_URL = "https://api.isongamarket.com";
 
 const GlobalBell = ({ buyerId }) => {
   const navigate = useNavigate();

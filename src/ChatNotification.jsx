@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 
-const BACKEND_URL = "https://isonga-backend.onrender.com";
+const BACKEND_URL = "https://api.isongamarket.com";
 
 function ChatNotification({ userId }) {
   const [conversations, setConversations] = useState([]);

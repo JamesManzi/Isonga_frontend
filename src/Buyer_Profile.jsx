@@ -125,7 +125,7 @@ if(!path) return "/placeholder.png";
 
 return path.startsWith("http") || path.startsWith("blob:")
 ? path
-: `https://isonga-backend.onrender.com/uploads/${path}`;
+: `https://api.isongamarket.com/uploads/${path}`;
 
 };
 

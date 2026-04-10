@@ -74,7 +74,7 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
 const socketRef = useRef(null);
 const sellerIdRef = useRef(null);
 useEffect(() => {
-  socketRef.current = io("https://isonga-backend.onrender.com", {
+  socketRef.current = io("https://api.isongamarket.com", {
     transports: ["websocket"],
   });
 
@@ -112,7 +112,7 @@ useEffect(() => {
 
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
-    return path.startsWith("http") ? path : `https://isonga-backend.onrender.com/uploads/${path}`;
+    return path.startsWith("http") ? path : `https://api.isongamarket.com/uploads/${path}`;
   };
 
   const renderStars = (rating) =>

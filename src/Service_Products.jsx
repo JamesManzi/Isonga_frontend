@@ -97,7 +97,7 @@ function Service_Products() {
   }, [searchQuery, products]);
 
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
-  const getFileUrl = (path) => path?.startsWith("http") ? path : `https://isonga-backend.onrender.com/uploads/${path}`;
+  const getFileUrl = (path) => path?.startsWith("http") ? path : `https://api.isongamarket.com/uploads/${path}`;
 
   if (loading) {
     return (

@@ -31,7 +31,7 @@ const NotificationBell = ({ buyerId }) => {
     fetchOrderNotifications();
 
     // Socket Setup
-    const socket = io("https://isonga-backend.onrender.com");
+    const socket = io("https://api.isongamarket.com");
     socket.emit("userOnline", { userId: buyerId, userModel: "Buyer" });
 
     socket.on("new_notification", (data) => {

@@ -103,7 +103,7 @@ useEffect(() => {
   const token = localStorage.getItem("token");
 
   if (!socketRef.current) {
-    socketRef.current = io("https://isonga-backend.onrender.com", {
+    socketRef.current = io("https://api.isongamarket.com", {
       transports: ["polling", "websocket"],
       auth: { token },
     });
@@ -275,7 +275,7 @@ useEffect(() => {
   const getFileUrl = (path) => {
     if (!path) return "/placeholder.png";
     if (path.startsWith("http")) return path;
-    return `https://isonga-backend.onrender.com/uploads/${path}`;
+    return `https://api.isongamarket.com/uploads/${path}`;
   };
 
   // Scroll and Modal Navbar Logic
