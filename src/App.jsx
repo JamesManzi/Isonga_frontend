@@ -1,4 +1,5 @@
 import { BrowserRouter,Routes,Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import Register from "./Register";
 import Login from "./Login";
 import Buyer_Register from "./Buyer_Register";
@@ -46,6 +47,7 @@ import Food from "./Food";
 function App(){
   return(
     <div>
+      <HelmetProvider>
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home/>}/>
@@ -94,6 +96,7 @@ function App(){
          <Route path="/SellerForgotPassword" element={<SellerForgotPassword/>}/>
       </Routes>
       </BrowserRouter>
+      </HelmetProvider>
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import "./Home.css";
 import { Link } from "react-router-dom";
-
+import { Helmet } from "react-helmet-async";
 function Home() {
   const [sellers, setSellers] = useState([]);
   const [filteredSellers, setFilteredSellers] = useState([]);
@@ -137,6 +137,13 @@ function Home() {
 
   return (
     <div className="Home">
+      <Helmet>
+  <title>Isonga Market Rwanda - Buy & Sell Online</title>
+  <meta
+    name="description"
+    content="Buy and sell products, shops, phones, clothes and more in Rwanda using Isonga Market."
+  />
+</Helmet>
       {/* Navbar */}
       <div className="Home_navbar">
         <div className="Home_brand">
