@@ -34,32 +34,12 @@ function VerifyEmail() {
     setTimer(seconds);
   }, []);
 
-  // --- 3. INITIALIZATION & AUTO-SEND ---
   useEffect(() => {
-    // If we just arrived from Login/Register, save data immediately
-    if (state?.email) {
-      sessionStorage.setItem("pending_email", state.email);
-      sessionStorage.setItem("pending_role", state.role || "buyer");
-    }
-
-    // Trigger the initial code delivery ONLY ONCE per session
-    const autoSend = async () => {
-      if (email && !sessionStorage.getItem("initial_sent")) {
-        try {
-          await api.post("/api/resend-verification", { 
-            email, 
-            userType: userRole 
-          });
-          sessionStorage.setItem("initial_sent", "true");
-          startTimer(59); // Start the persistent countdown
-        } catch (err) {
-          console.error("Auto-send failed", err);
-        }
-      }
-    };
-
-    autoSend();
-  }, [state, email, userRole, startTimer]);
+  if (state?.email) {
+    sessionStorage.setItem("pending_email", state.email);
+    sessionStorage.setItem("pending_role", state.role || "buyer");
+  }
+}, [state]);
 
   // --- 4. COUNTDOWN INTERVAL ---
   useEffect(() => {
