@@ -35,14 +35,22 @@ function VerifyBuyerEmail() {
   }, [state]);
 
   useEffect(() => {
-    let interval;
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [timer]);
+  // Only start the interval if there is actually a timer running
+  if (timer <= 0) return;
+
+  const interval = setInterval(() => {
+    setTimer((prev) => {
+      if (prev <= 1) {
+        clearInterval(interval);
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+
+  // Clean up on unmount or if timer is manually reset
+  return () => clearInterval(interval);
+}, []); // Empty array ensures the interval logic is set up once
 
   const handleVerify = async (e) => {
     e.preventDefault();
@@ -72,14 +80,25 @@ function VerifyBuyerEmail() {
   const handleManualResend = async () => {
     try {
       setLoading(true);
-      const res = await api.post("/api/buyer-resend-verification", { email, userType: "buyer" });
+      // Ensure the payload matches what your backend expects
+      const res = await api.post("/api/buyer-resend-verification", { email });
+      
       if (res.data.success) {
-        startTimer(59);
+        startTimer(60); // Reset to 60 seconds
         alert("Buyer verification code resent!"); 
         setCode(""); 
+      } else {
+        alert(res.data.message || "Failed to resend code");
       }
     } catch (err) {
-      alert("Network error. Please try again.");
+      // Catch the 429 'Too Many Requests' or other server errors
+      const errorMsg = err.response?.data?.message || "Network error. Please try again.";
+      alert(errorMsg);
+      
+      // If the server says we are waiting, sync the local timer if possible
+      if (err.response?.status === 429) {
+        startTimer(30); // Optionally force the timer to show again
+      }
     } finally {
       setLoading(false);
     }
