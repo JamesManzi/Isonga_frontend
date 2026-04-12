@@ -54,7 +54,7 @@ function Buyer_Register() {
             });
 
             if (res.data.success) {
-                setTimeout(() => navigate("/verify-email", { state: { email: email, role: "buyer" } 
+                setTimeout(() => navigate("/VerifyBuyerEmail", { state: { email: email, role: "buyer" } 
 }), 2000);
             }
         } catch (error) {

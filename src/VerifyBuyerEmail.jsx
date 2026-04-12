@@ -50,7 +50,7 @@ function VerifyBuyerEmail() {
     
     setLoading(true);
     try {
-      const res = await api.post("/api/verify-email", { email, code, role: "buyer" });
+      const res = await api.post("/api/buyer-verify-email", { email, code, role: "buyer" });
       
       if (res.data.success) {
         sessionStorage.removeItem("pending_buyer_email");
