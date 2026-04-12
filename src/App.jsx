@@ -44,6 +44,8 @@ import BuyerOrderDetails from "./BuyerOrderDetails";
 import BuyerBookingDetails from "./BuyerBookingDetails";
 import SellerForgotPassword from "./SellerForgotPassword";
 import Food from "./Food";
+import VerifyBuyerEmail from "./VerifyBuyerEmail";
+import  VerifySellerEmail from "./ VerifySellerEmail";
 function App(){
   return(
     <div>
@@ -94,6 +96,8 @@ function App(){
          <Route path="/buyer/booking/:id" element={<BuyerBookingDetails />} />
          <Route path="/Food" element={<Food/>}/>
          <Route path="/SellerForgotPassword" element={<SellerForgotPassword/>}/>
+         <Route path="/VerifyBuyerEmail" element={<VerifyBuyerEmail/>}/>
+         <Route path="/VerifySellerEmail" element={< VerifySellerEmail/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>
