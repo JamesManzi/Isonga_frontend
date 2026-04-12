@@ -78,7 +78,7 @@ function Login() {
       // 1. Handle Unverified Users First
       if (user.isVerified === false) {
         // We pass email/role so VerifyEmail page knows who to send the code to
-        navigate("/verify-email", { 
+        navigate("/VerifySellerEmail", { 
           state: { email: user.email, role: "seller" } 
         });
         return; 
