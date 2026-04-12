@@ -8,55 +8,85 @@ function VerifyBuyerEmail() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  // Specifically for Buyer
-  const [email] = useState(() => state?.email || sessionStorage.getItem("pending_buyer_email"));
+  const [email] = useState(
+    () => state?.email || sessionStorage.getItem("pending_buyer_email")
+  );
+
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-const calculateRemaining = () => {
-  const expiry = sessionStorage.getItem("buyer_timer_expiry");
-  if (!expiry) return 0;
 
-  const remaining = Math.floor((parseInt(expiry) - Date.now()) / 1000);
-  return remaining > 0 ? remaining : 0;
-};
+  // =========================
+  // TIMER LOGIC (FIXED)
+  // =========================
 
-const [timer, setTimer] = useState(() => calculateRemaining());
+  const calculateRemaining = () => {
+    const expiry = sessionStorage.getItem("buyer_timer_expiry");
+    if (!expiry) return 0;
 
-const startTimer = useCallback((seconds) => {
-  const expiryTime = Date.now() + seconds * 1000;
-  sessionStorage.setItem("buyer_timer_expiry", expiryTime.toString());
-  setTimer(seconds);
-}, []);
+    return Math.max(
+      Math.floor((Number(expiry) - Date.now()) / 1000),
+      0
+    );
+  };
 
-useEffect(() => {
-  if (state?.email) {
-    sessionStorage.setItem("pending_buyer_email", state.email);
-  }
-}, [state]);
+  const [timer, setTimer] = useState(() => calculateRemaining());
 
-// 🔥 FIX: live sync timer with expiry
-useEffect(() => {
-  const interval = setInterval(() => {
+  const startTimer = useCallback((seconds) => {
+    const expiryTime = Date.now() + seconds * 1000;
+    sessionStorage.setItem("buyer_timer_expiry", String(expiryTime));
+    setTimer(seconds);
+  }, []);
+
+  // Save email once
+  useEffect(() => {
+    if (state?.email) {
+      sessionStorage.setItem("pending_buyer_email", state.email);
+    }
+  }, [state]);
+
+  // 🔥 INIT TIMER (CRITICAL FIX)
+  useEffect(() => {
+    let expiry = sessionStorage.getItem("buyer_timer_expiry");
+
+    if (!expiry) {
+      const newExpiry = Date.now() + 60 * 1000;
+      sessionStorage.setItem("buyer_timer_expiry", String(newExpiry));
+      expiry = newExpiry;
+    }
+
     setTimer(calculateRemaining());
-  }, 1000);
+  }, []);
 
-  return () => clearInterval(interval);
-}, []);
+  // 🔥 LIVE COUNTDOWN (SINGLE SOURCE OF TRUTH)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer(calculateRemaining());
+    }, 1000);
 
+    return () => clearInterval(interval);
+  }, []);
+
+  // =========================
+  // VERIFY EMAIL
+  // =========================
   const handleVerify = async (e) => {
     e.preventDefault();
     if (code.length < 6) return;
-    
+
     setLoading(true);
     try {
-      const res = await api.post("/api/buyer-verify-email", { email, code, role: "buyer" });
-      
+      const res = await api.post("/api/buyer-verify-email", {
+        email,
+        code,
+        role: "buyer",
+      });
+
       if (res.data.success) {
         sessionStorage.removeItem("pending_buyer_email");
         sessionStorage.removeItem("buyer_timer_expiry");
 
-        navigate("/buyer_login", { 
-          state: { message: "Buyer account verified! Please login." } 
+        navigate("/buyer_login", {
+          state: { message: "Buyer account verified! Please login." },
         });
       } else {
         alert(res.data.message);
@@ -68,57 +98,63 @@ useEffect(() => {
     }
   };
 
-  useEffect(() => {
-  let expiry = sessionStorage.getItem("buyer_timer_expiry");
-
-  // If no expiry exists → create one
-  if (!expiry) {
-    const newExpiry = Date.now() + 60 * 1000; // 60 seconds default
-    sessionStorage.setItem("buyer_timer_expiry", newExpiry.toString());
-    expiry = newExpiry;
-  }
-
-  setTimer(calculateRemaining());
-}, []);
-
+  // =========================
+  // RESEND CODE
+  // =========================
   const handleManualResend = async () => {
     try {
       setLoading(true);
-      // Ensure the payload matches what your backend expects
-      const res = await api.post("/api/buyer-resend-verification", { email });
-      
+
+      const res = await api.post("/api/buyer-resend-verification", {
+        email,
+      });
+
       if (res.data.success) {
-        startTimer(60); // Reset to 60 seconds
-        alert("Buyer verification code resent!"); 
-        setCode(""); 
+        startTimer(60);
+        alert("Buyer verification code resent!");
+        setCode("");
       } else {
         alert(res.data.message || "Failed to resend code");
       }
     } catch (err) {
-      // Catch the 429 'Too Many Requests' or other server errors
-      const errorMsg = err.response?.data?.message || "Network error. Please try again.";
+      const errorMsg =
+        err.response?.data?.message || "Network error. Please try again.";
+
       alert(errorMsg);
-      
-      // If the server says we are waiting, sync the local timer if possible
+
       if (err.response?.status === 429) {
-        startTimer(30); // Optionally force the timer to show again
+        startTimer(30);
       }
     } finally {
       setLoading(false);
     }
   };
 
+  // =========================
+  // EMAIL CHECK
+  // =========================
   if (!email) {
     return (
       <div className="verify-page-wrapper">
-        <div className="verify-card" style={{ textAlign: "center", padding: "40px" }}>
+        <div
+          className="verify-card"
+          style={{ textAlign: "center", padding: "40px" }}
+        >
           <p>Buyer session expired.</p>
-          <button onClick={() => navigate("/buyer_login")} className="submit-btn active">Back to Login</button>
+          <button
+            onClick={() => navigate("/buyer_login")}
+            className="submit-btn active"
+          >
+            Back to Login
+          </button>
         </div>
       </div>
     );
   }
 
+  // =========================
+  // UI
+  // =========================
   return (
     <div className="verify-page-wrapper buyer-theme">
       <div className="verify-container">
@@ -126,33 +162,68 @@ useEffect(() => {
           <span className="brand-isonga">ISONGA</span>
           <span className="brand-market">BUYER</span>
         </div>
+
         <div className="verify-card">
           <div className="verify-header">
             <div className="icon-badge buyer-icon">
               <ShieldCheck size={32} />
             </div>
             <h2>Verify Buyer Account</h2>
-            <p>Code sent to: <b>{email}</b></p>
+            <p>
+              Code sent to: <b>{email}</b>
+            </p>
           </div>
+
           <form onSubmit={handleVerify} className="verify-form">
             <input
               type="text"
               maxLength="6"
               placeholder="000000"
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+              onChange={(e) =>
+                setCode(e.target.value.replace(/\D/g, ""))
+              }
               className="otp-input"
             />
-            <button type="submit" disabled={loading || code.length < 6} className={`submit-btn ${loading || code.length < 6 ? "disabled" : "active"}`}>
-              {loading ? <Loader2 className="spinner" /> : "Verify Buyer"}
-              {!loading && code.length === 6 && <CheckCircle2 size={20} />}
+
+            <button
+              type="submit"
+              disabled={loading || code.length < 6}
+              className={`submit-btn ${
+                loading || code.length < 6 ? "disabled" : "active"
+              }`}
+            >
+              {loading ? (
+                <Loader2 className="spinner" />
+              ) : (
+                "Verify Buyer"
+              )}
+              {!loading && code.length === 6 && (
+                <CheckCircle2 size={20} />
+              )}
             </button>
           </form>
+
           <div className="resend-section">
-            {timer > 0 ? <p>Resend in {timer}s</p> : <button onClick={handleManualResend} className="resend-link">Resend Code</button>}
+            {timer > 0 ? (
+              <p>Resend in {timer}s</p>
+            ) : (
+              <button
+                onClick={handleManualResend}
+                className="resend-link"
+              >
+                Resend Code
+              </button>
+            )}
           </div>
         </div>
-        <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft size={18} /> Back</button>
+
+        <button
+          onClick={() => navigate(-1)}
+          className="back-btn"
+        >
+          <ArrowLeft size={18} /> Back
+        </button>
       </div>
     </div>
   );
