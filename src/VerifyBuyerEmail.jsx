@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "./api";
 import { ShieldCheck, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
-import "./VerifyEmail.css";
+import "./VerifyBuyerEmail.css";
 
 function VerifyBuyerEmail() {
   const { state } = useLocation();

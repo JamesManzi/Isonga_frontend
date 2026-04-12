@@ -1,0 +1,204 @@
+/* Custom Variables for Easy Theme Tweaks */
+:root {
+  --primary-buyer: #2563eb; /* Modern Blue */
+  --primary-hover: #1d4ed8;
+  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  --card-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --error: #ef4444;
+  --success: #22c55e;
+  --radius: 12px;
+  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* Page Wrapper - Full screen centering */
+.verify-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-gradient);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  padding: 20px;
+}
+
+.verify-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Brand Logo Styling */
+.brand-logo {
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.025em;
+}
+
+.brand-isonga { color: var(--text-main); }
+.brand-market { 
+  color: var(--primary-buyer); 
+  margin-left: 4px;
+  font-weight: 400;
+}
+
+/* Main Card */
+.verify-card {
+  background: var(--card-bg);
+  padding: 40px 32px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.verify-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.icon-badge {
+  width: 64px;
+  height: 64px;
+  background: #eff6ff;
+  color: var(--primary-buyer);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.verify-header h2 {
+  font-size: 1.5rem;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.verify-header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Form & OTP Input */
+.verify-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.otp-input {
+  width: 100%;
+  padding: 16px;
+  font-size: 2rem;
+  text-align: center;
+  letter-spacing: 0.5rem;
+  font-weight: 700;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+  color: var(--text-main);
+}
+
+.otp-input:focus {
+  outline: none;
+  border-color: var(--primary-buyer);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.otp-input::placeholder {
+  color: #cbd5e1;
+  letter-spacing: 0.5rem;
+}
+
+/* Submit Button States */
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-btn.active {
+  background: var(--primary-buyer);
+  color: white;
+}
+
+.submit-btn.active:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.submit-btn.disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Animations */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Resend Section */
+.resend-section {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.resend-link {
+  background: none;
+  border: none;
+  color: var(--primary-buyer);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.resend-link:hover {
+  color: var(--primary-hover);
+}
+
+/* Navigation Buttons */
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: var(--text-main);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .verify-card {
+    padding: 32px 20px;
+  }
+}
