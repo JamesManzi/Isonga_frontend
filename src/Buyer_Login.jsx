@@ -78,7 +78,7 @@ function Buyer_Login() {
         // 1. Handle Unverified Buyers First
         if (user.isVerified === false) {
           // Pass the email and role to the VerifyEmail page
-          navigate("/verify-email", { 
+          navigate("/VerifyBuyerEmail", { 
             state: { email: user.email, role: "buyer" } 
           });
           return; // Stop execution here
