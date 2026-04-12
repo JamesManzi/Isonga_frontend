@@ -45,7 +45,7 @@ import BuyerBookingDetails from "./BuyerBookingDetails";
 import SellerForgotPassword from "./SellerForgotPassword";
 import Food from "./Food";
 import VerifyBuyerEmail from "./VerifyBuyerEmail";
-import  VerifySellerEmail from "./ VerifySellerEmail";
+import  VerifySellerEmail from "./VerifySellerEmail";
 function App(){
   return(
     <div>
