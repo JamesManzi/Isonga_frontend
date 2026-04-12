@@ -12,45 +12,36 @@ function VerifyBuyerEmail() {
   const [email] = useState(() => state?.email || sessionStorage.getItem("pending_buyer_email"));
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
+const calculateRemaining = () => {
+  const expiry = sessionStorage.getItem("buyer_timer_expiry");
+  if (!expiry) return 0;
 
-  const calculateRemaining = () => {
-    const expiry = sessionStorage.getItem("buyer_timer_expiry");
-    if (!expiry) return 0;
-    const remaining = Math.floor((parseInt(expiry) - Date.now()) / 1000);
-    return remaining > 0 ? remaining : 0;
-  };
+  const remaining = Math.floor((parseInt(expiry) - Date.now()) / 1000);
+  return remaining > 0 ? remaining : 0;
+};
 
-  const [timer, setTimer] = useState(calculateRemaining);
+const [timer, setTimer] = useState(() => calculateRemaining());
 
-  const startTimer = useCallback((seconds) => {
-    const expiryTime = Date.now() + seconds * 1000;
-    sessionStorage.setItem("buyer_timer_expiry", expiryTime.toString());
-    setTimer(seconds);
-  }, []);
+const startTimer = useCallback((seconds) => {
+  const expiryTime = Date.now() + seconds * 1000;
+  sessionStorage.setItem("buyer_timer_expiry", expiryTime.toString());
+  setTimer(seconds);
+}, []);
 
-  useEffect(() => {
-    if (state?.email) {
-      sessionStorage.setItem("pending_buyer_email", state.email);
-    }
-  }, [state]);
+useEffect(() => {
+  if (state?.email) {
+    sessionStorage.setItem("pending_buyer_email", state.email);
+  }
+}, [state]);
 
-  useEffect(() => {
-  // Only start the interval if there is actually a timer running
-  if (timer <= 0) return;
-
+// 🔥 FIX: live sync timer with expiry
+useEffect(() => {
   const interval = setInterval(() => {
-    setTimer((prev) => {
-      if (prev <= 1) {
-        clearInterval(interval);
-        return 0;
-      }
-      return prev - 1;
-    });
+    setTimer(calculateRemaining());
   }, 1000);
 
-  // Clean up on unmount or if timer is manually reset
   return () => clearInterval(interval);
-}, []); // Empty array ensures the interval logic is set up once
+}, []);
 
   const handleVerify = async (e) => {
     e.preventDefault();
