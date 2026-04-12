@@ -1,26 +1,89 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./api";
-import { Mail, Lock, ShieldCheck, ArrowLeft, Loader2, Eye, EyeOff, KeyRound } from "lucide-react";
-import "./VerifyEmail.css"; 
+import {
+  Mail,
+  ShieldCheck,
+  ArrowLeft,
+  Loader2,
+  Eye,
+  EyeOff,
+  KeyRound
+} from "lucide-react";
+import "./VerifyEmail.css";
 
 function ForgotPassword() {
-  const [step, setStep] = useState(1); // 1: Email, 2: Code, 3: New Password
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
-  // STEP 1: Request Code
+  // =========================
+  // TIMER LOGIC (SAME STYLE AS BUYER)
+  // =========================
+
+  const calculateRemaining = () => {
+    const expiry = sessionStorage.getItem("forgot_timer_expiry");
+    if (!expiry) return 0;
+
+    return Math.max(
+      Math.floor(Number(expiry) - Date.now()) / 1000,
+      0
+    );
+  };
+
+  const [timer, setTimer] = useState(() => calculateRemaining());
+
+  const startTimer = useCallback((seconds) => {
+    const expiry = Date.now() + seconds * 1000;
+    sessionStorage.setItem("forgot_timer_expiry", String(expiry));
+    setTimer(seconds);
+  }, []);
+
+  // =========================
+  // INIT TIMER
+  // =========================
+  useEffect(() => {
+    let expiry = sessionStorage.getItem("forgot_timer_expiry");
+
+    if (!expiry) {
+      const newExpiry = Date.now() + 60 * 1000;
+      sessionStorage.setItem("forgot_timer_expiry", String(newExpiry));
+      expiry = newExpiry;
+    }
+
+    setTimer(calculateRemaining());
+  }, []);
+
+  // =========================
+  // LIVE TIMER
+  // =========================
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer(calculateRemaining());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // =========================
+  // STEP 1 - REQUEST CODE
+  // =========================
   const handleRequestCode = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const res = await api.post("/api/forgot-password", { email });
+
       if (res.data.success) {
         setStep(2);
+        startTimer(60); // 🔥 START TIMER
+        setCode("");
       } else {
         alert(res.data.message);
       }
@@ -31,14 +94,20 @@ function ForgotPassword() {
     }
   };
 
-  // STEP 2: Verify Code (Before showing password field)
+  // =========================
+  // STEP 2 - VERIFY CODE
+  // =========================
   const handleVerifyCode = async (e) => {
     e.preventDefault();
     if (code.length < 6) return;
+
     setLoading(true);
     try {
-      // New temporary route to check if code is valid
-      const res = await api.post("/api/verify-reset-code", { email, code });
+      const res = await api.post("/api/verify-reset-code", {
+        email,
+        code
+      });
+
       if (res.data.success) {
         setStep(3);
       } else {
@@ -51,15 +120,24 @@ function ForgotPassword() {
     }
   };
 
-  // STEP 3: Save New Password
+  // =========================
+  // STEP 3 - RESET PASSWORD
+  // =========================
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      const res = await api.post("/api/reset-password", { email, code, newPassword });
+      const res = await api.post("/api/reset-password", {
+        email,
+        code,
+        newPassword
+      });
+
       if (res.data.success) {
-        alert("Password updated! Please login.");
-        navigate("/buyer_login"); 
+        alert("Password updated!");
+        sessionStorage.removeItem("forgot_timer_expiry");
+        navigate("/buyer_login");
       } else {
         alert(res.data.message);
       }
@@ -69,6 +147,43 @@ function ForgotPassword() {
       setLoading(false);
     }
   };
+
+  // =========================
+  // RESEND CODE
+  // =========================
+  const handleResend = async () => {
+    try {
+      setLoading(true);
+
+      const res = await api.post("/api/forgot-password", {
+        email
+      });
+
+      if (res.data.success) {
+        startTimer(60);
+        setCode("");
+        alert("Reset code resent!");
+      } else {
+        alert(res.data.message);
+      }
+    } catch (err) {
+      const msg =
+        err.response?.data?.message ||
+        "Network error. Please try again.";
+
+      alert(msg);
+
+      if (err.response?.status === 429) {
+        startTimer(30);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // =========================
+  // UI
+  // =========================
 
   return (
     <div className="verify-page-wrapper">
@@ -88,95 +203,103 @@ function ForgotPassword() {
               {step === 2 && <KeyRound size={32} />}
               {step === 3 && <ShieldCheck size={32} />}
             </div>
+
             <h2>
-              {step === 1 && "Forgot Password?"}
+              {step === 1 && "Forgot Password"}
               {step === 2 && "Verify Code"}
               {step === 3 && "New Password"}
             </h2>
+
             <p>
-              {step === 1 && "Enter your email to receive a reset code."}
-              {step === 2 && `Enter the 6-digit code sent to ${email}`}
-              {step === 3 && "Create a new secure password for your account."}
+              {step === 1 && "Enter your email"}
+              {step === 2 && `Code sent to ${email}`}
+              {step === 3 && "Create new password"}
             </p>
           </div>
 
-          {/* STEP 1: EMAIL */}
+          {/* STEP 1 */}
           {step === 1 && (
             <form onSubmit={handleRequestCode} className="verify-form">
-              <div className="input-group">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="otp-input"
-                  style={{ fontSize: '1rem', textAlign: 'left', padding: '0 15px' }}
-                />
-              </div>
-              <button type="submit" disabled={loading} className="submit-btn active">
-                {loading ? <Loader2 className="spinner" /> : "Send Reset Code"}
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                className="otp-input"
+                required
+              />
+
+              <button disabled={loading} className="submit-btn active">
+                {loading ? <Loader2 className="spinner" /> : "Send Code"}
               </button>
             </form>
           )}
 
-          {/* STEP 2: CODE VERIFICATION */}
+          {/* STEP 2 */}
           {step === 2 && (
-            <form onSubmit={handleVerifyCode} className="verify-form">
-              <div className="input-group">
+            <>
+              <form onSubmit={handleVerifyCode} className="verify-form">
                 <input
                   type="text"
                   maxLength="6"
-                  placeholder="000000"
-                  required
                   value={code}
-                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                  onChange={(e) =>
+                    setCode(e.target.value.replace(/\D/g, ""))
+                  }
                   className="otp-input"
+                  placeholder="000000"
                 />
+
+                <button
+                  disabled={loading || code.length < 6}
+                  className="submit-btn active"
+                >
+                  {loading ? <Loader2 className="spinner" /> : "Verify"}
+                </button>
+              </form>
+
+              <div className="resend-section">
+                {timer > 0 ? (
+                  <p>Resend in {timer}s</p>
+                ) : (
+                  <button onClick={handleResend} className="resend-link">
+                    Resend Code
+                  </button>
+                )}
               </div>
-              <button type="submit" disabled={loading || code.length < 6} className="submit-btn active">
-                {loading ? <Loader2 className="spinner" /> : "Verify Code"}
-              </button>
-            </form>
+            </>
           )}
 
-          {/* STEP 3: NEW PASSWORD */}
+          {/* STEP 3 */}
           {step === 3 && (
             <form onSubmit={handleResetPassword} className="verify-form">
-              <div className="input-group" style={{ position: 'relative' }}>
-                <input
-                  type={showPass ? "text" : "password"}
-                  placeholder="New Password"
-                  required
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="otp-input"
-                  style={{ fontSize: '1rem', textAlign: 'left', padding: '0 15px' }}
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPass(!showPass)}
-                  style={{ position: 'absolute', right: '15px', top: '35%', background: 'none', border: 'none', color: '#64748b' }}
-                >
-                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              <button type="submit" disabled={loading} className="submit-btn active">
-                {loading ? <Loader2 className="spinner" /> : "Update Password"}
+              <input
+                type={showPass ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="otp-input"
+                placeholder="New password"
+              />
+
+              <button disabled={loading} className="submit-btn active">
+                {loading ? <Loader2 className="spinner" /> : "Reset"}
               </button>
             </form>
           )}
 
+          {/* RESEND RESET */}
           <div className="resend-section">
-            <button onClick={() => setStep(1)} className="resend-link">
-              {step === 1 ? "Wait, I remember it!" : "Back to start"}
+            <button
+              onClick={() => setStep(1)}
+              className="resend-link"
+            >
+              Back
             </button>
           </div>
         </div>
 
         <button onClick={() => navigate(-1)} className="back-btn">
-          <ArrowLeft size={18} />
-          Back
+          <ArrowLeft size={18} /> Back
         </button>
       </div>
     </div>
