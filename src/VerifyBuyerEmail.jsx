@@ -68,6 +68,19 @@ useEffect(() => {
     }
   };
 
+  useEffect(() => {
+  let expiry = sessionStorage.getItem("buyer_timer_expiry");
+
+  // If no expiry exists → create one
+  if (!expiry) {
+    const newExpiry = Date.now() + 60 * 1000; // 60 seconds default
+    sessionStorage.setItem("buyer_timer_expiry", newExpiry.toString());
+    expiry = newExpiry;
+  }
+
+  setTimer(calculateRemaining());
+}, []);
+
   const handleManualResend = async () => {
     try {
       setLoading(true);
