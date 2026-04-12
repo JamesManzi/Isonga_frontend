@@ -34,15 +34,25 @@ function VerifySellerEmail() {
     }
   }, [state]);
 
-  useEffect(() => {
-    let interval;
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [timer]);
+ useEffect(() => {
+  // 1. If timer is 0 or less, don't start an interval at all
+  if (timer <= 0) return;
+
+  // 2. Start the interval
+  const interval = setInterval(() => {
+    setTimer((prev) => {
+      // 3. Check the previous value; if it's hitting 1, clear and stop
+      if (prev <= 1) {
+        clearInterval(interval);
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+
+  // 4. Cleanup: clear the interval if the component unmounts
+  return () => clearInterval(interval);
+}, []); // Empty dependency array means this logic sets up once on mount
 
   const handleVerify = async (e) => {
     e.preventDefault();
@@ -68,23 +78,36 @@ function VerifySellerEmail() {
       setLoading(false);
     }
   };
-
-  const handleManualResend = async () => {
+const handleManualResend = async () => {
     try {
       setLoading(true);
-      const res = await api.post("/api/seller-resend-verification", { email, userType: "seller" });
+      
+      // 1. Match the payload to your backend (we use { email })
+      const res = await api.post("/api/seller-resend-verification", { email });
+      
       if (res.data.success) {
-        startTimer(59);
+        // 2. Start a full 60-second timer to match backend cooldown
+        startTimer(60); 
         alert("Seller verification code resent!");
-        setCode("");
+        setCode(""); 
+      } else {
+        // Handle cases where success is false but no exception was thrown
+        alert(res.data.message || "Failed to resend code.");
       }
     } catch (err) {
-      alert("Network error.");
+      // 3. IMPORTANT: Catch the 429 "Please wait" error from the backend
+      // This displays "Please wait before requesting again" instead of "Network error"
+      const errorMsg = err.response?.data?.message || "Network error. Please try again.";
+      alert(errorMsg);
+      
+      // Optional: If the error is a 429, restart the timer locally to stay in sync
+      if (err.response?.status === 429) {
+        startTimer(30); 
+      }
     } finally {
       setLoading(false);
     }
   };
-
   if (!email) {
     return (
       <div className="verify-page-wrapper">
