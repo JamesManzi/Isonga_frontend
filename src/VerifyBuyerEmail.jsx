@@ -72,7 +72,7 @@ function VerifyBuyerEmail() {
   const handleManualResend = async () => {
     try {
       setLoading(true);
-      const res = await api.post("/api/resend-verification", { email, userType: "buyer" });
+      const res = await api.post("/api/buyer-resend-verification", { email, userType: "buyer" });
       if (res.data.success) {
         startTimer(59);
         alert("Buyer verification code resent!"); 
