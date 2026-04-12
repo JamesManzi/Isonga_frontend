@@ -72,7 +72,7 @@ function VerifySellerEmail() {
   const handleManualResend = async () => {
     try {
       setLoading(true);
-      const res = await api.post("/api/resend-verification", { email, userType: "seller" });
+      const res = await api.post("/api/seller-resend-verification", { email, userType: "seller" });
       if (res.data.success) {
         startTimer(59);
         alert("Seller verification code resent!");
