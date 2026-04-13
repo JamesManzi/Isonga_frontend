@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react"; // Added useRef for timer
 import api from "./api";
 import { useNavigate } from "react-router-dom";
 import "./Checkout.css";
@@ -8,14 +8,15 @@ function Checkout() {
   const [loading, setLoading] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [error, setError] = useState("");
-  
-  // Real Payment States
+
   const [isPaid, setIsPaid] = useState(false);
   const [momoTransactionId, setMomoTransactionId] = useState(null);
+  
+  // New state to prevent double-clicking during payment
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const pollingInterval = useRef(null);
 
   const navigate = useNavigate();
-  const pollingInterval = useRef(null); // To clear the timer
 
   const [form, setForm] = useState({
     name: "",
@@ -29,8 +30,8 @@ function Checkout() {
 
   useEffect(() => {
     fetchCart();
-    // Cleanup polling if the user leaves the page
-    return () => clearInterval(pollingInterval.current);
+    // Cleanup polling on unmount
+    return () => { if (pollingInterval.current) clearInterval(pollingInterval.current); };
   }, []);
 
   const fetchCart = async () => {
@@ -39,35 +40,32 @@ function Checkout() {
       if (res.data.success) {
         setCart(res.data.cart);
       }
-    } catch (err) {
+    } catch (error) {
+      console.log(error);
       setError("Failed to load cart");
     }
     setLoading(false);
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   };
 
-  // --- NEW: Polling Logic ---
-  const checkPaymentStatus = async (referenceId) => {
+  // --- FIX: Logic to check if user approved the prompt ---
+  const checkStatus = async (refId) => {
     try {
-      const res = await api.get(`/api/momo/status/${referenceId}`);
-      
-      if (res.data.status === "SUCCESSFUL") {
+      const res = await api.get(`/api/momo/status/${refId}`);
+      if (res.data.success && res.data.status === "SUCCESSFUL") {
         setIsPaid(true);
-        setMomoTransactionId(referenceId);
-        setIsProcessingPayment(false);
-        clearInterval(pollingInterval.current);
-        alert("Payment Successful!");
-      } else if (res.data.status === "FAILED") {
-        setError("Payment was declined or failed.");
+        setMomoTransactionId(refId);
         setIsProcessingPayment(false);
         clearInterval(pollingInterval.current);
       }
-      // If PENDING, do nothing and let the next interval run
     } catch (err) {
-      console.error("Error checking status", err);
+      console.log("Status check failed", err);
     }
   };
 
@@ -79,7 +77,7 @@ function Checkout() {
 
     try {
       setError("");
-      setIsProcessingPayment(true);
+      setIsProcessingPayment(true); // Disable button
 
       const res = await api.post("/api/momo/pay", {
         amount: cart.totalPrice,
@@ -87,19 +85,19 @@ function Checkout() {
       });
 
       if (res.data.success) {
-        const referenceId = res.data.referenceId; // Backend should return a unique ID
-        alert("Payment request sent! Please check your phone.");
-
-        // Start checking every 3 seconds if the user paid
-        pollingInterval.current = setInterval(() => {
-          checkPaymentStatus(referenceId);
-        }, 3000);
+        alert("Payment request sent to your phone. Please approve it.");
+        
+        // --- FIX: Start polling the backend to see when isPaid becomes true ---
+        const refId = res.data.referenceId; 
+        pollingInterval.current = setInterval(() => checkStatus(refId), 3000);
 
       } else {
         setError("Payment failed to start");
         setIsProcessingPayment(false);
       }
+
     } catch (err) {
+      console.log(err);
       setError("Server error while starting payment");
       setIsProcessingPayment(false);
     }
@@ -107,6 +105,7 @@ function Checkout() {
 
   const placeOrder = async () => {
     setError("");
+
     if (!form.name || !form.phone || !form.address) {
       setError("Please fill all required fields");
       return;
@@ -119,6 +118,7 @@ function Checkout() {
 
     try {
       setPlacingOrder(true);
+
       const orderData = {
         ...form,
         momoTransactionId: momoTransactionId,
@@ -134,58 +134,149 @@ function Checkout() {
         setError(res.data.message || "Order failed");
       }
     } catch (error) {
+      console.log(error);
       setError("Server error while placing order");
     } finally {
       setPlacingOrder(false);
     }
   };
 
-  // ... (Keep your loading and empty cart JSX the same) ...
+  if (loading) {
+    return (
+      <div className="checkout-loading-modern">
+        <div className="checkout-loader-card">
+          <div className="checkout-pulse"></div>
+          <h2>ISONGA MARKET</h2>
+          <p>Preparing checkout...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!cart || cart.items.length === 0) {
+    return (
+      <div className="checkout-empty">
+        <h2>Your cart is empty</h2>
+        <button onClick={() => navigate("/buyer_dashboard")}>
+          Back to Shop
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="checkout-page">
       <h1>Checkout</h1>
-      {error && <p className="checkout-error" style={{ color: 'red' }}>{error}</p>}
 
-      {/* Summary section remains same */}
+      {error && <p className="checkout-error">{error}</p>}
+
+      <div className="checkout-summary">
+        <h2>Order Summary</h2>
+        {cart.items.map(item => (
+          <div className="checkout-item" key={item.product._id}>
+            <div>
+              <strong>{item.product.name}</strong>
+              <p>Quantity: {item.quantity}</p>
+            </div>
+            <div>
+              {item.quantity * item.price} Rwf
+            </div>
+          </div>
+        ))}
+        <hr />
+        <h3>Total: {cart.totalPrice} Rwf</h3>
+      </div>
 
       <div className="checkout-form">
-        {/* Form inputs remain same */}
+        <h2>Delivery Details</h2>
+
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={form.name}
+          onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone Number"
+          value={form.phone}
+          onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          name="address"
+          placeholder="Delivery Address"
+          value={form.address}
+          onChange={handleChange}
+        />
+
+        <h3>Delivery Method</h3>
+        <select
+          name="deliveryMethod"
+          value={form.deliveryMethod}
+          onChange={handleChange}
+        >
+          <option value="standard">Standard Delivery</option>
+          <option value="express">Express Delivery</option>
+          <option value="pickup">Store Pickup</option>
+        </select>
 
         <h3>Payment Method</h3>
-        <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
+        <select
+          name="paymentMethod"
+          value={form.paymentMethod}
+          onChange={handleChange}
+        >
           <option value="cash">Cash on Delivery</option>
           <option value="mobile">Mobile Money</option>
         </select>
 
         {form.paymentMethod === "mobile" && (
-          <div className="payment-section" style={{ padding: '15px', background: '#f9f9f9', borderRadius: '10px', marginTop: '10px' }}>
+          <div className="payment-upload">
             <h3>MoMo Payment</h3>
             {!isPaid ? (
               <>
-                <p>{isProcessingPayment ? "Waiting for approval..." : "Enter phone and click pay:"}</p>
+                <p className="upload-hint">
+                  {isProcessingPayment ? "Waiting for your approval..." : "Click below to pay securely with MTN MoMo."}
+                </p>
                 <button 
                   type="button" 
                   onClick={handleMomoPayment}
                   disabled={isProcessingPayment}
                   style={{ 
                     background: isProcessingPayment ? '#ccc' : '#ffcc00', 
-                    color: '#000', padding: '12px', width: '100%', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: 'pointer' 
+                    color: '#000', padding: '10px', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: isProcessingPayment ? 'not-allowed' : 'pointer' 
                   }}
                 >
-                  {isProcessingPayment ? "⏳ Processing..." : `Pay ${cart.totalPrice} Rwf Now`}
+                  {isProcessingPayment ? "Processing..." : `Pay ${cart.totalPrice} Rwf Now`}
                 </button>
               </>
             ) : (
-              <div style={{ color: 'green', textAlign: 'center' }}>
-                <p>✅ Payment Verified!</p>
-                <small>Ref: {momoTransactionId}</small>
-              </div>
+              <p style={{ color: 'green', fontWeight: 'bold' }}>✅ Payment Verified! ID: {momoTransactionId}</p>
             )}
           </div>
         )}
 
-        {/* Remaining fields and buttons remain same */}
+        <h3>Delivery Date</h3>
+        <input
+          type="date"
+          name="deliveryDate"
+          value={form.deliveryDate}
+          onChange={handleChange}
+        />
+
+        <h3>Order Notes</h3>
+        <textarea
+          name="notes"
+          placeholder="Extra instructions"
+          value={form.notes}
+          onChange={handleChange}
+        />
+
         <div className="checkout-buttons">
           <button
             className="place-order"
@@ -193,6 +284,13 @@ function Checkout() {
             disabled={placingOrder || (form.paymentMethod === "mobile" && !isPaid)}
           >
             {placingOrder ? "Placing Order..." : "Place Order"}
+          </button>
+
+          <button
+            className="return-btn"
+            onClick={() => navigate(-1)}
+          >
+            Return
           </button>
         </div>
       </div>
