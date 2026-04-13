@@ -185,7 +185,6 @@ function Asset_Products() {
 
                 <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
-                <p><strong>Location:</strong> {product.location}</p>
                 <p>{product.description}</p>
 
                 <div className="View_Products_btns">
