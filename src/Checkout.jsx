@@ -58,7 +58,7 @@ function Checkout() {
 
     if (window.MomoWidget) {
       window.MomoWidget.setup({
-        key: "YOUR_PRIMARY_KEY", // From your dashboard
+        key: "59aa3ef77cca44da8dd904d32c58a414", // From your dashboard
         amount: cart.totalPrice,
         currency: "RWF",
         externalId: Date.now().toString(),
