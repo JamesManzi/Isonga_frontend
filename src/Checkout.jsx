@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from "react"; // Added useRef for timer
+
+import { useEffect, useState } from "react";
 import api from "./api";
 import { useNavigate } from "react-router-dom";
 import "./Checkout.css";
@@ -9,12 +10,9 @@ function Checkout() {
   const [placingOrder, setPlacingOrder] = useState(false);
   const [error, setError] = useState("");
 
-  const [isPaid, setIsPaid] = useState(false);
-  const [momoTransactionId, setMomoTransactionId] = useState(null);
-  
-  // New state to prevent double-clicking during payment
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const pollingInterval = useRef(null);
+  // New states for File Upload and Preview
+  const [paymentImage, setPaymentImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const navigate = useNavigate();
 
@@ -30,8 +28,6 @@ function Checkout() {
 
   useEffect(() => {
     fetchCart();
-    // Cleanup polling on unmount
-    return () => { if (pollingInterval.current) clearInterval(pollingInterval.current); };
   }, []);
 
   const fetchCart = async () => {
@@ -54,78 +50,50 @@ function Checkout() {
     });
   };
 
-  // --- FIX: Logic to check if user approved the prompt ---
-  const checkStatus = async (refId) => {
-    try {
-      const res = await api.get(`/api/momo/status/${refId}`);
-      if (res.data.success && res.data.status === "SUCCESSFUL") {
-        setIsPaid(true);
-        setMomoTransactionId(refId);
-        setIsProcessingPayment(false);
-        clearInterval(pollingInterval.current);
-      }
-    } catch (err) {
-      console.log("Status check failed", err);
-    }
-  };
-
-  const handleMomoPayment = async () => {
-    if (!form.phone) {
-      setError("Please enter your phone number to start payment");
-      return;
-    }
-
-    try {
-      setError("");
-      setIsProcessingPayment(true); // Disable button
-
-      const res = await api.post("/api/momo/pay", {
-        amount: cart.totalPrice,
-        phone: form.phone
-      });
-
-      if (res.data.success) {
-        alert("Payment request sent to your phone. Please approve it.");
-        
-        // --- FIX: Start polling the backend to see when isPaid becomes true ---
-        const refId = res.data.referenceId; 
-        pollingInterval.current = setInterval(() => checkStatus(refId), 3000);
-
-      } else {
-        setError("Payment failed to start");
-        setIsProcessingPayment(false);
-      }
-
-    } catch (err) {
-      console.log(err);
-      setError("Server error while starting payment");
-      setIsProcessingPayment(false);
+  // Handle image selection and create a preview URL
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPaymentImage(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const placeOrder = async () => {
     setError("");
 
+    // Validation
     if (!form.name || !form.phone || !form.address) {
       setError("Please fill all required fields");
       return;
     }
 
-    if (form.paymentMethod === "mobile" && !isPaid) {
-      setError("Please complete the MoMo payment first");
+    // Validation for payment proof
+    if (form.paymentMethod !== "cash" && !paymentImage) {
+      setError("Please upload a screenshot of your payment confirmation");
       return;
     }
 
     try {
       setPlacingOrder(true);
 
-      const orderData = {
-        ...form,
-        momoTransactionId: momoTransactionId,
-        isPaid: isPaid
-      };
+      // Create FormData because we are sending a file
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("phone", form.phone);
+      formData.append("address", form.address);
+      formData.append("deliveryMethod", form.deliveryMethod);
+      formData.append("paymentMethod", form.paymentMethod);
+      formData.append("notes", form.notes);
+      formData.append("deliveryDate", form.deliveryDate);
+      
+      if (paymentImage) {
+        formData.append("paymentProof", paymentImage);
+      }
 
-      const res = await api.post("/api/order", orderData);
+      const res = await api.post("/api/order", formData, { 
+      headers: { "Content-Type": "multipart/form-data" } 
+    });
 
       if (res.data.success) {
         alert("Order placed successfully");
@@ -136,22 +104,25 @@ function Checkout() {
     } catch (error) {
       console.log(error);
       setError("Server error while placing order");
-    } finally {
+    } finally{
       setPlacingOrder(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="checkout-loading-modern">
-        <div className="checkout-loader-card">
-          <div className="checkout-pulse"></div>
-          <h2>ISONGA MARKET</h2>
-          <p>Preparing checkout...</p>
-        </div>
+  return (
+    <div className="checkout-loading-modern">
+      <div className="checkout-loader-card">
+
+        <div className="checkout-pulse"></div>
+
+        <h2>ISONGA MARKET</h2>
+        <p>Preparing checkout...</p>
+
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   if (!cart || cart.items.length === 0) {
     return (
@@ -233,30 +204,24 @@ function Checkout() {
         >
           <option value="cash">Cash on Delivery</option>
           <option value="mobile">Mobile Money</option>
+          <option value="card">Card Payment</option>
         </select>
 
-        {form.paymentMethod === "mobile" && (
+        {/* CONDITIONAL UPLOAD FIELD */}
+        {form.paymentMethod !== "cash" && (
           <div className="payment-upload">
-            <h3>MoMo Payment</h3>
-            {!isPaid ? (
-              <>
-                <p className="upload-hint">
-                  {isProcessingPayment ? "Waiting for your approval..." : "Click below to pay securely with MTN MoMo."}
-                </p>
-                <button 
-                  type="button" 
-                  onClick={handleMomoPayment}
-                  disabled={isProcessingPayment}
-                  style={{ 
-                    background: isProcessingPayment ? '#ccc' : '#ffcc00', 
-                    color: '#000', padding: '10px', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: isProcessingPayment ? 'not-allowed' : 'pointer' 
-                  }}
-                >
-                  {isProcessingPayment ? "Processing..." : `Pay ${cart.totalPrice} Rwf Now`}
-                </button>
-              </>
-            ) : (
-              <p style={{ color: 'green', fontWeight: 'bold' }}>✅ Payment Verified! ID: {momoTransactionId}</p>
+            <h3>Upload Payment Screenshot</h3>
+            <p className="upload-hint">Please upload a screenshot of your transaction confirmation.</p>
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleFileChange} 
+            />
+            {imagePreview && (
+              <div className="preview-container">
+                <p>Preview:</p>
+                <img src={imagePreview} alt="Payment Proof" className="payment-preview-img" />
+              </div>
             )}
           </div>
         )}
@@ -281,7 +246,7 @@ function Checkout() {
           <button
             className="place-order"
             onClick={placeOrder}
-            disabled={placingOrder || (form.paymentMethod === "mobile" && !isPaid)}
+            disabled={placingOrder}
           >
             {placingOrder ? "Placing Order..." : "Place Order"}
           </button>
