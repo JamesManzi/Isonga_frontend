@@ -49,31 +49,31 @@ function Checkout() {
     });
   };
 
-  // --- NEW: Function to trigger the MoMo Widget ---
-  const handleMomoPayment = () => {
-    if (!form.phone) {
-      setError("Please enter your phone number to start payment");
-      return;
+  const handleMomoPayment = async () => {
+  if (!form.phone) {
+    setError("Please enter your phone number to start payment");
+    return;
+  }
+
+  try {
+    setError("");
+
+    const res = await api.post("/api/momo/pay", {
+      amount: cart.totalPrice,
+      phone: form.phone
+    });
+
+    if (res.data.success) {
+      alert("Payment request sent to your phone. Please approve it.");
+    } else {
+      setError("Payment failed to start");
     }
 
-    if (window.MomoWidget) {
-      window.MomoWidget.setup({
-        key: "59aa3ef77cca44da8dd904d32c58a414", // From your dashboard
-        amount: cart.totalPrice,
-        currency: "RWF",
-        externalId: Date.now().toString(),
-        phoneNumber: form.phone,
-        onSuccess: (data) => {
-          setIsPaid(true);
-          setMomoTransactionId(data.transactionId || data.reference);
-          setError(""); // Clear any previous payment errors
-        },
-        onFailure: () => {
-          setError("MoMo Payment failed. Please try again.");
-        }
-      });
-    }
-  };
+  } catch (err) {
+    console.log(err);
+    setError("Server error while starting payment");
+  }
+};
 
   const placeOrder = async () => {
     setError("");
