@@ -202,9 +202,7 @@ function View_Products() {
               <div className="product-info">
                  <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
-                <p><strong>Location:</strong> {product.location}</p>
                 <p><strong>Quantity:</strong> {product.quantity}</p>
-                <p>{product.description}</p>
 </div>
 <div className="View_Products_btns">
   <Link

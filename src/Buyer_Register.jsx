@@ -80,9 +80,9 @@ function Buyer_Register() {
                         <p>Join Isonga Market and get access to the best products from verified Rwandan sellers.</p>
                         
                         <ul className="buyer_reg_feature_list">
-                            <li>✓ Wide variety of categories</li>
-                            <li>✓ Verified & trusted sellers</li>
-                            <li>✓ Secure shopping experience</li>
+                            <li> Wide variety of categories</li>
+                            <li> Verified & trusted sellers</li>
+                            <li> Secure shopping experience</li>
                         </ul>
                     </div>
                 </div>
