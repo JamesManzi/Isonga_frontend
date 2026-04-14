@@ -123,6 +123,12 @@ function Buyer_Register() {
                                 accept="image/*" 
                                 onChange={(e) => {
                                     const file = e.target.files[0];
+                                    if(!file) return;
+                                    if (!file.type.startsWith("image/")) {
+        alert("Only image files (jpg, png, etc.) are allowed!");
+        e.target.value = ""; 
+        return;
+    }
                                     if (file && file.size <= 5 * 1024 * 1024) {
                                         setProfile(file);
                                         setPreviewProfile(URL.createObjectURL(file));

@@ -112,7 +112,15 @@ function Register() {
                                 </div>
                                 <input type="file" ref={profileInputRef} hidden accept="image/*" onChange={(e) => {
                                     const file = e.target.files[0];
-                                    if (file) { setProfile(file); setPreviewProfile(URL.createObjectURL(file)); }
+                                    if(!file) return;
+                                    if (!file.type.startsWith("image/")) {
+        return alert("Please upload an image file for your profile.");
+    }
+    if (file.size > 5 * 1024 * 1024) {
+        return alert("Profile image must be under 5MB");
+    }
+                                    setProfile(file); 
+    setPreviewProfile(URL.createObjectURL(file));
                                 }} />
                                 <div className="upload-text">
                                     <h3>Shop Profile</h3>
@@ -168,11 +176,18 @@ function Register() {
                                     <span>Add Store / Location Photos</span>
                                 </div>
                                 <input type="file" ref={locationImagesRef} hidden multiple accept="image/*" onChange={(e) => {
-                                    const newFiles = Array.from(e.target.files);
-                                    if (files.length + newFiles.length > 6) return alert("Max 6 photos");
-                                    setFiles([...files, ...newFiles]);
-                                    setPreviewFiles([...previewFiles, ...newFiles.map(f => URL.createObjectURL(f))]);
-                                }} />
+                                    const selectedFiles = Array.from(e.target.files);
+                                    const validImages = selectedFiles.filter(file => file.type.startsWith("image/"));
+                                    if (validImages.length !== selectedFiles.length) {
+        alert("Some files were skipped because they were not images.");
+    }
+                                   if (files.length + validImages.length > 6) {
+        return alert("Max 6 photos allowed total");
+    }
+
+    setFiles([...files, ...validImages]);
+    setPreviewFiles([...previewFiles, ...validImages.map(f => URL.createObjectURL(f))]);
+}} />
                                 
                                 <div className="modern-gallery-grid">
                                     {previewFiles.map((img, i) => (
