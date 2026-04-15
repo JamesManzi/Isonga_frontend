@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -226,15 +227,6 @@ function Add_Product() {
             required
           />
 
-          <label>Location</label>
-          <input
-            type="text"
-            placeholder="Enter Location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            required
-          />
-
           {type === "Product" && (
             <>
               <label>Quantity</label>
@@ -247,21 +239,6 @@ function Add_Product() {
             </>
           )}
 
-          <label>Category</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            disabled={!type}
-            required
-          >
-            <option value="">-- Select Category --</option>
-            {type &&
-              categoryOptions[type].map((cat, index) => (
-                <option key={index} value={cat}>
-                  {cat}
-                </option>
-              ))}
-          </select>
 
           <label>Description</label>
           <textarea

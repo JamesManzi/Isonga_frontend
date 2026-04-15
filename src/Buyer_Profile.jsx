@@ -17,12 +17,8 @@ const [profile,setProfile] = useState(null);
 const [preview,setPreview] = useState("");
 
 const [message, setMessage] = useState({ text: "", type: "" });
-// --- ADDED FOR ZOOM ---
-const [isZoomed, setIsZoomed] = useState(false);
 
-//////////////////////////////////////////////////
-// FETCH BUYER
-//////////////////////////////////////////////////
+const [isZoomed, setIsZoomed] = useState(false);
 
 useEffect(()=>{
 
@@ -53,10 +49,6 @@ fetchBuyer();
 
 },[]);
 
-//////////////////////////////////////////////////
-// IMAGE PREVIEW
-//////////////////////////////////////////////////
-
 const handleImageChange = (e)=>{
 
 const file = e.target.files[0];
@@ -69,10 +61,6 @@ setPreview(URL.createObjectURL(file));
 }
 
 };
-
-//////////////////////////////////////////////////
-// UPDATE PROFILE
-//////////////////////////////////////////////////
 
 const handleUpdate = async(e)=>{
 
@@ -115,10 +103,6 @@ setMessage("Update failed");
 
 };
 
-//////////////////////////////////////////////////
-// IMAGE URL
-//////////////////////////////////////////////////
-
 const getFileUrl = (path)=>{
 
 if(!path) return "/placeholder.png";
@@ -128,10 +112,6 @@ return path.startsWith("http") || path.startsWith("blob:")
 : `https://api.isongamarket.com/uploads/${path}`;
 
 };
-
-//////////////////////////////////////////////////
-// LOADING
-//////////////////////////////////////////////////
 
 if (loading || !buyer) {
   return (
@@ -151,10 +131,6 @@ const currentImage = profile
 : buyer?.profile 
 ? getFileUrl(buyer.profile) 
 : "/placeholder.png";
-
-//////////////////////////////////////////////////
-// UI
-//////////////////////////////////////////////////
 
 return(
 
