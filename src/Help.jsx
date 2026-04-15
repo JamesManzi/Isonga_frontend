@@ -93,12 +93,12 @@ function Help() {
           <div className="method-card">
             <FontAwesomeIcon icon={faEnvelope} size="2x" />
             <h4>Email Support</h4>
-            <p>support@isonga.rw</p>
+            <p>isongamarket@gmail.com</p>
           </div>
           <div className="method-card">
             <FontAwesomeIcon icon={faPhone} size="2x" />
             <h4>Call Us</h4>
-            <p>+250 788 000 000</p>
+            <p>+250 788 937 432</p>
           </div>
         </div>
       </div>
