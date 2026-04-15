@@ -97,7 +97,7 @@ function Help() {
           </div>
           <div className="method-card">
             <FontAwesomeIcon icon={faPhone} size="2x" />
-            <h4>Call Us</h4>
+            <h4>Whatssap</h4>
             <p>+250 788 937 432</p>
           </div>
         </div>
