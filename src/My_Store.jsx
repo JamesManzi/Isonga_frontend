@@ -282,7 +282,6 @@ const handleUpdate = async (e) => {
                 <div className="product-details">
                   <h1>{product.name}</h1>
                   <p>Price: {product.price} Rwf</p>
-                  <p>Location: {product.location}</p>
                   {product.type === "Product" && <p>Quantity: {product.quantity}</p>}
                   <p className="desc-text">{product.description}</p>
                   <div className="My_Store_btns">
