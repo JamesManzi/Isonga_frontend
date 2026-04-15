@@ -351,7 +351,7 @@ function Home() {
           </div>
           <div className="footer-contact">
             <h4>Contact</h4>
-            <p>Email: support@isonga.com</p>
+            <p>Email: isongamarket@gmail.com</p>
             <div className="footer-socials">
               <i className="fab fa-facebook"></i>
               <i className="fab fa-twitter"></i>
