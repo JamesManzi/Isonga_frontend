@@ -190,7 +190,6 @@ function Notifications_Page() {
                 
                 <div style={{ marginTop: '30px', fontSize: '11px', textAlign: 'center', color: '#bdc3c7' }}>
                     Thank you for choosing Isonga Market! <br />
-                    This is a computer-generated document.
                 </div>
             </div>
           </div>
