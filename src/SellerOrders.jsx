@@ -24,14 +24,22 @@ function SellerOrders() {
       try {
         setLoading(true);
         const res = await api.get("/api/seller/orders");
-        if (res.data.success) {
-          const incoming = res.data.orders.filter((order) =>
-            order.items.some(
-              (item) => item.seller === sellerId && item.status === "Pending"
-            )
-          );
-          setOrders(incoming);
-        }
+        // Change this section inside your useEffect:
+if (res.data.success) {
+  const incoming = res.data.orders.filter((order) =>
+    order.items.some((item) => {
+      // 1. Ensure we are comparing strings
+      // 2. Add logs to see what's happening in the console
+      const itemSellerId = item.seller?._id || item.seller; // Handle populated or unpopulated seller field
+      
+      const isMatch = String(itemSellerId) === String(sellerId) && 
+                      item.status === "Pending";
+      
+      return isMatch;
+    })
+  );
+  setOrders(incoming);
+}
       } catch (err) {
         console.error("Error fetching orders:", err);
       } finally {
