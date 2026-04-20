@@ -1,74 +1,87 @@
 import { useEffect, useState } from "react";
 import api from "./api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
 import "./SellerOrders.css";
+
 function SellerOrders() {
   const [orders, setOrders] = useState([]);
-const [selectedImg, setSelectedImg] = useState(null);
-const [loading, setLoading] = useState(true);
-const [actionLoading, setActionLoading] = useState(null); // for buttons
+  const [selectedImg, setSelectedImg] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(null); // for buttons
 
-useEffect(() => {
-  const getOrders = async () => {
-     const token = localStorage.getItem("token");
-        if (!token) {
+  const navigate = useNavigate();
+  const sellerId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    const getOrders = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
         navigate("/login");
         return;
       }
+      try {
+        setLoading(true);
+        const res = await api.get("/api/seller/orders");
+        if (res.data.success) {
+          const incoming = res.data.orders.filter((order) =>
+            order.items.some(
+              (item) => item.seller === sellerId && item.status === "Pending"
+            )
+          );
+          setOrders(incoming);
+        }
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getOrders();
+  }, [navigate, sellerId]);
+
+  const updateStatus = async (orderId, newStatus) => {
     try {
-      setLoading(true);
-      const res = await api.get("/api/seller/orders");
+      setActionLoading(orderId);
+      const res = await api.put(`/api/order/status/${orderId}`, {
+        status: newStatus,
+      });
       if (res.data.success) {
-        const incoming = res.data.orders.filter(
-          (order) => order.status === "Pending"
+        setOrders((prev) =>
+          prev.map((order) => {
+            if (order._id !== orderId) return order;
+
+            return {
+              ...order,
+              items: order.items.map((item) =>
+                item.seller === sellerId
+                  ? { ...item, status: newStatus }
+                  : item
+              ),
+            };
+          })
         );
-        setOrders(incoming);
       }
     } catch (err) {
-      console.error("Error fetching orders:", err);
+      console.error("Error updating order status:", err);
     } finally {
-      setLoading(false);
+      setActionLoading(null);
     }
   };
 
-  getOrders();
-}, []);
-
-  const updateStatus = async (orderId, newStatus) => {
-  try {
-    setActionLoading(orderId);
-   const res = await api.put(
-  `/api/order/status/${orderId}`,
-  { status: newStatus }
-);
-    if (res.data.success) {
-      setOrders((prevOrders) =>
-        prevOrders.filter((order) => order._id !== orderId)
-      );
-    }
-  } catch (err) {
-    console.error("Error updating order status:", err);
-  } finally {
-    setActionLoading(null);
-  }
-};
-
- if (loading) {
-  return (
-    <div className="orders-loading">
-      <div className="orders-loader-card">
-
-        <div className="ring-loader"></div>
-
-        <h2>ISONGA MARKET</h2>
-        <p>Fetching incoming orders...</p>
-
+  if (loading) {
+    return (
+      <div className="orders-loading">
+        <div className="orders-loader-card">
+          <div className="ring-loader"></div>
+          <h2>ISONGA MARKET</h2>
+          <p>Fetching incoming orders...</p>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div style={containerStyle}>
@@ -81,88 +94,106 @@ useEffect(() => {
       {orders.length === 0 ? (
         <p style={{ color: "#7f8c8d" }}>No incoming orders.</p>
       ) : (
-        orders.map((order) => (
-          <div key={order._id} style={cardStyle}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <h3>Order ID: ...{order._id.slice(-6)}</h3>
-              <span style={statusBadge(order.status)}>
-                {order.status}
-              </span>
-            </div>
+        orders.map((order) => {
+          // --- Logic for this specific order iteration ---
+          const sellerItems = order.items.filter(
+            (item) => item.seller === sellerId
+          );
 
-            <div style={gridStyle}>
-              <section>
-                <h4 style={sectionTitle}>Customer Info</h4>
-                <p><strong>Name:</strong> {order.name}</p>
-                <p><strong>Phone:</strong> {order.phone}</p>
-                <p><strong>Address:</strong> {order.address}</p>
-                <p><strong>Message:</strong> {order.notes || "No message"}</p>
-              </section>
+          const sellerStatus =
+            sellerItems.length > 0 ? sellerItems[0].status : "N/A";
 
-              <section>
-                <h4 style={sectionTitle}>Payment</h4>
-                <p><strong>Delivery:</strong> {order.deliveryMethod}</p>
-                <p><strong>Payment:</strong> {order.paymentMethod}</p>
+          const sellerTotal = sellerItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+          );
 
-                {order.paymentProof && (
-                  <button
-                    onClick={() => setSelectedImg(order.paymentProof)}
-                    style={receiptButtonStyle}
-                  >
-                    <FontAwesomeIcon icon={faImage} /> View Receipt
-                  </button>
-                )}
-              </section>
-            </div>
+          return (
+            <div key={order._id} style={cardStyle}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <h3>Order ID: ...{order._id.slice(-6)}</h3>
 
-            <div style={itemBox}>
-              <h4>Items</h4>
-              {order.items.map((item, i) => (
-                <div key={i} style={itemRow}>
-                  <span>
-                    {item.product?.name || "Deleted Product"} ×{" "}
-                    {item.quantity}
-                  </span>
-                  <span>{item.price * item.quantity} Rwf</span>
-                </div>
-              ))}
-              <div style={totalStyle}>
-                Total: {order.totalPrice} Rwf
+                <span style={statusBadge(sellerStatus)}>{sellerStatus}</span>
+              </div>
+
+              <div style={gridStyle}>
+                <section>
+                  <h4 style={sectionTitle}>Customer Info</h4>
+                  <p>
+                    <strong>Name:</strong> {order.name}
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> {order.phone}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {order.address}
+                  </p>
+                  <p>
+                    <strong>Message:</strong> {order.notes || "No message"}
+                  </p>
+                </section>
+
+                <section>
+                  <h4 style={sectionTitle}>Payment</h4>
+                  <p>
+                    <strong>Delivery:</strong> {order.deliveryMethod}
+                  </p>
+                  <p>
+                    <strong>Payment:</strong> {order.paymentMethod}
+                  </p>
+
+                  {order.paymentProof && (
+                    <button
+                      onClick={() => setSelectedImg(order.paymentProof)}
+                      style={receiptButtonStyle}
+                    >
+                      <FontAwesomeIcon icon={faImage} /> View Receipt
+                    </button>
+                  )}
+                </section>
+              </div>
+
+              <div style={itemBox}>
+                <h4>Items</h4>
+
+                {sellerItems.map((item, i) => (
+                  <div key={i} style={itemRow}>
+                    <span>
+                      {item.product?.name || "Deleted Product"} × {item.quantity}
+                    </span>
+                    <span>{item.price * item.quantity} Rwf</span>
+                  </div>
+                ))}
+
+                <div style={totalStyle}>Total: {sellerTotal} Rwf</div>
+              </div>
+
+              <div style={btnContainer}>
+                <button
+                  onClick={() => updateStatus(order._id, "Accepted")}
+                  style={btnAccept}
+                  disabled={actionLoading === order._id}
+                >
+                  {actionLoading === order._id ? "Processing..." : "Accept"}
+                </button>
+
+                <button
+                  onClick={() => updateStatus(order._id, "Cancelled")}
+                  style={btnDecline}
+                  disabled={actionLoading === order._id}
+                >
+                  {actionLoading === order._id ? "Processing..." : "Decline"}
+                </button>
               </div>
             </div>
-
-            {/*  ACTION BUTTONS */}
-            <div style={btnContainer}>
-              <button
-  onClick={() => updateStatus(order._id, "Accepted")}
-  style={btnAccept}
-  disabled={actionLoading === order._id}
->
-  {actionLoading === order._id ? "Processing..." : "Accept"}
-</button>
-
-<button
-  onClick={() => updateStatus(order._id, "Cancelled")}
-  style={btnDecline}
-  disabled={actionLoading === order._id}
->
-  {actionLoading === order._id ? "Processing..." : "Decline"}
-</button>
-            </div>
-          </div>
-        ))
+          );
+        })
       )}
 
-      {/*  IMAGE MODAL */}
+      {/*  IMAGE MODAL */}
       {selectedImg && (
-        <div
-          style={modalOverlayStyle}
-          onClick={() => setSelectedImg(null)}
-        >
-          <div
-            style={modalContentStyle}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div style={modalOverlayStyle} onClick={() => setSelectedImg(null)}>
+          <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
             <button
               style={closeButtonStyle}
               onClick={() => setSelectedImg(null)}
@@ -291,6 +322,7 @@ const modalOverlayStyle = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  zIndex: 1000,
 };
 
 const modalContentStyle = {
