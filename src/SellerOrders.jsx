@@ -24,22 +24,23 @@ function SellerOrders() {
       try {
         setLoading(true);
         const res = await api.get("/api/seller/orders");
-        // Change this section inside your useEffect:
-if (res.data.success) {
-  const incoming = res.data.orders.filter((order) =>
-    order.items.some((item) => {
-      // 1. Ensure we are comparing strings
-      // 2. Add logs to see what's happening in the console
-      const itemSellerId = item.seller?._id || item.seller; // Handle populated or unpopulated seller field
-      
-      const isMatch = String(itemSellerId) === String(sellerId) && 
-                      item.status === "Pending";
-      
-      return isMatch;
-    })
-  );
-  setOrders(incoming);
-}
+        
+        if (res.data.success && res.data.orders) {
+          // FAIL-PROOF FILTERING
+          const incoming = res.data.orders.filter((order) =>
+            order.items.some((item) => {
+              const itemSellerId = String(item.seller?._id || item.seller);
+              const currentSellerId = String(sellerId);
+              
+              // Use toLowerCase() to avoid "Pending" vs "pending" issues
+              const isPending = String(item.status).toLowerCase() === "pending";
+              const isMine = itemSellerId === currentSellerId;
+
+              return isMine && isPending;
+            })
+          );
+          setOrders(incoming);
+        }
       } catch (err) {
         console.error("Error fetching orders:", err);
       } finally {
@@ -56,29 +57,27 @@ if (res.data.success) {
       const res = await api.put(`/api/order/status/${orderId}`, {
         status: newStatus,
       });
-      if (res.data.success) {
-        setOrders((prev) =>
-          prev.map((order) => {
-            if (order._id !== orderId) return order;
 
-            return {
-              ...order,
-              items: order.items.map((item) =>
-                item.seller === sellerId
-                  ? { ...item, status: newStatus }
-                  : item
-              ),
-            };
+      if (res.data.success) {
+        // Update local state to remove processed orders
+        setOrders((prev) =>
+          prev.filter((order) => {
+            // Keep the order only if it STILL has other pending items for this seller
+            if (order._id !== orderId) return true;
+            
+            // If this was the order we just updated, usually we hide it from "Incoming"
+            // because its status is no longer "Pending"
+            return false; 
           })
         );
       }
     } catch (err) {
       console.error("Error updating order status:", err);
+      alert(err.response?.data?.message || "Failed to update order");
     } finally {
       setActionLoading(null);
     }
   };
-
   if (loading) {
     return (
       <div className="orders-loading">
