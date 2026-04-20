@@ -24,7 +24,7 @@ function SellerOrders() {
       try {
         setLoading(true);
         const res = await api.get("/api/seller/orders");
-        
+        console.log("API RESPONSE:", res.data);
         if (res.data.success) {
           const incoming = res.data.orders.filter((order) =>
   order.items.some((item) => {
