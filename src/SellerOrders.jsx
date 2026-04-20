@@ -26,12 +26,10 @@ function SellerOrders() {
         const res = await api.get("/api/seller/orders");
         console.log("API RESPONSE:", res.data);
         if (res.data.success) {
-          const incoming = res.data.orders.filter((order) =>
-  order.items.some((item) => {
+          const incoming = res.data.orders.filter(order =>
+  order.items.some(item => {
     const itemSellerId = String(item.seller?._id || item.seller);
     const currentSellerId = String(sellerId);
-
-    const status = (item.status || "").toLowerCase();
 
     return itemSellerId === currentSellerId;
   })
