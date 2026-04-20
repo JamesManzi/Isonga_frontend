@@ -25,18 +25,15 @@ function SellerOrders() {
         setLoading(true);
         const res = await api.get("/api/seller/orders");
         
-        if (res.data.success && res.data.orders) {
-          // FAIL-PROOF FILTERING
+        if (res.data.success) {
+          // Logic Fix: Ensure String comparison and handle populated seller objects
           const incoming = res.data.orders.filter((order) =>
             order.items.some((item) => {
               const itemSellerId = String(item.seller?._id || item.seller);
               const currentSellerId = String(sellerId);
-              
-              // Use toLowerCase() to avoid "Pending" vs "pending" issues
               const isPending = String(item.status).toLowerCase() === "pending";
-              const isMine = itemSellerId === currentSellerId;
-
-              return isMine && isPending;
+              
+              return itemSellerId === currentSellerId && isPending;
             })
           );
           setOrders(incoming);
@@ -57,27 +54,20 @@ function SellerOrders() {
       const res = await api.put(`/api/order/status/${orderId}`, {
         status: newStatus,
       });
-
       if (res.data.success) {
-        // Update local state to remove processed orders
+        // Keep original state update logic but remove order from view if no longer pending
         setOrders((prev) =>
-          prev.filter((order) => {
-            // Keep the order only if it STILL has other pending items for this seller
-            if (order._id !== orderId) return true;
-            
-            // If this was the order we just updated, usually we hide it from "Incoming"
-            // because its status is no longer "Pending"
-            return false; 
-          })
+          prev.filter((order) => order._id !== orderId)
         );
       }
     } catch (err) {
       console.error("Error updating order status:", err);
-      alert(err.response?.data?.message || "Failed to update order");
+      alert(err.response?.data?.message || "Error updating order");
     } finally {
       setActionLoading(null);
     }
   };
+
   if (loading) {
     return (
       <div className="orders-loading">
@@ -102,9 +92,9 @@ function SellerOrders() {
         <p style={{ color: "#7f8c8d" }}>No incoming orders.</p>
       ) : (
         orders.map((order) => {
-          // --- Logic for this specific order iteration ---
+          // Logic Fix: Use String() conversion to ensure items are found
           const sellerItems = order.items.filter(
-            (item) => item.seller === sellerId
+            (item) => String(item.seller?._id || item.seller) === String(sellerId)
           );
 
           const sellerStatus =
@@ -118,7 +108,7 @@ function SellerOrders() {
           return (
             <div key={order._id} style={cardStyle}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <h3>Order ID: ...{order._id.slice(-6)}</h3>
+                <h3>Order ID: ...{order._id.slice(-6).toUpperCase()}</h3>
 
                 <span style={statusBadge(sellerStatus)}>{sellerStatus}</span>
               </div>
@@ -197,7 +187,7 @@ function SellerOrders() {
         })
       )}
 
-      {/*  IMAGE MODAL */}
+      {/* IMAGE MODAL */}
       {selectedImg && (
         <div style={modalOverlayStyle} onClick={() => setSelectedImg(null)}>
           <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
