@@ -26,16 +26,16 @@ function SellerOrders() {
         const res = await api.get("/api/seller/orders");
         
         if (res.data.success) {
-          // Logic Fix: Ensure String comparison and handle populated seller objects
           const incoming = res.data.orders.filter((order) =>
-            order.items.some((item) => {
-              const itemSellerId = String(item.seller?._id || item.seller);
-              const currentSellerId = String(sellerId);
-              const isPending = String(item.status).toLowerCase() === "pending";
-              
-              return itemSellerId === currentSellerId && isPending;
-            })
-          );
+  order.items.some((item) => {
+    const itemSellerId = String(item.seller?._id || item.seller);
+    const currentSellerId = String(sellerId);
+
+    const status = (item.status || "").toLowerCase();
+
+    return itemSellerId === currentSellerId;
+  })
+);
           setOrders(incoming);
         }
       } catch (err) {
