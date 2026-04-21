@@ -125,12 +125,16 @@ function Add_Product() {
         return;
       }
     try {
-     const res = await api.post("/api/add_product",
-        formData)
-      if (!res.data.success) {
-        navigate("/login");
-        return;
-      }
+     const res = await api.post(
+  "/api/add_product",
+  formData,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data"
+    }
+  }
+);
 
       setMessage({
         text: res.data.message,
