@@ -136,7 +136,7 @@ function Buyer_Register() {
                                         alert("File too large (Max 5MB)");
                                     }
                                 }}
-                            />
+                           required />
                         </div>
 
                         <div className="buyer_reg_input_row">

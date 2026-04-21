@@ -44,7 +44,6 @@ function VerifyBuyerEmail() {
     }
   }, [state]);
 
-  // 🔥 INIT TIMER (CRITICAL FIX)
   useEffect(() => {
     let expiry = sessionStorage.getItem("buyer_timer_expiry");
 
