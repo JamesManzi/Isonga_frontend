@@ -166,6 +166,7 @@ style={{cursor: "zoom-in"}}
 type="file"
 onChange={handleImageChange}
 className="file-input"
+accept="image/*"
 />
 
 </div>
