@@ -149,13 +149,21 @@ useEffect(() => {
     }
   };
 
-  const deleteImage = async (filename) => {
-    if(!window.confirm("Delete this photo?")) return;
-    try {
-      await api.delete(`/api/delete_location_image/${encodeURIComponent(filename)}`);
-      setSeller(prev => ({ ...prev, files: prev.files.filter(f => f !== filename) }));
-    } catch (err) { alert("Delete failed"); }
-  };
+  const deleteImage = async (public_id) => {
+  if (!window.confirm("Delete this photo?")) return;
+
+  try {
+    await api.delete(`/api/delete_location_image/${encodeURIComponent(public_id)}`);
+
+    setSeller(prev => ({
+      ...prev,
+      files: prev.files.filter(f => f.public_id !== public_id)
+    }));
+
+  } catch (err) {
+    alert("Delete failed");
+  }
+};
 
   // Function to handle both NEW and UPDATED replies
 const handleReplySubmit = async (ratingId) => {
@@ -248,12 +256,21 @@ const startEditing = (review) => {
       {/* EXISTING GALLERY */}
       <h3>Store Gallery</h3>
       <div className="seller-files">
-        {seller.files?.map((file) => (
-          <div key={file} className="image-wrapper">
-            <img src={getFileUrl(file)} alt="Location" onClick={() => setSelectedImage(file)} />
-            <button onClick={() => deleteImage(file)} className="delete-overlay"><FontAwesomeIcon icon={faTrash} /></button>
-          </div>
-        ))}
+       {seller.files?.map((file) => (
+  <div key={file.public_id} className="image-wrapper">
+    <img 
+      src={file.url} 
+      alt="Location" 
+      onClick={() => setSelectedImage(file.url)} 
+    />
+    <button 
+      onClick={() => deleteImage(file.public_id)} 
+      className="delete-overlay"
+    >
+      <FontAwesomeIcon icon={faTrash} />
+    </button>
+  </div>
+))}
       </div>
 
       {/* MODERN UPDATE MODAL */}
