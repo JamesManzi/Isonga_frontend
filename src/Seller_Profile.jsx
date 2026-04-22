@@ -149,15 +149,15 @@ useEffect(() => {
     }
   };
 
-  const deleteImage = async (public_id) => {
+ const deleteImage = async (filename) => {
   if (!window.confirm("Delete this photo?")) return;
 
   try {
-    await api.delete(`/api/delete_location_image/${encodeURIComponent(public_id)}`);
+    await api.delete(`/api/delete_location_image/${encodeURIComponent(filename)}`);
 
     setSeller(prev => ({
       ...prev,
-      files: prev.files.filter(f => f.public_id !== public_id)
+      files: prev.files.filter(f => f !== filename)
     }));
 
   } catch (err) {
@@ -257,14 +257,14 @@ const startEditing = (review) => {
       <h3>Store Gallery</h3>
       <div className="seller-files">
        {seller.files?.map((file) => (
-  <div key={file.public_id} className="image-wrapper">
+  <div key={file} className="image-wrapper">
     <img 
-      src={file.url} 
+      src={getFileUrl(file)} 
       alt="Location" 
-      onClick={() => setSelectedImage(file.url)} 
+      onClick={() => setSelectedImage(file)} 
     />
     <button 
-      onClick={() => deleteImage(file.public_id)} 
+      onClick={() => deleteImage(file)} 
       className="delete-overlay"
     >
       <FontAwesomeIcon icon={faTrash} />
