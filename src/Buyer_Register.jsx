@@ -144,7 +144,8 @@ function Buyer_Register() {
                                 <label className="buyer_reg_label">Full Name</label>
                                 <div className="buyer_reg_input_wrapper">
                                     <FontAwesomeIcon icon={faUser} className="buyer_reg_icon" />
-                                    <input type="text" placeholder="John Doe" onChange={(e) => setName(e.target.value)} required />
+                                    <input type="text" placeholder="Enter Name"
+                                     onChange={(e) => setName(e.target.value)} required />
                                 </div>
                             </div>
 
@@ -152,7 +153,8 @@ function Buyer_Register() {
                                 <label className="buyer_reg_label">Email Address</label>
                                 <div className="buyer_reg_input_wrapper">
                                     <FontAwesomeIcon icon={faEnvelope} className="buyer_reg_icon" />
-                                    <input type="email" placeholder="john@example.com" onChange={(e) => setEmail(e.target.value)} required />
+                                    <input type="email" placeholder="Enter Email" 
+                                    onChange={(e) => setEmail(e.target.value)} required />
                                 </div>
                             </div>
                         </div>
@@ -162,7 +164,9 @@ function Buyer_Register() {
                                 <label className="buyer_reg_label">Password</label>
                                 <div className="buyer_reg_input_wrapper">
                                     <FontAwesomeIcon icon={faLock} className="buyer_reg_icon" />
-                                    <input type="password" placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} required />
+                                    <input type="password" 
+                                    placeholder="Enter Password" 
+                                    onChange={(e) => setPassword(e.target.value)} required />
                                 </div>
                             </div>
 
@@ -170,7 +174,8 @@ function Buyer_Register() {
                                 <label className="buyer_reg_label">Repeat Password</label>
                                 <div className="buyer_reg_input_wrapper">
                                     <FontAwesomeIcon icon={faLock} className="buyer_reg_icon" />
-                                    <input type="password" placeholder="••••••••" onChange={(e) => setRepeat_Pass(e.target.value)} required />
+                                    <input type="password" placeholder="Repeat Password" 
+                                    onChange={(e) => setRepeat_Pass(e.target.value)} required />
                                 </div>
                             </div>
                         </div>
