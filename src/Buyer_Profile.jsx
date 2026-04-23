@@ -216,7 +216,6 @@ required
 
 <label>New Password</label>
 
-<div className="password-container">
   <input
     type={showPassword ? "text" : "password"}
     placeholder="Enter new password"
@@ -229,12 +228,10 @@ required
     <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
   </span>
 </div>
-</div>
 
 <div className="form-group">
 
 <label>Confirm Password</label>
-<div className="password-container">
 <input
 type={showPassword ? "text":"password"}
 placeholder="Confirm password"
@@ -245,7 +242,6 @@ required
 <span className="eye-icon" onClick={togglePassword}>
   <FontAwesomeIcon icon={showPassword ? faEyeSlash:faEye}/>
 </span>
-</div>
 </div>
 
 <button className="save-btn">
