@@ -273,6 +273,7 @@ function ForgotPassword() {
           {/* STEP 3 */}
           {step === 3 && (
             <form onSubmit={handleResetPassword} className="verify-form">
+              <div>
               <input
                 type={showPass ? "text" : "password"}
                 value={newPassword}
@@ -280,7 +281,12 @@ function ForgotPassword() {
                 className="otp-input"
                 placeholder="New password"
               />
-
+              <FontAwesomeIcon
+                  icon={showPassword ? faEyeSlash : faEye}
+                  className="password-toggle"  
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              </div>
               <button disabled={loading} className="submit-btn active">
                 {loading ? <Loader2 className="spinner" /> : "Reset"}
               </button>
