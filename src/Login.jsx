@@ -89,35 +89,33 @@ function Login() {
       setTimeout(() => navigate("/dashboard"), 1200);
 
     } else {
-      const msg = res.data.message || "Invalid credentials";
+  const msg = res.data.message || "Invalid credentials";
   const lowerMsg = msg.toLowerCase();
 
   console.log("LOGIN MESSAGE:", msg);
 
-  if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
-    const msg = res.data.message || "Invalid credentials";
-  const lowerMsg = msg.toLowerCase();
-
-  console.log("LOGIN MESSAGE:", msg);
-
-  if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
+  if (
+    lowerMsg.includes("not verified") ||
+    lowerMsg.includes("email not verified")
+  ) {
     navigate("/VerifySellerEmail", {
       state: { email, role: "seller" }
     });
     return;
   }
-  handleFailure(msg);
-  }
+
   handleFailure(msg);
     }
   } catch (error) {
-    const errMsg = error.response?.data?.message || "Login failed. Please try again.";
+  const errMsg = error.response?.data?.message || "Login failed";
+  const lowerMsg = errMsg.toLowerCase();
 
   console.log("CATCH MESSAGE:", errMsg);
 
-  const lowerMsg = errMsg.toLowerCase();
-
-  if (lowerMsg.includes("not verified")) {
+  if (
+    lowerMsg.includes("not verified") ||
+    lowerMsg.includes("email not verified")
+  ) {
     navigate("/VerifySellerEmail", {
       state: { email, role: "seller" }
     });
