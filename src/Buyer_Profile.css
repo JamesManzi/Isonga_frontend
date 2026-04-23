@@ -146,10 +146,13 @@ color:#0a7cff;
   }
 }
 
-
-.password-container {
+.input-wrapper {
   position: relative;
-  width: 250px;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding-right: 40px; /* space for eye */
 }
 
 .eye-icon {

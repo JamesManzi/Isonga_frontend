@@ -215,7 +215,7 @@ required
 <div className="form-group">
 
 <label>New Password</label>
-
+<div className="input-wrapper">
   <input
     type={showPassword ? "text" : "password"}
     placeholder="Enter new password"
@@ -223,14 +223,13 @@ required
     onChange={(e) => setPassword(e.target.value)}
     required
   />
-
   <span className="eye-icon" onClick={togglePassword}>
     <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
   </span>
 </div>
-
+</div>
 <div className="form-group">
-
+<div className="form-group">
 <label>Confirm Password</label>
 <input
 type={showPassword ? "text":"password"}
@@ -243,7 +242,7 @@ required
   <FontAwesomeIcon icon={showPassword ? faEyeSlash:faEye}/>
 </span>
 </div>
-
+</div>
 <button className="save-btn">
 Update Profile
 </button>
