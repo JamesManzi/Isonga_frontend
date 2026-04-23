@@ -35,7 +35,7 @@ function Register() {
         
             const regex = /^(07(8|9|2|3)\d{7})$/;
      if(!regex.test(phone)){
-      return setMessage({text:"Invalid Phone Number",type:error})
+      return setMessage({text:"Invalid Phone Number",type:"error"})
      }
         const formData = new FormData();
         formData.append("name", name.trim());
