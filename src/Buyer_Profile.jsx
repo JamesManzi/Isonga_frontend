@@ -229,8 +229,8 @@ required
 </div>
 </div>
 <div className="form-group">
-<div className="input-wrapper">
 <label>Confirm Password</label>
+<div className="input-wrapper">
 <input
 type={showPassword ? "text":"password"}
 placeholder="Confirm password"
