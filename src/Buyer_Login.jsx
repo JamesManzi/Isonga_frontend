@@ -158,7 +158,7 @@ function Buyer_Login() {
               <label>Email Address</label>
               <input
                 type="email"
-                placeholder="yourname@example.com"
+                placeholder="Enter Email"
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={lockTime > 0}
@@ -170,7 +170,7 @@ function Buyer_Login() {
               <div className="buyer-password-wrapper">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  placeholder="Enter Password"
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={lockTime > 0}
