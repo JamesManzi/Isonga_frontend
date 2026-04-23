@@ -132,10 +132,11 @@ useEffect(() => {
 
     if (profile) formData.append("profileImage", profile);
     files.forEach((file) => formData.append("files", file));
-      const regex = /^(07(8|9|2|3)\d{7})$/;
-     if(!regex.test(phone)){
-      return setMessage({text:"Invalid Phone Number",type:"error"})
-     }
+      if(!regex.test(phone)){
+  setLoading(false); // Stop the spinner first
+  setMessage({text:"Invalid Phone Number",type:"error"});
+  return;
+}
     try {
       const res = await api.put("/api/seller_profile", formData);
       if (res.data.success) {
