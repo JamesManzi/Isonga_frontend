@@ -152,11 +152,6 @@ color:#0a7cff;
   width: 250px;
 }
 
-.password-container input {
-  width: 100%;
-  padding-right: 40px; /* space for the eye */
-}
-
 .eye-icon {
   position: absolute;
   right: 10px;
