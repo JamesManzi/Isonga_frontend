@@ -229,7 +229,7 @@ required
 </div>
 </div>
 <div className="form-group">
-<div className="form-group">
+<div className="input-wrapper">
 <label>Confirm Password</label>
 <input
 type={showPassword ? "text":"password"}
