@@ -291,3 +291,28 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+
+
+.buyer_reg_input_wrapper {
+  position: relative;   /* ADD THIS */
+  display: flex;
+  align-items: center;
+}
+
+.buyer_reg_input_wrapper input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+  padding-right: 35px;   /* ADD SPACE FOR EYE */
+}
+
+.eye-icon {
+  position: absolute;   /* KEY FIX */
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #9ca3af;
+}

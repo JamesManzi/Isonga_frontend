@@ -186,10 +186,10 @@ function Buyer_Register() {
                                     <input type={showPassword ? "text":"password"} 
                                     placeholder="Repeat Password" 
                                     onChange={(e) => setRepeat_Pass(e.target.value)} required />
-                                </div>
-                                <span className="eye-icon" onClick={togglePassword}>
+                                    <span className="eye-icon" onClick={togglePassword}>
     <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
   </span>
+                                </div>
                             </div>
                         </div>
 
