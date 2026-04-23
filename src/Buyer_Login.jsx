@@ -75,17 +75,6 @@ function Buyer_Login() {
       if (res.data.success) {
         const user = res.data.buyer;
 
-        // 1. Handle Unverified Buyers First
-        if (user.isVerified === false) {
-          // Pass the email and role to the VerifyEmail page
-          navigate("/VerifyBuyerEmail", { 
-            state: { email: user.email, role: "buyer" } 
-          });
-          return; // Stop execution here
-        }
-
-        // 2. Verified Buyer Success Path
-        // Clear security data
         localStorage.removeItem("buyer_attempts");
         localStorage.removeItem("buyer_lockUntil");
         setAttempts(0);
@@ -101,7 +90,14 @@ function Buyer_Login() {
         setTimeout(() => navigate("/buyer_dashboard"), 1200);
 
       } else {
-        handleFailure(res.data.message || "Invalid credentials");
+        const msg=res.data.message|| "Invalid credentials";
+        if(msg.toLowerCase().includes("verify")){
+           navigate("/VerifyBuyerEmail", { 
+            state: { email, role: "buyer" } 
+          });
+          return;
+        }
+        handleFailure(msg)
       }
     } catch (error) {
       // Check for specific backend messages regarding verification
