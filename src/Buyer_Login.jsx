@@ -100,9 +100,23 @@ function Buyer_Login() {
         handleFailure(msg)
       }
     } catch (error) {
-      // Check for specific backend messages regarding verification
-      const errMsg = error.response?.data?.message || "Login failed. Please try again.";
-      handleFailure(errMsg);
+  const errMsg = error.response?.data?.message || "Login failed. Please try again.";
+
+  console.log("Backend message:", errMsg); // 👈 debug
+
+  if (
+    errMsg.toLowerCase().includes("verify") ||
+    errMsg.toLowerCase().includes("not verified") ||
+    errMsg.toLowerCase().includes("activate")
+  ) {
+    navigate("/VerifyBuyerEmail", {
+      state: { email, role: "buyer" }
+    });
+    return;
+  }
+
+  // ❌ only real errors
+  handleFailure(errMsg);
     } finally {
       setLoading(false);
     }
