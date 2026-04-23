@@ -163,6 +163,7 @@ function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter Email"
                 required
                 disabled={lockTime > 0}
               />
@@ -175,6 +176,7 @@ function Login() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter Password"
                   required
                   disabled={lockTime > 0}
                 />

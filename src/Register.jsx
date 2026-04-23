@@ -133,7 +133,7 @@ function Register() {
                                     <label>Shop Name</label>
                                     <div className="input-with-icon">
                                         <FontAwesomeIcon icon={faStore} />
-                                        <input type="text" placeholder="e.g.  Tech Hub" onChange={(e) => setName(e.target.value)} required />
+                                        <input type="text" placeholder="Enter Name" onChange={(e) => setName(e.target.value)} required />
                                     </div>
                                 </div>
                                 <div className="modern-input-group">
@@ -173,7 +173,7 @@ function Register() {
                                 <label>Store Gallery (Min 2 photos)</label>
                                 <div className="multi-upload-trigger" onClick={() => locationImagesRef.current.click()}>
                                     <FontAwesomeIcon icon={faImages} />
-                                    <span>Add Store / Location Photos</span>
+                                    <span> Location Photos</span>
                                 </div>
                                 <input type="file" ref={locationImagesRef} hidden multiple accept="image/*" onChange={(e) => {
                                     const selectedFiles = Array.from(e.target.files);
@@ -207,7 +207,7 @@ function Register() {
                                     <label>Location</label>
                                     <div className="input-with-icon">
                                         <FontAwesomeIcon icon={faMapPin} />
-                                        <input type="text" placeholder="Street, City" onChange={(e) => setLocation(e.target.value)} required />
+                                        <input type="text" placeholder="Enter Location" onChange={(e) => setLocation(e.target.value)} required />
                                     </div>
                                 </div>
                                 <div className="modern-input-group">
@@ -228,7 +228,7 @@ function Register() {
                                 <label>Email Address</label>
                                 <div className="input-with-icon">
                                     <FontAwesomeIcon icon={faEnvelope} />
-                                    <input type="email" placeholder="hello@shop.com" onChange={(e) => setEmail(e.target.value)} required />
+                                    <input type="email" placeholder="Enter Email" onChange={(e) => setEmail(e.target.value)} required />
                                 </div>
                             </div>
 
@@ -237,14 +237,14 @@ function Register() {
                                     <label>Password</label>
                                     <div className="input-with-icon">
                                         <FontAwesomeIcon icon={faLock} />
-                                        <input type="password" placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} required />
+                                        <input type="password" placeholder="Enter Password" onChange={(e) => setPassword(e.target.value)} required />
                                     </div>
                                 </div>
                                 <div className="modern-input-group">
                                     <label>Confirm</label>
                                     <div className="input-with-icon">
                                         <FontAwesomeIcon icon={faLock} />
-                                        <input type="password" placeholder="••••••••" onChange={(e) => setRepeat_Pass(e.target.value)} required />
+                                        <input type="password" placeholder="Repeat Password" onChange={(e) => setRepeat_Pass(e.target.value)} required />
                                     </div>
                                 </div>
                             </div>
