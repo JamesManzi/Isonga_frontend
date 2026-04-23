@@ -19,6 +19,8 @@ const [preview,setPreview] = useState("");
 const [message, setMessage] = useState({ text: "", type: "" });
 
 const [isZoomed, setIsZoomed] = useState(false);
+ const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
+
 
 useEffect(()=>{
 
@@ -52,9 +54,11 @@ fetchBuyer();
 const handleImageChange = (e)=>{
 
 const file = e.target.files[0];
-
+if(file.size>5*1024*1024){
+  setMessage("Profile is Large Max(5MB");
+  return
+}
 if(file){
-
 setProfile(file);
 setPreview(URL.createObjectURL(file));
 
@@ -70,6 +74,11 @@ if(password !== confirmPassword){
 setMessage("Passwords do not match");
 return;
 }
+
+if(!rule.test(password)){
+  setMessage("Please Use Strong Password");
+  return;
+}
 setLoading(true)
 try{
 
@@ -81,7 +90,12 @@ if(password){
 formData.append("password",password);
 }
 
+const Max_Size=5*1024*1024;
+
 if(profile){
+  if(profile.size>Max_Size){
+  return setMessage("Profile is Large Max(5MB");
+}
 formData.append("profile",profile);
 }
 
@@ -90,7 +104,7 @@ const res = await api.put("/api/update_buyer_profile", formData);
 if(res.data.success){
 setMessage("Profile updated successfully");
 setMessage({ text: "Profile updated successfully", type: "success" });
-setTimeout(() => navigate("/buyer_dashboard"), 1500);
+setTimeout(() => navigate("/buyer_dashboard"), 2000);
 
 }
 
