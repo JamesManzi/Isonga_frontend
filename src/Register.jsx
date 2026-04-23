@@ -31,7 +31,7 @@ function Register() {
         if (!profile) return setMessage({ text: "Profile photo is required", type: "error" });
         if (files.length < 2) return setMessage({ text: "Upload at least 2 store photos", type: "error" });
         if (password !== repeat_pass) return setMessage({ text: "Passwords don't match", type: "error" });
-
+        if(password.length<10) return setMessage({text:"Minimum Password 10 Characters",type:error})
         const formData = new FormData();
         formData.append("name", name.trim());
         formData.append("location", location.trim());

@@ -37,7 +37,9 @@ function Buyer_Register() {
             setMessage({ text: "Passwords do not match", type: "error" });
             return;
         }
-
+        if(password.length<10){
+            setMessage({text:"Minimum Password 10 Characters",type:error})
+        }
         const formData = new FormData();
         formData.append("name", name.trim());
         formData.append("email", email.trim());

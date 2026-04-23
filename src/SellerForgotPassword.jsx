@@ -272,15 +272,6 @@ function SellerForgotPassword() {
               </button>
             </form>
           )}
-
-          <div className="resend-section">
-            <button
-              onClick={() => setStep(1)}
-              className="resend-link"
-            >
-              Back to start
-            </button>
-          </div>
         </div>
 
         <button onClick={() => navigate("/login")} className="back-btn">
