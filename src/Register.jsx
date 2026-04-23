@@ -257,19 +257,29 @@ function Register() {
                                 </div>
                                 </div>
                                 <div className="modern-input-group">
-                                    <label>Confirm</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faLock} />
-                                        <input type={showPassword ? "text":"password"}
-                                         placeholder="Repeat Password" onChange={(e) => setRepeat_Pass(e.target.value)} required />
-                                         <span className="eye-icon" onClick={togglePassword}>
-    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-  </span>
-                                    </div>
-                                    </div>
-                                </div>
-                            
+  <label>Confirm</label>
 
+  <div className="input-with-icon">
+    <div className="buyer_reg_input_wrapper">
+      
+      <FontAwesomeIcon icon={faLock} />
+
+      <input
+        type={showPassword ? "text" : "password"}
+        placeholder="Repeat Password"
+        onChange={(e) => setRepeat_Pass(e.target.value)}
+        required
+      />
+
+      <span className="eye-icon" onClick={togglePassword}>
+        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+      </span>
+
+    </div>
+  </div>
+</div>
+                            
+</div>
                             <button type="submit" className="modern-submit-btn" disabled={loading}>
                                 {loading ? "Creating Store..." : <>Get Started <FontAwesomeIcon icon={faChevronRight} /></>}
                             </button>
