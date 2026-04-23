@@ -90,15 +90,19 @@ function Buyer_Login() {
         setTimeout(() => navigate("/buyer_dashboard"), 1200);
 
       } else {
-        const msg=res.data.message|| "Invalid credentials";
-        if(msg.toLowerCase().includes("verify")){
-           navigate("/VerifyBuyerEmail", { 
-            state: { email, role: "buyer" } 
-          });
-          return;
-        }
-        handleFailure(msg)
-      }
+  const msg = res.data.message || "Invalid credentials";
+  const lowerMsg = msg.toLowerCase();
+
+  console.log("LOGIN MESSAGE:", msg);
+
+  if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
+    navigate("/VerifyBuyerEmail", {
+      state: { email, role: "buyer" }
+    });
+    return;
+  }
+  handleFailure(msg);
+}
     } catch (error) {
   const errMsg = error.response?.data?.message || "Login failed. Please try again.";
 
