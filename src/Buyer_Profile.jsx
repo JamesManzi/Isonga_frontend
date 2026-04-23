@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link,useNavigate } from "react-router-dom";
 import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faTimes } from "@fortawesome/free-solid-svg-icons"; // Added faTimes
+import { faArrowLeft, faTimes,faEye,faEyeSlash } from "@fortawesome/free-solid-svg-icons"; // Added faTimes
 import "./Buyer_Profile.css";
 
 function Buyer_Profile() {
@@ -15,12 +15,15 @@ const [confirmPassword,setConfirmPassword] = useState("");
 const [loading,setLoading]=useState(false);
 const [profile,setProfile] = useState(null);
 const [preview,setPreview] = useState("");
+const [showPassword,setShowPassword]=useState(false);
 
 const [message, setMessage] = useState({ text: "", type: "" });
 
 const [isZoomed, setIsZoomed] = useState(false);
  const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
-
+const togglePassword=()=>{
+  setShowPassword(prev=>!prev)
+}
 useEffect(()=>{
 
 const fetchBuyer = async()=>{
@@ -214,13 +217,15 @@ required
 <label>New Password</label>
 
 <input
-type="password"
+type={showPassword? "text":"password"}
 placeholder="Enter new password"
 value={password}
 onChange={(e)=>setPassword(e.target.value)}
 required
 />
-
+<span onClick={togglePassword}>
+<FontAwesomeIcon icon={showPassword?faEyeSlash:faEye}/>
+</span>
 </div>
 
 <div className="form-group">
