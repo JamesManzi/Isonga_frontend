@@ -70,6 +70,11 @@ const handleUpdate = async(e)=>{
 
 e.preventDefault();
 
+if(!(password||name||confirmPassword)){
+  setMessage("All Fields Required");
+  return;
+}
+
 if(password !== confirmPassword){
 setMessage("Passwords do not match");
 return;
@@ -209,6 +214,7 @@ type="password"
 placeholder="Enter new password"
 value={password}
 onChange={(e)=>setPassword(e.target.value)}
+required
 />
 
 </div>
@@ -222,6 +228,7 @@ type="password"
 placeholder="Confirm password"
 value={confirmPassword}
 onChange={(e)=>setConfirmPassword(e.target.value)}
+required
 />
 
 </div>
