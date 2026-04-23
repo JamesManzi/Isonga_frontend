@@ -372,6 +372,7 @@ const startEditing = (review) => {
                                     Cancel
                                 </button>
                             </div>
+                            {message && <div className={`modern-alert-box ${message.type}`}>{message.text}</div>}
                         </form>
                     </div>
                 </div>
@@ -461,7 +462,6 @@ const startEditing = (review) => {
           <img src={getFileUrl(selectedImage)} alt="Full" className="full-image" />
         </div>
       )}
-       {message && <div className={`modern-alert-box ${message.type}`}>{message.text}</div>}
     </div>
   );
 }
