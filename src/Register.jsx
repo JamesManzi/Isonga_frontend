@@ -2,7 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudUploadAlt, faStore, faPhone, faEnvelope, faLock, faMapPin, faTrash, faChevronRight, faImages, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { 
+    faCloudUploadAlt,faEye,faEyeSlash,
+     faStore, faPhone, faEnvelope, faLock, faMapPin, faTrash, faChevronRight, faImages, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import "./Register.css";
 
 function Register() {
@@ -23,9 +25,12 @@ function Register() {
     const [previewFiles, setPreviewFiles] = useState([]);
     const [message, setMessage] = useState(null);
     const [category, setCategory] = useState("");
-
+    const [showPassword,setShowPassword]=useState(false);
     const navigate = useNavigate();
 
+    const togglePassword=()=>{
+        setShowPassword(prev=>!prev);
+    }
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!profile) return setMessage({ text: "Profile photo is required", type: "error" });
@@ -241,15 +246,27 @@ function Register() {
                                 <div className="modern-input-group">
                                     <label>Password</label>
                                     <div className="input-with-icon">
+                                        <div className="buyer_reg_input_wrapper">
                                         <FontAwesomeIcon icon={faLock} />
-                                        <input type="password" placeholder="Enter Password" onChange={(e) => setPassword(e.target.value)} required />
+                                        <input type={showPassword ? "text":"password"}
+                                         placeholder="Enter Password" onChange={(e) => setPassword(e.target.value)} required />
+                                         <span className="eye-icon" onClick={togglePassword}>
+    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+  </span>
                                     </div>
+                                </div>
                                 </div>
                                 <div className="modern-input-group">
                                     <label>Confirm</label>
+                                    <div className="modern-input-group">
                                     <div className="input-with-icon">
                                         <FontAwesomeIcon icon={faLock} />
-                                        <input type="password" placeholder="Repeat Password" onChange={(e) => setRepeat_Pass(e.target.value)} required />
+                                        <input type={showPassword ? "text":"password"}
+                                         placeholder="Repeat Password" onChange={(e) => setRepeat_Pass(e.target.value)} required />
+                                         <span className="eye-icon" onClick={togglePassword}>
+    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+  </span>
+                                    </div>
                                     </div>
                                 </div>
                             </div>
