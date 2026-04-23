@@ -90,42 +90,31 @@ function Login() {
 
     } else {
   const msg = res.data.message || "Invalid credentials";
+  const lowerMsg = msg.toLowerCase();
 
   console.log("LOGIN MESSAGE:", msg);
 
-  if (isUnverified(msg)) {
-    navigate("/VerifySellerEmail", {
-      state: { email, role: "seller" }
+  if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
+    navigate("/VerifyBuyerEmail", {
+      state: { email, role: "buyer" }
     });
     return;
   }
-
   handleFailure(msg);
-    }
-  } catch (error) {
-  const errMsg =
-    error.response?.data?.message ||
-    error.message ||
-    "Network error";
+}
+} catch (error) {
+  const errMsg = error.response?.data?.message || "Login failed. Please try again.";
 
   console.log("CATCH MESSAGE:", errMsg);
 
-  // ⚠️ DO NOT treat network error as login failure
-  if (error.code === "ERR_NETWORK" || error.code === "ECONNABORTED") {
-    setMessage({
-      text: "Server unreachable. Try again.",
-      type: "error"
+  const lowerMsg = errMsg.toLowerCase();
+
+  if (lowerMsg.includes("not verified")) {
+    navigate("/VerifyBuyerEmail", {
+      state: { email, role: "buyer" }
     });
     return;
   }
-
-  if (isUnverified(errMsg)) {
-    navigate("/VerifySellerEmail", {
-      state: { email, role: "seller" }
-    });
-    return;
-  }
-
   handleFailure(errMsg);
   } finally {
     setLoading(false);
