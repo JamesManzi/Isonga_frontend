@@ -146,6 +146,7 @@ useEffect(() => {
         setFiles([]);
         setPreviewFiles([]);
         alert("Profile updated successfully");
+        setMessage(null);
       }
     } catch (err) {
       alert("Update failed");
