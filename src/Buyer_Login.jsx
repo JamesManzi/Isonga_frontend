@@ -102,12 +102,15 @@ function Buyer_Login() {
     } catch (error) {
   const errMsg = error.response?.data?.message || "Login failed. Please try again.";
 
-  console.log("Backend message:", errMsg); // 👈 debug
+  console.log("CATCH MESSAGE:", errMsg); // 👈 check this in console
 
+  const lowerMsg = errMsg.toLowerCase();
+
+  // ✅ HANDLE UNVERIFIED HERE
   if (
-    errMsg.toLowerCase().includes("verify") ||
-   msg.toLowerCase().includes("verified") ||
-    errMsg.toLowerCase().includes("activate")
+    lowerMsg.includes("verify") ||
+    lowerMsg.includes("verified") ||
+    lowerMsg.includes("not verified")
   ) {
     navigate("/VerifyBuyerEmail", {
       state: { email, role: "buyer" }
@@ -115,7 +118,7 @@ function Buyer_Login() {
     return;
   }
 
-  // ❌ only real errors
+  // ❌ only real failures
   handleFailure(errMsg);
     } finally {
       setLoading(false);
