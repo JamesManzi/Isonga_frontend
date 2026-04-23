@@ -366,7 +366,7 @@ if (!seller) {
       <div className="Dashboard_heading">
 
         <h1>
-          Welcome Back {seller.name} <FontAwesomeIcon icon={faHand} />
+          Welcome Back {seller.name} <FontAwesomeIcon icon={faHand} className="faHand" />
         </h1>
 
         <p>Grow Your Business Today</p>

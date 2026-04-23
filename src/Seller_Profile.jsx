@@ -60,8 +60,6 @@ const [replyingTo, setReplyingTo] = useState(null); // Stores the ID of the revi
         setReviews(data.ratings || []);
         setAverageRating(data.averageRating || 0);
         setNumReviews(data.numReviews || 0);
-      } else {
-        navigate("/login");
       }
     } catch (err) {
       console.log(err);
@@ -150,6 +148,8 @@ useEffect(() => {
       }
     } catch (err) {
       alert("Update failed");
+      setMessage({text:"Updating Failed",type:"error"});
+      return;
     } finally {
       setLoading(false);
     }
@@ -168,6 +168,8 @@ useEffect(() => {
 
   } catch (err) {
     alert("Delete failed");
+    setMessage({text:"Deleting Failed",type:"error"});
+    return;
   }
 };
 
@@ -187,6 +189,8 @@ const handleReplySubmit = async (ratingId) => {
     }
   } catch (err) {
     alert("Operation failed");
+    setMessage({text:"Reply Failed"});
+    return;
   } finally {
     setLoading(false);
   }
@@ -199,7 +203,8 @@ const handleDeleteReply = async (ratingId) => {
     const res = await api.put(`/api/ratings/${ratingId}/reply`, { reply: "" });
     if (res.data.success) fetchSeller();
   } catch (err) {
-    alert("Delete failed");
+    alert("Delete Reply failed");
+    setMessage({text:"Deleting Reply Failed"})
   }
 };
 
@@ -369,7 +374,8 @@ const startEditing = (review) => {
                                 <button type="submit" className="modern-submit-btn" disabled={loading} style={{flex: 2}}>
                                     {loading ? "Updating..." : <>Save Changes <FontAwesomeIcon icon={faCheckCircle} /></>}
                                 </button>
-                                <button type="button" className="modern-submit-btn" onClick={() => setShowEdit(false)} style={{flex: 1, background: '#666'}}>
+                                <button type="button" className="modern-submit-btn" 
+                                onClick={() => setShowEdit(false)} style={{flex: 1, background: '#666'}}>
                                     Cancel
                                 </button>
                             </div>
