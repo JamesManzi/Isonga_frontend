@@ -236,12 +236,15 @@ required
 <label>Confirm Password</label>
 
 <input
-type="password"
+type={showPassword ? "text":"password"}
 placeholder="Confirm password"
 value={confirmPassword}
 onChange={(e)=>setConfirmPassword(e.target.value)}
 required
 />
+<span className="eye-icon" onClick={togglePassword}>
+  <FontAwesomeIcon icon={showPassword ? faEyeSlash:faEye}/>
+</span>
 
 </div>
 
