@@ -101,8 +101,8 @@ function Login() {
   console.log("LOGIN MESSAGE:", msg);
 
   if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
-    navigate("/VerifyBuyerEmail", {
-      state: { email, role: "buyer" }
+    navigate("/VerifySellerEmail", {
+      state: { email, role: "seller" }
     });
     return;
   }
@@ -118,8 +118,8 @@ function Login() {
   const lowerMsg = errMsg.toLowerCase();
 
   if (lowerMsg.includes("not verified")) {
-    navigate("/VerifyBuyerEmail", {
-      state: { email, role: "buyer" }
+    navigate("/VerifySellerEmail", {
+      state: { email, role: "seller" }
     });
     return;
   }
