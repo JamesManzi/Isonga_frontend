@@ -21,12 +21,16 @@ const [message, setMessage] = useState({ text: "", type: "" });
 const [isZoomed, setIsZoomed] = useState(false);
  const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
 
-
 useEffect(()=>{
 
 const fetchBuyer = async()=>{
 setLoading(true)
 try{
+  const token=localStorage.getItem("token");
+  if(!token){
+    navigate("/buyer_login");
+    return;
+  }
 const res = await api.get("/api/buyer_profile");
 
 if(res.data.success){

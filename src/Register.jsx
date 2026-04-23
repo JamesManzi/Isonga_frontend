@@ -32,6 +32,11 @@ function Register() {
         if (files.length < 2) return setMessage({ text: "Upload at least 2 store photos", type: "error" });
         if (password !== repeat_pass) return setMessage({ text: "Passwords don't match", type: "error" });
         if(password.length<10) return setMessage({text:"Minimum Password 10 Characters",type:error})
+        
+            const regex = /^(07(8|9|2|3)\d{7})$/;
+     if(!regex.test(phone)){
+      return setMessage({text:"Invalid Phone Number",type:error})
+     }
         const formData = new FormData();
         formData.append("name", name.trim());
         formData.append("location", location.trim());
