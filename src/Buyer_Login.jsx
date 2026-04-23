@@ -106,7 +106,7 @@ function Buyer_Login() {
 
   if (
     errMsg.toLowerCase().includes("verify") ||
-    errMsg.toLowerCase().includes("not verified") ||
+   msg.toLowerCase().includes("verified") ||
     errMsg.toLowerCase().includes("activate")
   ) {
     navigate("/VerifyBuyerEmail", {
