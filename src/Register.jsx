@@ -258,7 +258,6 @@ function Register() {
                                 </div>
                                 <div className="modern-input-group">
                                     <label>Confirm</label>
-                                    <div className="modern-input-group">
                                     <div className="input-with-icon">
                                         <FontAwesomeIcon icon={faLock} />
                                         <input type={showPassword ? "text":"password"}
@@ -269,7 +268,7 @@ function Register() {
                                     </div>
                                     </div>
                                 </div>
-                            </div>
+                            
 
                             <button type="submit" className="modern-submit-btn" disabled={loading}>
                                 {loading ? "Creating Store..." : <>Get Started <FontAwesomeIcon icon={faChevronRight} /></>}
