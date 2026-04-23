@@ -2,7 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudUploadAlt, faUser, faEnvelope, faLock, faTrash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { 
+    faCloudUploadAlt, faUser, faEye,faEyeSlash,faEnvelope, faLock, faTrash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import "./Buyer_Register.css";
 
 function Buyer_Register() {
@@ -15,10 +16,13 @@ function Buyer_Register() {
     const [password, setPassword] = useState("");
     const [repeat_pass, setRepeat_Pass] = useState("");
     const [message, setMessage] = useState(null);
-
+    const [showPassword,setShowPassword]=useState(false);
     const navigate = useNavigate();
     const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
 
+    const togglePassword=()=>{
+        setShowPassword(prev=>!prev)
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage(null);
@@ -166,9 +170,12 @@ function Buyer_Register() {
                                 <label className="buyer_reg_label">Password</label>
                                 <div className="buyer_reg_input_wrapper">
                                     <FontAwesomeIcon icon={faLock} className="buyer_reg_icon" />
-                                    <input type="password" 
+                                    <input type={showPassword ? "text":"password"} 
                                     placeholder="Enter Password" 
                                     onChange={(e) => setPassword(e.target.value)} required />
+                                    <span className="eye-icon" onClick={togglePassword}>
+    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+  </span>
                                 </div>
                             </div>
 
@@ -176,9 +183,13 @@ function Buyer_Register() {
                                 <label className="buyer_reg_label">Repeat Password</label>
                                 <div className="buyer_reg_input_wrapper">
                                     <FontAwesomeIcon icon={faLock} className="buyer_reg_icon" />
-                                    <input type="password" placeholder="Repeat Password" 
+                                    <input type={showPassword ? "text":"password"} 
+                                    placeholder="Repeat Password" 
                                     onChange={(e) => setRepeat_Pass(e.target.value)} required />
                                 </div>
+                                <span className="eye-icon" onClick={togglePassword}>
+    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+  </span>
                             </div>
                         </div>
 

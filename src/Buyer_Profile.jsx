@@ -24,9 +24,7 @@ const [isZoomed, setIsZoomed] = useState(false);
 const togglePassword=()=>{
   setShowPassword(prev=>!prev)
 }
-const showpassword=()=>{
-  setShowPassword(prev=>!prev)
-}
+
 useEffect(()=>{
 
 const fetchBuyer = async()=>{
@@ -241,7 +239,7 @@ value={confirmPassword}
 onChange={(e)=>setConfirmPassword(e.target.value)}
 required
 />
-<span className="eye-icon" onClick={showpassword}>
+<span className="eye-icon" onClick={togglePassword}>
   <FontAwesomeIcon icon={showPassword ? faEyeSlash:faEye}/>
 </span>
 </div>
