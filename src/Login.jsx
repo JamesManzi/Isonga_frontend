@@ -74,18 +74,6 @@ function Login() {
 
     if (res.data.success) {
       const user = res.data.seller;
-
-      // 1. Handle Unverified Users First
-      if (user.isVerified === false) {
-        // We pass email/role so VerifyEmail page knows who to send the code to
-        navigate("/VerifySellerEmail", { 
-          state: { email: user.email, role: "seller" } 
-        });
-        return; 
-      }
-
-      // 2. Verified User Success Path
-      // Clear security data only for successful, verified logins
       localStorage.removeItem("attempts");
       localStorage.removeItem("lockUntil");
       setAttempts(0);
@@ -101,12 +89,42 @@ function Login() {
       setTimeout(() => navigate("/dashboard"), 1200);
 
     } else {
-      handleFailure(res.data.message || "Invalid credentials");
+      const msg = res.data.message || "Invalid credentials";
+  const lowerMsg = msg.toLowerCase();
+
+  console.log("LOGIN MESSAGE:", msg);
+
+  if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
+    const msg = res.data.message || "Invalid credentials";
+  const lowerMsg = msg.toLowerCase();
+
+  console.log("LOGIN MESSAGE:", msg);
+
+  if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
+    navigate("/VerifyBuyerEmail", {
+      state: { email, role: "buyer" }
+    });
+    return;
+  }
+  handleFailure(msg);
+  }
+  handleFailure(msg);
     }
   } catch (error) {
-    // Check if backend sends 403/401 for unverified users
-    const msg = error.response?.data?.message || "Login failed.";
-    handleFailure(msg);
+    const errMsg = error.response?.data?.message || "Login failed. Please try again.";
+
+  console.log("CATCH MESSAGE:", errMsg);
+
+  const lowerMsg = errMsg.toLowerCase();
+
+  if (lowerMsg.includes("not verified")) {
+    navigate("/VerifyBuyerEmail", {
+      state: { email, role: "buyer" }
+    });
+    return;
+  }
+
+  handleFailure(errMsg);
   } finally {
     setLoading(false);
   }
