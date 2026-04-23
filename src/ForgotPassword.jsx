@@ -286,16 +286,6 @@ function ForgotPassword() {
               </button>
             </form>
           )}
-
-          {/* RESEND RESET */}
-          <div className="resend-section">
-            <button
-              onClick={() => setStep(1)}
-              className="resend-link"
-            >
-              Back
-            </button>
-          </div>
         </div>
 
         <button onClick={() => navigate(-1)} className="back-btn">
