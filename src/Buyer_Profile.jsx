@@ -216,16 +216,19 @@ required
 
 <label>New Password</label>
 
-<input
-type={showPassword? "text":"password"}
-placeholder="Enter new password"
-value={password}
-onChange={(e)=>setPassword(e.target.value)}
-required
-/>
-<span onClick={togglePassword}>
-<FontAwesomeIcon icon={showPassword?faEyeSlash:faEye}/>
-</span>
+<div className="password-container">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Enter new password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+  />
+
+  <span className="eye-icon" onClick={togglePassword}>
+    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+  </span>
+</div>
 </div>
 
 <div className="form-group">
