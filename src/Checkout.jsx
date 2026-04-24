@@ -9,8 +9,7 @@ function Checkout() {
   const [loading, setLoading] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [error, setError] = useState("");
-  const [seller,setSeller]=useState(null);
-
+  const [sellers, setSellers] = useState([]);
   // New states for File Upload and Preview
   const [paymentImage, setPaymentImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -36,7 +35,7 @@ function Checkout() {
       const res = await api.get("/api/cart");
       if (res.data.success) {
         setCart(res.data.cart);
-        setSeller(res.data.seller);
+        setSellers(res.data.sellers);
       }
     } catch (error) {
       console.log(error);
@@ -215,11 +214,13 @@ function Checkout() {
         {/* CONDITIONAL UPLOAD FIELD */}
         {form.paymentMethod !== "cash" && (
           <div className="payment-upload">
-            {seller&&seller.phone?(
-              <p>Dial *182*1*1*{seller.phone}#</p>
-            ):(
-              <p>Loading payment details...</p>
-            )}
+           {sellers.length > 0 ? (
+  sellers.map((s, index) => (
+    <p key={index}>Dial *182*1*1*{s.phone}#</p>
+  ))
+) : (
+  <p>Loading payment details...</p>
+)}
             <h3>Upload Payment Screenshot</h3>
             <p className="upload-hint">Please upload a screenshot of your transaction confirmation.</p>
             <input 
