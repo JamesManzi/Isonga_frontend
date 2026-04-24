@@ -281,6 +281,7 @@ function ForgotPassword() {
           {step === 3 && (
             <form onSubmit={handleResetPassword} className="verify-form">
               <div>
+                <div className="buyer_reg_input_wrapper">
               <input
   type={showPass ? "text" : "password"}
   value={newPassword}
@@ -291,6 +292,7 @@ function ForgotPassword() {
 <span className="eye-icon" onClick={togglePassword}>
     <FontAwesomeIcon icon={showPass ? faEyeSlash : faEye} />
   </span>
+              </div>
               </div>
               <button disabled={loading} className="submit-btn active">
                 {loading ? <Loader2 className="spinner" /> : "Reset"}
