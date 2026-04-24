@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye,faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import api from "./api";
 import {
   Mail,
@@ -21,6 +23,10 @@ function SellerForgotPassword() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const togglePassword=()=>{
+    setShowPass(prev!=prev);
+  }
 
   // =========================
   // TIMER SYSTEM (RESEND LOCK)
@@ -259,6 +265,7 @@ function SellerForgotPassword() {
           {/* STEP 3 */}
           {step === 3 && (
             <form onSubmit={handleResetPassword} className="verify-form">
+              <div className="buyer_reg_input_wrapper">
               <input
                 type={showPass ? "text" : "password"}
                 placeholder="New password"
@@ -266,6 +273,10 @@ function SellerForgotPassword() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="otp-input"
               />
+              <span className="eye-icon" onClick={togglePassword}>
+    <FontAwesomeIcon icon={showPass ? faEyeSlash : faEye} />
+  </span>
+         </div>
 
               <button className="submit-btn active" disabled={loading}>
                 {loading ? <Loader2 className="spinner" /> : "Reset Password"}
