@@ -25,7 +25,7 @@ function SellerForgotPassword() {
   const navigate = useNavigate();
 
   const togglePassword=()=>{
-    setShowPass(prev!=prev);
+    setShowPass(prev=>!prev);
   }
 
   // =========================
