@@ -24,6 +24,10 @@ function ForgotPassword() {
 
   const navigate = useNavigate();
 
+  const togglePassword=()=>{
+    setShowPass(prev=>!prev);
+  }
+
   // =========================
   // TIMER LOGIC (SAME STYLE AS BUYER)
   // =========================
@@ -284,12 +288,9 @@ function ForgotPassword() {
   className="otp-input"
   placeholder="New password"
 />
-
-<FontAwesomeIcon
-  icon={showPass ? faEyeSlash : faEye}
-  className="password-toggle"
-  onClick={() => setShowPass(!showPass)}
-/>
+<span className="eye-icon" onClick={togglePassword}>
+    <FontAwesomeIcon icon={showPass ? faEyeSlash : faEye} />
+  </span>
               </div>
               <button disabled={loading} className="submit-btn active">
                 {loading ? <Loader2 className="spinner" /> : "Reset"}
