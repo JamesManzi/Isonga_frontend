@@ -196,6 +196,7 @@ function ForgotPassword() {
         <div className="brand-logo">
           <span className="brand-isonga">ISONGA</span>
           <span className="brand-market">MARKET</span>
+          <div className="seller-tag">BUYER PORTAL</div>
         </div>
 
         <div className="verify-card">
