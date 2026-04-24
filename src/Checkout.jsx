@@ -9,7 +9,7 @@ function Checkout() {
   const [loading, setLoading] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [error, setError] = useState("");
-  const [seller,setSeller]=useState("");
+  const [seller,setSeller]=useState(null);
 
   // New states for File Upload and Preview
   const [paymentImage, setPaymentImage] = useState(null);
@@ -212,7 +212,11 @@ function Checkout() {
         {/* CONDITIONAL UPLOAD FIELD */}
         {form.paymentMethod !== "cash" && (
           <div className="payment-upload">
-            <p>Dial *182*1*1*{seller.phone}#</p>
+            {seller&&seller.phone?(
+              <p>Dial *182*1*1*{seller.phone}#</p>
+            ):(
+              <p>Loading payment details...</p>
+            )}
             <h3>Upload Payment Screenshot</h3>
             <p className="upload-hint">Please upload a screenshot of your transaction confirmation.</p>
             <input 
