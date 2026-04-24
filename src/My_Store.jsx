@@ -425,7 +425,32 @@ const handleUpdate = async (e) => {
             </div>
         </div>
       )}
-
+       {/* Media Zoom Modal - ICONS ONLY APPEAR HERE */}
+            {modalMedia.productId && (() => {
+              const product = products.find((p) => p._id === modalMedia.productId);
+              if (!product) return null; 
+              const file = product.files[modalMedia.index];
+              return (
+                <div className="media-modal" onClick={() => setModalMedia({ productId: null, index: 0 })}>
+                  <span className="close-btn">&times;</span>
+                  {isVideoFile(file) ? (
+                    <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
+                  ) : (
+                    <img src={getFileUrl(file)} alt="Full view" className="full-media" onClick={(e) => e.stopPropagation()} />
+                  )}
+                  <div className="modal-controls">
+                    <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => {
+                      e.stopPropagation();
+                      setModalMedia(p => ({ ...p, index: (p.index - 1 + product.files.length) % product.files.length }));
+                    }} />
+                    <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => {
+                      e.stopPropagation();
+                      setModalMedia(p => ({ ...p, index: (p.index + 1) % product.files.length }));
+                    }} />
+                  </div>
+                </div>
+              );
+            })()}
       {/* Delete Confirmation Modal */}
       {productToDelete && (
         <div className="delete-modal-overlay">
