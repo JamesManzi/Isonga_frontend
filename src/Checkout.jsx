@@ -192,7 +192,9 @@ function Checkout() {
           name="deliveryMethod"
           value={form.deliveryMethod}
           onChange={handleChange}
+          required
         >
+          <option value="select method">---Delivery Mehod---</option>
           <option value="standard">Standard Delivery</option>
           <option value="express">Express Delivery</option>
           <option value="pickup">Store Pickup</option>
@@ -203,10 +205,11 @@ function Checkout() {
           name="paymentMethod"
           value={form.paymentMethod}
           onChange={handleChange}
+          required
         >
+          <option value="Payment Method">---Payment Method---</option>
           <option value="cash">Cash on Delivery</option>
           <option value="mobile">Mobile Money</option>
-          <option value="card">Card Payment</option>
         </select>
 
         {/* CONDITIONAL UPLOAD FIELD */}
