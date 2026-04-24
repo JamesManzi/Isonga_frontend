@@ -210,6 +210,7 @@ function Checkout() {
         {/* CONDITIONAL UPLOAD FIELD */}
         {form.paymentMethod !== "cash" && (
           <div className="payment-upload">
+            <p>Dial *182*1*1#</p>
             <h3>Upload Payment Screenshot</h3>
             <p className="upload-hint">Please upload a screenshot of your transaction confirmation.</p>
             <input 
