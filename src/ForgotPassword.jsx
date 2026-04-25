@@ -37,7 +37,7 @@ function ForgotPassword() {
     if (!expiry) return 0;
 
     return Math.max(
-      Math.floor(Number(expiry) - Date.now()) / 1000,
+      Math.floor((Number(expiry) - Date.now()) / 1000),
       0
     );
   };
