@@ -5,7 +5,7 @@ const api = axios.create({
   withCredentials:true
 });
 
-// 🔥 REQUEST INTERCEPTOR (attach token automatically)
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
@@ -16,12 +16,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// 🔥 RESPONSE INTERCEPTOR (GLOBAL LOGOUT)
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // ❌ Token invalid / expired
 
       localStorage.removeItem("token");
 
