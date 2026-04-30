@@ -32,6 +32,10 @@ function Buyer_Register() {
             return;
         }
 
+        if (!name || !email || !password || !repeat_pass) {
+            setMessage({text:"All Fields Required",type:error})
+  return;
+}
         if (!rule.test(password)) {
             setMessage({ text: "Password must be 10+ chars with 3 types (Upper, Lower, Number, Special)", type: "error" });
             return;

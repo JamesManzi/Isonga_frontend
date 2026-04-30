@@ -320,8 +320,8 @@ if (!seller) {
           {isMenuOpen && (
 
             <div className="dropdown_list" ref={dropdownRef}>
-              <Link to="/settings">Settings</Link>
-              <Link to="/inventory">Inventory</Link>
+              <Link to="/seller_profile">Settings</Link>
+              <Link to="/my_store">Inventory</Link>
               <hr />
             </div>
 
