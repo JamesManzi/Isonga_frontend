@@ -105,18 +105,15 @@ useEffect(() => {
                 <p><strong>Delivery:</strong> {order.deliveryMethod}</p>
                 <p><strong>Payment:</strong> {order.paymentMethod}</p>
 
-                {order.items.map((item, index) => (
-  item.paymentProof && (
-    <button
-      key={index}
-      onClick={() => setSelectedImg(item.paymentProof)}
-      style={receiptButtonStyle}
-    >
-      <FontAwesomeIcon icon={faImage} /> 
-      View {item.product?.name || "Item"} Receipt
-    </button>
-  )
-))}
+                {order.paymentProof && (
+  <button
+    onClick={() => setSelectedImg(order.paymentProof)}
+    style={receiptButtonStyle}
+  >
+    <FontAwesomeIcon icon={faImage} /> View Payment Receipt
+  </button>
+)}
+
               </section>
             </div>
 
