@@ -127,11 +127,22 @@ function Checkout() {
       // ✅ send seller totals also (important)
       formData.append("sellerTotals", JSON.stringify(sellerTotals));
 
-      // append files
-      Object.keys(sellerPayments).forEach((sellerId) => {
-        formData.append("paymentProofs", sellerPayments[sellerId].file);
-        formData.append("sellerIds", sellerId);
-      });
+      const paymentMap = [];
+const files = [];
+
+Object.keys(sellerPayments).forEach((sellerId) => {
+  paymentMap.push({ sellerId });
+
+  files.push(sellerPayments[sellerId].file);
+});
+
+// send mapping
+formData.append("paymentMap", JSON.stringify(paymentMap));
+
+// send files in same order
+files.forEach((file) => {
+  formData.append("files", file);
+});
 
       const res = await api.post("/api/order", formData, {
         headers: { "Content-Type": "multipart/form-data" }
