@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import api from "./api";
 import { useNavigate } from "react-router-dom";
@@ -10,9 +9,12 @@ function Checkout() {
   const [placingOrder, setPlacingOrder] = useState(false);
   const [error, setError] = useState("");
   const [sellers, setSellers] = useState([]);
-  // New states for File Upload and Preview
-  const [paymentImage, setPaymentImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+
+  // payments per seller
+  const [sellerPayments, setSellerPayments] = useState({});
+
+  // ✅ NEW: totals per seller
+  const [sellerTotals, setSellerTotals] = useState({});
 
   const navigate = useNavigate();
 
@@ -30,20 +32,46 @@ function Checkout() {
     fetchCart();
   }, []);
 
-  const fetchCart = async () => {
-    try {
-      const res = await api.get("/api/cart");
-      if (res.data.success) {
-        setCart(res.data.cart);
-        setSellers(res.data.sellers);
-      }
-    } catch (error) {
-      console.log(error);
-      setError("Failed to load cart");
-    }
-    setLoading(false);
-  };
+  // ✅ Calculate totals per seller
+  const calculateSellerTotals = (items = []) => {
+  const totals = {};
 
+  items.forEach((item) => {
+    const sellerId =
+      item.product?.seller?._id?.toString() ||
+      item.product?.seller?.toString();
+
+    if (!sellerId) return;
+
+    const amount = item.price * item.quantity;
+
+    totals[sellerId] = (totals[sellerId] || 0) + amount;
+  });
+
+  return totals;
+};
+
+  const fetchCart = async () => {
+  try {
+    const res = await api.get("/api/cart");
+
+    if (res.data.success) {
+      const cartData = res.data.cart;
+
+      setCart(cartData);
+      setSellers(res.data.sellers);
+
+      // ✅ use cartData, NOT cart
+      const totals = calculateSellerTotals(cartData.items);
+      setSellerTotals(totals);
+    }
+  } catch (error) {
+    console.log(error);
+    setError("Failed to load cart");
+  }
+
+  setLoading(false);
+};
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -51,35 +79,43 @@ function Checkout() {
     });
   };
 
-  // Handle image selection and create a preview URL
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPaymentImage(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
+  // handle file per seller
+  const handleSellerFileChange = (sellerId, file) => {
+    if (!file) return;
+
+    setSellerPayments((prev) => ({
+      ...prev,
+      [sellerId]: {
+        file,
+        preview: URL.createObjectURL(file)
+      }
+    }));
   };
 
   const placeOrder = async () => {
     setError("");
 
-    // Validation
     if (!form.name || !form.phone || !form.address) {
       setError("Please fill all required fields");
       return;
     }
 
-    // Validation for payment proof
-    if (form.paymentMethod !== "cash" && !paymentImage) {
-      setError("Please upload a screenshot of your payment confirmation");
-      return;
+    // validate proofs
+    if (form.paymentMethod !== "cash") {
+      for (let s of sellers) {
+        if (!sellerPayments[s._id]?.file) {
+          setError("Upload payment proof for each seller");
+          return;
+        }
+      }
     }
 
     try {
       setPlacingOrder(true);
 
-      // Create FormData because we are sending a file
       const formData = new FormData();
+
+      // basic info
       formData.append("name", form.name);
       formData.append("phone", form.phone);
       formData.append("address", form.address);
@@ -87,14 +123,19 @@ function Checkout() {
       formData.append("paymentMethod", form.paymentMethod);
       formData.append("notes", form.notes);
       formData.append("deliveryDate", form.deliveryDate);
-      
-      if (paymentImage) {
-        formData.append("paymentProof", paymentImage);
-      }
 
-      const res = await api.post("/api/order", formData, { 
-      headers: { "Content-Type": "multipart/form-data" } 
-    });
+      // ✅ send seller totals also (important)
+      formData.append("sellerTotals", JSON.stringify(sellerTotals));
+
+      // append files
+      Object.keys(sellerPayments).forEach((sellerId) => {
+        formData.append("paymentProofs", sellerPayments[sellerId].file);
+        formData.append("sellerIds", sellerId);
+      });
+
+      const res = await api.post("/api/order", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
 
       if (res.data.success) {
         alert("Order placed successfully");
@@ -105,29 +146,20 @@ function Checkout() {
     } catch (error) {
       console.log(error);
       setError("Server error while placing order");
-    } finally{
+    } finally {
       setPlacingOrder(false);
     }
   };
 
+  // ================= UI =================
+
   if (loading) {
-  return (
-    <div className="checkout-loading-modern">
-      <div className="checkout-loader-card">
-
-        <div className="checkout-pulse"></div>
-
-        <h2>ISONGA MARKET</h2>
-        <p>Preparing checkout...</p>
-
-      </div>
-    </div>
-  );
-}
+    return <h2>Loading checkout...</h2>;
+  }
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="checkout-empty">
+      <div>
         <h2>Your cart is empty</h2>
         <button onClick={() => navigate("/buyer_dashboard")}>
           Back to Shop
@@ -142,132 +174,92 @@ function Checkout() {
 
       {error && <p className="checkout-error">{error}</p>}
 
+      {/* ORDER SUMMARY */}
       <div className="checkout-summary">
         <h2>Order Summary</h2>
-        {cart.items.map(item => (
-          <div className="checkout-item" key={item.product._id}>
+
+        {cart.items.map((item) => (
+          <div key={item.product._id} className="checkout-item">
             <div>
               <strong>{item.product.name}</strong>
-              <p>Quantity: {item.quantity}</p>
+              <p>Qty: {item.quantity}</p>
             </div>
-            <div>
-              {item.quantity * item.price} Rwf
-            </div>
+            <div>{item.quantity * item.price} Rwf</div>
           </div>
         ))}
+
         <hr />
         <h3>Total: {cart.totalPrice} Rwf</h3>
       </div>
 
+      {/* FORM */}
       <div className="checkout-form">
         <h2>Delivery Details</h2>
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={form.name}
-          onChange={handleChange}
-        />
-
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone Number"
-          value={form.phone}
-          onChange={handleChange}
-        />
-
-        <input
-          type="text"
-          name="address"
-          placeholder="Delivery Address"
-          value={form.address}
-          onChange={handleChange}
-        />
+        <input name="name" placeholder="Full Name" value={form.name} onChange={handleChange} />
+        <input name="phone" placeholder="Phone Number" value={form.phone} onChange={handleChange} />
+        <input name="address" placeholder="Address" value={form.address} onChange={handleChange} />
 
         <h3>Delivery Method</h3>
-        <select
-          name="deliveryMethod"
-          value={form.deliveryMethod}
-          onChange={handleChange}
-          required
-        >
-          <option value="select method">---Delivery Mehod---</option>
-          <option value="standard">Standard Delivery</option>
-          <option value="express">Express Delivery</option>
-          <option value="pickup">Store Pickup</option>
+        <select name="deliveryMethod" value={form.deliveryMethod} onChange={handleChange}>
+          <option value="standard">Standard</option>
+          <option value="express">Express</option>
+          <option value="pickup">Pickup</option>
         </select>
 
         <h3>Payment Method</h3>
-        <select
-          name="paymentMethod"
-          value={form.paymentMethod}
-          onChange={handleChange}
-          required
-        >
-          <option value="Payment Method">---Payment Method---</option>
-          <option value="cash">Cash on Delivery</option>
+        <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
+          <option value="cash">Cash</option>
           <option value="mobile">Mobile Money</option>
         </select>
 
-        {/* CONDITIONAL UPLOAD FIELD */}
+        {/* ✅ MULTI SELLER PAYMENT */}
         {form.paymentMethod !== "cash" && (
           <div className="payment-upload">
-           {sellers.length > 0 ? (
-  sellers.map((s, index) => (
-    <p key={index}>Dial *182*1*1*{s.phone}#</p>
-  ))
-) : (
-  <p>Loading payment details...</p>
-)}
-            <h3>Upload Payment Screenshot</h3>
-            <p className="upload-hint">Please upload a screenshot of your transaction confirmation.</p>
-            <input 
-              type="file" 
-              accept="image/*" 
-              onChange={handleFileChange} 
-            />
-            {imagePreview && (
-              <div className="preview-container">
-                <p>Preview:</p>
-                <img src={imagePreview} alt="Payment Proof" className="payment-preview-img" />
+            {sellers.map((s) => (
+              <div key={s._id} className="seller-card">
+                <h3>Seller:{s.name}</h3>
+
+                {/* ✅ SHOW AMOUNT */}
+                <p><strong>Amount:</strong> {sellerTotals[s._id] || 0} Rwf</p>
+
+                {/* ✅ DIAL CODE WITH AMOUNT */}
+                <p>
+                  Dial: *182*1*1*{s.phone}*{sellerTotals[s._id] || 0}#
+                </p>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    handleSellerFileChange(s._id, e.target.files[0])
+                  }
+                />
+
+                {sellerPayments[s._id]?.preview && (
+                  <img
+                    src={sellerPayments[s._id].preview}
+                    alt="proof"
+                    className="payment-preview-img"
+                  />
+                )}
               </div>
-            )}
+            ))}
           </div>
         )}
 
         <h3>Delivery Date</h3>
-        <input
-          type="date"
-          name="deliveryDate"
-          value={form.deliveryDate}
-          onChange={handleChange}
-        />
+        <input type="date" name="deliveryDate" value={form.deliveryDate} onChange={handleChange} />
 
-        <h3>Order Notes</h3>
-        <textarea
-          name="notes"
-          placeholder="Extra instructions"
-          value={form.notes}
-          onChange={handleChange}
-        />
+        <h3>Notes</h3>
+        <textarea name="notes" value={form.notes} onChange={handleChange} />
 
         <div className="checkout-buttons">
-          <button
-            className="place-order"
-            onClick={placeOrder}
-            disabled={placingOrder}
-          >
-            {placingOrder ? "Placing Order..." : "Place Order"}
+          <button onClick={placeOrder} disabled={placingOrder}>
+            {placingOrder ? "Placing..." : "Place Order"}
           </button>
 
-          <button
-            className="return-btn"
-            onClick={() => navigate(-1)}
-          >
-            Return
-          </button>
+          <button onClick={() => navigate(-1)}>Back</button>
         </div>
       </div>
     </div>
