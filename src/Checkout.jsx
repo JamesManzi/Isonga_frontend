@@ -124,24 +124,15 @@ function Checkout() {
       formData.append("notes", form.notes);
       formData.append("deliveryDate", form.deliveryDate);
 
-      // ✅ send seller totals also (important)
+      //  send seller totals also (important)
       formData.append("sellerTotals", JSON.stringify(sellerTotals));
 
-      const paymentMap = [];
-const files = [];
+      Object.keys(sellerPayments).forEach((sellerId) => {
+  const file = sellerPayments[sellerId]?.file;
 
-Object.keys(sellerPayments).forEach((sellerId) => {
-  paymentMap.push({ sellerId });
-
-  files.push(sellerPayments[sellerId].file);
-});
-
-// send mapping
-formData.append("paymentMap", JSON.stringify(paymentMap));
-
-// send files in same order
-files.forEach((file) => {
-  formData.append("files", file);
+  if (file) {
+    formData.append("paymentProofs", file);
+  }
 });
 
       const res = await api.post("/api/order", formData, {
@@ -224,17 +215,17 @@ files.forEach((file) => {
           <option value="mobile">Mobile Money</option>
         </select>
 
-        {/* ✅ MULTI SELLER PAYMENT */}
+        {/*  MULTI SELLER PAYMENT */}
         {form.paymentMethod !== "cash" && (
           <div className="payment-upload">
             {sellers.map((s) => (
               <div key={s._id} className="seller-card">
                 <h3>Seller:{s.name}</h3>
 
-                {/* ✅ SHOW AMOUNT */}
+                {/*  SHOW AMOUNT */}
                 <p><strong>Amount:</strong> {sellerTotals[s._id] || 0} Rwf</p>
 
-                {/* ✅ DIAL CODE WITH AMOUNT */}
+                {/*  DIAL CODE WITH AMOUNT */}
                 <p>
                   Dial: *182*1*1*{s.phone}*{sellerTotals[s._id] || 0}#
                 </p>
