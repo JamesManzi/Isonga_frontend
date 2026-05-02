@@ -22,7 +22,7 @@ useEffect(() => {
       setLoading(true);
       const res = await api.get("/api/seller/orders");
       if(res.data.success){
-         setOrders(incoming);
+         setOrders(res.data.orders);
       }
     } catch (err) {
       console.error("Error fetching orders:", err);
