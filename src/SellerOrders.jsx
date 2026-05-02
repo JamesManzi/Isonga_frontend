@@ -21,6 +21,7 @@ useEffect(() => {
     try {
       setLoading(true);
       const res = await api.get("/api/seller/orders");
+      console.log("ORDERS:", res.data.orders);
       if(res.data.success){
          setOrders(res.data.orders);
       }
