@@ -21,11 +21,8 @@ useEffect(() => {
     try {
       setLoading(true);
       const res = await api.get("/api/seller/orders");
-      if (res.data.success) {
-        const incoming = res.data.orders.filter(
-          (order) => order.status === "Pending"
-        );
-        setOrders(incoming);
+      if(res.data.success){
+         setOrders(incoming);
       }
     } catch (err) {
       console.error("Error fetching orders:", err);

@@ -129,11 +129,12 @@ function Checkout() {
 
       Object.keys(sellerPayments).forEach((sellerId) => {
   const file = sellerPayments[sellerId]?.file;
-
   if (file) {
-    formData.append("paymentProofs", file);
+    // 👇 include sellerId in the field name
+    formData.append(`proof_${sellerId}`, file);
   }
 });
+
 
       const res = await api.post("/api/order", formData, {
         headers: { "Content-Type": "multipart/form-data" }
