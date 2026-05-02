@@ -22,9 +22,9 @@ useEffect(() => {
       setLoading(true);
       const res = await api.get("/api/seller/orders");
       console.log("ORDERS:", res.data.orders);
-      if(res.data.success){
-         setOrders(res.data.orders);
-      }
+      if (res.data.success) {
+         const incoming = res.data.orders.filter( (order) => order.status === "Pending" );
+          setOrders(incoming); }
     } catch (err) {
       console.error("Error fetching orders:", err);
     } finally {
