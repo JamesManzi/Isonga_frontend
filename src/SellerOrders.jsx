@@ -23,10 +23,13 @@ useEffect(() => {
       setLoading(true);
       const res = await api.get("/api/seller/orders");
       if (res.data.success) {
-         const incoming = res.data.orders.filter(order =>
-  order.items.some(item => item.status === "Pending")
+         const userId = localStorage.getItem("userId");
+const incoming = res.data.orders.filter(order =>
+  order.items.some(item => 
+    item.seller?.toString() === userId && item.status === "Pending"
+  )
 );
-setOrders(incoming); // ✅ REQUIRED
+setOrders(incoming)
       }
     } catch (err) {
       console.error("Error fetching orders:", err);
@@ -98,11 +101,11 @@ setOrders(incoming); // ✅ REQUIRED
   <p style={{ color: "#7f8c8d" }}>No incoming orders.</p>
 ) : (
   orders.map((order) => {
-    const sellerItem = order.items.find(
-      item => item.seller === localStorage.getItem("userId")
-    );
+   const sellerItem = order.items.find(
+  item => item.seller?.toString() === localStorage.getItem("userId")
+);
 
-    const sellerStatus = sellerItem?.status;
+const sellerStatus = sellerItem?.status;
 
     return (
       <div key={order._id} style={cardStyle}>
@@ -126,17 +129,15 @@ setOrders(incoming); // ✅ REQUIRED
                 <h4 style={sectionTitle}>Payment</h4>
                 <p><strong>Delivery:</strong> {order.deliveryMethod}</p>
                 <p><strong>Payment:</strong> {order.paymentMethod}</p>
-
-                {order.paymentProof && (
-  <button
-    onClick={() => setSelectedImg(order.paymentProof)}
-    style={receiptButtonStyle}
-  >
-    <FontAwesomeIcon icon={faImage} /> View Payment Receipt
-  </button>
-)}
-      
-              </section>
+                {sellerItem?.paymentProof && (
+    <button
+      onClick={() => setSelectedImg(sellerItem.paymentProof)}
+      style={receiptButtonStyle}
+    >
+      <FontAwesomeIcon icon={faImage} /> View Payment Receipt
+    </button>
+  )}
+</section>
             </div>
 
             <div style={itemBox}>
