@@ -1,7 +1,7 @@
 
     import { useEffect, useState } from "react";
 import api from "./api";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
 import "./SellerOrders.css";
@@ -10,6 +10,7 @@ function SellerOrders() {
 const [selectedImg, setSelectedImg] = useState(null);
 const [loading, setLoading] = useState(true);
 const [actionLoading, setActionLoading] = useState(null); // for buttons
+const navigate = useNavigate();
 
 useEffect(() => {
   const getOrders = async () => {
@@ -21,10 +22,12 @@ useEffect(() => {
     try {
       setLoading(true);
       const res = await api.get("/api/seller/orders");
-      console.log("ORDERS:", res.data.orders);
       if (res.data.success) {
-         const incoming = res.data.orders.filter( (order) => order.status === "Pending" );
-          setOrders(incoming); }
+         const incoming = res.data.orders.filter(order =>
+  order.items.some(item => item.status === "Pending")
+);
+setOrders(incoming); // ✅ REQUIRED
+      }
     } catch (err) {
       console.error("Error fetching orders:", err);
     } finally {
@@ -43,9 +46,23 @@ useEffect(() => {
   { status: newStatus }
 );
     if (res.data.success) {
-      setOrders((prevOrders) =>
-        prevOrders.filter((order) => order._id !== orderId)
-      );
+      setOrders(prevOrders =>
+  prevOrders
+    .map(order => {
+      if (order._id !== orderId) return order;
+
+      return {
+        ...order,
+        items: order.items.map(item => ({
+  ...item,
+  status: item.status === "Pending" ? newStatus : item.status
+}))
+      };
+    })
+    .filter(order =>
+      order.items.some(item => item.status === "Pending")
+    )
+);
     }
   } catch (err) {
     console.error("Error updating order status:", err);
@@ -77,18 +94,25 @@ useEffect(() => {
 
       <h1 style={titleStyle}>Incoming Orders</h1>
 
-      {orders.length === 0 ? (
-        <p style={{ color: "#7f8c8d" }}>No incoming orders.</p>
-      ) : (
-        orders.map((order) => (
-          <div key={order._id} style={cardStyle}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <h3>Order ID: ...{order._id.slice(-6)}</h3>
-              <span style={statusBadge(order.status)}>
-                {order.status}
-              </span>
-            </div>
+     {orders.length === 0 ? (
+  <p style={{ color: "#7f8c8d" }}>No incoming orders.</p>
+) : (
+  orders.map((order) => {
+    const sellerItem = order.items.find(
+      item => item.seller === localStorage.getItem("userId")
+    );
 
+    const sellerStatus = sellerItem?.status;
+
+    return (
+      <div key={order._id} style={cardStyle}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <h3>Order ID: ...{order._id.slice(-6)}</h3>
+
+          <span style={statusBadge(sellerStatus)}>
+            {sellerStatus}
+          </span>
+        </div>
             <div style={gridStyle}>
               <section>
                 <h4 style={sectionTitle}>Customer Info</h4>
@@ -111,7 +135,7 @@ useEffect(() => {
     <FontAwesomeIcon icon={faImage} /> View Payment Receipt
   </button>
 )}
-
+      
               </section>
             </div>
 
@@ -150,9 +174,10 @@ useEffect(() => {
 </button>
             </div>
           </div>
-        ))
-      )}
-
+    );
+  })
+        )}
+    
       {/*  IMAGE MODAL */}
       {selectedImg && (
         <div
@@ -175,8 +200,7 @@ useEffect(() => {
       )}
     </div>
   );
-}
-
+    }
 /* ---------------- STYLES ---------------- */
 
 const containerStyle = {
