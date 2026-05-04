@@ -126,11 +126,18 @@ function SellerOrderHistory() {
                 <section>
                   <h4 style={sectionTitle}>Payment Info</h4>
                   <p style={textStyle}><strong>Method:</strong> {order.paymentMethod}</p>
-                  {order.paymentProof && (
-                    <button onClick={() => setSelectedImg(order.paymentProof)} style={receiptButtonStyle}>
-                      <FontAwesomeIcon icon={faImage} /> View Receipt
-                    </button>
-                  )}
+                  {/* ✅ SIMPLE + CORRECT */}
+                    {order.paymentProof ? (
+                      <button
+                        onClick={() => setSelectedImg(order.paymentProof)}
+                        style={receiptButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faImage} />
+                        View Receipt
+                      </button>
+                    ) : (
+                      <p style={{ color: "#999" }}>No payment proof</p>
+                    )}
                 </section>
               </div>
 
