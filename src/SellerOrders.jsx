@@ -108,34 +108,23 @@ useEffect(() => {
                 <p><strong>Delivery:</strong> {order.deliveryMethod}</p>
                 <p><strong>Payment:</strong> {order.paymentMethod}</p>
 
-             {order.items.map((item, index) => {
-  const sellerId =
-    typeof item.seller === "object"
-      ? item.seller._id?.toString()
-      : item.seller?.toString();
+  <h4 style={sectionTitle}>Payment</h4>
+  <p><strong>Delivery:</strong> {order.deliveryMethod}</p>
+  <p><strong>Payment:</strong> {order.paymentMethod}</p>
 
-  // ✅ Use .get() for Mongoose Map
-  const proof =
-    order.paymentProofsBySeller?.get
-      ? order.paymentProofsBySeller.get(sellerId)
-      : order.paymentProofsBySeller?.[sellerId];
-
-  if (!proof) return null;
-
-  return (
+  {/* ✅ SIMPLE + CORRECT */}
+  {order.paymentProof ? (
     <button
-      key={index}
-      onClick={() => setSelectedImg(proof)}
+      onClick={() => setSelectedImg(order.paymentProof)}
       style={receiptButtonStyle}
     >
       <FontAwesomeIcon icon={faImage} />
-      View {item.product?.name || "Item"} Receipt
+      View Receipt
     </button>
-  );
-})}
-
-
-              </section>
+  ) : (
+    <p style={{ color: "#999" }}>No payment proof</p>
+  )}
+</section>
             </div>
 
             <div style={itemBox}>
