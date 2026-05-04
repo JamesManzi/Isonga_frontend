@@ -30,13 +30,10 @@ function SellerOrderHistory() {
       return;
     }
 
-    api.get("/api/seller/orders")
+    api.get("/api/seller/orders/history")
       .then((res) => {
         if (res.data.success) {
-          const processed = res.data.orders.filter(
-            (o) => o.status === "Accepted" || o.status === "Cancelled"
-          );
-          setOrders(processed);
+        setOrders(res.data.orders);
         }
       })
       .catch((err) => console.error("Error fetching history:", err))
@@ -113,7 +110,6 @@ function SellerOrderHistory() {
                 >
                   <FontAwesomeIcon icon={faDownload} /> PDF
                 </button>
-                <span style={statusBadge(order.status)}>{order.status}</span>
               </div>
             </div>
 
@@ -143,6 +139,7 @@ function SellerOrderHistory() {
                   <div key={index} style={itemRowStyle}>
                     <span>{item.product?.name || "Product"} × {item.quantity}</span>
                     <span>{item.price * item.quantity} Rwf</span>
+                    <span style={statusBadge(item.status)}>{item.status}</span>
                   </div>
                 ))}
                 <div style={totalStyle}>Total Amount: {order.totalPrice} Rwf</div>

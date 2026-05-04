@@ -142,6 +142,7 @@ function Checkout() {
 
       if (res.data.success) {
         alert("Order placed successfully");
+        console.log("Saved Orders",res.data.orderId)
         navigate("/buyer_dashboard");
       } else {
         setError(res.data.message || "Order failed");
@@ -157,7 +158,15 @@ function Checkout() {
   // ================= UI =================
 
   if (loading) {
-    return <h2>Loading checkout...</h2>;
+    return (
+      <div className="cart-loading-modern">
+        <div className="cart-loader-card">
+          <div className="cart-spinner"></div>
+          <h2>ISONGA MARKET</h2>
+          <h2>Loading checkout...</h2>
+        </div>
+      </div>
+    );
   }
 
   if (!cart || cart.items.length === 0) {
@@ -265,6 +274,7 @@ function Checkout() {
           <button onClick={() => navigate(-1)}>Back</button>
         </div>
       </div>
+
     </div>
   );
 }

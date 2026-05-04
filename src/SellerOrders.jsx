@@ -1,5 +1,5 @@
 
-    import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "./api";
 import { Link,useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,8 +10,7 @@ function SellerOrders() {
 const [selectedImg, setSelectedImg] = useState(null);
 const [loading, setLoading] = useState(true);
 const [actionLoading, setActionLoading] = useState(null); // for buttons
-const navigate = useNavigate();
-
+const navigate=useNavigate();
 useEffect(() => {
   const getOrders = async () => {
      const token = localStorage.getItem("token");
@@ -23,13 +22,12 @@ useEffect(() => {
       setLoading(true);
       const res = await api.get("/api/seller/orders");
       if (res.data.success) {
-         const userId = localStorage.getItem("userId");
-const incoming = res.data.orders.filter(order =>
-  order.items.some(item => 
-    item.seller?.toString() === userId && item.status === "Pending"
-  )
-);
-setOrders(incoming)
+        console.log("Orders",res.data.orders);
+        if (res.data.orders.length > 0) {
+      console.log("First Order Data:", res.data.orders[0]);
+      console.log("Payment Proofs for first order:", res.data.orders[0].paymentProofsBySeller);
+    }
+      setOrders(res.data.orders);
       }
     } catch (err) {
       console.error("Error fetching orders:", err);
@@ -49,23 +47,8 @@ setOrders(incoming)
   { status: newStatus }
 );
     if (res.data.success) {
-      setOrders(prevOrders =>
-  prevOrders
-    .map(order => {
-      if (order._id !== orderId) return order;
-
-      return {
-        ...order,
-        items: order.items.map(item => ({
-  ...item,
-  status: item.status === "Pending" ? newStatus : item.status
-}))
-      };
-    })
-    .filter(order =>
-      order.items.some(item => item.status === "Pending")
-    )
-);
+     const refreshed = await api.get("/api/seller/orders");
+  setOrders(refreshed.data.orders);
     }
   } catch (err) {
     console.error("Error updating order status:", err);
@@ -97,25 +80,20 @@ setOrders(incoming)
 
       <h1 style={titleStyle}>Incoming Orders</h1>
 
-     {orders.length === 0 ? (
-  <p style={{ color: "#7f8c8d" }}>No incoming orders.</p>
-) : (
-  orders.map((order) => {
-   const sellerItem = order.items.find(
-  item => item.seller?.toString() === localStorage.getItem("userId")
-);
+      {orders.length === 0 ? (
+        <p style={{ color: "#7f8c8d" }}>No incoming orders.</p>
+      ) : (
+        orders.map((order) => {
+          const firstItem = order.items[0];
+  return (
+    <div key={order._id} style={cardStyle}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <h3>Order ID: ...{order._id.slice(-6)}</h3>
+              <span style={statusBadge(firstItem?.status)}>
+  {firstItem?.status}
+</span>
+            </div>
 
-const sellerStatus = sellerItem?.status;
-
-    return (
-      <div key={order._id} style={cardStyle}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h3>Order ID: ...{order._id.slice(-6)}</h3>
-
-          <span style={statusBadge(sellerStatus)}>
-            {sellerStatus}
-          </span>
-        </div>
             <div style={gridStyle}>
               <section>
                 <h4 style={sectionTitle}>Customer Info</h4>
@@ -129,15 +107,35 @@ const sellerStatus = sellerItem?.status;
                 <h4 style={sectionTitle}>Payment</h4>
                 <p><strong>Delivery:</strong> {order.deliveryMethod}</p>
                 <p><strong>Payment:</strong> {order.paymentMethod}</p>
-                {sellerItem?.paymentProof && (
+
+             {order.items.map((item, index) => {
+  const sellerId =
+    typeof item.seller === "object"
+      ? item.seller._id?.toString()
+      : item.seller?.toString();
+
+  // ✅ Use .get() for Mongoose Map
+  const proof =
+    order.paymentProofsBySeller?.get
+      ? order.paymentProofsBySeller.get(sellerId)
+      : order.paymentProofsBySeller?.[sellerId];
+
+  if (!proof) return null;
+
+  return (
     <button
-      onClick={() => setSelectedImg(sellerItem.paymentProof)}
+      key={index}
+      onClick={() => setSelectedImg(proof)}
       style={receiptButtonStyle}
     >
-      <FontAwesomeIcon icon={faImage} /> View Payment Receipt
+      <FontAwesomeIcon icon={faImage} />
+      View {item.product?.name || "Item"} Receipt
     </button>
-  )}
-</section>
+  );
+})}
+
+
+              </section>
             </div>
 
             <div style={itemBox}>
@@ -155,7 +153,7 @@ const sellerStatus = sellerItem?.status;
                 Total: {order.totalPrice} Rwf
               </div>
             </div>
-
+      
             {/*  ACTION BUTTONS */}
             <div style={btnContainer}>
               <button
@@ -175,10 +173,9 @@ const sellerStatus = sellerItem?.status;
 </button>
             </div>
           </div>
-    );
-  })
-        )}
-    
+  );
+})
+      )}
       {/*  IMAGE MODAL */}
       {selectedImg && (
         <div
@@ -201,7 +198,7 @@ const sellerStatus = sellerItem?.status;
       )}
     </div>
   );
-    }
+}
 /* ---------------- STYLES ---------------- */
 
 const containerStyle = {

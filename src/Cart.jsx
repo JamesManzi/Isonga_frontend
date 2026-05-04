@@ -9,6 +9,7 @@ function Cart() {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,10 +21,11 @@ function Cart() {
     try {
       //  Fixed: api handles the token and base URL automatically
       const res = await api.get("/api/cart");
-
       if (res.data.success) {
         setCart(res.data.cart);
-        setProfile(res.data.buyer?.profile || "");
+        if(res.data.buyer){
+          setProfile(res.data.buyer.profile);
+        }
       }
     } catch (error) {
       console.log("Fetch Cart Error:", error);
@@ -148,7 +150,7 @@ function Cart() {
 
         <div className="nav-right">
           <div className="Cart_profile">
-            <img src={getFileUrl(profile)} alt="Profile" />
+            <img src={getFileUrl(profile)} alt="Profile"  onClick={() => setSelectedImage(profile)} />
           </div>
           <button className="logout-btn" onClick={logout}>
             <FontAwesomeIcon icon={faSignOutAlt} /> Logout
@@ -248,6 +250,12 @@ function Cart() {
           </button>
         </div>
       </div>
+       {selectedImage && (
+        <div className="image-modal" onClick={() => setSelectedImage(null)}>
+          <span className="close-btn">&times;</span>
+          <img src={getFileUrl(selectedImage)} alt="Full view" />
+        </div>
+      )}
     </div>
   );
 }
