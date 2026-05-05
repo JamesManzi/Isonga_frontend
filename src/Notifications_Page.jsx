@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./api";
@@ -36,27 +37,58 @@ function Notifications_Page() {
     };
     fetchNotifications();
   }, []);
-
   const handleView = async (n) => {
-    try {
-      const type = n.bookingId ? "booking" : "order";
-      const id = n.bookingId || n.orderId;
-      if (!id) return alert("Details ID not found.");
+  try {
+    const type = n.bookingId ? "booking" : "order";
+    const id = n.bookingId || n.orderId;
 
-      const res = await api.get(`/api/${type}s/${id}`);
+    if (!id) return alert("Details ID not found.");
 
-      if (res.data.success) {
-        // Inject the 'type' into the object so the modal knows what to render
-        setViewDetail({ ...res.data[type], type });
-      } else {
-        alert("Could not load details.");
-      }
-    } catch (err) {
-      console.error("Detail Fetch Error:", err);
-      alert("Details not found. The item may have been deleted.");
+    const res = await api.get(`/api/${type}s/${id}`);
+
+    if (!res.data.success) return;
+
+    let data = res.data[type];
+
+    if (type === "order") {
+      // 🔥 FIX sender extraction
+      const sellerId =
+        typeof n.sender === "object"
+          ? n.sender._id
+          : n.sender;
+
+      console.log("SENDER ID:", sellerId);
+
+      const filteredItems = data.items.filter((item) => {
+        const itemSellerId =
+          typeof item.seller === "object"
+            ? item.seller._id
+            : item.seller;
+
+        console.log("ITEM SELLER:", itemSellerId);
+
+        return String(itemSellerId) === String(sellerId);
+      });
+
+      console.log("FILTERED:", filteredItems);
+
+      const sellerTotal = filteredItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+
+      data = {
+        ...data,
+        items: filteredItems,
+        totalPrice: sellerTotal,
+      };
     }
-  };
 
+    setViewDetail({ ...data, type });
+  } catch (err) {
+    console.error(err);
+  }
+};
   const downloadPDF = async () => {
     const element = pdfRef.current;
     if (!element || !viewDetail) return;
@@ -169,8 +201,8 @@ function Notifications_Page() {
                             </div>
                         ))}
                         <div style={totalStyle}>
-                          Total: {viewDetail.totalPrice?.toLocaleString()} Rwf
-                        </div>
+  Total: {viewDetail.totalPrice?.toLocaleString() || 0} Rwf
+</div>
                     </div>
                 )}
 
@@ -212,3 +244,4 @@ const itemRow = { display: "flex", justifyContent: "space-between", marginBottom
 const totalStyle = { textAlign: "right", fontWeight: "bold", marginTop: "15px", borderTop: "2px solid #eee", paddingTop: "10px", fontSize: "1.1rem", color: "#2c3e50" };
 
 export default Notifications_Page;
+

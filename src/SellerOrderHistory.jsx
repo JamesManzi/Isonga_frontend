@@ -136,7 +136,7 @@ function SellerOrderHistory() {
                         View Receipt
                       </button>
                     ) : (
-                      <p style={{ color: "#999" }}>No payment proof</p>
+                      <p style={{ color: "#999" }}></p>
                     )}
                 </section>
               </div>
