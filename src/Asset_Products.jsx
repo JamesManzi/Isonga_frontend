@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import api from "./api";
-import "./View_Products.css";
+import "./Asset_Products.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   faArrowRight,
   faChevronLeft,
-  faChevronRight,
+  faChevronRight, 
   faSearch,
   faCartShopping
 } from "@fortawesome/free-solid-svg-icons";
@@ -108,9 +108,9 @@ function Asset_Products() {
 
   if (loading) {
     return (
-      <div className="products-loading">
-        <div className="products-loader-card">
-          <div className="cube-loader">
+      <div className="Asset_Products-products-loading">
+        <div className="Asset_Products-products-loader-card">
+          <div className="Asset_Products-cube-loader">
             <div></div><div></div><div></div><div></div>
           </div>
           <h2>ISONGA MARKET</h2>
@@ -121,22 +121,22 @@ function Asset_Products() {
   }
 
   return (
-    <div className="View_Products">
+    <div className="Asset_Products">
       {/* Navbar */}
-      <div className="View_Products_navbar">
-        <div className="View_Products_logo">
+      <div className="Asset_Products_navbar">
+        <div className="Asset_Products_logo">
           <img src="/logo.png" alt="logo" />
-          <div className="View_Products_heads"><h1>Isonga</h1><h2>Market</h2></div>
+          <div className="Asset_Products_heads"><h1>Isonga</h1><h2>Market</h2></div>
         </div>
-        <div className="View_Products_back" onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>
+        <div className="Asset_Products_back" onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>
           <FontAwesomeIcon icon={faArrowRight} />
         </div>
       </div>
 
-      <div className="View_Products_body"><p>Find All Assets You Desire</p></div>
+      <div className="Asset_Products_body"><p>Find All Assets You Desire</p></div>
 
       {/* Search */}
-      <div className="View_Products_search">
+      <div className="Asset_Products_search">
         <input
           type="search"
           placeholder="Search by name, location..."
@@ -147,7 +147,7 @@ function Asset_Products() {
       </div>
 
       {/* Assets Grid */}
-      <div className="store_container">
+      <div className="Asset_Products_store_container">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => {
             const files = product.files || [];
@@ -155,21 +155,21 @@ function Asset_Products() {
             const currentFile = files[activeIdx];
 
             return (
-              <div key={product._id} className="productcard">
-                <div className="image-slider">
+              <div key={product._id} className="Asset_Products_productcard">
+                <div className="Asset_Products_image-slider">
                   <div onClick={() => setModalMedia({ productId: product._id, index: activeIdx })}>
                     {currentFile && (
                       isVideoFile(currentFile) ? (
-                        <video src={getFileUrl(currentFile)} muted autoPlay loop className="slider-media" />
+                        <video src={getFileUrl(currentFile)} muted autoPlay loop className="Asset_Products-slider-media" />
                       ) : (
-                        <img src={getFileUrl(currentFile)} alt={product.name} className="slider-media" />
+                        <img src={getFileUrl(currentFile)} alt={product.name} className="Asset_Products-slider-media" />
                       )
                     )}
                   </div>
 
                   {/* Dots (No Arrow Icons) */}
                   {files.length > 1 && (
-                    <div className="slider-dots">
+                    <div className="Asset_Products-slider-dots">
                       {files.map((_, idx) => (
                         <span key={idx} className={`dot ${idx === activeIdx ? "active" : ""}`}></span>
                       ))}
@@ -177,7 +177,7 @@ function Asset_Products() {
                   )}
 
                   {seller && (
-                    <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
+                    <Link to={`/view_profile/${seller._id}`} className="Asset_Products-profile-avatar">
                       <img src={getFileUrl(seller.profile)} alt="seller" />
                     </Link>
                   )}
@@ -187,11 +187,11 @@ function Asset_Products() {
                 <p><strong>Price:</strong> {product.price} Rwf</p>
                 <p>{product.description}</p>
 
-                <div className="View_Products_btns">
+                <div className="Asset_Products_btns">
                   <Link
     to={`/buyer_chat/${seller?._id}?productId=${product._id}&productName=${encodeURIComponent(product.name)}&productImage=${encodeURIComponent(product.files[0] || "")}&productPrice=${product.price}`}
   >
-  <button className="chat_btn">Chat</button>
+  <button className="Asset_Products_chat_btn">Chat</button>
 </Link>
                 </div>
               </div>
@@ -236,13 +236,13 @@ function Asset_Products() {
         </div>
       )}
 
-      {showCartPopup && <div className="cart-popup">{popupMessage}</div>}
+      {showCartPopup && <div className="Asset_Products-cart-popup">{popupMessage}</div>}
 
       {/* Original Footer */}
-      <footer className="Buyer_Footer">
-        <div className="Footer_Container">
-          <div className="Footer_Section">
-            <div className="Footer_Logo">
+      <footer className="Asset_Products-Buyer_Footer">
+        <div className="Asset_Products-Footer_Container">
+          <div className="Asset_Products-Footer_Section">
+            <div className="Asset_Products-Footer_Logo">
               <img src="/logo.png" alt="Isonga Logo"/>
               <h3>Isonga Market</h3>
             </div>
@@ -260,8 +260,9 @@ function Asset_Products() {
           <div className="Footer_Section">
             <h4>Support</h4>
             <ul>
-              <li><Link to="/help">Help Center</Link></li>
-              <li><Link to="/terms">Terms</Link></li>
+              <li><Link to="/help-center">Help Center</Link></li>
+                            <li><Link to="/Steping">How It Works</Link></li>
+                            <li><Link to="/PrivacyRules">Privacy Policy</Link></li>
             </ul>
           </div>
           <div className="Footer_Section">

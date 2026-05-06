@@ -148,6 +148,7 @@ function Booking() {
           name="message"
           value={form.message}
           onChange={handleChange}
+          placeholder="Additional Details....."
         />
 
         <label>Payment Method</label>

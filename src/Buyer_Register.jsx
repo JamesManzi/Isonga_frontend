@@ -19,7 +19,7 @@ function Buyer_Register() {
     const [showPassword,setShowPassword]=useState(false);
     const navigate = useNavigate();
     const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
-
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const togglePassword=()=>{
         setShowPassword(prev=>!prev)
     };
@@ -33,26 +33,30 @@ function Buyer_Register() {
         }
 
         if (!name || !email || !password || !repeat_pass) {
-            setMessage({text:"All Fields Required",type:error})
+            setMessage({text:"All Fields Required",type:error});
   return;
 }
         if (!rule.test(password)) {
             setMessage({ text: "Password must be 10+ chars with 3 types (Upper, Lower, Number, Special)", type: "error" });
             return;
         }
-
+        if(!emailRegex.test(email)){
+            setMessage({text:"Invalid Email Try Again",type:error});
+            return;
+        }
         if (password !== repeat_pass) {
             setMessage({ text: "Passwords do not match", type: "error" });
             return;
         }
         if(password.length<10){
-            setMessage({text:"Minimum Password 10 Characters",type:error})
+            setMessage({text:"Minimum Password 10 Characters",type:error});
+            return;
         }
         const formData = new FormData();
         formData.append("name", name.trim());
         formData.append("email", email.trim());
-        formData.append("password", password);
-        formData.append("repeat_pass", repeat_pass);
+        formData.append("password", password.trim());
+        formData.append("repeat_pass", repeat_pass.trim());
         formData.append("profile", profile);
 
         setLoading(true);
@@ -86,8 +90,12 @@ function Buyer_Register() {
                 <div className="buyer_reg_info_side">
                     <div className="buyer_reg_info_content">
                         <img src="/logo.png" alt="Logo" className="buyer_reg_logo_img" />
-                        <h1>Start Your Journey</h1>
-                        <p>Join Isonga Market and get access to the best products from verified Rwandan sellers.</p>
+                        <h1>Isonga Market</h1>
+                        <h1>Start buyer Journey</h1>
+                        <p>Join Isonga Market and get access
+                             to the best products services and assets from verified  sellers.</p>
+                             <p>Also you get shipping services for purchased products 
+                             </p>
                         
                         <ul className="buyer_reg_feature_list">
                             <li> Wide variety of categories</li>
@@ -151,7 +159,7 @@ function Buyer_Register() {
 
                         <div className="buyer_reg_input_row">
                             <div className="buyer_reg_group">
-                                <label className="buyer_reg_label">Full Name</label>
+                                <label className="buyer_reg_label"> Name</label>
                                 <div className="buyer_reg_input_wrapper">
                                     <FontAwesomeIcon icon={faUser} className="buyer_reg_icon" />
                                     <input type="text" placeholder="Enter Name"

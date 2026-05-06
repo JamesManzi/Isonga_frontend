@@ -42,16 +42,21 @@ function Register() {
      if(!regex.test(phone)){
       return setMessage({text:"Invalid Phone Number",type:"error"})
      }
+     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+     if(!emailRegex.test(email)){
+        setMessage({text:"Invalid Email Try Again"});
+        return;
+     }
         const formData = new FormData();
         formData.append("name", name.trim());
         formData.append("location", location.trim());
-        formData.append("phone", phone);
+        formData.append("phone", phone.trim());
         formData.append("email", email.trim());
-        formData.append("password", password);
-        formData.append("repeat_pass", repeat_pass);
+        formData.append("password", password.trim());
+        formData.append("repeat_pass", repeat_pass.trim());
         formData.append("description", description.trim());
-        formData.append("category", category);
-        formData.append("sellerType", sellerType);
+        formData.append("category", category.trim());
+        formData.append("sellerType", sellerType.trim());
         formData.append("profile", profile);
         files.forEach(file => formData.append("files", file));
 
@@ -91,7 +96,7 @@ function Register() {
                         <div className="step-item active"><span className="step-num">3</span> Account Security</div>
                     </div>
                     <div className="sidebar-footer">
-                        <p>© 2026 Isonga Market. Proudly Rwandan 🇷🇼</p>
+                        <p>&copy; {new Date().getFullYear()} Isonga Market. Ecommerce Hub</p>
                     </div>
                 </div>
 
@@ -101,6 +106,7 @@ function Register() {
                         <div className="form-header">
                             <h1>Become a Seller</h1>
                             <p>Set up your professional store in minutes.</p>
+                            <p>sell whatever online 24 hours with Isonga Market </p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="modern-form">
@@ -143,7 +149,8 @@ function Register() {
                                     <label>Shop Name</label>
                                     <div className="input-with-icon">
                                         <FontAwesomeIcon icon={faStore} />
-                                        <input type="text" placeholder="Enter Name" onChange={(e) => setName(e.target.value)} required />
+                                        <input type="text" placeholder="Enter  Shop Name" 
+                                        onChange={(e) => setName(e.target.value)} required />
                                     </div>
                                 </div>
                                 <div className="modern-input-group">

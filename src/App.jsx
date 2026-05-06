@@ -46,6 +46,9 @@ import SellerForgotPassword from "./SellerForgotPassword";
 import Food from "./Food";
 import VerifyBuyerEmail from "./VerifyBuyerEmail";
 import  VerifySellerEmail from "./VerifySellerEmail";
+import HelpCenter from "./HelpCenter";
+import Steping from "./Steping";
+import PrivacyRules from "./PrivacyRules";
 function App(){
   return(
     <div>
@@ -98,6 +101,9 @@ function App(){
          <Route path="/SellerForgotPassword" element={<SellerForgotPassword/>}/>
          <Route path="/VerifyBuyerEmail" element={<VerifyBuyerEmail/>}/>
          <Route path="/VerifySellerEmail" element={< VerifySellerEmail/>}/>
+         <Route path="/help-center" element={<HelpCenter/>}/>
+         <Route path="/Steping" element={<Steping/>}/>
+         <Route path="/PrivacyRules" element={<PrivacyRules/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>

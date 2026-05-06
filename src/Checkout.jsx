@@ -264,7 +264,7 @@ function Checkout() {
         <input type="date" name="deliveryDate" value={form.deliveryDate} onChange={handleChange} />
 
         <h3>Notes</h3>
-        <textarea name="notes" value={form.notes} onChange={handleChange} />
+        <textarea name="notes" value={form.notes} onChange={handleChange} placeholder="Additional Details...." />
 
         <div className="checkout-buttons">
           <button onClick={placeOrder} disabled={placingOrder}>

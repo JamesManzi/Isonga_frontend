@@ -155,6 +155,7 @@ function Login() {
             <img src="/logo.png" alt="Logo" className="hero-logo" />
             <h1>Isonga Market</h1>
             <p>Empowering Rwandan entrepreneurs to reach more customers, faster.</p>
+            <p>Get Connected With Customers Nationwide Online.</p>
           </div>
         </div>
 

@@ -440,7 +440,7 @@ useEffect(() => {
         <div className="Footer_Container">
           <div className="Footer_Section">
             <div className="Footer_Logo"><img src="/logo.png" alt="Isonga Logo" /><h3>Isonga Market</h3></div>
-            <p>The leading digital marketplace in Rwanda.</p>
+            <p>© {new Date().getFullYear()} Isonga Market • Built for growth 🚀</p>
           </div>
           {/* Footer content remains same */}
           <div className="Footer_Section">
@@ -455,9 +455,9 @@ useEffect(() => {
           <div className="Footer_Section">
             <h4>Support</h4>
             <ul>
-              <li><Link to="/help">Help Center</Link></li>
-              <li><Link to="/terms">Terms</Link></li>
-              <li><Link to="/privacy">Privacy Policy</Link></li>
+              <li><Link to="/help-center">Help Center</Link></li>
+              <li><Link to="/Steping">How It Works</Link></li>
+              <li><Link to="/PrivacyRules">Privacy Policy</Link></li>
             </ul>
           </div>
           <div className="Footer_Section">

@@ -154,7 +154,10 @@ function Buyer_Login() {
           <div className="buyer-hero-content">
             <img src="/logo.png" alt="Logo" className="buyer-hero-logo" />
             <h1>Isonga Market</h1>
-            <p>Discover quality products and support local businesses across Rwanda.</p>
+            <p>Discover Shops of All Kind Across Country
+              With Verified Sellers and be Able to Access Products Services and Assets
+              at Suitable Prices
+            </p>
           </div>
         </div>
 

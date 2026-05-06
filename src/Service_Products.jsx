@@ -216,31 +216,40 @@ function Service_Products() {
       {showCartPopup && <div className="cart-popup">{popupMessage}</div>}
 
       <footer className="Buyer_Footer">
-        <div className="Footer_Container">
-          <div className="Footer_Section">
-            <div className="Footer_Logo"><img src="/logo.png" alt="Logo"/><h3>Isonga Market</h3></div>
-            <p>The leading digital marketplace in Rwanda.</p>
-          </div>
-          <div className="Footer_Section">
-            <h4>Quick Links</h4>
-            <ul>
-              <li><Link to="/fashion">All Products</Link></li>
-              <li><Link to="/services">Services</Link></li>
-              <li><Link to="/RealEstate">Assets</Link></li>
-            </ul>
-          </div>
-          <div className="Footer_Section">
-            <h4>Secure Payments</h4>
-            <div className="Payment_Methods">
-              <span className="Payment_Badge momo">MTN MoMo</span>
-              <span className="Payment_Badge airtel">Airtel Money</span>
-            </div>
-          </div>
-        </div>
-        <div className="Footer_Bottom">
-          <p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved. 🇷🇼</p>
-        </div>
-      </footer>
+              <div className="Footer_Container">
+                <div className="Footer_Section">
+                  <div className="Footer_Logo"><img src="/logo.png" alt="Isonga Logo" /><h3>Isonga Market</h3></div>
+                  <p>© {new Date().getFullYear()} Isonga Market • Built for growth 🚀</p>
+                </div>
+                {/* Footer content remains same */}
+                <div className="Footer_Section">
+                  <h4>Quick Links</h4>
+                  <ul>
+                    <li><Link to="/fashion">All Products</Link></li>
+                    <li><Link to="/services">Services</Link></li>
+                    <li><Link to="/RealEstate">Assets</Link></li>
+                    <li><Link to="/cart">My Cart</Link></li>
+                  </ul>
+                </div>
+                <div className="Footer_Section">
+                  <h4>Support</h4>
+                  <ul>
+                    <li><Link to="/help-center">Help Center</Link></li>
+                    <li><Link to="/Steping">How It Works</Link></li>
+                    <li><Link to="/PrivacyRules">Privacy Policy</Link></li>
+                  </ul>
+                </div>
+                <div className="Footer_Section">
+                  <h4>Secure Payments</h4>
+                  <div className="Payment_Methods">
+                    <span className="Payment_Badge momo">MTN MoMo</span>
+                    <span className="Payment_Badge airtel">Airtel Money</span>
+                  </div>
+                  <p className="Secure_Note">🔒 SSL Secure Transactions</p>
+                </div>
+              </div>
+              <div className="Footer_Bottom"><p>&copy; {new Date().getFullYear()} Isonga Market. All rights reserved. Designed for Rwanda 🇷🇼</p></div>
+            </footer>
     </div>
   );
 }

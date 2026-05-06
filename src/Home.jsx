@@ -341,7 +341,6 @@ function Home() {
             <div>
               <h4>For Sellers</h4>
               <Link to="/login">Sell Products</Link>
-              <Link to="#">Seller Tips</Link>
             </div>
             <div>
               <h4>Company</h4>
