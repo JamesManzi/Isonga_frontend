@@ -37,22 +37,22 @@ function Login() {
   try {
     const res = await api.post("/api/login", { email, password });
 
-    if (res.data.success) {
-      const user = res.data.user;
+   if (res.data.success) {
+  const seller = res.data.seller;
 
-      // Save credentials
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(user));
+  // Save credentials
+  localStorage.setItem("token", res.data.token);
+  localStorage.setItem("seller", JSON.stringify(seller));
 
-      setMessage({ text: "Success! Welcome back.", type: "success" });
-      
-    setTimeout(() => {
-  if (user.role === "admin") {
-    navigate("/AdminDashboard"); // or /admin-dashboard (same UI if hidden)
-  } else {
-    navigate("/dashboard");
-  }
-}, 1000);
+  setMessage({ text: "Success! Welcome back.", type: "success" });
+
+  setTimeout(() => {
+    if (seller.role === "admin") {
+      navigate("/AdminDashboard");
+    } else {
+      navigate("/dashboard");
+    }
+  }, 1000);
 
     } else {
   const msg = res.data.message || "Invalid credentials";
