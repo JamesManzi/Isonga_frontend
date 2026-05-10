@@ -8,6 +8,8 @@ import {
   faUsers,
   faStore,
   faChartLine,
+  faBox,
+  faCommentDots,
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -16,7 +18,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 function AdminDashboard() {
   const [stats, setStats] = useState(null);
-  const [users, setUsers] = useState([]);
+  const [recentUsers, setRecentUsers] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const dropdownRef = useRef(null);
@@ -39,23 +41,23 @@ function AdminDashboard() {
 
   /* ---------------- FETCH ADMIN DATA ---------------- */
   useEffect(() => {
-    const fetchAdmin = async () => {
+    const fetchAdminData = async () => {
       try {
         const statsRes = await api.get("/admin/dashboard");
         setStats(statsRes.data);
 
-        const usersRes = await api.get("/admin/users");
-        setUsers(usersRes.data.users || []);
+        const usersRes = await api.get("/admin/users?limit=5");
+        setRecentUsers(usersRes.data.users || []);
       } catch (err) {
         console.log(err);
-        toast.error("Failed to load admin data");
+        toast.error("Failed to load admin dashboard");
       }
     };
 
-    fetchAdmin();
+    fetchAdminData();
   }, []);
 
-  /* ---------------- CLICK OUTSIDE MENU ---------------- */
+  /* ---------------- CLOSE DROPDOWN ---------------- */
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -64,8 +66,7 @@ function AdminDashboard() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -82,6 +83,7 @@ function AdminDashboard() {
               <Link to="/admin/dashboard">Dashboard</Link>
               <Link to="/admin/users">Users</Link>
               <Link to="/admin/sellers">Sellers</Link>
+              <Link to="/admin/orders">Orders</Link>
               <hr />
               <button onClick={handleLogout}>Logout</button>
             </div>
@@ -99,11 +101,11 @@ function AdminDashboard() {
 
       {/* HEADER */}
       <div className="Dashboard_heading">
-        <h1>Admin Dashboard</h1>
-        <p>Manage users, sellers and platform activity</p>
+        <h1>Welcome Admin</h1>
+        <p>Monitor platform activity and manage system data</p>
       </div>
 
-      {/* STATS CARDS */}
+      {/* STATS */}
       <div className="Dashboard_body1">
         <div className="sales">
           <FontAwesomeIcon icon={faUsers} />
@@ -118,19 +120,25 @@ function AdminDashboard() {
         </div>
 
         <div className="views">
+          <FontAwesomeIcon icon={faBox} />
+          <p>Total Products</p>
+          <h2>{stats?.totalProducts || 0}</h2>
+        </div>
+
+        <div className="views">
           <FontAwesomeIcon icon={faChartLine} />
           <p>Total Orders</p>
           <h2>{stats?.totalOrders || 0}</h2>
         </div>
       </div>
 
-      {/* USERS LIST */}
+      {/* RECENT USERS */}
       <div className="Dashboard_body2">
         <h2>Recent Users</h2>
 
-        {users.slice(0, 5).map((user) => (
+        {recentUsers.map((user) => (
           <div key={user._id} className="user_card">
-            <p>{user.name}</p>
+            <p><strong>{user.name}</strong></p>
             <p>{user.email}</p>
           </div>
         ))}
@@ -148,9 +156,14 @@ function AdminDashboard() {
           <h2>Manage Sellers</h2>
         </Link>
 
-        <Link to="/admin/reports" className="buyer_messages">
+        <Link to="/admin/orders" className="buyer_messages">
           <FontAwesomeIcon icon={faChartLine} />
-          <h2>Reports</h2>
+          <h2>View Orders</h2>
+        </Link>
+
+        <Link to="/admin/messages" className="buyer_messages">
+          <FontAwesomeIcon icon={faCommentDots} />
+          <h2>Messages</h2>
         </Link>
       </div>
 
@@ -169,6 +182,11 @@ function AdminDashboard() {
         <Link to="/admin/sellers" className="footer_item">
           <FontAwesomeIcon icon={faStore} />
           <h2>Sellers</h2>
+        </Link>
+
+        <Link to="/admin/orders" className="footer_item">
+          <FontAwesomeIcon icon={faChartLine} />
+          <h2>Orders</h2>
         </Link>
       </div>
     </div>
