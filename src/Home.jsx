@@ -124,7 +124,17 @@ function Home() {
       : `https://api.isongamarket.com/uploads/${path}`;
   };
 
-
+if (loading) {
+    return (
+      <div className="home-loading">
+        <div className="loading-card">
+          <div className="spinner"></div>
+          <h2>Loading marketplace...</h2>
+          <p>Please wait</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="Home">
