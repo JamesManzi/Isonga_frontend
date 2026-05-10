@@ -237,7 +237,7 @@ function Checkout() {
 
                 {/*  DIAL CODE WITH AMOUNT */}
                 <p>
-                  Dial: *182*1*1*{s.phone}*{sellerTotals[s._id] || 0}#
+                  Dial: *182*1*1*{s.phone}*{sellerTotals[s._id] || 0}# Then Upload Screenshot
                 </p>
 
                 <input
