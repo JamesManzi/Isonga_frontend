@@ -122,30 +122,26 @@ function Home() {
       ? path
       : `https://api.isongamarket.com/uploads/${path}`;
   };
-
-  if (loading) {
-    return (
-      <div className="home-loading">
-        <div className="loading-card">
-          <div className="spinner"></div>
-          <h2>Loading marketplace...</h2>
-          <p>Please wait</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="Home">
-      <Helmet>
-  <title>Isonga Market Rwanda - Buy & Sell Online</title>
-  <meta
-    name="description"
-    content="Buy and sell products, shops, phones, clothes and more in Rwanda using Isonga Market."
-  />
-</Helmet>
-      {/* Navbar */}
-      <div className="Home_navbar">
+  <div className="Home">
+
+    {loading && (
+      <div className="home-loading">
+        <div className="spinner"></div>
+        <h2>Loading marketplace...</h2>
+      </div>
+    )}
+
+    <Helmet>
+      <title>Isonga Market Rwanda - Buy & Sell Online</title>
+      <meta
+        name="description"
+        content="Buy and sell products, shops, phones, clothes and more in Rwanda using Isonga Market."
+      />
+    </Helmet>
+
+    {/* Navbar */}
+    <div className="Home_navbar">
         <div className="Home_brand">
           <img src="/logo.png" alt="logo" />
           <div className="Home_heads">
