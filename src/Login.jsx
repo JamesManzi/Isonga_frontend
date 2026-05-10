@@ -11,60 +11,25 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
-
-  const [lockTime, setLockTime] = useState(0);
-  const [attempts, setAttempts] = useState(0);
-
+  const [lockTime,setLockTime]=useState(null);
   const navigate = useNavigate();
-  const MAX_ATTEMPTS = 5;
 
-  //  Load saved attempts + lock on page load
-  useEffect(() => {
-    const savedAttempts = localStorage.getItem("attempts");
-    const lockUntil = localStorage.getItem("lockUntil");
-
-    if (savedAttempts) {
-      setAttempts(parseInt(savedAttempts));
-    }
-
-    if (lockUntil) {
-      const remaining = Math.floor((parseInt(lockUntil) - Date.now()) / 1000);
-      if (remaining > 0) {
-        setLockTime(remaining);
-      } else {
-        localStorage.removeItem("lockUntil");
-      }
-    }
-  }, []);
-
-  //  Save attempts whenever they change
-  useEffect(() => {
-    localStorage.setItem("attempts", attempts);
-  }, [attempts]);
-
-  //  Countdown timer
-  useEffect(() => {
-    let timer;
-
-    if (lockTime > 0) {
-      timer = setInterval(() => {
-        setLockTime((prev) => {
-          if (prev <= 1) {
-            localStorage.removeItem("lockUntil");
-            localStorage.removeItem("attempts"); // reset attempts after lock ends
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => clearInterval(timer);
-  }, [lockTime]);
+  useEffect(()=>{
+    if(lockTime===null||lockTime<=0) return;
+    const timer=setInterval(()=>{
+      setLockTime(prev=>{
+        if(prev<=1){
+          clearInterval(timer);
+          return 0;
+        }
+        return prev-1;
+      })
+    },1000);
+    return ()=>clearInterval(timer);
+  },[lockTime]);
 
   const handleSubmit = async (e) => {
   e.preventDefault();
-  if (lockTime > 0) return;
 
   setLoading(true);
   setMessage(null);
@@ -74,10 +39,6 @@ function Login() {
 
     if (res.data.success) {
       const user = res.data.seller;
-      localStorage.removeItem("attempts");
-      localStorage.removeItem("lockUntil");
-      setAttempts(0);
-      setLockTime(0);
 
       // Save credentials
       localStorage.setItem("token", res.data.token);
@@ -86,63 +47,58 @@ function Login() {
       setMessage({ text: "Success! Welcome back.", type: "success" });
       
       // Short delay for the user to see the success message
-      setTimeout(() => navigate("/dashboard"), 1200);
+      setTimeout(() => navigate("/dashboard"), 1000);
 
     } else {
   const msg = res.data.message || "Invalid credentials";
+  if(res.data.remaining){
+    setLockTime(res.data.remaining);
+  }
   const lowerMsg = msg.toLowerCase();
 
   console.log("LOGIN MESSAGE:", msg);
 
   if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
     navigate("/VerifySellerEmail", {
-      state: { email, role: "buyer" }
+      state: { email, role: "seller" }
     });
     return;
   }
-  handleFailure(msg);
+ setMessage({
+  text: msg,
+  type: "error"
+});
 }
-} catch (error) {
-  const errMsg = error.response?.data?.message || "Login failed. Please try again.";
+}catch (error) {
+
+  const errMsg =
+    error.response?.data?.message ||
+    "Login failed. Please try again.";
 
   console.log("CATCH MESSAGE:", errMsg);
+
+  if (error.response?.status === 429) {
+    setLockTime(error.response.data.remaining);
+  }
 
   const lowerMsg = errMsg.toLowerCase();
 
   if (lowerMsg.includes("not verified")) {
     navigate("/VerifySellerEmail", {
-      state: { email, role: "buyer" }
+      state: { email, role: "seller" }
     });
     return;
   }
-  handleFailure(errMsg);
-  } finally {
-    setLoading(false);
-  }
+
+  setMessage({
+    text: errMsg,
+    type: "error"
+  });
+
+} finally {
+  setLoading(false);
+}
 };
-
-  const handleFailure = (errorText) => {
-    const newAttempts = attempts + 1;
-    setAttempts(newAttempts);
-
-    if (newAttempts >= MAX_ATTEMPTS) {
-      const expiryTime = Date.now() + 30000; // 30 seconds
-
-      localStorage.setItem("lockUntil", expiryTime);
-
-      setLockTime(30);
-
-      setMessage({
-        text: "Too many attempts. Locked for 30 seconds.",
-        type: "error",
-      });
-    } else {
-      setMessage({
-        text: `${errorText}. ${MAX_ATTEMPTS - newAttempts} attempts remaining.`,
-        type: "error",
-      });
-    }
-  };
   return (
     <div className="login-page">
       {loading && <div className="top-loading-bar"></div>}
@@ -175,7 +131,7 @@ function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter Email"
                 required
-                disabled={lockTime > 0}
+                disabled={loading||lockTime>0}
               />
             </div>
 
@@ -188,7 +144,7 @@ function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter Password"
                   required
-                  disabled={lockTime > 0}
+                  disabled={loading||lockTime>0}
                 />
                 <FontAwesomeIcon
                   icon={showPassword ? faEyeSlash : faEye}
@@ -203,24 +159,28 @@ function Login() {
             <button
               type="submit"
               className="main-login-btn"
-              disabled={loading || lockTime > 0}
+              disabled={loading||lockTime>0}
             >
-              {lockTime > 0
-                ? `Locked (${lockTime}s)`
-                : loading
-                ? "Authenticating..."
-                : (
-                  <>
-                    Sign In <FontAwesomeIcon icon={faArrowRight} />
-                  </>
-                )}
+            {loading?(
+              "Loading......"
+            ):(
+              <>
+               Sign In <FontAwesomeIcon icon={faArrowRight}/>
+              </>
+            )}
             </button>
 
-            {message && (
-              <div className={`modern-alert ${message.type}`}>
-                {message.text}
-              </div>
-            )}
+          {message && (
+  <div className={`modern-alert ${message.type}`}>
+    {message.text}
+  </div>
+)}
+
+{lockTime > 0 && (
+  <div className="modern-alert error">
+    Try Again in {lockTime}s
+  </div>
+)}
 
             <div className="register-redirect">
               Don't have a shop yet? <Link to="/register">Create Account</Link>

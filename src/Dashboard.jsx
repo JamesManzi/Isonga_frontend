@@ -326,9 +326,8 @@ if (!seller) {
               <Link to="/add_product">Add Item</Link>
               <hr />
             </div>
-
+ 
           )}
-
         </div>
 
         <div className="Dashboard_text">

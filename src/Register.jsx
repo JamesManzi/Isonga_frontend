@@ -33,10 +33,19 @@ function Register() {
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
+        if(!rule.test(password)){
+             setMessage({ text: "Password must be 10+ chars with 3 types (Upper, Lower, Number, Special)", type: "error" });
+            return;
+        }
+        
+     if(!name||!location||!phone||!email||!password||!repeat_pass||!description||!category||!sellerType||!files){
+        setMessage({text:"All Field Required",type:"error"})
+     }
         if (!profile) return setMessage({ text: "Profile photo is required", type: "error" });
         if (files.length < 2) return setMessage({ text: "Upload at least 2 store photos", type: "error" });
         if (password !== repeat_pass) return setMessage({ text: "Passwords don't match", type: "error" });
-        if(password.length<10) return setMessage({text:"Minimum Password 10 Characters",type:error})
+        if(password.length<10) return setMessage({text:"Minimum Password 10 Characters",type:"error"})
         
             const regex = /^(07(8|9|2|3)\d{7})$/;
      if(!regex.test(phone)){
@@ -133,7 +142,7 @@ function Register() {
         return alert("Please upload an image file for your profile.");
     }
     if (file.size > 5 * 1024 * 1024) {
-        return alert("Profile image must be under 5MB");
+        return alert("Profile image must not exceed 5MB");
     }
                                     setProfile(file); 
     setPreviewProfile(URL.createObjectURL(file));
