@@ -38,7 +38,7 @@ function Login() {
     const res = await api.post("/api/login", { email, password });
 
     if (res.data.success) {
-      const user = res.data.seller;
+      const user = res.data.user;
 
       // Save credentials
       localStorage.setItem("token", res.data.token);
@@ -46,8 +46,13 @@ function Login() {
 
       setMessage({ text: "Success! Welcome back.", type: "success" });
       
-      // Short delay for the user to see the success message
-      setTimeout(() => navigate("/dashboard"), 1000);
+    setTimeout(() => {
+  if (user.role === "admin") {
+    navigate("/AdminDashboard"); // or /admin-dashboard (same UI if hidden)
+  } else {
+    navigate("/dashboard");
+  }
+}, 1000);
 
     } else {
   const msg = res.data.message || "Invalid credentials";
@@ -60,7 +65,7 @@ function Login() {
 
   if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
     navigate("/VerifySellerEmail", {
-      state: { email, role: "seller" }
+      state: { email, role:user.role }
     });
     return;
   }
@@ -85,7 +90,7 @@ function Login() {
 
   if (lowerMsg.includes("not verified")) {
     navigate("/VerifySellerEmail", {
-      state: { email, role: "seller" }
+      state: { email, role:user.role }
     });
     return;
   }

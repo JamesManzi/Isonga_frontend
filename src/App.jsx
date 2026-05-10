@@ -49,6 +49,7 @@ import  VerifySellerEmail from "./VerifySellerEmail";
 import HelpCenter from "./HelpCenter";
 import Steping from "./Steping";
 import PrivacyRules from "./PrivacyRules";
+import AdminDashboard from "./AdminDashboard";
 function App(){
   return(
     <div>
@@ -104,6 +105,7 @@ function App(){
          <Route path="/help-center" element={<HelpCenter/>}/>
          <Route path="/Steping" element={<Steping/>}/>
          <Route path="/PrivacyRules" element={<PrivacyRules/>}/>
+         <Route path="/AdminDashboard" element={<AdminDashboard/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>
