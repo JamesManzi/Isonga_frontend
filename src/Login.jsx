@@ -65,7 +65,7 @@ function Login() {
 
   if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
     navigate("/VerifySellerEmail", {
-      state: { email, role:user.role }
+      state: { email, role:"seller"}
     });
     return;
   }
@@ -90,7 +90,7 @@ function Login() {
 
   if (lowerMsg.includes("not verified")) {
     navigate("/VerifySellerEmail", {
-      state: { email, role:user.role }
+      state: { email, role:"seller" }
     });
     return;
   }
