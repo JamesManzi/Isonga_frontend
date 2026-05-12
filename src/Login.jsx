@@ -166,13 +166,15 @@ function Login() {
               className="main-login-btn"
               disabled={loading||lockTime>0}
             >
-            {loading?(
-              "Loading......"
-            ):(
-              <>
-               Sign In <FontAwesomeIcon icon={faArrowRight}/>
-              </>
-            )}
+           {lockTime > 0 ? (
+                           <>Locked ({lockTime}s) <FontAwesomeIcon icon={faLock} /></>
+                         ) : loading ? (
+                           "Verifying..."
+                         ) : (
+                           <>
+                             Sign In <FontAwesomeIcon icon={faArrowRight} />
+                           </>
+                         )}
             </button>
 
           {message && (
@@ -180,7 +182,7 @@ function Login() {
     {message.text}
   </div>
 )}
-
+       
 {lockTime > 0 && (
   <div className="modern-alert error">
     Try Again in {lockTime}s
