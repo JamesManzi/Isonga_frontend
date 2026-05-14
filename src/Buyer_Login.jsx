@@ -176,14 +176,6 @@ function Buyer_Login() {
                 {message.text}
               </div>
             )}
-
-            
-{lockTime > 0 && (
-  <div className="modern-alert error">
-    Try Again in {lockTime}s
-  </div>
-)}
-
             <div className="buyer-register-redirect">
               New to Isonga? <Link to="/buyer_register">Create Account</Link>
             </div>

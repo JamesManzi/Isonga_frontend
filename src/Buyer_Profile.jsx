@@ -223,6 +223,7 @@ required
     placeholder="Enter new password"
     value={password}
     onChange={(e) => setPassword(e.target.value)}
+    name="password"
     required
   />
   <span className="eye-icon" onClick={togglePassword}>
@@ -238,6 +239,7 @@ type={showPassword ? "text":"password"}
 placeholder="Confirm password"
 value={confirmPassword}
 onChange={(e)=>setConfirmPassword(e.target.value)}
+name="confirmPassword"
 required
 />
 <span className="eye-icon" onClick={togglePassword}>

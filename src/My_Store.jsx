@@ -314,75 +314,63 @@ const handleUpdate = async (e) => {
 
                         <form onSubmit={handleUpdate} className="modern-form">
                             <div className="modern-grid">
-                                <div className="modern-input-group">
-                                    <label>Type</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faLayerGroup} />
-                                        <select 
-                                          value={editingProduct.type} 
-                                          onChange={(e) => setEditingProduct({...editingProduct, type: e.target.value, category: ""})} 
-                                          required
-                                        >
-                                            <option value="Product">Product</option>
-                                            <option value="Service">Service</option>
-                                            <option value="Asset">Asset</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="modern-input-group">
-                                    <label>Category</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faLayerGroup} />
-                                        <select 
-                                          value={editingProduct.category} 
-                                          onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})} 
-                                          required
-                                        >
-                                            <option value="">-- Select Category --</option>
-                                            {categoryOptions[editingProduct.type].map((cat) => (
-                                                <option key={cat} value={cat}>{cat}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+    <div className="modern-input-group">
+        <label>Name</label>
+        <div className="input-with-icon">
+            <FontAwesomeIcon icon={faStore} />
+            <input
+              type="text"
+              value={editingProduct.name}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  name: e.target.value,
+                })
+              }
+              required
+            />
+        </div>
+    </div>
 
-                            <div className="modern-grid">
-                                <div className="modern-input-group">
-                                    <label>Name</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faStore} />
-                                        <input type="text" value={editingProduct.name} onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})} required />
-                                    </div>
-                                </div>
-                                <div className="modern-input-group">
-                                    <label>Price (Rwf)</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faTag} />
-                                        <input type="number" value={editingProduct.price} onChange={(e) => setEditingProduct({...editingProduct, price: e.target.value})} required />
-                                    </div>
-                                </div>
-                            </div>
+    <div className="modern-input-group">
+        <label>Price (Rwf)</label>
+        <div className="input-with-icon">
+            <FontAwesomeIcon icon={faTag} />
+            <input
+              type="number"
+              value={editingProduct.price}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  price: e.target.value,
+                })
+              }
+              required
+            />
+        </div>
+    </div>
 
-                            <div className="modern-grid">
-                                <div className="modern-input-group">
-                                    <label>Location</label>
-                                    <div className="input-with-icon">
-                                        <FontAwesomeIcon icon={faMapPin} />
-                                        <input type="text" value={editingProduct.location} onChange={(e) => setEditingProduct({...editingProduct, location: e.target.value})} required />
-                                    </div>
-                                </div>
-                                {/* CONDITIONAL QUANTITY FIELD */}
-                                {editingProduct.type === "Product" && (
-                                  <div className="modern-input-group">
-                                      <label>Quantity Available</label>
-                                      <div className="input-with-icon">
-                                          <FontAwesomeIcon icon={faInfoCircle} />
-                                          <input type="number" value={editingProduct.quantity} onChange={(e) => setEditingProduct({...editingProduct, quantity: e.target.value})} required />
-                                      </div>
-                                  </div>
-                                )}
-                            </div>
+    {/* CONDITIONAL QUANTITY FIELD */}
+    {editingProduct.type === "Product" && (
+      <div className="modern-input-group">
+          <label>Quantity Available</label>
+          <div className="input-with-icon">
+              <FontAwesomeIcon icon={faInfoCircle} />
+              <input
+                type="number"
+                value={editingProduct.quantity}
+                onChange={(e) =>
+                  setEditingProduct({
+                    ...editingProduct,
+                    quantity: e.target.value,
+                  })
+                }
+                required
+              />
+          </div>
+      </div>
+    )}
+</div>
 
                             <div className="modern-input-group">
                                 <label>Description</label>
@@ -418,13 +406,13 @@ const handleUpdate = async (e) => {
                                     {loading ? "Saving..." : "Save Changes"}
                                 </button>
                                 <button type="button" className="modern-cancel-btn" onClick={() => setEditingProduct(null)}>Cancel</button>
-                            </div>
+                        </div>
                         </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-      )}
+</div>
+</div>
+</div>
+</div>
+)}
        {/* Media Zoom Modal - ICONS ONLY APPEAR HERE */}
             {modalMedia.productId && (() => {
               const product = products.find((p) => p._id === modalMedia.productId);
@@ -470,5 +458,4 @@ const handleUpdate = async (e) => {
     </div>
   );
 }
-
 export default My_Store;

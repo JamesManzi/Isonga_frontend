@@ -182,12 +182,6 @@ function Login() {
     {message.text}
   </div>
 )}
-       
-{lockTime > 0 && (
-  <div className="modern-alert error">
-    Try Again in {lockTime}s
-  </div>
-)}
 
             <div className="register-redirect">
               Don't have a shop yet? <Link to="/register">Create Account</Link>
