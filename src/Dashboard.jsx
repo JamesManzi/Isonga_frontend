@@ -323,7 +323,7 @@ if (!seller) {
               <Link to="/seller_profile">Settings</Link>
               <Link to="/my_store">Inventory</Link>
               <Link to="/SellerConversations">Chat Messages</Link>
-              <Link to="/add_product">Add Item</Link>
+              <Link to="/add_product">Upload Inventory</Link>
               <hr />
             </div>
  

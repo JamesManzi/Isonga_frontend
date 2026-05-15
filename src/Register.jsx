@@ -163,6 +163,7 @@ function Register() {
                                     </div>
                                 </div>
                                 <div className="modern-input-group">
+                                    <label>Seller Type</label>
                                     <select
   value={sellerType}  // <- Actually create a separate state for sellerType
   onChange={(e) => setSellerType(e.target.value)}
