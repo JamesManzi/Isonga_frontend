@@ -161,7 +161,11 @@ function Buyer_Login() {
               disabled={loading || lockTime > 0}
             >
               {lockTime > 0 ? (
-                <>Locked ({lockTime}s) <FontAwesomeIcon icon={faLock} /></>
+                  <>
+  Locked (
+  {Math.floor(lockTime / 60)}m {lockTime % 60}s
+  ) <FontAwesomeIcon icon={faLock} />
+</>
               ) : loading ? (
                 "Verifying..."
               ) : (
