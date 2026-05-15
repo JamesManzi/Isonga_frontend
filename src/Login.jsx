@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "./api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faArrowRight,faLock } from "@fortawesome/free-solid-svg-icons";
 import "./Login.css";
 
 function Login() {
