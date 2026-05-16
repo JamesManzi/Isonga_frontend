@@ -211,6 +211,7 @@ type="text"
 placeholder="Enter Name"
 value={name}
 onChange={(e)=>setName(e.target.value)}
+required
 />
 
 </div>
@@ -225,6 +226,7 @@ onChange={(e)=>setName(e.target.value)}
     value={password}
     onChange={(e) => setPassword(e.target.value)}
     name="password"
+    required
   />
   <span className="eye-icon" onClick={togglePassword}>
     <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
@@ -240,6 +242,7 @@ placeholder="Confirm password"
 value={confirmPassword}
 onChange={(e)=>setConfirmPassword(e.target.value)}
 name="confirmPassword"
+required
 />
 <span className="eye-icon" onClick={togglePassword}>
   <FontAwesomeIcon icon={showPassword ? faEyeSlash:faEye}/>
