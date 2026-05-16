@@ -102,7 +102,9 @@ formData.append("name",name);
 if(password){
 formData.append("password",password);
 }
-
+if(confirmPassword){
+  formData.append("confirmPassword",confirmPassword)
+}
 const Max_Size=5*1024*1024;
 
 if(profile){
