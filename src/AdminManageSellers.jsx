@@ -13,10 +13,14 @@ import {
   faTriangleExclamation,
   faTrashCan,
   faArrowLeft,
-  faShop
+  faShop,
+  faSpinner,
+  faEye,
 } from "@fortawesome/free-solid-svg-icons";
+
 import { createPortal } from "react-dom";
-import "./Buyer_Dashboard.css"; // Reuses your core layout structure and styling token sets
+import toast, { Toaster } from "react-hot-toast";
+import "./Buyer_Dashboard.css";
 
 function AdminManageSellers() {
   const navigate = useNavigate();
@@ -26,335 +30,1031 @@ function AdminManageSellers() {
   const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
-  // 1. Initial Admin Check and Seller Accounts Fetch
+  const [modalMedia, setModalMedia] = useState({
+    sellerId: null,
+    index: 0,
+  });
+
+  const socketRef = useRef(null);
+
+  /* ---------------- CATEGORY ROUTES ---------------- */
+
+  const productCategories = [
+    "Fashion",
+    "Electronics",
+    "Furniture",
+    "Construction",
+    "Food",
+  ];
+
+  const serviceCategories = [
+    "services",
+    "Hospitality",
+  ];
+
+  const assetCategories = [
+    "RealEstate",
+    "Vehicles",
+    "Livestock",
+  ];
+
+  const getSellerRoute = (category, id) => {
+    if (productCategories.includes(category)) {
+      return `/view_products/${id}`;
+    }
+
+    if (serviceCategories.includes(category)) {
+      return `/Service_Products/${id}`;
+    }
+
+    if (assetCategories.includes(category)) {
+      return `/Asset_products/${id}`;
+    }
+
+    return `/view_products/${id}`;
+  };
+
+  /* ---------------- FETCH SELLERS ---------------- */
+
   useEffect(() => {
     const fetchAdminSellers = async () => {
-      setLoading(true);
       try {
+        setLoading(true);
+
         const token = localStorage.getItem("token");
+
         if (!token) {
-          navigate("/buyer_login");
+          navigate("/login");
           return;
         }
 
-        // Fetching all store registers via the Admin Management route
-        const res = await api.get("/api/admin/dashboard-sellers"); 
-        if (res.data.success) {
-          const fetchedSellers = res.data.sellers.map(s => ({
-            ...s,
-            averageRating: s.averageRating || 0,
-            numReviews: s.numReviews || 0,
-            isVerified: s.isVerified ?? true, // baseline fallback checks
-            isSuspended: s.isSuspended ?? false
-          }));
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
 
-          setSellers(fetchedSellers);
-          setFilteredSellers(fetchedSellers);
+        const res = await api.get(
+          "/api/admin/dashboard-sellers",
+          config
+        );
+
+        if (res.data.success) {
+          const sellersData = (res.data.sellers || []).map(
+            (seller) => ({
+              ...seller,
+              averageRating:
+                seller.averageRating || 0,
+              numReviews:
+                seller.numReviews || 0,
+              isVerified:
+                seller.isVerified ?? false,
+              isSuspended:
+                seller.isSuspended ?? false,
+            })
+          );
+
+          setSellers(sellersData);
+          setFilteredSellers(sellersData);
 
           const indexes = {};
-          fetchedSellers.forEach(s => { indexes[s._id] = 0; });
+
+          sellersData.forEach((seller) => {
+            indexes[seller._id] = 0;
+          });
+
           setCurrentImageIndex(indexes);
         }
       } catch (err) {
-        console.error("Admin Fetch Sellers Error:", err);
-        // Redirect if route access verification fails (401/403)
-        if (err.response?.status === 403 || err.response?.status === 401) {
-          alert("Access denied. Admin authorization required.");
-          navigate("/buyer_login");
+        console.error(
+          "Fetch sellers error:",
+          err
+        );
+
+        toast.error(
+          err?.response?.data?.message ||
+            "Failed to load sellers"
+        );
+
+        if (
+          err?.response?.status === 401 ||
+          err?.response?.status === 403
+        ) {
+          localStorage.removeItem("token");
+          navigate("/login");
         }
       } finally {
         setLoading(false);
       }
     };
+
     fetchAdminSellers();
   }, [navigate]);
 
-  // 2. Real-time Synchronization (Listens for new shops registering live)
-  const socketRef = useRef(null);
+  /* ---------------- SOCKET ---------------- */
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!socketRef.current) {
-      socketRef.current = io("https://api.isongamarket.com", {
-        transports: ["polling", "websocket"],
+
+    if (!token) return;
+
+    socketRef.current = io(
+      "https://api.isongamarket.com",
+      {
         auth: { token },
-      });
-    }
+        transports: ["websocket", "polling"],
+      }
+    );
 
     const socket = socketRef.current;
-    socket.on("newSeller", () => {
-      // Re-fetch store data silently to display incoming shop applications instantly
-      api.get("/api/admin/dashboard-sellers").then(res => {
-        if (res.data.success) {
-          setSellers(res.data.sellers);
-        }
-      });
+
+    socket.on("connect", () => {
+      console.log("Admin socket connected");
+    });
+
+    socket.on("newSeller", (data) => {
+      toast.success(
+        data?.message ||
+          "New seller registered"
+      );
+
+      fetchLatestSellers();
     });
 
     return () => {
       socket.off("newSeller");
+
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
     };
   }, []);
 
-  // 3. Filter / Search Execution
+  const fetchLatestSellers = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const res = await api.get(
+        "/api/admin/dashboard-sellers",
+        config
+      );
+
+      if (res.data.success) {
+        setSellers(res.data.sellers || []);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /* ---------------- SEARCH ---------------- */
+
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredSellers(sellers);
       return;
     }
+
     const q = searchQuery.toLowerCase();
-    setFilteredSellers(
-      sellers.filter(s =>
-        (s.name && s.name.toLowerCase().includes(q)) ||
-        (s.category && s.category.toLowerCase().includes(q)) ||
-        (s.location && s.location.toLowerCase().includes(q)) ||
-        (s.email && s.email.toLowerCase().includes(q))
-      )
+
+    const filtered = sellers.filter(
+      (seller) =>
+        seller.name
+          ?.toLowerCase()
+          .includes(q) ||
+        seller.category
+          ?.toLowerCase()
+          .includes(q) ||
+        seller.location
+          ?.toLowerCase()
+          .includes(q) ||
+        seller.email
+          ?.toLowerCase()
+          .includes(q)
     );
+
+    setFilteredSellers(filtered);
   }, [searchQuery, sellers]);
 
-  // 4. Auto-playing Media Sliders
+  /* ---------------- IMAGE SLIDER ---------------- */
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => {
-        const newIndexes = { ...prev };
+        const updated = { ...prev };
+
         filteredSellers.forEach((seller) => {
-          if (seller.files && seller.files.length > 1) {
-            const currentIndex = prev[seller._id] || 0;
-            newIndexes[seller._id] = (currentIndex + 1) % seller.files.length;
+          if (
+            seller.files &&
+            seller.files.length > 1
+          ) {
+            const current =
+              prev[seller._id] || 0;
+
+            updated[seller._id] =
+              (current + 1) %
+              seller.files.length;
           }
         });
-        return newIndexes;
+
+        return updated;
       });
     }, 5000);
+
     return () => clearInterval(interval);
   }, [filteredSellers]);
 
-  // 5. Admin Management Control Triggers
-  const handleToggleVerify = async (sellerId, currentStatus) => {
-    try {
-      const res = await api.put(`/api/admin/sellers/${sellerId}/verify`, { verify: !currentStatus });
-      if (res.data.success) {
-        setSellers(prev => prev.map(s => s._id === sellerId ? { ...s, isVerified: !currentStatus } : s));
-      }
-    } catch (err) {
-      alert("Failed to alter seller verification parameters.");
-    }
+  /* ---------------- HELPERS ---------------- */
+
+  const isVideoFile = (filename) => {
+    return /\.(mp4|webm|ogg|mov)$/i.test(
+      filename
+    );
   };
 
-  const handleToggleSuspend = async (sellerId, currentStatus) => {
-    try {
-      const res = await api.put(`/api/admin/sellers/${sellerId}/suspend`, { suspend: !currentStatus });
-      if (res.data.success) {
-        setSellers(prev => prev.map(s => s._id === sellerId ? { ...s, isSuspended: !currentStatus } : s));
-      }
-    } catch (err) {
-      alert("Failed to modify account operational clearance status.");
-    }
-  };
-
-  const handleDeleteSeller = async (sellerId) => {
-    if (!window.confirm("CRITICAL WARNING: Are you sure you want to permanently purge this shop from Isonga Market? This removes all associated items and data permanently.")) {
-      return;
-    }
-    try {
-      const res = await api.delete(`/api/admin/sellers/${sellerId}`);
-      if (res.data.success) {
-        setSellers(prev => prev.filter(s => s._id !== sellerId));
-        alert("Store records successfully purged.");
-      }
-    } catch (err) {
-      alert("Purge operation dropped due to backend response failure.");
-    }
-  };
-
-  const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
   const getFileUrl = (path) => {
-    if (!path) return "/placeholder.png";
-    if (path.startsWith("http")) return path;
+    if (!path) {
+      return "/placeholder.png";
+    }
+
+    if (path.startsWith("http")) {
+      return path;
+    }
+
     return `https://api.isongamarket.com/uploads/${path}`;
   };
+
+  /* ---------------- VERIFY SELLER ---------------- */
+
+  const handleToggleVerify = async (
+    sellerId,
+    currentStatus
+  ) => {
+    try {
+      const token =
+        localStorage.getItem("token");
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const res = await api.put(
+        `/api/admin/sellers/${sellerId}/verify`,
+        {
+          verify: !currentStatus,
+        },
+        config
+      );
+
+      if (res.data.success) {
+        setSellers((prev) =>
+          prev.map((seller) =>
+            seller._id === sellerId
+              ? {
+                  ...seller,
+                  isVerified:
+                    !currentStatus,
+                }
+              : seller
+          )
+        );
+
+        toast.success(
+          currentStatus
+            ? "Seller verification removed"
+            : "Seller verified successfully"
+        );
+      }
+    } catch (err) {
+      console.log(err);
+
+      toast.error(
+        err?.response?.data?.message ||
+          "Verification failed"
+      );
+    }
+  };
+
+  /* ---------------- SUSPEND SELLER ---------------- */
+
+  const handleToggleSuspend = async (
+    sellerId,
+    currentStatus
+  ) => {
+    try {
+      const token =
+        localStorage.getItem("token");
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const res = await api.put(
+        `/api/admin/sellers/${sellerId}/suspend`,
+        {
+          suspend: !currentStatus,
+        },
+        config
+      );
+
+      if (res.data.success) {
+        setSellers((prev) =>
+          prev.map((seller) =>
+            seller._id === sellerId
+              ? {
+                  ...seller,
+                  isSuspended:
+                    !currentStatus,
+                }
+              : seller
+          )
+        );
+
+        toast.success(
+          currentStatus
+            ? "Seller unsuspended"
+            : "Seller suspended"
+        );
+      }
+    } catch (err) {
+      console.log(err);
+
+      toast.error(
+        err?.response?.data?.message ||
+          "Suspend action failed"
+      );
+    }
+  };
+
+  /* ---------------- DELETE SELLER ---------------- */
+
+  const handleDeleteSeller = async (
+    sellerId
+  ) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to permanently delete this seller?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const token =
+        localStorage.getItem("token");
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const res = await api.delete(
+        `/api/admin/sellers/${sellerId}`,
+        config
+      );
+
+      if (res.data.success) {
+        setSellers((prev) =>
+          prev.filter(
+            (seller) =>
+              seller._id !== sellerId
+          )
+        );
+
+        toast.success(
+          "Seller deleted successfully"
+        );
+      }
+    } catch (err) {
+      console.log(err);
+
+      toast.error(
+        err?.response?.data?.message ||
+          "Delete failed"
+      );
+    }
+  };
+
+  /* ---------------- LOADING ---------------- */
 
   if (loading) {
     return (
       <div className="beautiful-loading">
         <div className="text-center bg-white/20 backdrop-blur-lg p-10 rounded-3xl border border-white/30 shadow-2xl">
-          <div className="loader-dots flex space-x-2 justify-center mb-4">
-            <div className="w-4 h-4 bg-white rounded-full animate-bounce"></div>
-            <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            <div className="w-4 h-4 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          </div>
-          <h2 className="text-white font-bold text-xl tracking-widest">ADMIN PORTAL</h2>
-          <p className="text-white/80 text-sm">Mapping marketplace stores...</p>
+          <FontAwesomeIcon
+            icon={faSpinner}
+            spin
+            size="3x"
+            className="mb-4"
+          />
+
+          <h2>
+            Loading Seller Management...
+          </h2>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="Buyer_Dashboard Admin_Management_View">
-      {/* Top Navbar Header */}
+    <div className="Buyer_Dashboard">
+      <Toaster position="top-center" />
+
+      {/* ---------------- NAVBAR ---------------- */}
+
       <div className="Buyer_Dashboard_navbar">
-        <div className="Buyer_Dashboard_logos"><img src="/logo.png" alt="Logo" /></div>
-        <div className="Buyer_Dashboard_heads"><h1>Admin</h1><h2>Control</h2></div>
+        <div className="Buyer_Dashboard_logos">
+          <img
+            src="/logo.png"
+            alt="logo"
+          />
+        </div>
+
+        <div className="Buyer_Dashboard_heads">
+          <h1>Admin</h1>
+          <h2>Portal</h2>
+        </div>
+
         <div className="Buyer_Dashboard_nav">
-          <button onClick={() => navigate(-1)} style={{ background: "transparent", color: "white", border: "1px solid white", padding: "6px 12px", borderRadius: "20px", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
-            <FontAwesomeIcon icon={faArrowLeft} /> Dashboard Home
+          <button
+            onClick={() =>
+              navigate("/admin/dashboard")
+            }
+            style={{
+              background: "transparent",
+              color: "white",
+              border:
+                "1px solid white",
+              padding: "8px 14px",
+              borderRadius: "20px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+            />
+            Dashboard
           </button>
         </div>
+
         <div className="Buyer_Dashboard_Logout">
-          <button onClick={() => { localStorage.removeItem("token"); navigate("/buyer_login"); }}>Exit Portal</button>
+          <button
+            onClick={() => {
+              localStorage.removeItem(
+                "token"
+              );
+
+              navigate("/login");
+            }}
+          >
+            Logout
+          </button>
         </div>
       </div>
 
-      {/* Main Title Banner */}
+      {/* ---------------- HEADING ---------------- */}
+
       <div className="Buyer_Dashboard_Heading">
-        <h1>Marketplace Shop Moderation Center 👑</h1>
-        <p>Monitor profiles, handle security clearance verifications, or remove non-compliant vendor accounts globally.</p>
+        <h1>
+          Manage Marketplace Sellers
+        </h1>
+
+        <p>
+          Verify, suspend, monitor,
+          and manage all seller
+          accounts.
+        </p>
       </div>
 
-      {/* Control Search Row */}
+      {/* ---------------- SEARCH ---------------- */}
+
       <div className="Buyer_Dashboard_search">
-        <input type="text" placeholder="Filter stores by name, niche domain category, active region location..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-        <button><FontAwesomeIcon icon={faSearch} /></button>
+        <input
+          type="text"
+          placeholder="Search sellers..."
+          value={searchQuery}
+          onChange={(e) =>
+            setSearchQuery(
+              e.target.value
+            )
+          }
+        />
+
+        <button>
+          <FontAwesomeIcon
+            icon={faSearch}
+          />
+        </button>
       </div>
 
-      {/* Responsive Store Processing Grid Layout */}
+      {/* ---------------- SELLERS ---------------- */}
+
       <div className="shop-grid">
         {filteredSellers.length > 0 ? (
-          filteredSellers.map((seller) => {
-            const activeIdx = currentImageIndex[seller._id] || 0;
-            return (
-              <div 
-                key={seller._id} 
-                className="shop-card" 
-                style={{ 
-                  border: seller.isSuspended ? "2px solid #dc3545" : !seller.isVerified ? "2px solid #ffc107" : "1px solid #e2e8f0",
-                  opacity: seller.isSuspended ? 0.75 : 1 
-                }}
-              >
-                {/* Media Presentation Container */}
-                <div className="card-image-section" style={{ position: "relative" }}>
-                  {seller.isSuspended && (
-                    <span style={{ position: "absolute", top: "10px", left: "10px", background: "#dc3545", color: "white", padding: "4px 10px", borderRadius: "12px", fontSize: "11px", fontWeight: "bold", zIndex: 10 }}>
-                      <FontAwesomeIcon icon={faTriangleExclamation} /> SUSPENDED
-                    </span>
-                  )}
-                  {seller.files && seller.files.length > 0 ? (
-                    <div className="image-slider">
-                      {isVideoFile(seller.files[activeIdx]) ? (
-                        <video src={getFileUrl(seller.files[activeIdx])} muted autoPlay loop className="slider-image" onClick={() => setModalMedia({ sellerId: seller._id, index: activeIdx })} />
-                      ) : (
-                        <img src={getFileUrl(seller.files[activeIdx])} alt={seller.name} className="slider-image" onClick={() => setModalMedia({ sellerId: seller._id, index: activeIdx })} />
-                      )}
-                      {seller.files.length > 1 && (
-                        <div className="slider-dots">
-                          {seller.files.map((_, idx) => (
-                            <span key={idx} className={`dot ${idx === activeIdx ? "active" : ""}`} onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => ({ ...prev, [seller._id]: idx })); }}></span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <img src="/placeholder.png" alt="no documentation assets" className="slider-image" />
-                  )}
-                </div>
+          filteredSellers.map(
+            (seller) => {
+              const activeIdx =
+                currentImageIndex[
+                  seller._id
+                ] || 0;
 
-                {/* Profile Icon Overlay */}
-                <div className="profile-avatar">
-                  <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image" />
-                </div>
+              return (
+                <div
+                  key={seller._id}
+                  className="shop-card"
+                  style={{
+                    border:
+                      seller.isSuspended
+                        ? "2px solid red"
+                        : seller.isVerified
+                        ? "1px solid #ddd"
+                        : "2px solid orange",
+                  }}
+                >
+                  {/* IMAGE */}
 
-                {/* Descriptive Core Store Profiling Text Metadata */}
-                <div className="shop-card-info" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <h3 style={{ margin: 0 }}>{seller.name} Shop</h3>
-                    <span style={{ fontSize: "12px", padding: "2px 8px", borderRadius: "10px", fontWeight: "bold", background: seller.isVerified ? "#e6fffa" : "#fffbeb", color: seller.isVerified ? "#319795" : "#b7791f" }}>
-                      {seller.isVerified ? "Verified ✅" : "Pending Auth ⏳"}
-                    </span>
+                  <div className="card-image-section">
+                    {seller.files &&
+                    seller.files.length >
+                      0 ? (
+                      <div className="image-slider">
+                        {isVideoFile(
+                          seller.files[
+                            activeIdx
+                          ]
+                        ) ? (
+                          <video
+                            src={getFileUrl(
+                              seller
+                                .files[
+                                activeIdx
+                              ]
+                            )}
+                            className="slider-image"
+                            muted
+                            autoPlay
+                            loop
+                            onClick={() =>
+                              setModalMedia(
+                                {
+                                  sellerId:
+                                    seller._id,
+                                  index:
+                                    activeIdx,
+                                }
+                              )
+                            }
+                          />
+                        ) : (
+                          <img
+                            src={getFileUrl(
+                              seller
+                                .files[
+                                activeIdx
+                              ]
+                            )}
+                            alt={
+                              seller.name
+                            }
+                            className="slider-image"
+                            onClick={() =>
+                              setModalMedia(
+                                {
+                                  sellerId:
+                                    seller._id,
+                                  index:
+                                    activeIdx,
+                                }
+                              )
+                            }
+                          />
+                        )}
+
+                        {seller.files
+                          .length >
+                          1 && (
+                          <div className="slider-dots">
+                            {seller.files.map(
+                              (
+                                _,
+                                idx
+                              ) => (
+                                <span
+                                  key={
+                                    idx
+                                  }
+                                  className={`dot ${
+                                    idx ===
+                                    activeIdx
+                                      ? "active"
+                                      : ""
+                                  }`}
+                                  onClick={() =>
+                                    setCurrentImageIndex(
+                                      (
+                                        prev
+                                      ) => ({
+                                        ...prev,
+                                        [seller._id]:
+                                          idx,
+                                      })
+                                    )
+                                  }
+                                ></span>
+                              )
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <img
+                        src="/placeholder.png"
+                        alt="placeholder"
+                        className="slider-image"
+                      />
+                    )}
                   </div>
-                  <p style={{ margin: "4px 0" }}><b>Niche Domain:</b> {seller.category} Segment</p>
-                  <p style={{ margin: "2px 0" }}><b>Regional Point:</b> {seller.location}</p>
-                  <p style={{ margin: "2px 0", fontSize: "12px", color: "#4a5568" }}><b>System ID Email:</b> {seller.email || "No direct login mail attached"}</p>
-                  
-                  {/* Informational Rating Components */}
-                  <div className="rating" style={{ margin: "6px 0" }}>
-                    {(() => {
-                      const stars = [];
-                      for (let i = 1; i <= 5; i++) {
-                        stars.push(<FontAwesomeIcon key={i} icon={faStar} color={seller.averageRating >= i ? "gold" : "gray"} />);
+
+                  {/* PROFILE */}
+
+                  <Link
+                    to={`/view_profile/${seller._id}`}
+                    className="profile-avatar"
+                  >
+                    <img
+                      src={
+                        seller.profile
+                          ? getFileUrl(
+                              seller.profile
+                            )
+                          : "/placeholder.png"
                       }
-                      return stars;
-                    })()}
-                    <span style={{ fontSize: "12px", marginLeft: "4px" }}>({seller.numReviews} active consumer evaluations)</span>
-                  </div>
+                      alt={seller.name}
+                      className="avatar-image"
+                    />
+                  </Link>
 
-                  <p style={{ fontSize: "13px", color: "#718096", flexGrow: 1 }}>{seller.description || "Vendor hasn't populated a description summary statement yet."}</p>
-                  
-                  {/* Dedicated System Administration Modification Grid Interface Blocks */}
-                  <div className="admin-controls-grid" style={{ marginTop: "14px", borderTop: "1px dashed #cbd5e0", paddingTop: "12px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-                    
-                    <button 
-                      onClick={() => handleToggleVerify(seller._id, seller.isVerified)}
-                      style={{ background: seller.isVerified ? "#ecc94b" : "#48bb78", color: "white", padding: "8px", borderRadius: "6px", border: "none", cursor: "pointer", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "12px" }}
-                    >
-                      <FontAwesomeIcon icon={seller.isVerified ? faUserXmark : faUserCheck} />
-                      {seller.isVerified ? "Revoke Status" : "Verify Store"}
-                    </button>
+                  {/* INFO */}
 
-                    <button 
-                      onClick={() => handleToggleSuspend(seller._id, seller.isSuspended)}
-                      style={{ background: seller.isSuspended ? "#4a5568" : "#ed8936", color: "white", padding: "8px", borderRadius: "6px", border: "none", cursor: "pointer", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "12px" }}
+                  <div className="shop-card-info">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent:
+                          "space-between",
+                        alignItems:
+                          "center",
+                      }}
                     >
-                      <FontAwesomeIcon icon={faTriangleExclamation} />
-                      {seller.isSuspended ? "Unsuspend" : "Freeze/Lock"}
-                    </button>
+                      <h3>
+                        {seller.name} Shop
+                      </h3>
 
-                    <button 
-                      onClick={() => handleDeleteSeller(seller._id)}
-                      style={{ gridColumn: "1 / -1", background: "#e53e3e", color: "white", padding: "9px", borderRadius: "6px", border: "none", cursor: "pointer", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontSize: "13px" }}
+                      <span
+                        style={{
+                          fontSize:
+                            "12px",
+                          fontWeight:
+                            "bold",
+                          color:
+                            seller.isVerified
+                              ? "green"
+                              : "orange",
+                        }}
+                      >
+                        {seller.isVerified
+                          ? "Verified"
+                          : "Pending"}
+                      </span>
+                    </div>
+
+                    <p>
+                      {
+                        seller.location
+                      }
+                    </p>
+
+                    <p>
+                      {
+                        seller.category
+                      }
+                    </p>
+
+                    <div className="rating">
+                      {[1, 2, 3, 4, 5].map(
+                        (star) => (
+                          <FontAwesomeIcon
+                            key={star}
+                            icon={faStar}
+                            color={
+                              seller.averageRating >=
+                              star
+                                ? "gold"
+                                : "gray"
+                            }
+                          />
+                        )
+                      )}
+
+                      <span>
+                        (
+                        {
+                          seller.numReviews
+                        }
+                        )
+                      </span>
+                    </div>
+
+                    <p>
+                      {seller.description ||
+                        "No description"}
+                    </p>
+
+                    {/* ACTIONS */}
+
+                    <div
+                      className="card-actions"
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns:
+                          "1fr 1fr",
+                        gap: "10px",
+                        marginTop:
+                          "15px",
+                      }}
                     >
-                      <FontAwesomeIcon icon={faTrashCan} /> Hard Purge From System
-                    </button>
-                    
+                      <Link
+                        to={getSellerRoute(
+                          seller.category,
+                          seller._id
+                        )}
+                      >
+                        <button className="visit-btn">
+                          <FontAwesomeIcon
+                            icon={faEye}
+                          />
+                          Visit Shop
+                        </button>
+                      </Link>
+
+                      <button
+                        onClick={() =>
+                          handleToggleVerify(
+                            seller._id,
+                            seller.isVerified
+                          )
+                        }
+                        style={{
+                          background:
+                            seller.isVerified
+                              ? "#f59e0b"
+                              : "#10b981",
+                          color:
+                            "white",
+                          border:
+                            "none",
+                          borderRadius:
+                            "8px",
+                          padding:
+                            "10px",
+                          cursor:
+                            "pointer",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={
+                            seller.isVerified
+                              ? faUserXmark
+                              : faUserCheck
+                          }
+                        />{" "}
+                        {seller.isVerified
+                          ? "Unverify"
+                          : "Verify"}
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          handleToggleSuspend(
+                            seller._id,
+                            seller.isSuspended
+                          )
+                        }
+                        style={{
+                          background:
+                            seller.isSuspended
+                              ? "#6b7280"
+                              : "#ef4444",
+                          color:
+                            "white",
+                          border:
+                            "none",
+                          borderRadius:
+                            "8px",
+                          padding:
+                            "10px",
+                          cursor:
+                            "pointer",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={
+                            faTriangleExclamation
+                          }
+                        />{" "}
+                        {seller.isSuspended
+                          ? "Unsuspend"
+                          : "Suspend"}
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          handleDeleteSeller(
+                            seller._id
+                          )
+                        }
+                        style={{
+                          background:
+                            "#dc2626",
+                          color:
+                            "white",
+                          border:
+                            "none",
+                          borderRadius:
+                            "8px",
+                          padding:
+                            "10px",
+                          cursor:
+                            "pointer",
+                          gridColumn:
+                            "1 / -1",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={
+                            faTrashCan
+                          }
+                        />{" "}
+                        Delete Seller
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            }
+          )
         ) : (
-          <p className="no-sellers-msg" style={{ gridColumn: "1 / -1", textAlign: "center", padding: "40px" }}>No active seller records match your specified lookup parameters.</p>
+          <p className="no-sellers-msg">
+            No sellers found
+          </p>
         )}
       </div>
 
-      {/* Immersive Portal-Mounted Multi-Media Preview Layer */}
-      {modalMedia.sellerId && createPortal(
-        (() => {
-          const seller = sellers.find(s => s._id === modalMedia.sellerId);
-          if (!seller) return null;
-          const file = seller.files[modalMedia.index];
-          return (
-            <div className="media-modal" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>
-              <span className="close-btn" onClick={() => setModalMedia({ sellerId: null, index: 0 })}>&times;</span>
-              {isVideoFile(file) ? (
-                <video src={getFileUrl(file)} controls autoPlay className="full-media" onClick={(e) => e.stopPropagation()} />
-              ) : (
-                <img src={getFileUrl(file)} alt="Full view" className="full-media" onClick={(e) => e.stopPropagation()} />
-              )}
-              <div className="modal-controls">
-                <FontAwesomeIcon icon={faChevronLeft} className="modal-arrow" onClick={(e) => { e.stopPropagation(); setModalMedia((p) => ({ ...p, index: (p.index - 1 + seller.files.length) % seller.files.length })); }} />
-                <FontAwesomeIcon icon={faChevronRight} className="modal-arrow" onClick={(e) => { e.stopPropagation(); setModalMedia((p) => ({ ...p, index: (p.index + 1) % seller.files.length })); }} />
-              </div>
-            </div>
-          );
-        })(), document.body
-      )}
+      {/* ---------------- MODAL ---------------- */}
 
-      {/* Core Footer Element */}
-      <footer className="Buyer_Footer" style={{ marginTop: "40px" }}>
+      {modalMedia.sellerId &&
+        createPortal(
+          (() => {
+            const seller =
+              sellers.find(
+                (s) =>
+                  s._id ===
+                  modalMedia.sellerId
+              );
+
+            if (!seller) return null;
+
+            const file =
+              seller.files[
+                modalMedia.index
+              ];
+
+            return (
+              <div
+                className="media-modal"
+                onClick={() =>
+                  setModalMedia({
+                    sellerId: null,
+                    index: 0,
+                  })
+                }
+              >
+                <span
+                  className="close-btn"
+                  onClick={() =>
+                    setModalMedia({
+                      sellerId: null,
+                      index: 0,
+                    })
+                  }
+                >
+                  &times;
+                </span>
+
+                {isVideoFile(file) ? (
+                  <video
+                    src={getFileUrl(
+                      file
+                    )}
+                    controls
+                    autoPlay
+                    className="full-media"
+                    onClick={(e) =>
+                      e.stopPropagation()
+                    }
+                  />
+                ) : (
+                  <img
+                    src={getFileUrl(
+                      file
+                    )}
+                    alt="preview"
+                    className="full-media"
+                    onClick={(e) =>
+                      e.stopPropagation()
+                    }
+                  />
+                )}
+
+                <div className="modal-controls">
+                  <FontAwesomeIcon
+                    icon={
+                      faChevronLeft
+                    }
+                    className="modal-arrow"
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      setModalMedia(
+                        (prev) => ({
+                          ...prev,
+                          index:
+                            (prev.index -
+                              1 +
+                              seller.files
+                                .length) %
+                            seller.files
+                              .length,
+                        })
+                      );
+                    }}
+                  />
+
+                  <FontAwesomeIcon
+                    icon={
+                      faChevronRight
+                    }
+                    className="modal-arrow"
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      setModalMedia(
+                        (prev) => ({
+                          ...prev,
+                          index:
+                            (prev.index +
+                              1) %
+                            seller.files
+                              .length,
+                        })
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })(),
+          document.body
+        )}
+
+      {/* ---------------- FOOTER ---------------- */}
+
+      <footer
+        className="Buyer_Footer"
+        style={{
+          marginTop: "40px",
+        }}
+      >
         <div className="Footer_Bottom">
-          <p>&copy; {new Date().getFullYear()} Isonga Market Admin Portal • Operational Control Mode 🇷🇼</p>
+          <p>
+            ©{" "}
+            {new Date().getFullYear()}{" "}
+            Isonga Market Admin
+            Panel
+          </p>
         </div>
       </footer>
     </div>
