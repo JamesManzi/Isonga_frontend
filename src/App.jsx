@@ -50,12 +50,13 @@ import HelpCenter from "./HelpCenter";
 import Steping from "./Steping";
 import PrivacyRules from "./PrivacyRules";
 import AdminDashboard from "./AdminDashboard";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react";
 function App(){
   return(
     <div>
       <HelmetProvider>
       <BrowserRouter>
+       <Analytics />
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/register" element={<Register/>}/>
