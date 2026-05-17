@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { useState, useEffect, useRef } from "react";
@@ -65,67 +66,59 @@ function AdminDashboard() {
     }
 
   };
+/* ---------------- FETCH ADMIN DATA ---------------- */
 
-  /* ---------------- FETCH ADMIN DATA ---------------- */
+useEffect(() => {
+  const fetchAdminData = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-  useEffect(() => {
-
-    const fetchAdminData = async () => {
-
-      try {
-
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          navigate("/login");
-          return;
-        }
-
-        setLoading(true);
-
-        const [
-          statsRes,
-          usersRes,
-          ordersRes
-        ] = await Promise.all([
-          api.get("/api/admin/dashboard"),
-          api.get("/api/admin/users?limit=5"),
-          api.get("/api/admin/orders?limit=5"),
-        ]);
-
-        if (statsRes.data.success) {
-          setStats(statsRes.data);
-        }
-
-        if (usersRes.data.success) {
-          setRecentUsers(usersRes.data.users || []);
-        }
-
-        if (ordersRes.data.success) {
-          setRecentOrders(ordersRes.data.orders || []);
-        }
-
-      } catch (err) {
-
-        console.log(err);
-
-        toast.error(
-          err?.response?.data?.message ||
-          "Failed to load admin dashboard"
-        );
-
-      } finally {
-
-        setLoading(false);
-
+      if (!token) {
+        navigate("/login");
+        return;
       }
 
-    };
+      setLoading(true);
 
-    fetchAdminData();
+      // Pass the authorization headers to your requests
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-  }, [navigate]);
+      const [statsRes, usersRes, ordersRes] = await Promise.all([
+        api.get("/api/admin/dashboard", config),
+        api.get("/api/admin/users?limit=5", config),
+        api.get("/api/admin/orders?limit=5", config),
+      ]);
 
+      if (statsRes.data.success) {
+        // Ensure stats matches your schema perfectly
+        setStats(statsRes.data); 
+      }
+
+      if (usersRes.data.success) {
+        setRecentUsers(usersRes.data.users || []);
+      }
+
+      if (ordersRes.data.success) {
+        setRecentOrders(ordersRes.data.orders || []);
+      }
+
+    } catch (err) {
+      console.error("Dashboard Fetch Error:", err);
+      toast.error(
+        err?.response?.data?.message ||
+        "Failed to load admin dashboard"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchAdminData();
+}, [navigate]);
   /* ---------------- SOCKET ---------------- */
 
   useEffect(() => {
