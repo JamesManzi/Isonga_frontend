@@ -50,6 +50,7 @@ import HelpCenter from "./HelpCenter";
 import Steping from "./Steping";
 import PrivacyRules from "./PrivacyRules";
 import AdminDashboard from "./AdminDashboard";
+import { Analytics } from "@vercel/analytics/next"
 function App(){
   return(
     <div>
