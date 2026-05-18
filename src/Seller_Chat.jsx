@@ -125,9 +125,20 @@ function Seller_Chat() {
 
     const room = `Buyer_${buyerId}__Seller_${seller._id}`;
 
-    const handleReceive = (msg) => {
+    const handleReceive = async (msg) => {
       if (msg.room === room) {
+        // 1. Instantly display incoming message on screen
         setMessages(prev => [...prev, msg]);
+
+        // 2. Real-time fix: If the message came from the BUYER, mark it read immediately
+        if (msg.sender !== seller._id) {
+          try {
+            await api.put(`/api/messages/read/${room}`);
+            socket.emit("messagesRead", { room });
+          } catch (err) {
+            console.error("Failed to mark incoming message as read:", err);
+          }
+        }
       }
     };
 
@@ -351,7 +362,7 @@ function Seller_Chat() {
                     </p>
                   )}
 
-                  {/* FIXED: Wraps message image outputs into a uniform column layout */}
+                  {/* Wrapped message image outputs into a uniform column layout */}
                   {msg.files && msg.files.length > 0 && (
                     <div 
                       className="chat-image-container" 
