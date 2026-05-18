@@ -7,7 +7,8 @@ import {
   faImage, 
   faTimes, 
   faHistory, 
-  faDownload 
+  faDownload,
+  faSearch // 👈 Added search icon
 } from "@fortawesome/free-solid-svg-icons";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -15,6 +16,8 @@ import "./SellerOrderHistory.css";
 
 function SellerOrderHistory() {
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]); // 👈 Array for search filtering
+  const [searchQuery, setSearchQuery] = useState("");      // 👈 String tracking search input
   const [selectedImg, setSelectedImg] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -33,7 +36,8 @@ function SellerOrderHistory() {
     api.get("/api/seller/orders/history")
       .then((res) => {
         if (res.data.success) {
-        setOrders(res.data.orders);
+          setOrders(res.data.orders);
+          setFilteredOrders(res.data.orders); // Initialize filtered list with all records
         }
       })
       .catch((err) => console.error("Error fetching history:", err))
@@ -43,6 +47,28 @@ function SellerOrderHistory() {
   useEffect(() => {
     getOrders();
   }, []);
+
+  // 🔎 DYNAMIC SEARCH FILTER LOGIC
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredOrders(orders);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = orders.filter((order) => {
+        const matchesName = order.name?.toLowerCase().includes(query);
+        const matchesPhone = order.phone?.toLowerCase().includes(query);
+        const matchesId = order._id?.toLowerCase().includes(query);
+        
+        // Optional: Search inside item product names too
+        const matchesProducts = order.items?.some(item => 
+          item.product?.name?.toLowerCase().includes(query)
+        );
+
+        return matchesName || matchesPhone || matchesId || matchesProducts;
+      });
+      setFilteredOrders(filtered);
+    }
+  }, [searchQuery, orders]);
 
   // PDF DOWNLOAD LOGIC
   const downloadOrderPDF = async (orderId) => {
@@ -91,12 +117,33 @@ function SellerOrderHistory() {
         <FontAwesomeIcon icon={faHistory} /> Order History
       </h1>
 
-      {orders.length === 0 ? (
+      {/* 🔍 SEARCH BAR UI CONTROLS */}
+      {orders.length > 0 && (
+        <div style={searchBarContainerStyle}>
+          <div style={searchFieldWrapperStyle}>
+            <FontAwesomeIcon icon={faSearch} style={searchIconStyle} />
+            <input
+              type="text"
+              placeholder="Search by customer name, phone, or order ID..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={searchInputStyle}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")} style={clearSearchButtonStyle}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {filteredOrders.length === 0 ? (
         <div style={emptyStateStyle}>
-          <p>No processed orders in your history yet.</p>
+          <p>{orders.length === 0 ? "No processed orders in your history yet." : "No history items match your search criteria."}</p>
         </div>
       ) : (
-        orders.map((order) => (
+        filteredOrders.map((order) => (
           <div key={order._id} style={historyCardStyle}>
             
             {/* Header: Contains ID, Download Button, and Status */}
@@ -126,18 +173,16 @@ function SellerOrderHistory() {
                 <section>
                   <h4 style={sectionTitle}>Payment Info</h4>
                   <p style={textStyle}><strong>Method:</strong> {order.paymentMethod}</p>
-                  {/* ✅ SIMPLE + CORRECT */}
-                    {order.paymentProof ? (
-                      <button
-                        onClick={() => setSelectedImg(order.paymentProof)}
-                        style={receiptButtonStyle}
-                      >
-                        <FontAwesomeIcon icon={faImage} />
-                        View Receipt
-                      </button>
-                    ) : (
-                      <p style={{ color: "#999" }}></p>
-                    )}
+                  {order.paymentProof ? (
+                    <button
+                      onClick={() => setSelectedImg(order.paymentProof)}
+                      style={receiptButtonStyle}
+                    >
+                      <FontAwesomeIcon icon={faImage} /> View Receipt
+                    </button>
+                  ) : (
+                    <p style={{ color: "#999" }}></p>
+                  )}
                 </section>
               </div>
 
@@ -175,8 +220,15 @@ function SellerOrderHistory() {
 
 const containerStyle = { padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" };
 const backLinkStyle = { textDecoration: "none", color: "#3498db", fontWeight: "600" };
-const titleStyle = { margin: "25px 0", color: "#2c3e50" };
+const titleStyle = { margin: "25px 0 15px 0", color: "#2c3e50" };
 const emptyStateStyle = { textAlign: "center", marginTop: "50px", color: "#7f8c8d" };
+
+// New search bar UI clean inline styles
+const searchBarContainerStyle = { marginBottom: "25px", width: "100%" };
+const searchFieldWrapperStyle = { position: "relative", display: "flex", alignItems: "center", width: "100%", background: "#fff", borderRadius: "8px", border: "1px solid #dcdde1", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" };
+const searchIconStyle = { position: "absolute", left: "15px", color: "#a4b0be", fontSize: "1rem" };
+const searchInputStyle = { width: "100%", padding: "12px 40px 12px 45px", border: "none", borderRadius: "8px", fontSize: "0.95rem", color: "#2c3e50", outline: "none", background: "transparent" };
+const clearSearchButtonStyle = { position: "absolute", right: "15px", background: "none", border: "none", color: "#a4b0be", cursor: "pointer", fontSize: "1rem", padding: "2px" };
 
 const historyCardStyle = {
   background: "#fff",
