@@ -194,11 +194,16 @@ function Buyer_Chat() {
     let uploadedFiles = [];
 
     try {
+      // Fixed: Send using multipart/form-data config
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach(f => formData.append("files", f));
 
-        const res = await api.post("/api/chat/upload", formData);
+        const res = await api.post("/api/chat/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         if (res.data.success) uploadedFiles = res.data.files;
       }
 
@@ -236,7 +241,7 @@ function Buyer_Chat() {
       socket.emit("stopTyping", { room });
 
     } catch (err) {
-      console.error(err);
+      console.error("Error uploading or sending message:", err);
     }
 
     setSending(false);
@@ -361,13 +366,30 @@ function Buyer_Chat() {
         </div>
       )}
 
+      {/* Added File Uploading Banner Preview */}
+      {files.length > 0 && (
+        <div className="file-upload-preview" style={{ padding: "8px 12px", background: "#f1f1f1", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center", borderTop: "1px solid #ddd" }}>
+          {files.map((file, i) => (
+            <span key={i} style={{ fontSize: "12px", background: "#e0e0e0", padding: "4px 8px", borderRadius: "12px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              📄 {file.name.length > 20 ? `${file.name.substring(0, 17)}...` : file.name}
+            </span>
+          ))}
+          <button 
+            onClick={() => { setFiles([]); if(fileInputRef.current) fileInputRef.current.value = ""; }} 
+            style={{ marginLeft: "auto", background: "none", border: "none", color: "#ff4d4d", fontWeight: "bold", cursor: "pointer" }}
+          >
+            Clear Files
+          </button>
+        </div>
+      )}
+
       <div className="chat-input">
         <input
           type="file"
           multiple
           ref={fileInputRef}
           style={{ display: "none" }}
-          onChange={(e) => setFiles(Array.from(e.target.files))}
+          onChange={(e) => setFiles(Array.from(e.target.files || []))}
         />
         <button onClick={() => fileInputRef.current.click()}>📎</button>
         <button onClick={() => setShowEmoji(!showEmoji)}>😊</button>
