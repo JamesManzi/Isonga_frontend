@@ -118,9 +118,20 @@ function Buyer_Chat() {
 
     const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
 
-    const handleReceive = (msg) => {
+    const handleReceive = async (msg) => {
       if (msg.room === room) {
+        // 1. Instantly display incoming message on screen
         setMessages(prev => [...prev, msg]);
+
+        // 2. Real-time fix: If the message came from the SELLER, mark it read immediately
+        if (msg.sender !== buyer._id) {
+          try {
+            await api.put(`/api/messages/read/${room}`);
+            socket.emit("messagesRead", { room });
+          } catch (err) {
+            console.error("Failed to mark incoming message as read:", err);
+          }
+        }
       }
     };
 
@@ -336,7 +347,7 @@ function Buyer_Chat() {
                     {msg.message}
                   </p>
 
-                  {/* FIXED: Wraps image outputs into a column layout layout structure */}
+                  {/* Wrapped image outputs into a column layout structure */}
                   {msg.files && msg.files.length > 0 && (
                     <div 
                       className="chat-image-container" 
@@ -399,7 +410,7 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* Showing true visual image previews using URL.createObjectURL */}
+      {/* Interactive image previews using URL.createObjectURL */}
       {files.length > 0 && (
         <div className="file-upload-preview" style={{ padding: "10px 12px", background: "#f9f9f9", display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center", borderTop: "1px solid #eee" }}>
           {files.map((file, i) => (
