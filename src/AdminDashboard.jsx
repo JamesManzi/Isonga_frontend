@@ -568,7 +568,7 @@ useEffect(() => {
         </Link>
 
         <Link
-          to="/AdminManageSeller"
+          to="/AdminManageSellers"
           className="footer_item"
         >
 
