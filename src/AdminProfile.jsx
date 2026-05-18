@@ -57,7 +57,7 @@ function AdminProfile() {
         return;
       }
       try {
-      const res = await api.get(`/api/view_profile/${id}`);
+      const res = await api.get(`/api/AdminProfile/${id}`);
         if (res.data.success) {
           setSeller(res.data.seller);
           setReviews(res.data.seller.ratings || []);
