@@ -691,7 +691,7 @@ function AdminManageSellers() {
                   {/* PROFILE */}
 
                   <Link
-                    to={`/view_profile/${seller._id}`}
+                    to={`/AdminProfile/${seller._id}`}
                     className="profile-avatar"
                   >
                     <img
