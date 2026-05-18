@@ -28,7 +28,7 @@ function AdminDashboard() {
   const [recentUsers, setRecentUsers] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
   const [notifications, setNotifications] = useState(0);
-
+ const [buyers,setBuyers]=useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -100,6 +100,9 @@ useEffect(() => {
 
       if (usersRes.data.success) {
         setRecentUsers(usersRes.data.users || []);
+      }
+      if(usersRes.data.success){
+        setBuyers(res.data.totalBuyers);
       }
 
       if (ordersRes.data.success) {
@@ -383,7 +386,7 @@ useEffect(() => {
           <h2>Total Buyers</h2>
 
           <h2>
-            {stats?.totalBuyers || 0}
+            {buyers || 0}
           </h2>
 
         </div>
