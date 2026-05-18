@@ -255,7 +255,7 @@ function Buyer_Chat() {
     });
   };
 
-  // Only keep image types
+  // FIXED: Appends multi-file batches and clears the input cache safely
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files || []);
     const imageFiles = selectedFiles.filter(file => file.type.startsWith("image/"));
@@ -264,7 +264,13 @@ function Buyer_Chat() {
       alert("Only image files are allowed.");
     }
     
-    setFiles(imageFiles);
+    // Uses functional state update to merge new items with previous choices
+    setFiles(prevFiles => [...prevFiles, ...imageFiles]);
+
+    // Resets target input trace so users can drop and pick identical filenames
+    if (e.target) {
+      e.target.value = "";
+    }
   };
 
   // Function to remove a single image from selection before sending
@@ -386,7 +392,7 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* FIXED: Showing true visual image previews using URL.createObjectURL */}
+      {/* Showing true visual image previews using URL.createObjectURL */}
       {files.length > 0 && (
         <div className="file-upload-preview" style={{ padding: "10px 12px", background: "#f9f9f9", display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center", borderTop: "1px solid #eee" }}>
           {files.map((file, i) => (
