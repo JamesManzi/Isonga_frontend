@@ -119,15 +119,50 @@ function My_Store() {
       ? path
       : `https://api.isongamarket.com/uploads/${path}`;
   };
+// 1. Add these validation constants right above your handleFileChange function
+  const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+  const ACCEPTED_FORMATS = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/gif",
+    "video/mp4",
+    "video/webm",
+    "video/ogg"
+  ];
 
+  // 2. Replace your old handleFileChange with this protected version
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
-    setSelectedFiles((prev) => [...prev, ...newFiles]);
-    const newPreviews = newFiles.map((f) => ({
-      url: URL.createObjectURL(f),
-      type: f.type,
-    }));
+    const validFiles = [];
+    const newPreviews = [];
+
+    newFiles.forEach((file) => {
+      // Check file size (20MB)
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`${file.name} is too large. Max size is 20MB.`);
+        return;
+      }
+
+      // Check file format
+      if (!ACCEPTED_FORMATS.includes(file.type)) {
+        alert(`${file.name} format is not supported.`);
+        return;
+      }
+
+      validFiles.push(file);
+      newPreviews.push({
+        url: URL.createObjectURL(file),
+        type: file.type,
+      });
+    });
+
+    // Append valid selections to state
+    setSelectedFiles((prev) => [...prev, ...validFiles]);
     setPreviewFiles((prev) => [...prev, ...newPreviews]);
+
+    // Reset value so the user can re-add the same file if they delete it by mistake
+    e.target.value = null;
   };
 
   const removePreview = (index) => {
