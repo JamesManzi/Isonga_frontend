@@ -61,7 +61,7 @@ function AdminManageSellers() {
 
   const getSellerRoute = (category, id) => {
     if (productCategories.includes(category)) {
-      return `/view_products/${id}`;
+      return `/DeleteProducts/${id}`;
     }
 
     if (serviceCategories.includes(category)) {
