@@ -5,20 +5,15 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Buyer_Chat.css";
 
-// Socket
-export const socket = io("https://api.isongamarket.com", {
-  transports: ["polling", "websocket"],
-  auth: {
-    token: localStorage.getItem("token")
-  }
-});
+// Singleton socket variable initialized safely
+let socket;
 
 function Buyer_Chat() {
   const { sellerId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  //  Keep Original Logic: Get product info from URL parameters
+  // Keep Original Logic: Get product info from URL parameters
   const queryParams = new URLSearchParams(location.search);
   const pName = queryParams.get("productName");
   const pImage = queryParams.get("productImage");
@@ -41,8 +36,18 @@ function Buyer_Chat() {
   const fileInputRef = useRef();
   const typingTimeout = useRef(null);
 
+  // Establish production-safe socket initialization
+  if (!socket) {
+    socket = io("https://api.isongamarket.com", {
+      transports: ["polling", "websocket"],
+      auth: {
+        token: localStorage.getItem("token")
+      }
+    });
+  }
+
   // =========================
-  // EMOJI
+  // EMOJI & UTILS
   // =========================
   const onEmojiClick = (emojiData) => {
     setText(prev => prev + emojiData.emoji);
@@ -56,6 +61,13 @@ function Buyer_Chat() {
       ? clean
       : `https://api.isongamarket.com/${clean.replace(/^\/+/, "")}`;
   };
+
+  // Clean up timers on component unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    };
+  }, []);
 
   // =========================
   // LOAD CHAT
@@ -102,7 +114,7 @@ function Buyer_Chat() {
   // SOCKET EVENTS
   // =========================
   useEffect(() => {
-    if (!buyer) return;
+    if (!buyer || !sellerId) return;
 
     const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
 
@@ -121,12 +133,17 @@ function Buyer_Chat() {
     };
 
     const handleTyping = (data) => {
-      if (data.senderId !== buyer._id) setIsTyping(true);
+      if (data.senderId !== buyer._id && data.room === room) {
+        setIsTyping(true);
+      }
     };
 
-    const handleStopTyping = () => setIsTyping(false);
+    const handleStopTyping = (data) => {
+      if (data.room === room) setIsTyping(false);
+    };
 
     const handleDelete = (data) => {
+      if (data.room !== room) return;
       setMessages(prev =>
         prev.map(msg => {
           if (msg._id === data.messageId) {
@@ -165,7 +182,7 @@ function Buyer_Chat() {
   // =========================
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTyping]);
 
   // =========================
   // SEND MESSAGE
@@ -206,7 +223,7 @@ function Buyer_Chat() {
         receiverModel: "Seller",
         message: finalMessage,
         files: uploadedFiles,
-        replyTo: replyTo?._id || null, //  Sends the ID of message being replied to
+        replyTo: replyTo?._id || null,
         room
       });
 
@@ -226,6 +243,7 @@ function Buyer_Chat() {
   };
 
   const handleDeleteMessage = (id, forEveryone) => {
+    if (!buyer) return;
     socket.emit("deleteMessage", {
       messageId: id,
       room: `Buyer_${buyer._id}__Seller_${sellerId}`,
@@ -235,7 +253,6 @@ function Buyer_Chat() {
 
   return (
     <div className="chat-container">
-
       <div className="chat-header">
         <Link to="/BuyerConversations">←</Link>
         <div className="header-user-info">
@@ -261,7 +278,6 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* REPLY PREVIEW UI */}
       {replyTo && (
         <div className="reply-preview">
           <p>Replying to: {replyTo.message || "Media"}</p>
@@ -269,7 +285,6 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* MESSAGES */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === buyer?._id;
@@ -278,13 +293,10 @@ function Buyer_Chat() {
           return (
             <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
-
                 <div
                   className="bubble"
                   onDoubleClick={() => !isDeleted && setReplyTo(msg)}
                 >
-
-                  {/* DISPLAY QUOTED MESSAGE */}
                   {msg.replyTo && !isDeleted && (
                     <div className="quoted-msg">
                       <p>{msg.replyTo.message || "Media"}</p>
@@ -321,7 +333,6 @@ function Buyer_Chat() {
                 </div>
 
                 <div className="message-actions">
-                  {/*  Added explicit Reply button */}
                   {!isDeleted && (
                     <button onClick={() => setReplyTo(msg)}>Reply</button>
                   )}
@@ -336,7 +347,6 @@ function Buyer_Chat() {
                     </button>
                   )}
                 </div>
-
               </div>
             </div>
           );
@@ -367,8 +377,10 @@ function Buyer_Chat() {
           placeholder="Type message..."
           onChange={(e) => {
             setText(e.target.value);
-            const room = `Buyer_${buyer?._id}__Seller_${sellerId}`;
-            socket.emit("typing", { room, senderId: buyer?._id });
+            if (!buyer) return;
+            
+            const room = `Buyer_${buyer._id}__Seller_${sellerId}`;
+            socket.emit("typing", { room, senderId: buyer._id });
 
             if (typingTimeout.current) clearTimeout(typingTimeout.current);
             typingTimeout.current = setTimeout(() => {
@@ -393,7 +405,6 @@ function Buyer_Chat() {
           <img src={zoomImage} alt="" />
         </div>
       )}
-
     </div>
   );
 }

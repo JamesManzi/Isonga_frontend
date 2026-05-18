@@ -5,13 +5,8 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Seller_Chat.css";
 
-// ✅ Socket
-export const socket = io("https://api.isongamarket.com", {
-  transports: ["polling", "websocket"],
-  auth: {
-    token: localStorage.getItem("token")
-  }
-});
+// Singleton socket instance initialized safely inside or outside component context
+let socket;
 
 function Seller_Chat() {
   const { buyerId } = useParams();
@@ -35,6 +30,16 @@ function Seller_Chat() {
   const fileInputRef = useRef();
   const typingTimeout = useRef(null);
 
+  // Safely initialize the socket instance with fresh token access
+  if (!socket) {
+    socket = io("https://api.isongamarket.com", {
+      transports: ["polling", "websocket"],
+      auth: {
+        token: localStorage.getItem("token")
+      }
+    });
+  }
+
   const getFileUrl = (path) => {
     if (!path) return "";
     const clean = path.trim().replace(/\\/g, "/");
@@ -43,64 +48,72 @@ function Seller_Chat() {
       : `https://api.isongamarket.com/${clean.replace(/^\/+/, "")}`;
   };
 
+  // Prevent background memory leaks from hanging timeouts on page unmount
   useEffect(() => {
-  const loadChat = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return navigate("/login");
+    return () => {
+      if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    };
+  }, []);
 
-    try {
-      const sellerRes = await api.get("/api/dashboard");
-      if (!sellerRes.data.success) return;
+  // =========================
+  // LOAD CHAT
+  // =========================
+  useEffect(() => {
+    const loadChat = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
 
-      const sellerData = sellerRes.data.seller;
-      setSeller(sellerData);
+      try {
+        const sellerRes = await api.get("/api/dashboard");
+        if (!sellerRes.data.success) return;
 
-      const buyerRes = await api.get(`/api/get_buyer/${buyerId}`);
-      if (buyerRes.data.success) setBuyer(buyerRes.data.buyer);
+        const sellerData = sellerRes.data.seller;
+        setSeller(sellerData);
 
-      const room = `Buyer_${buyerId}__Seller_${sellerData._id}`;
+        const buyerRes = await api.get(`/api/get_buyer/${buyerId}`);
+        if (buyerRes.data.success) setBuyer(buyerRes.data.buyer);
 
-      //  FIX: Define a function to emit events safely
-      const joinChat = () => {
-        socket.emit("userOnline", { userModel: "Seller", userId: sellerData._id });
-        socket.emit("joinRoom", {
-          senderId: sellerData._id,
-          senderModel: "Seller",
-          receiverId: buyerId,
-          receiverModel: "Buyer"
-        });
-        socket.emit("messagesRead", { room });
-      };
+        const room = `Buyer_${buyerId}__Seller_${sellerData._id}`;
 
-      //  FIX: Check connection status before emitting
-      if (socket.connected) {
-        joinChat();
-      } else {
-        socket.once("connect", joinChat);
+        const joinChat = () => {
+          socket.emit("userOnline", { userModel: "Seller", userId: sellerData._id });
+          socket.emit("joinRoom", {
+            senderId: sellerData._id,
+            senderModel: "Seller",
+            receiverId: buyerId,
+            receiverModel: "Buyer"
+          });
+          socket.emit("messagesRead", { room });
+        };
+
+        if (socket.connected) {
+          joinChat();
+        } else {
+          socket.once("connect", joinChat);
+        }
+
+        const msgRes = await api.get(`/api/messages/${room}`);
+        if (msgRes.data.success) setMessages(msgRes.data.messages);
+
+        await api.put(`/api/messages/read/${room}`);
+
+      } catch (err) {
+        console.error("Load Chat Error:", err);
       }
+    };
 
-      const msgRes = await api.get(`/api/messages/${room}`);
-      if (msgRes.data.success) setMessages(msgRes.data.messages);
+    loadChat();
+    
+    return () => {
+      socket.off("connect");
+    };
+  }, [buyerId, navigate]);
 
-      await api.put(`/api/messages/read/${room}`);
-
-    } catch (err) {
-      console.error("Load Chat Error:", err);
-    }
-  };
-
-  loadChat();
-  
-  // Cleanup listener on unmount
-  return () => {
-    socket.off("connect");
-  };
-}, [buyerId, navigate]);
   // =========================
   // SOCKET EVENTS
   // =========================
   useEffect(() => {
-    if (!seller) return;
+    if (!seller || !buyerId) return;
 
     const room = `Buyer_${buyerId}__Seller_${seller._id}`;
 
@@ -119,14 +132,17 @@ function Seller_Chat() {
     };
 
     const handleTyping = (data) => {
-      if (data.senderId !== seller._id) {
+      if (data.senderId !== seller._id && data.room === room) {
         setIsTyping(true);
       }
     };
 
-    const handleStopTyping = () => setIsTyping(false);
+    const handleStopTyping = (data) => {
+      if (data.room === room) setIsTyping(false);
+    };
 
     const handleDelete = (data) => {
+      if (data.room !== room) return;
       setMessages(prev =>
         prev.map(msg => {
           if (msg._id === data.messageId) {
@@ -165,7 +181,7 @@ function Seller_Chat() {
   // =========================
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTyping]);
 
   // =========================
   // EMOJI
@@ -202,7 +218,7 @@ function Seller_Chat() {
         receiverModel: "Buyer",
         message: text,
         files: uploadedFiles,
-        replyTo: replyTo?._id || null, //  Properly sending the reply link
+        replyTo: replyTo?._id || null,
         room
       });
 
@@ -221,6 +237,7 @@ function Seller_Chat() {
   };
 
   const handleDeleteMessage = (id, forEveryone) => {
+    if (!seller) return;
     socket.emit("deleteMessage", {
       messageId: id,
       room: `Buyer_${buyerId}__Seller_${seller._id}`,
@@ -230,17 +247,14 @@ function Seller_Chat() {
 
   return (
     <div className="chat-container">
-
       <div className="chat-header">
         <Link to="/SellerConversations">←</Link>
-
         <div className="header-user-info">
           <img src={getFileUrl(buyer?.profile)} className="header-img" alt="" />
           <h3>{buyer?.name || "Loading..."}</h3>
         </div>
       </div>
 
-      {/* PRODUCT FROM NAVIGATION */}
       {location.state?.productName && (
         <div className="product-context-header">
           <div className="context-card">
@@ -258,7 +272,6 @@ function Seller_Chat() {
         </div>
       )}
 
-      {/*  NEW: REPLY PREVIEW (Shows what you are about to reply to) */}
       {replyTo && (
         <div className="reply-preview">
           <p>Replying to: {replyTo.message || "📎 Media"}</p>
@@ -266,7 +279,6 @@ function Seller_Chat() {
         </div>
       )}
 
-      {/* MESSAGES */}
       <div className="chat-messages">
         {messages.map((msg, i) => {
           const isMe = msg.sender === seller?._id;
@@ -275,10 +287,8 @@ function Seller_Chat() {
           return (
             <div key={msg._id || i} className={`message-row ${isMe ? "sent" : "received"}`}>
               <div className="bubble-wrapper">
-
                 <div className="bubble" onDoubleClick={() => !isDeleted && setReplyTo(msg)}>
-
-                  {/* PRODUCT FROM MESSAGE */}
+                  
                   {msg.productId && (
                     <div className="product-in-chat">
                       <img
@@ -293,7 +303,6 @@ function Seller_Chat() {
                     </div>
                   )}
 
-                  {/*  REPLY DISPLAY (Shows the quoted text inside the bubble) */}
                   {msg.replyTo && !isDeleted && (
                     <div className="quoted-msg">
                       <p>
@@ -306,14 +315,12 @@ function Seller_Chat() {
                     </div>
                   )}
 
-                  {/* MESSAGE TEXT */}
                   {msg.message && (
                     <p style={isDeleted ? { fontStyle: "italic", color: "#999" } : { whiteSpace: "pre-wrap" }}>
                       {msg.message}
                     </p>
                   )}
 
-                  {/* FILES/IMAGES */}
                   {msg.files?.map((file, idx) => (
                     <img
                       key={idx}
@@ -338,11 +345,9 @@ function Seller_Chat() {
                       </span>
                     )}
                   </div>
-
                 </div>
 
                 <div className="message-actions">
-                  {/*  Added explicit Reply button */}
                   {!isDeleted && (
                     <button onClick={() => setReplyTo(msg)}>Reply</button>
                   )}
@@ -357,7 +362,6 @@ function Seller_Chat() {
                     </button>
                   )}
                 </div>
-
               </div>
             </div>
           );
@@ -366,12 +370,10 @@ function Seller_Chat() {
         <div ref={scrollRef} />
       </div>
 
-      {/* TYPING */}
       {isTyping && (
         <div className="typing-indicator">{buyer?.name} is typing...</div>
       )}
 
-      {/* INPUT */}
       <div className="chat-input">
         <input
           type="file"
@@ -389,12 +391,13 @@ function Seller_Chat() {
           placeholder="Type message..."
           onChange={(e) => {
             setText(e.target.value);
+            if (!seller) return;
 
-            const room = `Buyer_${buyerId}__Seller_${seller?._id}`;
+            const room = `Buyer_${buyerId}__Seller_${seller._id}`;
 
             socket.emit("typing", {
               room,
-              senderId: seller?._id
+              senderId: seller._id
             });
 
             if (typingTimeout.current) clearTimeout(typingTimeout.current);
@@ -421,7 +424,6 @@ function Seller_Chat() {
           <img src={zoomImage} alt="" />
         </div>
       )}
-
     </div>
   );
 }
