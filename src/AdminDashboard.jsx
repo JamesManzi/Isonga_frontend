@@ -417,7 +417,7 @@ useEffect(() => {
         </Link>
 
         <Link
-          to="/AdminManageSellers"
+          to="/AdminManageSeller"
           className="viewOrders"
         >
 
@@ -428,7 +428,7 @@ useEffect(() => {
         </Link>
 
         <Link
-          to="/admin/orders"
+          to="/AdminOrders"
           className="buyer_messages"
         >
 
