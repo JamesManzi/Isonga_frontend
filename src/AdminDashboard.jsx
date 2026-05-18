@@ -406,13 +406,13 @@ useEffect(() => {
       <div className="Dashboard_body3">
 
         <Link
-          to="/admin/users"
+          to="/AdminBuyers"
           className="add_product"
         >
 
           <FontAwesomeIcon icon={faUsers} />
 
-          <h2>Manage Users</h2>
+          <h2>Manage Buyers</h2>
 
         </Link>
 
