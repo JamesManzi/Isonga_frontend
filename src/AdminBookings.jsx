@@ -29,7 +29,6 @@ function AdminBookings() {
 
     try {
       setLoading(true);
-
       const res = await api.get("/api/admin/bookings");
 
       if (res.data.success) {
@@ -92,7 +91,6 @@ function AdminBookings() {
         bookings.map((b) => (
           <div key={b._id} style={cardStyle}>
             
-            {/* HEADER */}
             <div style={orderHeader}>
               <div>
                 <h3 style={{ margin: 0 }}>
@@ -108,9 +106,7 @@ function AdminBookings() {
               </span>
             </div>
 
-            {/* INFO */}
             <div style={gridStyle}>
-              
               <div style={boxStyle}>
                 <h4>Customer</h4>
                 <p>{b.name}</p>
@@ -126,17 +122,10 @@ function AdminBookings() {
               </div>
             </div>
 
-            {/* PAYMENT */}
             <div style={itemsBox}>
               <h4>Payment</h4>
-
-              <p>
-                Method: <b>{b.paymentMethod}</b>
-              </p>
-
-              <p>
-                Total: <b>{b.amount} Rwf</b>
-              </p>
+              <p>Method: <b>{b.paymentMethod}</b></p>
+              <p>Total: <b>{b.amount} Rwf</b></p>
 
               {b.paymentProof && (
                 <button
@@ -148,7 +137,6 @@ function AdminBookings() {
               )}
             </div>
 
-            {/* ACTIONS */}
             <div style={btnWrap}>
               <button
                 onClick={() => updateBookingStatus(b._id, "Accepted")}
@@ -170,14 +158,12 @@ function AdminBookings() {
         ))
       )}
 
-      {/* IMAGE MODAL */}
       {selectedImg && (
         <div style={modal} onClick={() => setSelectedImg(null)}>
           <div style={modalBox}>
             <button style={closeBtn} onClick={() => setSelectedImg(null)}>
               <FontAwesomeIcon icon={faTimes} />
             </button>
-
             <img src={selectedImg} style={img} />
           </div>
         </div>
