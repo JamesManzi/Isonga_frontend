@@ -383,7 +383,6 @@ useEffect(() => {
           <h2>Total Buyers</h2>
 
           <h2>
-            $
             {stats?.totalBuyers || 0}
           </h2>
 
