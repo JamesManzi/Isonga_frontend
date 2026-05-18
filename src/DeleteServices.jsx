@@ -36,8 +36,8 @@ function DeleteServices() {
     _id: "",
     name: "",
     price: "",
-    description: "",
-    location: ""
+    location: "",
+    description: ""
   });
 
   const hasTracked = useRef(false);
@@ -65,8 +65,8 @@ function DeleteServices() {
         });
         setCurrentIndex(indexes);
 
-        if (!hasTracked.current && res.data.seller?._id) {
-          api.post(`/api/seller/view/${res.data.seller._id}`, {}).catch(() => {});
+        if (!hasTracked.current) {
+          api.post(`/api/seller/view/${id}`).catch(() => {});
           hasTracked.current = true;
         }
       } catch (error) {
@@ -149,8 +149,8 @@ function DeleteServices() {
       _id: product._id,
       name: product.name || "",
       price: product.price || "",
-      description: product.description || "",
-      location: product.location || ""
+      location: product.location || "",
+      description: product.description || ""
     });
     setIsUpdateModalOpen(true);
   };
@@ -164,8 +164,8 @@ function DeleteServices() {
       const res = await api.put(`/api/services/update/${editingProduct._id}`, {
         name: editingProduct.name,
         price: editingProduct.price,
-        description: editingProduct.description,
-        location: editingProduct.location
+        location: editingProduct.location,
+        description: editingProduct.description
       });
 
       const updatedProduct = res.data.product || editingProduct;
@@ -190,9 +190,8 @@ function DeleteServices() {
     return (
       <div className="products-loading">
         <div className="products-loader-card">
-          <div className="cube-loader"><div></div><div></div><div></div><div></div></div>
           <h2>ISONGA MARKET</h2>
-          <p>Loading Services...</p>
+          <p>Loading services...</p>
         </div>
       </div>
     );
@@ -263,30 +262,27 @@ function DeleteServices() {
                 )}
               </div>
 
-              {/* SERVICE DETAILS */}
-              <div className="service_card">
-                <h1>{product.name}</h1>
+              {/* SERVICE INFO */}
+              <div className="product-info">
+                 <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
                 {product.location && <p><strong>Location:</strong> {product.location}</p>}
-                <p>{product.description}</p>
               </div>
               
-              {/* FIXED ACTION BUTTONS WITH ICONS */}
-              <div className="service_btns" style={{ display: 'flex', gap: '10px' }}>
+              {/* ACTION BUTTONS */}
+              <div className="Service_Products_btns" style={{ display: 'flex', gap: '10px' }}>
                 <button 
                   className="chat-btn" 
-                  style={{ backgroundColor: "#dc3545", color: "white", flex: 1, display: "flex", gap: "6px", alignItems: "center", justifyContent: "center" }} 
+                  style={{ backgroundColor: "#dc3545", color: "white", flex: 1 }} 
                   onClick={() => handleDelete(product._id, product.name)}
                   disabled={deleteLoading === product._id}
                 >
-                  <FontAwesomeIcon icon={faTrash} />
                   {deleteLoading === product._id ? "Deleting..." : "Delete"}
                 </button>
                 <button 
-                  style={{ backgroundColor: "#007bff", color: "white", flex: 1, border: 'none', borderRadius: '4px', cursor: 'pointer', display: "flex", gap: "6px", alignItems: "center", justifyContent: "center" }}
+                  style={{ backgroundColor: "#007bff", color: "white", flex: 1, border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                   onClick={() => openUpdateModal(product)}
                 >
-                  <FontAwesomeIcon icon={faEdit} />
                   Update
                 </button>
               </div>
@@ -328,6 +324,7 @@ function DeleteServices() {
                 <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>Location</label>
                 <input 
                   type="text" 
+                  required 
                   style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
                   value={editingProduct.location}
                   onChange={(e) => setEditingProduct({...editingProduct, location: e.target.value})}
