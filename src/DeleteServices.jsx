@@ -30,7 +30,7 @@ function DeleteServices() {
 
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
 
-  // --- NEW UPDATE MODAL STATES FOR SERVICES ---
+  // --- NEW UPDATE MODAL STATES ---
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState({
     _id: "",
@@ -121,7 +121,7 @@ function DeleteServices() {
       : `https://api.isongamarket.com/uploads/${path}`;
   };
 
-  // --- DELETE HANDLER FOR SERVICES ---
+  // --- DELETE HANDLER ---
   const handleDelete = async (productId, productName) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete ${productName}?`);
     if (!confirmDelete) return;
@@ -170,7 +170,6 @@ function DeleteServices() {
 
       const updatedProduct = res.data.product || editingProduct;
 
-      // Instantly update UI fields 
       setProducts((prev) =>
         prev.map((p) => (p._id === editingProduct._id ? { ...p, ...updatedProduct } : p))
       );
@@ -264,7 +263,7 @@ function DeleteServices() {
                 )}
               </div>
 
-              {/* SERVICE INFO */}
+              {/* SERVICE DETAILS */}
               <div className="service_card">
                 <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
@@ -272,20 +271,22 @@ function DeleteServices() {
                 <p>{product.description}</p>
               </div>
               
-              {/* ACTION BUTTONS */}
-              <div className="service_btns" style={{ display: 'flex', gap: '10px', padding: '0 15px 15px' }}>
+              {/* FIXED ACTION BUTTONS WITH ICONS */}
+              <div className="service_btns" style={{ display: 'flex', gap: '10px' }}>
                 <button 
-                  className="booking-btn" 
-                  style={{ backgroundColor: "#dc3545", color: "white", flex: 1, border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '10px' }} 
+                  className="chat-btn" 
+                  style={{ backgroundColor: "#dc3545", color: "white", flex: 1, display: "flex", gap: "6px", alignItems: "center", justifyContent: "center" }} 
                   onClick={() => handleDelete(product._id, product.name)}
                   disabled={deleteLoading === product._id}
                 >
+                  <FontAwesomeIcon icon={faTrash} />
                   {deleteLoading === product._id ? "Deleting..." : "Delete"}
                 </button>
                 <button 
-                  style={{ backgroundColor: "#007bff", color: "white", flex: 1, border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '10px' }}
+                  style={{ backgroundColor: "#007bff", color: "white", flex: 1, border: 'none', borderRadius: '4px', cursor: 'pointer', display: "flex", gap: "6px", alignItems: "center", justifyContent: "center" }}
                   onClick={() => openUpdateModal(product)}
                 >
+                  <FontAwesomeIcon icon={faEdit} />
                   Update
                 </button>
               </div>
