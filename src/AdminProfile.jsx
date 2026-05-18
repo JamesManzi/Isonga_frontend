@@ -148,7 +148,7 @@ if (!seller) {
       <div className="Seller_Profile_navbar">
         <div className="Seller_profile_logos"><img src="/logo.png" alt="Logo" /></div>
         <div className="seller_profile_heads"><h1>Isonga</h1><h2>Market</h2></div>
-        <div className="seller_profile_logout"><Link to="/buyer_dashboard"><FontAwesomeIcon icon={faArrowRight} /></Link></div>
+        <div className="seller_profile_logout"><Link to="/AdminManageSellers"><FontAwesomeIcon icon={faArrowRight} /></Link></div>
       </div>
 
       <div className="profile">
