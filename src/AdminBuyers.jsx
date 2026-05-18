@@ -9,8 +9,8 @@ function AdminBuyers() {
   const [buyers, setBuyers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState(null);
-  const [isZoomed, setIsZoomed] = useState(false);
   const navigate = useNavigate();
+  const [zoomImage, setZoomImage] = useState(null);
 
   useEffect(() => {
     fetchBuyers();
@@ -91,7 +91,7 @@ function AdminBuyers() {
               {/* PROFILE IMAGE */}
               <img
                 src={getProfileImage(buyer.profile)}
-                onClick={() => setIsZoomed(true)}
+                onClick={() => setZoomImage(getProfileImage(buyer.profile))}
                 alt="profile"
                 style={{
                   width: "50px",
@@ -141,26 +141,48 @@ function AdminBuyers() {
           </div>
         ))
       )}
-      {isZoomed && (
-        <div className="media-modal" onClick={() => setIsZoomed(false)} style={{
-            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-            backgroundColor: 'rgba(0,0,0,0.9)', display: 'flex', 
-            justifyContent: 'center', alignItems: 'center', zIndex: 2000
-        }}>
-          <span className="close-btn" style={{
-              position: 'absolute', top: '20px', right: '30px', 
-              color: 'white', fontSize: '30px', cursor: 'pointer'
-          }}>
-            <FontAwesomeIcon icon={faTimes} />
-          </span>
-          <img 
-            src={currentImage} 
-            alt="Full Profile" 
-            style={{ maxWidth: '90%', maxHeight: '85%', borderRadius: '10px' }} 
-            onClick={(e) => e.stopPropagation()} 
-          />
-        </div>
-      )}
+      {zoomImage && (
+  <div
+    onClick={() => setZoomImage(null)}
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0,0,0,0.9)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 2000,
+    }}
+  >
+    <span
+      onClick={() => setZoomImage(null)}
+      style={{
+        position: "absolute",
+        top: "20px",
+        right: "30px",
+        color: "white",
+        fontSize: "30px",
+        cursor: "pointer",
+      }}
+    >
+      ✖
+    </span>
+
+    <img
+      src={zoomImage}
+      alt="Zoom Profile"
+      style={{
+        maxWidth: "90%",
+        maxHeight: "85%",
+        borderRadius: "10px",
+      }}
+      onClick={(e) => e.stopPropagation()}
+    />
+  </div>
+)}
       
     </div>
   );
