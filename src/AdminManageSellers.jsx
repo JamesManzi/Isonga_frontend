@@ -65,14 +65,14 @@ function AdminManageSellers() {
     }
 
     if (serviceCategories.includes(category)) {
-      return `/Service_Products/${id}`;
+      return `/DeleteServices/${id}`;
     }
 
     if (assetCategories.includes(category)) {
-      return `/Asset_products/${id}`;
+      return `/DeleteAssets/${id}`;
     }
 
-    return `/view_products/${id}`;
+    return `/DeleteProducts/${id}`;
   };
 
   /* ---------------- FETCH SELLERS ---------------- */

@@ -53,6 +53,8 @@ import AdminDashboard from "./AdminDashboard";
 import { Analytics } from "@vercel/analytics/react";
 import AdminManageSellers from "./AdminManageSellers";
 import DeleteProducts from "./DeleteProducts";
+import DeleteServices from "./DeleteServices";
+import DeleteAssets from "./DeleteAssets";
 function App(){
   return(
     <div>
@@ -112,6 +114,8 @@ function App(){
          <Route path="/AdminDashboard" element={<AdminDashboard/>}/>
          <Route path="/AdminManageSellers" element={<AdminManageSellers/>}/>
          <Route path="/DeleteProducts/:id" element={<DeleteProducts/>}/>
+         <Route path="/DeleteServices/:id" element={<DeleteServices/>}/>
+         <Route path="/DeleteAssets/:id" element={<DeleteAssets/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>
