@@ -8,8 +8,8 @@ import {
   faChevronLeft,
   faChevronRight,
   faSearch,
-  faCartShopping,
-  faTrash // Added trash icon for better UX, optional
+  faTrash,
+  faEdit
 } from "@fortawesome/free-solid-svg-icons";
 
 function DeleteProducts() {
@@ -25,10 +25,20 @@ function DeleteProducts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
-  const [cartLoading, setCartLoading] = useState(null);
-  const [deleteLoading, setDeleteLoading] = useState(null); // Tracks which product is deleting
+  const [deleteLoading, setDeleteLoading] = useState(null); 
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
+
+  // --- NEW UPDATE MODAL STATES ---
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState({
+    _id: "",
+    name: "",
+    price: "",
+    quantity: "",
+    description: ""
+  });
 
   const hasTracked = useRef(false);
 
@@ -44,7 +54,7 @@ function DeleteProducts() {
 
         const res = await api.get(`/api/view_products/${id}`);
 
-        const fetchedProducts = res.data.products;
+        const fetchedProducts = res.data.products || [];
         setProducts(fetchedProducts);
         setFilteredProducts(fetchedProducts);
         setSeller(res.data.seller);
@@ -71,6 +81,7 @@ function DeleteProducts() {
   }, [id, navigate]);
 
   useEffect(() => {
+    if (products.length === 0) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => {
         const newIndexes = { ...prev };
@@ -109,36 +120,16 @@ function DeleteProducts() {
       : `https://api.isongamarket.com/uploads/${path}`;
   };
 
-  const addToCart = async (productId, productName) => {
-    try {
-      setCartLoading(productId);
-      const res = await api.post("/api/cart/add", { productId, quantity: 1 });
-      setPopupMessage(res.data.success ? `${productName} added to cart!` : "Error");
-      setShowCartPopup(true);
-      setTimeout(() => setShowCartPopup(false), 2000);
-    } catch (error) {
-      setPopupMessage("Error adding to cart");
-      setShowCartPopup(true);
-      setTimeout(() => setShowCartPopup(false), 2000);
-    } finally {
-      setCartLoading(null);
-    }
-  };
-
-  // --- NEW DELETE HANDLER FUNCTION ---
+  // --- DELETE HANDLER ---
   const handleDelete = async (productId, productName) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete ${productName}?`);
     if (!confirmDelete) return;
 
     try {
       setDeleteLoading(productId);
-      
-      // Update this endpoint to match your actual backend delete route
-      // e.g., api.delete(`/api/products/${productId}`)
       await api.delete(`/api/products/delete/${productId}`); 
 
-      // Filter out the deleted product from state to update the UI instantly
-      setProducts((prevProducts) => prevProducts.filter((p) => p._id !== productId));
+      setProducts((prev) => prev.filter((p) => p._id !== productId));
       
       setPopupMessage(`${productName} deleted successfully!`);
       setShowCartPopup(true);
@@ -148,6 +139,50 @@ function DeleteProducts() {
       alert(error.response?.data?.message || "Failed to delete product.");
     } finally {
       setDeleteLoading(null);
+    }
+  };
+
+  // --- OPEN UPDATE MODAL ---
+  const openUpdateModal = (product) => {
+    setEditingProduct({
+      _id: product._id,
+      name: product.name || "",
+      price: product.price || "",
+      quantity: product.quantity || "",
+      description: product.description || ""
+    });
+    setIsUpdateModalOpen(true);
+  };
+
+  // --- SUBMIT UPDATE ---
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setUpdateLoading(true);
+      
+      const res = await api.put(`/api/products/update/${editingProduct._id}`, {
+        name: editingProduct.name,
+        price: editingProduct.price,
+        quantity: editingProduct.quantity,
+        description: editingProduct.description
+      });
+
+      const updatedProduct = res.data.product || editingProduct;
+
+      // Instantly update UI fields 
+      setProducts((prev) =>
+        prev.map((p) => (p._id === editingProduct._id ? { ...p, ...updatedProduct } : p))
+      );
+
+      setIsUpdateModalOpen(false);
+      setPopupMessage("Product updated successfully! ✨");
+      setShowCartPopup(true);
+      setTimeout(() => setShowCartPopup(false), 2000);
+    } catch (error) {
+      console.error("Update error:", error);
+      alert(error.response?.data?.message || "Failed to save updates.");
+    } finally {
+      setUpdateLoading(false);
     }
   };
 
@@ -174,6 +209,7 @@ function DeleteProducts() {
           <FontAwesomeIcon icon={faArrowRight} />
         </div>
       </div>
+
       {/* Header */}
       <div className="View_Products_body">
         <p>Find All Products You Desire</p>
@@ -208,7 +244,7 @@ function DeleteProducts() {
                       onClick={() => setModalMedia({ productId: product._id, index: activeIdx })}
                     />
                   )
-                ) : <img src="/placeholder.png" className="slider-media" />}
+                ) : <img src="/placeholder.png" className="slider-media" alt="placeholder" />}
 
                 {/* Slider Dots */}
                 {files.length > 1 && (
@@ -233,25 +269,98 @@ function DeleteProducts() {
                 <p><strong>Quantity:</strong> {product.quantity}</p>
               </div>
               
-              {/* MODIFIED ACTION BUTTONS CONTAINER */}
-              <div className="View_Products_btns">
+              {/* ACTION BUTTONS */}
+              <div className="View_Products_btns" style={{ display: 'flex', gap: '10px' }}>
                 <button 
                   className="chat-btn" 
-                  style={{ backgroundColor: "#dc3545", color: "white" }} // Red button style for warning
+                  style={{ backgroundColor: "#dc3545", color: "white", flex: 1 }} 
                   onClick={() => handleDelete(product._id, product.name)}
                   disabled={deleteLoading === product._id}
                 >
                   {deleteLoading === product._id ? "Deleting..." : "Delete"}
                 </button>
-                <button onClick={() => addToCart(product._id, product.name)} disabled={cartLoading === product._id}>
-                  {cartLoading === product._id ? "Adding..." : "Add To Cart"} <FontAwesomeIcon icon={faCartShopping} />
+                <button 
+                  style={{ backgroundColor: "#007bff", color: "white", flex: 1, border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  onClick={() => openUpdateModal(product)}
+                >
+                  Update
                 </button>
               </div>
-
             </div> 
           );
         })} 
       </div>
+
+      {/* --- POPUP UPDATE MODAL --- */}
+      {isUpdateModalOpen && (
+        <div className="media-modal" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
+          <div className="modal-content" style={{ backgroundColor: 'white', padding: '25px', borderRadius: '8px', width: '90%', maxWidth: '450px', color: '#333' }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginBottom: '15px', color: '#111', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Update Product</h3>
+            
+            <form onSubmit={handleUpdateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>Product Name</label>
+                <input 
+                  type="text" 
+                  required 
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  value={editingProduct.name}
+                  onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>Price (Rwf)</label>
+                <input 
+                  type="number" 
+                  required 
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  value={editingProduct.price}
+                  onChange={(e) => setEditingProduct({...editingProduct, price: e.target.value})}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>Quantity</label>
+                <input 
+                  type="number" 
+                  required 
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  value={editingProduct.quantity}
+                  onChange={(e) => setEditingProduct({...editingProduct, quantity: e.target.value})}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>Description</label>
+                <textarea 
+                  rows="3"
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', resize: 'none' }}
+                  value={editingProduct.description}
+                  onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px', justifyContent: 'flex-end' }}>
+                <button 
+                  type="button" 
+                  style={{ padding: '8px 16px', background: '#aaa', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  onClick={() => setIsUpdateModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={updateLoading}
+                  style={{ padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  {updateLoading ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Media Zoom Modal */}
       {modalMedia.productId && (() => {
