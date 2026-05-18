@@ -24,7 +24,7 @@ function Buyer_Chat() {
   const [messages, setMessages] = useState([]);
 
   const [text, setText] = useState("");
-  const [files, setFiles] = useState([]); // Will store chosen image files only
+  const [files, setFiles] = useState([]); // Will store chosen image files
   const [showEmoji, setShowEmoji] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -255,7 +255,7 @@ function Buyer_Chat() {
     });
   };
 
-  // Fixed: Filter inputs to only keep image types 
+  // Only keep image types
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files || []);
     const imageFiles = selectedFiles.filter(file => file.type.startsWith("image/"));
@@ -265,6 +265,15 @@ function Buyer_Chat() {
     }
     
     setFiles(imageFiles);
+  };
+
+  // Function to remove a single image from selection before sending
+  const removeSelectedFile = (indexToRemove) => {
+    const updatedFiles = files.filter((_, idx) => idx !== indexToRemove);
+    setFiles(updatedFiles);
+    if (updatedFiles.length === 0 && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -377,25 +386,34 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* Uploading Banner Preview for Images */}
+      {/* FIXED: Showing true visual image previews using URL.createObjectURL */}
       {files.length > 0 && (
-        <div className="file-upload-preview" style={{ padding: "8px 12px", background: "#f1f1f1", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center", borderTop: "1px solid #ddd" }}>
+        <div className="file-upload-preview" style={{ padding: "10px 12px", background: "#f9f9f9", display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center", borderTop: "1px solid #eee" }}>
           {files.map((file, i) => (
-            <span key={i} style={{ fontSize: "12px", background: "#e0e0e0", padding: "4px 8px", borderRadius: "12px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-              🖼️ {file.name.length > 20 ? `${file.name.substring(0, 17)}...` : file.name}
-            </span>
+            <div key={i} style={{ position: "relative", display: "inline-block", width: "60px", height: "60px" }}>
+              <img 
+                src={URL.createObjectURL(file)} 
+                alt="preview" 
+                style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "6px", border: "1px solid #ccc" }} 
+              />
+              <button 
+                onClick={() => removeSelectedFile(i)}
+                style={{ position: "absolute", top: "-5px", right: "-5px", background: "#ff4d4d", color: "white", border: "none", borderRadius: "50%", width: "18px", height: "18px", fontSize: "10px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                ✕
+              </button>
+            </div>
           ))}
           <button 
             onClick={() => { setFiles([]); if(fileInputRef.current) fileInputRef.current.value = ""; }} 
-            style={{ marginLeft: "auto", background: "none", border: "none", color: "#ff4d4d", fontWeight: "bold", cursor: "pointer" }}
+            style={{ marginLeft: "auto", background: "none", border: "none", color: "#ff4d4d", fontWeight: "bold", cursor: "pointer", fontSize: "13px" }}
           >
-            Clear Images
+            Clear All
           </button>
         </div>
       )}
 
       <div className="chat-input">
-        {/* Fixed: Added accept="image/*" attribute & handleFileChange function restriction */}
         <input
           type="file"
           multiple
