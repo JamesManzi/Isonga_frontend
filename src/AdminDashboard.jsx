@@ -101,9 +101,6 @@ useEffect(() => {
       if (usersRes.data.success) {
         setRecentUsers(usersRes.data.users || []);
       }
-      if(usersRes.data.success){
-        setBuyers(res.data.totalBuyers);
-      }
 
       if (ordersRes.data.success) {
         setRecentOrders(ordersRes.data.orders || []);
@@ -386,7 +383,7 @@ useEffect(() => {
           <h2>Total Buyers</h2>
 
           <h2>
-            {buyers || 0}
+            {stats?.totalBuyers || 0}
           </h2>
 
         </div>
