@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import Picker from "emoji-picker-react";
 import "./Seller_Chat.css";
 
-// Singleton socket instance initialized safely inside or outside component context
+// Singleton socket variable initialized safely
 let socket;
 
 function Seller_Chat() {
@@ -18,7 +18,7 @@ function Seller_Chat() {
   const [messages, setMessages] = useState([]);
 
   const [text, setText] = useState("");
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState([]); // Will store chosen image files
   const [showEmoji, setShowEmoji] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -40,6 +40,14 @@ function Seller_Chat() {
     });
   }
 
+  // =========================
+  // EMOJI & UTILS
+  // =========================
+  const onEmojiClick = (emojiData) => {
+    setText(prev => prev + emojiData.emoji);
+    setShowEmoji(false);
+  };
+
   const getFileUrl = (path) => {
     if (!path) return "";
     const clean = path.trim().replace(/\\/g, "/");
@@ -48,7 +56,7 @@ function Seller_Chat() {
       : `https://api.isongamarket.com/${clean.replace(/^\/+/, "")}`;
   };
 
-  // Prevent background memory leaks from hanging timeouts on page unmount
+  // Clean up timers on component unmount
   useEffect(() => {
     return () => {
       if (typingTimeout.current) clearTimeout(typingTimeout.current);
@@ -184,14 +192,6 @@ function Seller_Chat() {
   }, [messages, isTyping]);
 
   // =========================
-  // EMOJI
-  // =========================
-  const onEmojiClick = (emojiData) => {
-    setText(prev => prev + emojiData.emoji);
-    setShowEmoji(false);
-  };
-
-  // =========================
   // SEND MESSAGE
   // =========================
   const handleSend = async () => {
@@ -205,7 +205,11 @@ function Seller_Chat() {
         const formData = new FormData();
         files.forEach(f => formData.append("files", f));
 
-        const res = await api.post("/api/chat/upload", formData);
+        const res = await api.post("/api/chat/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         if (res.data.success) uploadedFiles = res.data.files;
       }
 
@@ -225,6 +229,7 @@ function Seller_Chat() {
       setText("");
       setFiles([]);
       setReplyTo(null);
+
       if (fileInputRef.current) fileInputRef.current.value = "";
 
       socket.emit("stopTyping", { room });
@@ -243,6 +248,31 @@ function Seller_Chat() {
       room: `Buyer_${buyerId}__Seller_${seller._id}`,
       forEveryone
     });
+  };
+
+  // Appends multi-file batches and clears the input cache safely
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    const imageFiles = selectedFiles.filter(file => file.type.startsWith("image/"));
+    
+    if (imageFiles.length !== selectedFiles.length) {
+      alert("Only image files are allowed.");
+    }
+    
+    setFiles(prevFiles => [...prevFiles, ...imageFiles]);
+
+    if (e.target) {
+      e.target.value = "";
+    }
+  };
+
+  // Function to remove a single image from selection before sending
+  const removeSelectedFile = (indexToRemove) => {
+    const updatedFiles = files.filter((_, idx) => idx !== indexToRemove);
+    setFiles(updatedFiles);
+    if (updatedFiles.length === 0 && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -321,15 +351,24 @@ function Seller_Chat() {
                     </p>
                   )}
 
-                  {msg.files?.map((file, idx) => (
-                    <img
-                      key={idx}
-                      src={getFileUrl(file)}
-                      className="chat-image"
-                      onClick={() => setZoomImage(getFileUrl(file))}
-                      alt=""
-                    />
-                  ))}
+                  {/* FIXED: Wraps message image outputs into a uniform column layout */}
+                  {msg.files && msg.files.length > 0 && (
+                    <div 
+                      className="chat-image-container" 
+                      style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}
+                    >
+                      {msg.files.map((file, idx) => (
+                        <img
+                          key={idx}
+                          src={getFileUrl(file)}
+                          className="chat-image"
+                          onClick={() => setZoomImage(getFileUrl(file))}
+                          alt=""
+                          style={{ display: "block", maxWidth: "100%", borderRadius: "8px" }}
+                        />
+                      ))}
+                    </div>
+                  )}
 
                   <div className="msg-info">
                     <span>
@@ -374,13 +413,41 @@ function Seller_Chat() {
         <div className="typing-indicator">{buyer?.name} is typing...</div>
       )}
 
+      {/* Showing interactive layout image previews before dispatching */}
+      {files.length > 0 && (
+        <div className="file-upload-preview" style={{ padding: "10px 12px", background: "#f9f9f9", display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center", borderTop: "1px solid #eee" }}>
+          {files.map((file, i) => (
+            <div key={i} style={{ position: "relative", display: "inline-block", width: "60px", height: "60px" }}>
+              <img 
+                src={URL.createObjectURL(file)} 
+                alt="preview" 
+                style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "6px", border: "1px solid #ccc" }} 
+              />
+              <button 
+                onClick={() => removeSelectedFile(i)}
+                style={{ position: "absolute", top: "-5px", right: "-5px", background: "#ff4d4d", color: "white", border: "none", borderRadius: "50%", width: "18px", height: "18px", fontSize: "10px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          <button 
+            onClick={() => { setFiles([]); if(fileInputRef.current) fileInputRef.current.value = ""; }} 
+            style={{ marginLeft: "auto", background: "none", border: "none", color: "#ff4d4d", fontWeight: "bold", cursor: "pointer", fontSize: "13px" }}
+          >
+            Clear All
+          </button>
+        </div>
+      )}
+
       <div className="chat-input">
         <input
           type="file"
           multiple
+          accept="image/*"
           ref={fileInputRef}
           style={{ display: "none" }}
-          onChange={(e) => setFiles(Array.from(e.target.files))}
+          onChange={handleFileChange}
         />
 
         <button onClick={() => fileInputRef.current.click()}>📎</button>
