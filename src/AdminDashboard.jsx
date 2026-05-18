@@ -380,12 +380,12 @@ useEffect(() => {
 
           <FontAwesomeIcon icon={faMoneyBillWave} />
 
-          <h2>Total Revenue</h2>
+          <h2>Total Buyers</h2>
 
-          <p>
+          <h2>
             $
-            {stats?.totalRevenue?.toLocaleString() || 0}
-          </p>
+            {stats?.totalBuyers || 0}
+          </h2>
 
         </div>
 
