@@ -52,6 +52,7 @@ import PrivacyRules from "./PrivacyRules";
 import AdminDashboard from "./AdminDashboard";
 import { Analytics } from "@vercel/analytics/react";
 import AdminManageSellers from "./AdminManageSellers";
+import DeleteProducts from "./DeleteProducts";
 function App(){
   return(
     <div>
@@ -110,6 +111,7 @@ function App(){
          <Route path="/PrivacyRules" element={<PrivacyRules/>}/>
          <Route path="/AdminDashboard" element={<AdminDashboard/>}/>
          <Route path="/AdminManageSellers" element={<AdminManageSellers/>}/>
+         <Route path="/DeleteProducts" element={<DeleteProducts/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>
