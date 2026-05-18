@@ -24,9 +24,21 @@ function DeleteAssets() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(null);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   // Zoom Modal State
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
+
+  // --- UPDATE MODAL STATES ---
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState({
+    _id: "",
+    name: "",
+    price: "",
+    location: "",
+    description: ""
+  });
 
   const hasTracked = useRef(false);
 
@@ -38,19 +50,18 @@ function DeleteAssets() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-        if (!token) {
+      if (!token) {
         navigate("/buyer_login");
         return;
       }
-     const res = await api.get(`/api/Asset_Products/${id}`);
-      const fetchedProducts = res.data.products;
+      const res = await api.get(`/api/Asset_Products/${id}`);
+      const fetchedProducts = res.data.products || [];
       setProducts(fetchedProducts);
       setFilteredProducts(fetchedProducts);
       setSeller(res.data.seller);
 
       if (!hasTracked.current && res.data.seller?._id) {
-        api.post(`/api/seller/view/${res.data.seller._id}`,{}
-        ).catch(err => console.log("Silent seller view fail"));
+        api.post(`/api/seller/view/${res.data.seller._id}`, {}).catch(err => console.log("Silent seller view fail"));
         hasTracked.current = true;
       }
 
@@ -106,6 +117,72 @@ function DeleteAssets() {
     return path.startsWith("http") ? path : `https://api.isongamarket.com/uploads/${path}`;
   };
 
+  // --- DELETE HANDLER ---
+  const handleDelete = async (productId, productName) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete ${productName}?`);
+    if (!confirmDelete) return;
+
+    try {
+      setDeleteLoading(productId);
+      await api.delete(`/api/products/delete/${productId}`); 
+
+      setProducts((prev) => prev.filter((p) => p._id !== productId));
+      
+      setPopupMessage(`${productName} deleted successfully!`);
+      setShowCartPopup(true);
+      setTimeout(() => setShowCartPopup(false), 2000);
+    } catch (error) {
+      console.error("Delete Error:", error);
+      alert(error.response?.data?.message || "Failed to delete product.");
+    } finally {
+      setDeleteLoading(null);
+    }
+  };
+
+  // --- ACTIONS: PREPARE UPDATE CONFIGURATION ---
+  const openUpdateModal = (product) => {
+    setEditingProduct({
+      _id: product._id,
+      name: product.name || "",
+      price: product.price || "",
+      location: product.location || "",
+      description: product.description || ""
+    });
+    setIsUpdateModalOpen(true);
+  };
+
+  // --- SUBMIT UPDATE ---
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setUpdateLoading(true);
+      
+      const res = await api.put(`/api/products/update/${editingProduct._id}`, {
+        name: editingProduct.name,
+        price: editingProduct.price,
+        quantity: editingProduct.quantity,
+        description: editingProduct.description
+      });
+
+      const updatedProduct = res.data.product || editingProduct;
+
+      // Instantly update UI fields 
+      setProducts((prev) =>
+        prev.map((p) => (p._id === editingProduct._id ? { ...p, ...updatedProduct } : p))
+      );
+
+      setIsUpdateModalOpen(false);
+      setPopupMessage("Product updated successfully! ✨");
+      setShowCartPopup(true);
+      setTimeout(() => setShowCartPopup(false), 2000);
+    } catch (error) {
+      console.error("Update error:", error);
+      alert(error.response?.data?.message || "Failed to save updates.");
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="Asset_Products-products-loading">
@@ -158,13 +235,13 @@ function DeleteAssets() {
               <div key={product._id} className="Asset_Products_productcard">
                 <div className="Asset_Products_image-slider">
                   <div onClick={() => setModalMedia({ productId: product._id, index: activeIdx })}>
-                    {currentFile && (
+                    {currentFile ? (
                       isVideoFile(currentFile) ? (
                         <video src={getFileUrl(currentFile)} muted autoPlay loop className="Asset_Products-slider-media" />
                       ) : (
                         <img src={getFileUrl(currentFile)} alt={product.name} className="Asset_Products-slider-media" />
                       )
-                    )}
+                    ) : <img src="/placeholder.png" className="Asset_Products-slider-media" alt="placeholder" />}
                   </div>
 
                   {/* Dots (No Arrow Icons) */}
@@ -185,14 +262,25 @@ function DeleteAssets() {
 
                 <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
+                {product.location && <p><strong>Location:</strong> {product.location}</p>}
                 <p>{product.description}</p>
 
-                <div className="Asset_Products_btns">
-                  <Link
-    to={`/DeleteAssets/${seller?._id}?productId=${product._id}&productName=${encodeURIComponent(product.name)}&productImage=${encodeURIComponent(product.files[0] || "")}&productPrice=${product.price}`}
-  >
-  <button className="Asset_Products_chat_btn">Delete</button>
-</Link>
+                {/* MODIFIED ACTION BLOCKS */}
+                <div className="Asset_Products_btns" style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                  <button 
+                    className="Asset_Products_chat_btn"
+                    style={{ backgroundColor: "#dc3545", color: "white", flex: 1 }}
+                    onClick={() => handleDelete(product._id, product.name)}
+                    disabled={deleteLoading === product._id}
+                  >
+                    {deleteLoading === product._id ? "Deleting..." : "Delete"}
+                  </button>
+                  <button 
+                    style={{ backgroundColor: "#007bff", color: "white", flex: 1, border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}
+                    onClick={() => openUpdateModal(product)}
+                  >
+                    Update
+                  </button>
                 </div>
               </div>
             );
@@ -202,9 +290,81 @@ function DeleteAssets() {
         )}
       </div>
 
+      {/* --- POPUP UPDATE MODAL --- */}
+      {isUpdateModalOpen && (
+        <div className="media-modal" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
+          <div className="modal-content" style={{ backgroundColor: 'white', padding: '25px', borderRadius: '8px', width: '90%', maxWidth: '450px', color: '#333' }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginBottom: '15px', color: '#111', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Update Asset</h3>
+            
+            <form onSubmit={handleUpdateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>Asset Name</label>
+                <input 
+                  type="text" 
+                  required 
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  value={editingProduct.name}
+                  onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>Price (Rwf)</label>
+                <input 
+                  type="number" 
+                  required 
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  value={editingProduct.price}
+                  onChange={(e) => setEditingProduct({...editingProduct, price: e.target.value})}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>Location</label>
+                <input 
+                  type="text" 
+                  required 
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  value={editingProduct.location}
+                  onChange={(e) => setEditingProduct({...editingProduct, location: e.target.value})}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>Description</label>
+                <textarea 
+                  rows="3"
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', resize: 'none' }}
+                  value={editingProduct.description}
+                  onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px', justifyContent: 'flex-end' }}>
+                <button 
+                  type="button" 
+                  style={{ padding: '8px 16px', background: '#aaa', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  onClick={() => setIsUpdateModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={updateLoading}
+                  style={{ padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  {updateLoading ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Media Zoom Modal - ARROWS ONLY HERE */}
       {modalMedia.productId && (() => {
         const product = products.find((p) => p._id === modalMedia.productId);
+        if (!product) return null;
         const file = product.files[modalMedia.index];
         return (
           <div className="media-modal" onClick={() => setModalMedia({ productId: null, index: 0 })}>
@@ -236,7 +396,9 @@ function DeleteAssets() {
         </div>
       )}
 
-      {showCartPopup && <div className="Asset_Products-cart-popup">{popupMessage}</div>}
+      <div className={`Asset_Products-cart-popup ${showCartPopup ? "show" : ""}`}>
+        {popupMessage}
+      </div>
 
       {/* Original Footer */}
       <footer className="Asset_Products-Buyer_Footer">
@@ -261,8 +423,8 @@ function DeleteAssets() {
             <h4>Support</h4>
             <ul>
               <li><Link to="/help-center">Help Center</Link></li>
-                            <li><Link to="/Steping">How It Works</Link></li>
-                            <li><Link to="/PrivacyRules">Privacy Policy</Link></li>
+              <li><Link to="/Steping">How It Works</Link></li>
+              <li><Link to="/PrivacyRules">Privacy Policy</Link></li>
             </ul>
           </div>
           <div className="Footer_Section">
