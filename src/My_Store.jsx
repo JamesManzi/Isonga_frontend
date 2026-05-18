@@ -187,7 +187,7 @@ function My_Store() {
       setLoading(false);
     }
   };
-const handleUpdate = async (e) => {
+  const handleUpdate = async (e) => {
   e.preventDefault();
   if (!editingProduct) return;
   setLoading(true);
@@ -209,26 +209,28 @@ const handleUpdate = async (e) => {
   try {
     const res = await api.put(`/api/products/update/${editingProduct._id}`, formData);
     
-    // Check for res.data.product to match your backend response
     if (res.data.success && res.data.product) {
-      const updatedItem = res.data.product; // Use the 'product' key from your backend
+      const updatedItem = res.data.product;
 
-      // 1. Update the products array
+      // 1. Update the products array in state
       setProducts((prev) =>
         prev.map((p) => (p._id === editingProduct._id ? updatedItem : p))
       );
 
-      // 2. Sync the slider index for the updated product ID
+      // 2. Sync the slider index
       setCurrentIndex((prev) => ({
         ...prev,
         [updatedItem._id]: prev[updatedItem._id] || 0
       }));
 
-      // 3. Reset UI states
-      setEditingProduct(null);
+      // 🎉 3. FIX: Instantly close the modal and clear file states 
+      setEditingProduct(null); // 👈 This closes the update window right away!
       setSelectedFiles([]);
       setPreviewFiles([]);
-      alert("Updated successfully!");
+      
+      // Optional: replace standard alert with a minor notification or omit it for seamless return
+      alert("Updated successfully!"); 
+      
     } else {
       console.error("Data mismatch: res.data.product is undefined");
       setMessage("Update error: Missing product data from server.");
