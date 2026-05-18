@@ -557,18 +557,18 @@ useEffect(() => {
         </Link>
 
         <Link
-          to="/admin/users"
+          to="/AdminBuyers"
           className="footer_item"
         >
 
           <FontAwesomeIcon icon={faUsers} />
 
-          <h2>Users</h2>
+          <h2>Buyers</h2>
 
         </Link>
 
         <Link
-          to="/admin/sellers"
+          to="/AdminManageSeller"
           className="footer_item"
         >
 
@@ -579,7 +579,7 @@ useEffect(() => {
         </Link>
 
         <Link
-          to="/admin/orders"
+          to="/AdminOrders"
           className="footer_item"
         >
 
