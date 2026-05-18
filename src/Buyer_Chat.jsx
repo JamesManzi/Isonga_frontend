@@ -24,7 +24,7 @@ function Buyer_Chat() {
   const [messages, setMessages] = useState([]);
 
   const [text, setText] = useState("");
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState([]); // Will store chosen image files only
   const [showEmoji, setShowEmoji] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -194,7 +194,6 @@ function Buyer_Chat() {
     let uploadedFiles = [];
 
     try {
-      // Fixed: Send using multipart/form-data config
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach(f => formData.append("files", f));
@@ -254,6 +253,18 @@ function Buyer_Chat() {
       room: `Buyer_${buyer._id}__Seller_${sellerId}`,
       forEveryone
     });
+  };
+
+  // Fixed: Filter inputs to only keep image types 
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    const imageFiles = selectedFiles.filter(file => file.type.startsWith("image/"));
+    
+    if (imageFiles.length !== selectedFiles.length) {
+      alert("Only image files are allowed.");
+    }
+    
+    setFiles(imageFiles);
   };
 
   return (
@@ -366,30 +377,32 @@ function Buyer_Chat() {
         </div>
       )}
 
-      {/* Added File Uploading Banner Preview */}
+      {/* Uploading Banner Preview for Images */}
       {files.length > 0 && (
         <div className="file-upload-preview" style={{ padding: "8px 12px", background: "#f1f1f1", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center", borderTop: "1px solid #ddd" }}>
           {files.map((file, i) => (
             <span key={i} style={{ fontSize: "12px", background: "#e0e0e0", padding: "4px 8px", borderRadius: "12px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-              📄 {file.name.length > 20 ? `${file.name.substring(0, 17)}...` : file.name}
+              🖼️ {file.name.length > 20 ? `${file.name.substring(0, 17)}...` : file.name}
             </span>
           ))}
           <button 
             onClick={() => { setFiles([]); if(fileInputRef.current) fileInputRef.current.value = ""; }} 
             style={{ marginLeft: "auto", background: "none", border: "none", color: "#ff4d4d", fontWeight: "bold", cursor: "pointer" }}
           >
-            Clear Files
+            Clear Images
           </button>
         </div>
       )}
 
       <div className="chat-input">
+        {/* Fixed: Added accept="image/*" attribute & handleFileChange function restriction */}
         <input
           type="file"
           multiple
+          accept="image/*"
           ref={fileInputRef}
           style={{ display: "none" }}
-          onChange={(e) => setFiles(Array.from(e.target.files || []))}
+          onChange={handleFileChange}
         />
         <button onClick={() => fileInputRef.current.click()}>📎</button>
         <button onClick={() => setShowEmoji(!showEmoji)}>😊</button>
