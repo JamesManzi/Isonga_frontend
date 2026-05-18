@@ -121,27 +121,28 @@ function DeleteServices() {
       : `https://api.isongamarket.com/uploads/${path}`;
   };
 
-  // --- DELETE HANDLER ---
-  const handleDelete = async (productId, productName) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete ${productName}?`);
-    if (!confirmDelete) return;
-
-    try {
-      setDeleteLoading(productId);
-      await api.delete(`/api/services/delete/${productId}`); 
-
-      setProducts((prev) => prev.filter((p) => p._id !== productId));
-      
-      setPopupMessage(`${productName} deleted successfully!`);
-      setShowCartPopup(true);
-      setTimeout(() => setShowCartPopup(false), 2000);
-    } catch (error) {
-      console.error("Delete Error:", error);
-      alert(error.response?.data?.message || "Failed to delete service.");
-    } finally {
-      setDeleteLoading(null);
-    }
-  };
+  
+    // --- DELETE HANDLER ---
+    const handleDelete = async (productId, productName) => {
+      const confirmDelete = window.confirm(`Are you sure you want to delete ${productName}?`);
+      if (!confirmDelete) return;
+  
+      try {
+        setDeleteLoading(productId);
+        await api.delete(`/api/products/delete/${productId}`); 
+  
+        setProducts((prev) => prev.filter((p) => p._id !== productId));
+        
+        setPopupMessage(`${productName} deleted successfully!`);
+        setShowCartPopup(true);
+        setTimeout(() => setShowCartPopup(false), 2000);
+      } catch (error) {
+        console.error("Delete Error:", error);
+        alert(error.response?.data?.message || "Failed to delete product.");
+      } finally {
+        setDeleteLoading(null);
+      }
+    };
 
   // --- OPEN UPDATE MODAL ---
   const openUpdateModal = (product) => {
@@ -154,28 +155,28 @@ function DeleteServices() {
     });
     setIsUpdateModalOpen(true);
   };
-
-  // --- SUBMIT UPDATE ---
+// --- SUBMIT UPDATE ---
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     try {
       setUpdateLoading(true);
       
-      const res = await api.put(`/api/services/update/${editingProduct._id}`, {
+      const res = await api.put(`/api/products/update/${editingProduct._id}`, {
         name: editingProduct.name,
         price: editingProduct.price,
-        location: editingProduct.location,
+        quantity: editingProduct.quantity,
         description: editingProduct.description
       });
 
       const updatedProduct = res.data.product || editingProduct;
 
+      // Instantly update UI fields 
       setProducts((prev) =>
         prev.map((p) => (p._id === editingProduct._id ? { ...p, ...updatedProduct } : p))
       );
 
       setIsUpdateModalOpen(false);
-      setPopupMessage("Service updated successfully! ✨");
+      setPopupMessage("Product updated successfully! ✨");
       setShowCartPopup(true);
       setTimeout(() => setShowCartPopup(false), 2000);
     } catch (error) {
@@ -185,6 +186,7 @@ function DeleteServices() {
       setUpdateLoading(false);
     }
   };
+
 
   if (loading) {
     return (
