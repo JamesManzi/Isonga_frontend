@@ -111,7 +111,7 @@ function App(){
          <Route path="/PrivacyRules" element={<PrivacyRules/>}/>
          <Route path="/AdminDashboard" element={<AdminDashboard/>}/>
          <Route path="/AdminManageSellers" element={<AdminManageSellers/>}/>
-         <Route path="/DeleteProducts" element={<DeleteProducts/>}/>
+         <Route path="/DeleteProducts/:id" element={<DeleteProducts/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>
