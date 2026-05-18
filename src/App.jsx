@@ -123,7 +123,7 @@ function App(){
          <Route path="/AdminOrders" element={<AdminOrders/>}/>
          <Route path="/AdminBuyers" element={<AdminBuyers/>}/>
          <Route path="/AdminBookings" element={<AdminBookings/>}/>
-         <Route path="/AdminProfile:/id" element={<AdminProfile/>}/>
+         <Route path="/AdminProfile/:id" element={<AdminProfile/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>
