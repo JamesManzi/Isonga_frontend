@@ -57,6 +57,7 @@ import DeleteServices from "./DeleteServices";
 import DeleteAssets from "./DeleteAssets";
 import AdminOrders from "./AdminOrders";
 import AdminBuyers from "./AdminBuyers";
+import AdminBookings from "./AdminBookings";
 function App(){
   return(
     <div>
@@ -120,6 +121,7 @@ function App(){
          <Route path="/DeleteAssets/:id" element={<DeleteAssets/>}/>
          <Route path="/AdminOrders" element={<AdminOrders/>}/>
          <Route path="/AdminBuyers" element={<AdminBuyers/>}/>
+         <Route path="/AdminBookings" element={<AdminBookings/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>

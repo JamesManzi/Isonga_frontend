@@ -443,9 +443,9 @@ useEffect(() => {
           className="buyer_messages"
         >
 
-          <FontAwesomeIcon icon={faCommentDots} />
+          <FontAwesomeIcon icon={faChartLine} />
 
-          <h2>Messages</h2>
+          <h2>Bookings</h2>
 
         </Link>
 
