@@ -255,7 +255,7 @@ function Buyer_Chat() {
     });
   };
 
-  // FIXED: Appends multi-file batches and clears the input cache safely
+  // Appends multi-file batches and clears the input cache safely
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files || []);
     const imageFiles = selectedFiles.filter(file => file.type.startsWith("image/"));
@@ -264,10 +264,8 @@ function Buyer_Chat() {
       alert("Only image files are allowed.");
     }
     
-    // Uses functional state update to merge new items with previous choices
     setFiles(prevFiles => [...prevFiles, ...imageFiles]);
 
-    // Resets target input trace so users can drop and pick identical filenames
     if (e.target) {
       e.target.value = "";
     }
@@ -338,15 +336,24 @@ function Buyer_Chat() {
                     {msg.message}
                   </p>
 
-                  {msg.files?.map((file, idx) => (
-                    <img
-                      key={idx}
-                      src={getFileUrl(file)}
-                      className="chat-image"
-                      onClick={() => setZoomImage(getFileUrl(file))}
-                      alt=""
-                    />
-                  ))}
+                  {/* FIXED: Wraps image outputs into a column layout layout structure */}
+                  {msg.files && msg.files.length > 0 && (
+                    <div 
+                      className="chat-image-container" 
+                      style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}
+                    >
+                      {msg.files.map((file, idx) => (
+                        <img
+                          key={idx}
+                          src={getFileUrl(file)}
+                          className="chat-image"
+                          onClick={() => setZoomImage(getFileUrl(file))}
+                          alt=""
+                          style={{ display: "block", maxWidth: "100%", borderRadius: "8px" }}
+                        />
+                      ))}
+                    </div>
+                  )}
 
                   <div className="msg-info">
                     <span>
