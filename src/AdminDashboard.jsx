@@ -439,7 +439,7 @@ useEffect(() => {
         </Link>
 
         <Link
-          to="/admin/messages"
+          to="/AdminBookings"
           className="buyer_messages"
         >
 
