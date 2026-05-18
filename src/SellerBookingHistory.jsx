@@ -7,7 +7,8 @@ import {
   faImage, 
   faTimes, 
   faHistory, 
-  faDownload 
+  faDownload,
+  faSearch // 👈 Added search icon
 } from "@fortawesome/free-solid-svg-icons";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -15,6 +16,8 @@ import "./SellerBookingHistory.css";
 
 function SellerBookingHistory() {
   const [bookings, setBookings] = useState([]);
+  const [filteredBookings, setFilteredBookings] = useState([]); // 👈 Added state for filtering
+  const [searchQuery, setSearchQuery] = useState("");          // 👈 Added state for search string
   const [selectedImg, setSelectedImg] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -30,6 +33,7 @@ function SellerBookingHistory() {
         // Filter out Pending to show only Accepted/Cancelled in History
         const history = res.data.bookings.filter((b) => b.status !== "Pending");
         setBookings(history);
+        setFilteredBookings(history); // Initialize filtered state
       }
     } catch (err) {
       console.error("Error fetching history:", err);
@@ -46,6 +50,24 @@ function SellerBookingHistory() {
     }
     getBookings();
   }, []);
+
+  // 🔎 DYNAMIC CLIENT-SIDE SEARCH LOGIC
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredBookings(bookings);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = bookings.filter((booking) => {
+        const matchesName = booking.name?.toLowerCase().includes(query);
+        const matchesPhone = booking.phone?.toLowerCase().includes(query);
+        const matchesId = booking._id?.toLowerCase().includes(query);
+        const matchesDate = booking.date?.toLowerCase().includes(query);
+
+        return matchesName || matchesPhone || matchesId || matchesDate;
+      });
+      setFilteredBookings(filtered);
+    }
+  }, [searchQuery, bookings]);
 
   // PDF DOWNLOAD LOGIC
   const downloadBookingPDF = async (bookingId) => {
@@ -95,12 +117,33 @@ function SellerBookingHistory() {
         <FontAwesomeIcon icon={faHistory} /> Booking History
       </h1>
 
-      {bookings.length === 0 ? (
+      {/* 🔍 SEARCH BAR COMPONENT */}
+      {bookings.length > 0 && (
+        <div style={searchBarContainerStyle}>
+          <div style={searchFieldWrapperStyle}>
+            <FontAwesomeIcon icon={faSearch} style={searchIconStyle} />
+            <input
+              type="text"
+              placeholder="Search bookings by customer, phone, date or ID..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={searchInputStyle}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")} style={clearSearchButtonStyle}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {filteredBookings.length === 0 ? (
         <div style={emptyStateStyle}>
-          <p>No processed bookings in your history yet.</p>
+          <p>{bookings.length === 0 ? "No processed bookings in your history yet." : "No bookings match your search details."}</p>
         </div>
       ) : (
-        bookings.map((booking) => (
+        filteredBookings.map((booking) => (
           <div key={booking._id} style={historyCardStyle}>
             
             {/* Header Area */}
@@ -171,8 +214,15 @@ function SellerBookingHistory() {
 
 const containerStyle = { padding: "30px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" };
 const backLinkStyle = { textDecoration: "none", color: "#3498db", fontWeight: "600" };
-const titleStyle = { margin: "25px 0", color: "#2c3e50" };
+const titleStyle = { margin: "25px 0 15px 0", color: "#2c3e50" };
 const emptyStateStyle = { textAlign: "center", marginTop: "50px", color: "#7f8c8d" };
+
+// Search input UI styling
+const searchBarContainerStyle = { marginBottom: "25px", width: "100%" };
+const searchFieldWrapperStyle = { position: "relative", display: "flex", alignItems: "center", width: "100%", background: "#fff", borderRadius: "8px", border: "1px solid #dcdde1", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" };
+const searchIconStyle = { position: "absolute", left: "15px", color: "#a4b0be", fontSize: "1rem" };
+const searchInputStyle = { width: "100%", padding: "12px 40px 12px 45px", border: "none", borderRadius: "8px", fontSize: "0.95rem", color: "#2c3e50", outline: "none", background: "transparent" };
+const clearSearchButtonStyle = { position: "absolute", right: "15px", background: "none", border: "none", color: "#a4b0be", cursor: "pointer", fontSize: "1rem", padding: "2px" };
 
 const historyCardStyle = {
   background: "#fff",
