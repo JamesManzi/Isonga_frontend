@@ -265,7 +265,7 @@ const startEditing = (review) => {
       </div>
 
       {/* EXISTING GALLERY */}
-      <h3>Store Gallery</h3>
+      <h3>Our Location</h3>
       <div className="seller-files">
        {seller.files?.map((file) => (
   <div key={file} className="image-wrapper">
