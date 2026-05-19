@@ -34,7 +34,7 @@ function Buyer_Dashboard() {
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
   const productCategories = ["Fashion", "Electronics", "Furniture", "Construction","Food"];
-  const serviceCategories = ["RepairServices", "Hospitality","BusinessServices"];
+  const serviceCategories = ["Repair Services", "Hospitality","Business Services"];
   const assetCategories = ["RealEstate", "Vehicles", "Livestock"];
   const [notifications, setNotifications] = useState([]);
   const [orderNotifications, setOrderNotifications] = useState([]);
