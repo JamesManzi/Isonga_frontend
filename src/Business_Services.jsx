@@ -72,7 +72,7 @@ function Business_Services() {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const res = await api.get("/api/sellers/BusinessServices");
+        const res = await api.get("/api/sellers/Business Services");
         if (!res.data.success) {
           navigate("/buyer_login");
           return;

@@ -72,7 +72,7 @@ function Services() {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const res = await api.get("/api/sellers/RepairServices");
+        const res = await api.get("/api/sellers/Repair Services");
         if (!res.data.success) {
           navigate("/buyer_login");
           return;
