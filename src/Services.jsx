@@ -247,7 +247,7 @@ useEffect(() => {
                   <p className="seller-description">{seller.description}</p>
                   <div className="card-actions">
   {/* Visit Shop Link */}
-  <Link to={`/Asset_products/${seller._id}`}>
+  <Link to={`/Service_products/${seller._id}`}>
     <button className="visit-btn">Visit Shop</button>
   </Link>
 
