@@ -203,6 +203,7 @@ function View_Products() {
                  <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
                 <p><strong>Quantity:</strong> {product.quantity}</p>
+                <p><strong>{product.description}</strong></p>
 </div>
 <div className="View_Products_btns">
   <Link
