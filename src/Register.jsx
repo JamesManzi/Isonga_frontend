@@ -185,12 +185,13 @@ function Register() {
   <option value="RealEstate">Real Estate</option>
   <option value="Vehicles">Vehicles</option>
   <option value="Livestock">Livestock</option>
-  <option value="services">services</option>
   <option value="Hospitality">Hospitality</option>
   <option value="Electronics">Electronics</option>
   <option value="Furniture">Furniture</option>
   <option value="Construction">Construction</option>
   <option value="Food">Food</option>
+  <option value="BusinessServices">Business Services</option>
+  <option value="RepairServices">Repair Services</option>
                                     </select>
                                 </div>
                             </div>
