@@ -59,6 +59,7 @@ import AdminOrders from "./AdminOrders";
 import AdminBuyers from "./AdminBuyers";
 import AdminBookings from "./AdminBookings";
 import AdminProfile from "./AdminProfile";
+import Business_Services from "./Business_Services";
 function App(){
   return(
     <div>
@@ -124,6 +125,7 @@ function App(){
          <Route path="/AdminBuyers" element={<AdminBuyers/>}/>
          <Route path="/AdminBookings" element={<AdminBookings/>}/>
          <Route path="/AdminProfile/:id" element={<AdminProfile/>}/>
+         <Route path="/Business_Services" element={<Business_Services/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>
