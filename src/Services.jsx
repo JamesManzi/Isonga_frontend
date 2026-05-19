@@ -153,7 +153,6 @@ useEffect(() => {
         <div className="Buyer_Dashboard_nav">
           <nav>
             <ul>
-              <li><Link to="/services">Repair Services</Link></li>
               <li><Link to="/Hospitality">Hospitality</Link></li>
               <li><Link to="/Business_Services">Business Services</Link></li>
             </ul>
