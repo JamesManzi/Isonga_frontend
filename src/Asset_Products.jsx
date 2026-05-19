@@ -185,7 +185,7 @@ function Asset_Products() {
 
                 <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
-                <p>{product.description}</p>
+                <p><strong>{product.description}</strong></p>
 
                 <div className="Asset_Products_btns">
                   <Link
