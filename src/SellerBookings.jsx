@@ -91,7 +91,9 @@ const getBookings = async () => {
             <div style={gridStyle}>
               <section>
                 <h4 style={sectionTitle}>Customer Info</h4>
-                 <p><strong>Service:</strong> {booking.service?.title}</p>
+                <p>
+    <strong>Service:</strong> {booking.product?.name}
+  </p>
                 <p><strong>Name:</strong> {booking.name}</p>
                 <p><strong>Phone:</strong> {booking.phone}</p>
                 <p><strong>Message:</strong> {booking.message || "No message"}</p>

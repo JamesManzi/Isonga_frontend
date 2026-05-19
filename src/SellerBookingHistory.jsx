@@ -166,7 +166,9 @@ function SellerBookingHistory() {
               <div style={gridStyle}>
                 <section>
                   <h4 style={sectionTitle}>Customer</h4>
-                   <p><strong>Service:</strong> {booking.service?.title}</p>
+                   <p>
+    <strong>Service:</strong> {booking.product?.name}
+  </p>
                   <p style={textStyle}><strong>Name:</strong> {booking.name}</p>
                   <p style={textStyle}><strong>Phone:</strong> {booking.phone}</p>
                   <p style={textStyle}><strong>Message:</strong> {booking.message || "No message"}</p>
