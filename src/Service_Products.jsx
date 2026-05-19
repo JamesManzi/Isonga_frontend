@@ -164,7 +164,7 @@ function Service_Products() {
               <div className="service_card">
               <h1>{product.name}</h1>
               <p><strong>Price:</strong> {product.price} Rwf</p>
-              <p>{product.description}</p>
+              <p><strong>{product.description}</strong></p>
               </div>
               <div className="service_btns">
                 <Link
