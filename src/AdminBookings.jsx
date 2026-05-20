@@ -42,23 +42,7 @@ function AdminBookings() {
     }
   };
 
-  const updateBookingStatus = async (id, status) => {
-    try {
-      setActionLoading(id);
-
-      const res = await api.put(`/api/admin/booking/status/${id}`, {
-        status,
-      });
-
-      if (res.data.success) {
-        fetchBookings();
-      }
-    } catch (err) {
-      alert(err.response?.data?.message || "Update failed");
-    } finally {
-      setActionLoading(null);
-    }
-  };
+ 
 
   if (loading) {
     return (
@@ -130,23 +114,7 @@ function AdminBookings() {
               )}
             </div>
 
-            <div style={btnRow}>
-              <button
-                onClick={() => updateBookingStatus(b._id, "Accepted")}
-                disabled={actionLoading === b._id}
-                style={acceptBtn}
-              >
-                {actionLoading === b._id ? "Updating..." : "Approve"}
-              </button>
-
-              <button
-                onClick={() => updateBookingStatus(b._id, "Cancelled")}
-                disabled={actionLoading === b._id}
-                style={cancelBtn}
-              >
-                Cancel
-              </button>
-            </div>
+            
           </div>
         ))
       )}
