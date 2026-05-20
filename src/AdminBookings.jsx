@@ -70,9 +70,9 @@ function AdminBookings() {
 
   return (
     <div style={containerStyle}>
-      <Link to="/admin/dashboard" style={backStyle}>
+      <button onClick={()=>navigate(-1)}>
         <FontAwesomeIcon icon={faArrowLeft} /> Back
-      </Link>
+      </button>
 
       <div style={headerStyle}>
         <h1>All Bookings</h1>

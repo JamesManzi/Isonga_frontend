@@ -516,7 +516,7 @@ function AdminManageSellers() {
               navigate(-1);
             }}
           >
-            Logout
+            Back
           </button>
         </div>
       </div>
