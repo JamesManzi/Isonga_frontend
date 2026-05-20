@@ -78,11 +78,10 @@ const handleUpdate = async(e)=>{
 
 e.preventDefault();
 
-if(!(password||name||confirmPassword)){
-  setMessage("All Fields Required");
-  return;
+if(!name){
+  setMessage("Name Required!");
+  return
 }
-
 if(password !== confirmPassword){
 setMessage("Passwords do not match");
 return;
