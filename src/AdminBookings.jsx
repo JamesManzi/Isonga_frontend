@@ -32,7 +32,7 @@ function AdminBookings() {
       setLoading(true);
       setError(null);
 
-      const res = await api.get("/api/admin/bookings");
+      const res = await api.get("/api/bookings/:id");
 
       setBookings(res.data.bookings || []);
     } catch (err) {
