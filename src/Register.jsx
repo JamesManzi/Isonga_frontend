@@ -59,19 +59,19 @@ function Register() {
       "Electronics",
       "Furniture",
       "Food",
-      "Livestock",
+      "Construction",
     ],
 
     Service: [
       "Hospitality",
       "Business Services",
       "Repair Services",
-      "Construction",
     ],
 
     Asset: [
       "RealEstate",
       "Vehicles",
+      "Livestock",
     ],
   };
 
