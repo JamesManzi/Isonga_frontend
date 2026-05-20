@@ -30,10 +30,10 @@ function AdminOrders() {
     try {
       setLoading(true);
 
-      const res = await api.get("/api/admin/orders");
+      const res = await api.get("/api/admin/order");
 
       if (res.data.success) {
-        setOrders(res.data.orders || []);
+        setOrders(res.data.order || []);
       }
     } catch (err) {
       console.error("Error fetching orders:", err);
