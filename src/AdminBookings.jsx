@@ -102,7 +102,7 @@ function AdminBookings() {
 
             <div style={paymentBox}>
               <p><b>Payment:</b> {b.paymentMethod}</p>
-              <p><b>Total:</b> {b.amount} Rwf</p>
+              <p><b>Total:</b> {b.totalPrice} Rwf</p>
 
               {b.paymentProof && (
                 <button
@@ -113,8 +113,6 @@ function AdminBookings() {
                 </button>
               )}
             </div>
-
-            
           </div>
         ))
       )}
