@@ -78,10 +78,9 @@ function AdminOrders() {
 
   return (
     <div style={containerStyle}>
-      <Link to="/admin/dashboard" style={backStyle}>
+      <button onClick={navigate(-1)} style={backStyle}>
         <FontAwesomeIcon icon={faArrowLeft} /> Back
-      </Link>
-
+      </button>
       <div style={headerStyle}>
         <h1 style={{ margin: 0 }}>All Seller Orders</h1>
         <span style={countBadge}>
