@@ -17,7 +17,6 @@ function AdminBookings() {
   const [selectedImg, setSelectedImg] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
   const [error, setError] = useState(null);
-  const [seller,setSeller]=useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,7 +34,6 @@ function AdminBookings() {
       const res = await api.get("/api/admin/booking");
 
       setBookings(res.data.bookings || []);
-      setSeller(res.data.seller);
     } catch (err) {
       console.error("Error fetching bookings:", err);
       setError("Failed to load bookings. Check backend route.");
@@ -112,7 +110,7 @@ function AdminBookings() {
 
               <div style={box}>
                 <h4>Booking</h4>
-                <p><b>Service:</b> {b.name}</p>
+                <p><b>Service:</b> {b.product.name}</p>
                 <p><b>Provider:</b> {b.seller.name}</p>
                 <p><b>Time:</b> {b.time}</p>
               </div>
