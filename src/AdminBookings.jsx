@@ -110,8 +110,8 @@ function AdminBookings() {
 
               <div style={box}>
                 <h4>Booking</h4>
-                <p><b>Service:</b> {b.product.name}</p>
-                <p><b>Provider:</b> {b.seller.name}</p>
+                <p><b>Service:</b> {b.product?.name||"No Service"}</p>
+                <p><b>Provider:</b> {b.seller?.name||"No Provider"}</p>
                 <p><b>Time:</b> {b.time}</p>
               </div>
             </div>
