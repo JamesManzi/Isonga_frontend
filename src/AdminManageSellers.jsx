@@ -513,11 +513,7 @@ function AdminManageSellers() {
         <div className="Buyer_Dashboard_Logout">
           <button
             onClick={() => {
-              localStorage.removeItem(
-                "token"
-              );
-
-              navigate("/login");
+              navigate(-1);
             }}
           >
             Logout
