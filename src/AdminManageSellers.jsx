@@ -488,7 +488,7 @@ function AdminManageSellers() {
         <div className="Buyer_Dashboard_nav">
           <button
             onClick={() =>
-              navigate("/admin/dashboard")
+              navigate(-1)
             }
             style={{
               background: "transparent",
