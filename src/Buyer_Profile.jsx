@@ -62,7 +62,8 @@ fetchBuyer();
 const handleImageChange = (e)=>{
 
 const file = e.target.files[0];
-if(file.size>5*1024*1024){
+const Max_Size=5*1024*1024;
+if(file.size>Max_Size){
   setMessage("Profile is Large Max(5MB");
   return
 }
@@ -213,7 +214,6 @@ type="text"
 placeholder="Enter Name"
 value={name}
 onChange={(e)=>setName(e.target.value)}
-required
 />
 
 </div>
