@@ -82,15 +82,18 @@ if(!name){
   setMessage("Name Required!");
   return
 }
-if(password !== confirmPassword){
-setMessage("Passwords do not match");
-return;
+if (password || confirmPassword) {
+  if (password !== confirmPassword) {
+    setMessage("Passwords do not match");
+    return;
+  }
+
+  if (!rule.test(password)) {
+    setMessage("Please Use Strong Password");
+    return;
+  }
 }
 
-if(!rule.test(password)){
-  setMessage("Please Use Strong Password");
-  return;
-}
 setLoading(true)
 try{
 
