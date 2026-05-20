@@ -78,7 +78,7 @@ function AdminOrders() {
 
   return (
     <div style={containerStyle}>
-      <button onClick={navigate(-1)} style={backStyle}>
+      <button onClick={()=>navigate(-1)} style={backStyle}>
         <FontAwesomeIcon icon={faArrowLeft} /> Back
       </button>
       <div style={headerStyle}>
