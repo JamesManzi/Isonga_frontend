@@ -223,7 +223,9 @@ function Booking() {
           name="paymentMethod"
           value={form.paymentMethod}
           onChange={handleChange}
+          required
         >
+          <option value="">---Select Method----</option>
           <option value="cash">Cash on Service</option>
           <option value="mobile">Mobile Money</option>
         </select>

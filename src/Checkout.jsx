@@ -220,7 +220,8 @@ function Checkout() {
         </select>
 
         <h3>Payment Method</h3>
-        <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
+        <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange} required>
+           <option value="">---Select Method----</option>
           <option value="cash">Cash</option>
           <option value="mobile">Mobile Money</option>
         </select>
