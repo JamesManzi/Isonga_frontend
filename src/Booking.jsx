@@ -8,8 +8,8 @@ function Booking() {
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
-  const [sellerTotal, setSellerTotal] = useState(0);
   const [seller, setSeller] = useState(null);
+  const [sellerTotal, setSellerTotal] = useState(0);
 
   const [message, setMessage] = useState(null);
 
@@ -23,6 +23,7 @@ function Booking() {
   });
 
   const [loading, setLoading] = useState(false);
+
   const [paymentImage, setPaymentImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
@@ -47,18 +48,20 @@ function Booking() {
     fetchProduct();
   }, [productId]);
 
-  // ================= INPUT CHANGE =================
+  // ================= HANDLE INPUT =================
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setForm((prev) => ({
       ...prev,
       [name]: value
     }));
   };
 
-  // ================= FILE UPLOAD =================
+  // ================= FILE CHANGE =================
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+
     if (file) {
       setPaymentImage(file);
       setPreview(URL.createObjectURL(file));
@@ -68,15 +71,23 @@ function Booking() {
   // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setMessage(null);
 
     if (!form.name || !form.phone || !form.date || !form.time) {
-      setMessage({ text: "Please fill all required fields", type: "error" });
+      setMessage({
+        text: "Please fill all required fields",
+        type: "error"
+      });
       return;
     }
 
-    if (form.paymentMethod !== "cash" && !paymentImage) {
-      setMessage({ text: "Please upload payment proof", type: "error" });
+    // require screenshot for mobile money
+    if (form.paymentMethod === "mobile" && !paymentImage) {
+      setMessage({
+        text: "Please upload payment screenshot",
+        type: "error"
+      });
       return;
     }
 
@@ -100,16 +111,30 @@ function Booking() {
       const res = await api.post("/api/bookService", formData);
 
       if (res.data.success) {
-        setMessage({ text: "Booking Successful!", type: "success" });
+        setMessage({
+          text: "Booking Successful!",
+          type: "success"
+        });
 
         setTimeout(() => {
           navigate("/buyer_dashboard");
         }, 1500);
+
       } else {
-        setMessage({ text: "Booking Failed", type: "error" });
+        setMessage({
+          text: "Booking Failed",
+          type: "error"
+        });
       }
+
     } catch (err) {
-      setMessage({ text: "Server Error. Try again later.", type: "error" });
+      console.log(err);
+
+      setMessage({
+        text: "Server Error. Try again later.",
+        type: "error"
+      });
+
     } finally {
       setLoading(false);
     }
@@ -124,30 +149,18 @@ function Booking() {
         <h2>Book Service</h2>
 
         <div className="booking-actions">
-          <button onClick={() => navigate(-1)} className="btn-back">
+          <button
+            onClick={() => navigate(-1)}
+            className="btn-back"
+          >
             Back
           </button>
+
           <Link to="/login" className="btn-logout">
             Logout
           </Link>
         </div>
       </div>
-
-      {/* SELLER INFO + AMOUNT */}
-      {seller && (
-        <div className="seller-info-box">
-          <h3>Seller: {seller.name}</h3>
-          <p><strong>Phone:</strong> {seller.phone}</p>
-
-          <p><strong>Amount to Pay:</strong> {sellerTotal} Rwf</p>
-
-          {form.paymentMethod !== "cash" && (
-            <p>
-              Dial: *182*1*1*{seller.phone}*{sellerTotal}#
-            </p>
-          )}
-        </div>
-      )}
 
       {/* ERROR */}
       {message && message.type === "error" && (
@@ -163,6 +176,7 @@ function Booking() {
           name="name"
           value={form.name}
           onChange={handleChange}
+          placeholder="Enter your name"
           required
         />
 
@@ -173,6 +187,7 @@ function Booking() {
           pattern="07\d{8}"
           value={form.phone}
           onChange={handleChange}
+          placeholder="07XXXXXXXX"
           required
         />
 
@@ -199,9 +214,35 @@ function Booking() {
           name="message"
           value={form.message}
           onChange={handleChange}
+          placeholder="Additional details..."
         />
 
+        {/* PAYMENT INFO ABOVE METHOD */}
+        {seller && form.paymentMethod === "mobile" && (
+          <div className="seller-card">
+
+            <h3>Payment Instructions</h3>
+
+            <p>
+              <strong>Seller:</strong> {seller.name}
+            </p>
+
+            <p>
+              <strong>Amount:</strong> {sellerTotal} Rwf
+            </p>
+
+            <p>
+              Dial:
+              {" "}
+              *182*1*1*{seller.phone}*{sellerTotal}#
+            </p>
+
+          </div>
+        )}
+
+        {/* PAYMENT METHOD */}
         <label>Payment Method</label>
+
         <select
           name="paymentMethod"
           value={form.paymentMethod}
@@ -211,9 +252,10 @@ function Booking() {
           <option value="mobile">Mobile Money</option>
         </select>
 
-        {/* PAYMENT PROOF */}
-        {form.paymentMethod !== "cash" && (
+        {/* PAYMENT SCREENSHOT */}
+        {form.paymentMethod === "mobile" && (
           <div className="payment-upload">
+
             <label>Upload Payment Screenshot</label>
 
             <input
@@ -224,21 +266,34 @@ function Booking() {
 
             {preview && (
               <div className="preview">
-                <img src={preview} alt="preview" width="120" />
+                <img
+                  src={preview}
+                  alt="preview"
+                  width="140"
+                />
               </div>
             )}
+
           </div>
         )}
 
-        <button type="submit" disabled={loading} className="btn-submit">
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-submit"
+        >
           {loading ? "Sending..." : "Send Booking"}
         </button>
+
       </form>
 
-      {/* SUCCESS / ERROR ALERT */}
+      {/* SUCCESS / ERROR */}
       {message && (
         <div className={`alert ${message.type}`}>
-          <span>{message.type === "success" ? "✓" : "⚠"}</span>
+          <span>
+            {message.type === "success" ? "✓" : "⚠"}
+          </span>
+
           <span>{message.text}</span>
         </div>
       )}
