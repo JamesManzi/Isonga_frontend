@@ -148,7 +148,7 @@ if (loading) {
       {/* Navbar */}
       <div className="Home_navbar">
         <div className="Home_brand">
-          <img src="/my_logo1.png" alt="logo" />
+          <img src="/my_logo1.png" alt="logo" style={{fontSize:"20px"}} />
           <div className="Home_heads">
             <h1>Isonga</h1>
             <h2>Market</h2>
