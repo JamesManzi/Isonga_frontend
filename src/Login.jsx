@@ -113,7 +113,12 @@ function Login() {
         <div className="login-hero-side">
           <div className="hero-overlay"></div>
           <div className="hero-content">
-            <img src="/logo.png" alt="Logo" className="hero-logo" />
+            <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  className="hero-logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
             <h1>Isonga Market</h1>
             <p>Empowering Rwandan entrepreneurs to reach more customers, faster.</p>
             <p>Get Connected With Customers Nationwide Online.</p>
