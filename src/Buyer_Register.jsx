@@ -223,7 +223,7 @@ function Buyer_Register() {
 
     <label htmlFor="agree">
         I agree to the{" "}
-        <Link to="/privacy_rules">
+        <Link to="/PrivacyRules">
             Privacy Policy & Marketplace Rules
         </Link>
     </label>
