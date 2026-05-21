@@ -19,7 +19,7 @@ function Booking() {
     date: "",
     time: "",
     message: "",
-    paymentMethod: "cash"
+    paymentMethod: ""
   });
 
   const [loading, setLoading] = useState(false);

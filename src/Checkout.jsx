@@ -214,6 +214,7 @@ function Checkout() {
 
         <h3>Delivery Method</h3>
         <select name="deliveryMethod" value={form.deliveryMethod} onChange={handleChange}>
+          <option value="">---Select Method----</option>
           <option value="standard">Standard</option>
           <option value="express">Express</option>
           <option value="pickup">Pickup</option>
