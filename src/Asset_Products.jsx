@@ -125,7 +125,11 @@ function Asset_Products() {
       {/* Navbar */}
       <div className="Asset_Products_navbar">
         <div className="Asset_Products_logo">
-          <img src="/logo.png" alt="logo" />
+           <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
           <div className="Asset_Products_heads"><h1>Isonga</h1><h2>Market</h2></div>
         </div>
         <div className="Asset_Products_back" onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>
@@ -243,7 +247,11 @@ function Asset_Products() {
         <div className="Asset_Products-Footer_Container">
           <div className="Asset_Products-Footer_Section">
             <div className="Asset_Products-Footer_Logo">
-              <img src="/logo.png" alt="Isonga Logo"/>
+               <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
               <h3>Isonga Market</h3>
             </div>
             <p>The leading digital marketplace in Rwanda.</p>
