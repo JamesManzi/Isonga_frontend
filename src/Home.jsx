@@ -156,7 +156,7 @@ if (loading) {
         </div>
         <nav>
           <ul>
-            <li><Link to="#">Home</Link></li>
+            <li><Link to="/PrivacyRules">Privacy</Link></li>
             <li><Link to="/Steps">How It Works</Link></li>
             <li><Link to="/Help">Help</Link></li>
           </ul>
