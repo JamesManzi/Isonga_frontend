@@ -82,7 +82,6 @@ function Booking() {
       return;
     }
 
-    // require screenshot for mobile money
     if (form.paymentMethod === "mobile" && !paymentImage) {
       setMessage({
         text: "Please upload payment screenshot",
@@ -217,29 +216,6 @@ function Booking() {
           placeholder="Additional details..."
         />
 
-        {/* PAYMENT INFO ABOVE METHOD */}
-        {seller && form.paymentMethod === "mobile" && (
-          <div className="seller-card">
-
-            <h3>Payment Instructions</h3>
-
-            <p>
-              <strong>Seller:</strong> {seller.name}
-            </p>
-
-            <p>
-              <strong>Amount:</strong> {sellerTotal} Rwf
-            </p>
-
-            <p>
-              Dial:
-              {" "}
-              *182*1*1*{seller.phone}*{sellerTotal}#
-            </p>
-
-          </div>
-        )}
-
         {/* PAYMENT METHOD */}
         <label>Payment Method</label>
 
@@ -252,27 +228,52 @@ function Booking() {
           <option value="mobile">Mobile Money</option>
         </select>
 
-        {/* PAYMENT SCREENSHOT */}
-        {form.paymentMethod === "mobile" && (
-          <div className="payment-upload">
+        {/* MOBILE MONEY SECTION */}
+        {seller && form.paymentMethod === "mobile" && (
+          <div className="seller-card">
 
-            <label>Upload Payment Screenshot</label>
+            <h3>Payment Instructions</h3>
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
+            <p>
+              <strong>Seller:</strong> {seller.name}
+            </p>
 
-            {preview && (
-              <div className="preview">
-                <img
-                  src={preview}
-                  alt="preview"
-                  width="140"
-                />
-              </div>
-            )}
+            <p>
+              <strong>Phone:</strong> {seller.phone}
+            </p>
+
+            <p>
+              <strong>Amount:</strong> {sellerTotal} Rwf
+            </p>
+
+            <p>
+              Dial:
+              {" "}
+              *182*1*1*{seller.phone}*{sellerTotal}#
+            </p>
+
+            {/* UPLOAD SCREENSHOT */}
+            <div className="payment-upload">
+
+              <label>Upload Payment Screenshot</label>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+
+              {preview && (
+                <div className="preview">
+                  <img
+                    src={preview}
+                    alt="preview"
+                    width="140"
+                  />
+                </div>
+              )}
+
+            </div>
 
           </div>
         )}
