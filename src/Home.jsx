@@ -151,7 +151,7 @@ if (loading) {
           <img 
   src="/my_logo1.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "80px", height: "auto" }} 
+  style={{ width: "100px", height: "auto" }} 
 />
           <div className="Home_heads">
             <h1>Isonga</h1>
