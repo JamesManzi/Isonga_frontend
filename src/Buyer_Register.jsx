@@ -36,13 +36,6 @@ function Buyer_Register() {
     return;
 }
 
-if (acceptedPolicies !== "true") {
-  return res.status(400).json({
-    success: false,
-    message: "Please accept Privacy Policy & Rules"
-  });
-}
-
         if (!profile) {
             setMessage({ text: "Please upload a profile picture", type: "error" });
             return;
