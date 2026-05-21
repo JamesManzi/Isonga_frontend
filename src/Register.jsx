@@ -21,7 +21,7 @@ import "./Register.css";
 function Register() {
   const profileInputRef = useRef(null);
   const locationImagesRef = useRef(null);
-
+ const [agreed, setAgreed] = useState(false);
   const navigate = useNavigate();
 
   const [sellerType, setSellerType] = useState("");
@@ -112,6 +112,13 @@ function Register() {
       });
     }
 
+    if (!agreed) {
+  return setMessage({
+    text: "Please accept Privacy Policy & Marketplace Rules",
+    type: "error",
+  });
+}
+
     if (files.length < 2) {
       return setMessage({
         text: "Upload at least 2 store photos",
@@ -162,6 +169,7 @@ function Register() {
     formData.append("description", description.trim());
     formData.append("category", category.trim());
     formData.append("sellerType", sellerType.trim());
+    formData.append("acceptedPolicies", agreed);
 
     formData.append("profile", profile);
 
@@ -618,6 +626,25 @@ function Register() {
                   </div>
                 </div>
               </div>
+
+              <div className="modern-checkbox-wrapper">
+
+  <input
+    type="checkbox"
+    id="sellerAgree"
+    checked={agreed}
+    onChange={(e) => setAgreed(e.target.checked)}
+    required
+  />
+
+  <label htmlFor="sellerAgree">
+    I agree to the{" "}
+    <Link to="/PrivacyRules">
+      Privacy Policy & Marketplace Rules
+    </Link>
+  </label>
+
+</div>
 
               {/* SUBMIT */}
               <button

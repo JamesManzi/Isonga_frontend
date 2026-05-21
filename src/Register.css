@@ -356,3 +356,38 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+
+
+.modern-checkbox-wrapper{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  margin-top:10px;
+  margin-bottom:22px;
+  font-size:14px;
+  color:#475569;
+}
+
+.modern-checkbox-wrapper input{
+  width:18px;
+  height:18px;
+  margin-top:2px;
+  cursor:pointer;
+  accent-color:#2563eb;
+  flex-shrink:0;
+}
+
+.modern-checkbox-wrapper label{
+  line-height:1.6;
+}
+
+.modern-checkbox-wrapper a{
+  color:#2563eb;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.modern-checkbox-wrapper a:hover{
+  text-decoration:underline;
+}
