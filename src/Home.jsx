@@ -345,8 +345,7 @@ if (loading) {
             </div>
             <div>
               <h4>Company</h4>
-              <Link to="#">About</Link>
-              <Link to="#">Privacy Policy</Link>
+              <Link to="/PrivacyRules">Privacy Policy</Link>
             </div>
           </div>
           <div className="footer-contact">
