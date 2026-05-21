@@ -316,3 +316,37 @@ body {
   cursor: pointer;
   color: #9ca3af;
 }
+
+
+
+
+.buyer_reg_checkbox{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin:20px 0;
+    font-size:14px;
+    color:#475569;
+}
+
+.buyer_reg_checkbox input{
+    width:18px;
+    height:18px;
+    margin-top:2px;
+    cursor:pointer;
+    accent-color:#2563eb;
+}
+
+.buyer_reg_checkbox label{
+    line-height:1.6;
+}
+
+.buyer_reg_checkbox a{
+    color:#2563eb;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.buyer_reg_checkbox a:hover{
+    text-decoration:underline;
+}

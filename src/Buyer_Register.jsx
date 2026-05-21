@@ -17,6 +17,7 @@ function Buyer_Register() {
     const [repeat_pass, setRepeat_Pass] = useState("");
     const [message, setMessage] = useState(null);
     const [showPassword,setShowPassword]=useState(false);
+    const [agreed, setAgreed] = useState(false);
     const navigate = useNavigate();
     const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,13 +28,21 @@ function Buyer_Register() {
         e.preventDefault();
         setMessage(null);
 
+        if (!agreed) {
+    setMessage({
+        text: "Please accept Privacy Policy & Rules",
+        type: "error"
+    });
+    return;
+}
+
         if (!profile) {
             setMessage({ text: "Please upload a profile picture", type: "error" });
             return;
         }
 
         if (!name || !email || !password || !repeat_pass) {
-            setMessage({text:"All Fields Required",type:error});
+            setMessage({text:"All Fields Required",type:"error"});
   return;
 }
         if (!rule.test(password)) {
@@ -41,7 +50,7 @@ function Buyer_Register() {
             return;
         }
         if(!emailRegex.test(email)){
-            setMessage({text:"Invalid Email Try Again",type:error});
+            setMessage({text:"Invalid Email Try Again",type:"error"});
             return;
         }
         if (password !== repeat_pass) {
@@ -49,7 +58,7 @@ function Buyer_Register() {
             return;
         }
         if(password.length<10){
-            setMessage({text:"Minimum Password 10 Characters",type:error});
+            setMessage({text:"Minimum Password 10 Characters",type:"error"});
             return;
         }
         const formData = new FormData();
@@ -204,6 +213,21 @@ function Buyer_Register() {
                                 </div>
                             </div>
                         </div>
+                        <div className="buyer_reg_checkbox">
+    <input
+        type="checkbox"
+        id="agree"
+        checked={agreed}
+        onChange={(e) => setAgreed(e.target.checked)}
+    />
+
+    <label htmlFor="agree">
+        I agree to the{" "}
+        <Link to="/privacy_rules">
+            Privacy Policy & Marketplace Rules
+        </Link>
+    </label>
+</div>
 
                         <button type="submit" className="buyer_reg_submit_btn" disabled={loading}>
                             {loading ? "Creating Account..." : (
