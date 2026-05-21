@@ -99,7 +99,12 @@ function Buyer_Register() {
                 {/* Left Side: Hero Info */}
                 <div className="buyer_reg_info_side">
                     <div className="buyer_reg_info_content">
-                        <img src="/logo.png" alt="Logo" className="buyer_reg_logo_img" />
+                         <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  className="buyer_reg_logo_img"
+  style={{ width: "100px", height: "auto" }} 
+/>
                         <h1>Isonga Market</h1>
                         <h1>Start buyer Journey</h1>
                         <p>Join Isonga Market and get access
