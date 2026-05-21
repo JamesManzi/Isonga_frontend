@@ -332,7 +332,11 @@ if (loading) {
 
         <div className="footer-main">
           <div className="footer-brand">
-            <img src="/logo.png" alt="logo" />
+             <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
             <h3>Isonga Market</h3>
             <p>Connecting buyers and sellers across Rwanda easily and securely.</p>
           </div>
