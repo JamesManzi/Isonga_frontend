@@ -22,8 +22,8 @@ function Checkout() {
     name: "",
     phone: "",
     address: "",
-    deliveryMethod: "standard",
-    paymentMethod: "cash",
+    deliveryMethod: "",
+    paymentMethod: "",
     notes: "",
     deliveryDate: ""
   });
@@ -227,7 +227,7 @@ function Checkout() {
         </select>
 
         {/*  MULTI SELLER PAYMENT */}
-        {form.paymentMethod !== "cash" && (
+        {form.paymentMethod === "mobile" && (
           <div className="payment-upload">
             {sellers.map((s) => (
               <div key={s._id} className="seller-card">
