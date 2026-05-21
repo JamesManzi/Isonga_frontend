@@ -44,7 +44,11 @@ function HelpCenter() {
       {/* Clean Navbar: Brand + Login + 2 Signups */}
       <nav className="Landing_Navbar">
         <div className="Navbar_Brand">
-          <img src="/logo.png" alt="Isonga Logo" />
+          <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
           <div className="Brand_Text">
             <h1>Isonga</h1>
             <span>Market</span>
@@ -98,7 +102,11 @@ function HelpCenter() {
       <footer className="Landing_Footer">
         <div className="Footer_Content">
           <div className="Footer_Info">
-            <img src="/logo.png" alt="Logo" />
+            <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
             <p>Connecting Rwanda's buyers and sellers safely.</p>
           </div>
           <div className="Footer_Payments">

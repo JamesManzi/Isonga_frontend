@@ -146,7 +146,13 @@ if (!seller) {
   return (
     <div className="View_Profile">
       <div className="Seller_Profile_navbar">
-        <div className="Seller_profile_logos"><img src="/logo.png" alt="Logo" /></div>
+        <div className="Seller_profile_logos">
+          <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
+        </div>
         <div className="seller_profile_heads"><h1>Isonga</h1><h2>Market</h2></div>
         <div className="seller_profile_logout"><button onClick={()=>navigate(-1)}>
           <FontAwesomeIcon icon={faArrowRight} />

@@ -137,7 +137,11 @@ useEffect(() => {
       {/* Navbar */}
       <div className="Buyer_Dashboard_navbar">
         <div className="Buyer_Dashboard_logos">
-          <img src="/logo.png" alt="Logo" />
+          <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
         </div>
         <div className="Buyer_Dashboard_heads">
           <h1>Isonga</h1>
@@ -318,7 +322,11 @@ useEffect(() => {
         <div className="Footer_Container">
           <div className="Footer_Section">
             <div className="Footer_Logo">
-              <img src="/logo.png" alt="Isonga Logo" />
+              <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
               <h3>Isonga Market</h3>
             </div>
             <p>The leading digital marketplace in Rwanda. Connecting local sellers with happy buyers.</p>

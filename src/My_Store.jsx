@@ -256,7 +256,11 @@ function My_Store() {
       {/* Navbar */}
       <div className="My_Store_navbar">
         <div className="My_Store_logo">
-          <img src="/logo.png" alt="logo" />
+          <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
           <div className="My_Store_heads">
             <h1>Isonga</h1>
             <h2>Market</h2>

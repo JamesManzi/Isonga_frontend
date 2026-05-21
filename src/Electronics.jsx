@@ -135,7 +135,11 @@ useEffect(() => {
       {/* Navbar */}
       <div className="Buyer_Dashboard_navbar">
         <div className="Buyer_Dashboard_logos">
-          <img src="/logo.png" alt="Logo" />
+          <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
         </div>
         <div className="Buyer_Dashboard_heads">
           <h1>Isonga</h1>
@@ -290,7 +294,13 @@ useEffect(() => {
      <footer className="Buyer_Footer">
              <div className="Footer_Container">
                <div className="Footer_Section">
-                 <div className="Footer_Logo"><img src="/logo.png" alt="Isonga Logo" /><h3>Isonga Market</h3></div>
+                 <div className="Footer_Logo">
+                  <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  style={{ width: "100px", height: "auto" }} 
+/>
+                  <h3>Isonga Market</h3></div>
                  <p>© {new Date().getFullYear()} Isonga Market • Built for growth 🚀</p>
                </div>
                {/* Footer content remains same */}
