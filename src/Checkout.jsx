@@ -13,7 +13,7 @@ function Checkout() {
   // payments per seller
   const [sellerPayments, setSellerPayments] = useState({});
 
-  // ✅ NEW: totals per seller
+  
   const [sellerTotals, setSellerTotals] = useState({});
 
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ function Checkout() {
     fetchCart();
   }, []);
 
-  // ✅ Calculate totals per seller
+  
   const calculateSellerTotals = (items = []) => {
   const totals = {};
 
@@ -61,7 +61,7 @@ function Checkout() {
       setCart(cartData);
       setSellers(res.data.sellers);
 
-      // ✅ use cartData, NOT cart
+      
       const totals = calculateSellerTotals(cartData.items);
       setSellerTotals(totals);
     }

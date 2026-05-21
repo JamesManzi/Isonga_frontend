@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "./api";
 import "./Booking.css";
@@ -6,8 +6,13 @@ import "./Booking.css";
 function Booking() {
   const { productId } = useParams();
   const navigate = useNavigate();
-  
-  const [message, setMessage] = useState(null); 
+
+  const [product, setProduct] = useState(null);
+  const [sellerTotal, setSellerTotal] = useState(0);
+  const [seller, setSeller] = useState(null);
+
+  const [message, setMessage] = useState(null);
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -21,7 +26,28 @@ function Booking() {
   const [paymentImage, setPaymentImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  //  ADDED: Function to handle text input changes
+  // ================= FETCH PRODUCT =================
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await api.get(`/api/product/${productId}`);
+
+        if (res.data.success) {
+          const prod = res.data.product;
+
+          setProduct(prod);
+          setSeller(prod.seller);
+          setSellerTotal(prod.price);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
+
+  // ================= INPUT CHANGE =================
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -30,18 +56,19 @@ function Booking() {
     }));
   };
 
-  //  ADDED: Function to handle file uploads and image preview
+  // ================= FILE UPLOAD =================
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setPaymentImage(file);
-      setPreview(URL.createObjectURL(file)); // Creates a temporary URL for the preview <img>
+      setPreview(URL.createObjectURL(file));
     }
   };
 
+  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage(null); 
+    setMessage(null);
 
     if (!form.name || !form.phone || !form.date || !form.time) {
       setMessage({ text: "Please fill all required fields", type: "error" });
@@ -57,6 +84,7 @@ function Booking() {
 
     try {
       const formData = new FormData();
+
       formData.append("productId", productId);
       formData.append("name", form.name);
       formData.append("phone", form.phone);
@@ -64,16 +92,16 @@ function Booking() {
       formData.append("time", form.time);
       formData.append("message", form.message);
       formData.append("paymentMethod", form.paymentMethod);
-      
-     if (paymentImage) {
-  // CHANGE "paymentImage" TO "paymentProof"
-  formData.append("paymentProof", paymentImage); 
-}
 
-     
-      const res = await api.post("/api/bookService",formData);
+      if (paymentImage) {
+        formData.append("paymentProof", paymentImage);
+      }
+
+      const res = await api.post("/api/bookService", formData);
+
       if (res.data.success) {
         setMessage({ text: "Booking Successful!", type: "success" });
+
         setTimeout(() => {
           navigate("/buyer_dashboard");
         }, 1500);
@@ -87,29 +115,53 @@ function Booking() {
     }
   };
 
+  // ================= UI =================
   return (
     <div className="booking-container">
+
+      {/* HEADER */}
       <div className="booking-header">
         <h2>Book Service</h2>
+
         <div className="booking-actions">
-          {/*  Updated to return to previous page */}
-          <button onClick={() => navigate(-1)} className="btn-back">Back</button>
-          <Link to="/login" className="btn-logout">Logout</Link>
+          <button onClick={() => navigate(-1)} className="btn-back">
+            Back
+          </button>
+          <Link to="/login" className="btn-logout">
+            Logout
+          </Link>
         </div>
       </div>
 
-      {/*  Fixed: Changed 'error' to 'message' to match your state */}
+      {/* SELLER INFO + AMOUNT */}
+      {seller && (
+        <div className="seller-info-box">
+          <h3>Seller: {seller.name}</h3>
+          <p><strong>Phone:</strong> {seller.phone}</p>
+
+          <p><strong>Amount to Pay:</strong> {sellerTotal} Rwf</p>
+
+          {form.paymentMethod !== "cash" && (
+            <p>
+              Dial: *182*1*1*{seller.phone}*{sellerTotal}#
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* ERROR */}
       {message && message.type === "error" && (
         <p className="booking-error">{message.text}</p>
       )}
 
+      {/* FORM */}
       <form onSubmit={handleSubmit} className="booking-form">
+
         <label>Your Name</label>
         <input
           type="text"
           name="name"
           value={form.name}
-          placeholder="Enter Your Name"
           onChange={handleChange}
           required
         />
@@ -118,7 +170,6 @@ function Booking() {
         <input
           type="tel"
           name="phone"
-          placeholder="07XXXXXXXX"
           pattern="07\d{8}"
           value={form.phone}
           onChange={handleChange}
@@ -148,7 +199,6 @@ function Booking() {
           name="message"
           value={form.message}
           onChange={handleChange}
-          placeholder="Additional Details....."
         />
 
         <label>Payment Method</label>
@@ -159,12 +209,13 @@ function Booking() {
         >
           <option value="cash">Cash on Service</option>
           <option value="mobile">Mobile Money</option>
-          <option value="card">Card</option>
         </select>
 
+        {/* PAYMENT PROOF */}
         {form.paymentMethod !== "cash" && (
           <div className="payment-upload">
             <label>Upload Payment Screenshot</label>
+
             <input
               type="file"
               accept="image/*"
@@ -173,7 +224,6 @@ function Booking() {
 
             {preview && (
               <div className="preview">
-                <p>Preview:</p>
                 <img src={preview} alt="preview" width="120" />
               </div>
             )}
@@ -185,14 +235,14 @@ function Booking() {
         </button>
       </form>
 
+      {/* SUCCESS / ERROR ALERT */}
       {message && (
         <div className={`alert ${message.type}`}>
-          <span className="alert-icon">
-            {message.type === "success" ? "✓" : "⚠"}
-          </span>
+          <span>{message.type === "success" ? "✓" : "⚠"}</span>
           <span>{message.text}</span>
         </div>
       )}
+
     </div>
   );
 }
