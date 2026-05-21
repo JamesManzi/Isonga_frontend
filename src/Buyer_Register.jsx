@@ -219,6 +219,7 @@ function Buyer_Register() {
         id="agree"
         checked={agreed}
         onChange={(e) => setAgreed(e.target.checked)}
+        required
     />
 
     <label htmlFor="agree">
