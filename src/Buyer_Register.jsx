@@ -30,10 +30,17 @@ function Buyer_Register() {
 
         if (!agreed) {
     setMessage({
-        text: "Please accept Privacy Policy & Rules",
+        text: "Privacy Policy & Rules Required",
         type: "error"
     });
     return;
+}
+
+if (acceptedPolicies !== "true") {
+  return res.status(400).json({
+    success: false,
+    message: "Please accept Privacy Policy & Rules"
+  });
 }
 
         if (!profile) {
@@ -67,6 +74,7 @@ function Buyer_Register() {
         formData.append("password", password.trim());
         formData.append("repeat_pass", repeat_pass.trim());
         formData.append("profile", profile);
+        formData.append("acceptedPolicies", agreed);
 
         setLoading(true);
         try {
