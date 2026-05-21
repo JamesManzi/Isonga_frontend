@@ -106,7 +106,12 @@ function Buyer_Login() {
         <div className="buyer-hero-side">
           <div className="buyer-hero-overlay"></div>
           <div className="buyer-hero-content">
-            <img src="/logo.png" alt="Logo" className="buyer-hero-logo" />
+             <img 
+  src="/my_logo1.png" 
+  alt="Isonga Market Logo" 
+  className="buyer-hero-logo"
+  style={{ width: "100px", height: "auto" }} 
+/>
             <h1>Isonga Market</h1>
             <p>Discover Shops of All Kind Across Country
               With Verified Sellers and be Able to Access Products Services and Assets
