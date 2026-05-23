@@ -234,7 +234,7 @@ function Vehicles() {
                 <div className="shop-card-info">
                   <h3 className="seller-name">{seller.name} Shop</h3>
                   <p className="seller-location">{seller.location}</p>
-                  <p className="seller-category">{seller.category} Shop</p>
+                  <p className="seller-category">{seller.category}</p>
                   <div className="rating">
                     {renderStars(seller.averageRating || 0)} ({seller.numReviews || 0})
                   </div>

@@ -384,7 +384,7 @@ function Register() {
 
               {/* GALLERY */}
               <div className="modern-multi-upload">
-                <label>Store Gallery (Min 2 photos)</label>
+                <label>Location Photos (Min 2 photos)</label>
 
                 <div
                   className="multi-upload-trigger"
