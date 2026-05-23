@@ -34,13 +34,11 @@ function Buyer_Dashboard() {
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
   const productCategories = ["Fashion", "Electronics", "Furniture", "Construction","Food"];
-  const serviceCategories = ["Repair Services", "Hospitality","Business Services"];
-  const assetCategories = ["RealEstate", "Vehicles", "Livestock"];
+  const assetCategories = ["RealEstate", "Vehicles"];
   const [notifications, setNotifications] = useState([]);
   const [orderNotifications, setOrderNotifications] = useState([]);
   const getSellerRoute = (category, id) => {
     if (productCategories.includes(category)) return `/view_products/${id}`;
-    if (serviceCategories.includes(category)) return `/Service_Products/${id}`;
     if (assetCategories.includes(category)) return `/Asset_products/${id}`;
     return `/view_products/${id}`;
   };
@@ -337,7 +335,7 @@ useEffect(() => {
           <ChatNotification userId={buyerId} />
         </div>
         <div className="Buyer_Dashboard_nav">
-          <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/services">Services</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
+          <nav><ul><li><Link to="/fashion">Products</Link></li><li><Link to="/RealEstate">Assets</Link></li></ul></nav>
         </div>
 
         <div 
