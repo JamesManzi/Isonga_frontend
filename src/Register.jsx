@@ -62,12 +62,6 @@ function Register() {
       "Construction",
     ],
 
-    Service: [
-      "Hospitality",
-      "Business Services",
-      "Repair Services",
-    ],
-
     Asset: [
       "RealEstate",
       "Vehicles",
@@ -355,7 +349,6 @@ function Register() {
                     </option>
 
                     <option value="Product">Product</option>
-                    <option value="Service">Service</option>
                     <option value="Asset">Asset</option>
                   </select>
                 </div>
