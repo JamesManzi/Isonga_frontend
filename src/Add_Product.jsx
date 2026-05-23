@@ -15,14 +15,6 @@ const categoryOptions = {
     "Food",
     "Construction Materials"
   ],
-  Service: [
-    "Repair",
-    "Cleaning",
-    "Transport",
-    "Construction",
-    "IT Services",
-    "Consulting"
-  ],
   Asset: [
     "House",
     "Land",
@@ -203,7 +195,6 @@ function Add_Product() {
           >
             <option value="">-- Select Type --</option>
             <option value="Product">Product</option>
-            <option value="Service">Service</option>
             <option value="Asset">Asset</option>
           </select>
 
@@ -211,9 +202,7 @@ function Add_Product() {
           <input
             type="text"
             placeholder={
-              type === "Service"
-                ? "Enter Service Name"
-                : type === "Asset"
+                 type === "Asset"
                 ? "Enter Asset Name"
                 : "Enter Product Name"
             }
