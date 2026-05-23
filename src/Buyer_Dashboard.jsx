@@ -33,7 +33,7 @@ function Buyer_Dashboard() {
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
 
-  const productCategories = ["Fashion", "Electronics", "Furniture", "Construction","Food"];
+  const productCategories = ["Fashion", "Electronics", "Furniture", "building supplies","Food"];
   const assetCategories = ["RealEstate", "Vehicles"];
   const [notifications, setNotifications] = useState([]);
   const [orderNotifications, setOrderNotifications] = useState([]);
