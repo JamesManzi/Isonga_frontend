@@ -71,7 +71,7 @@ function Construction() {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const res = await api.get("/api/sellers/Construction");
+        const res = await api.get("/api/sellers/building supplies");
         if (!res.data.success) {
           navigate("/buyer_login");
           return;
