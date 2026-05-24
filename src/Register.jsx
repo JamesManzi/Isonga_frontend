@@ -21,7 +21,7 @@ import "./Register.css";
 function Register() {
   const profileInputRef = useRef(null);
   const locationImagesRef = useRef(null);
- const [agreed, setAgreed] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const navigate = useNavigate();
 
   const [sellerType, setSellerType] = useState("");
@@ -45,34 +45,21 @@ function Register() {
   const [previewFiles, setPreviewFiles] = useState([]);
 
   const [message, setMessage] = useState(null);
-
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
   };
 
-  // CATEGORY BASED ON SELLER TYPE
   const categoryOptions = {
-    Product: [
-      "Fashion",
-      "Electronics",
-      "Furniture",
-      "Food",
-      "building supplies",
-    ],
-
-    Asset: [
-      "RealEstate",
-      "Vehicles",
-    ],
+    Product: ["Fashion", "Electronics", "Furniture", "Food", "building supplies"],
+    Asset: ["RealEstate", "Vehicles"],
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const rule =
-      /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
+    const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
 
     if (!rule.test(password)) {
       return setMessage({
@@ -106,11 +93,11 @@ function Register() {
     }
 
     if (!agreed) {
-  return setMessage({
-    text: "Please accept Privacy Policy & Marketplace Rules",
-    type: "error",
-  });
-}
+      return setMessage({
+        text: "Please accept Privacy Policy & Marketplace Rules",
+        type: "error",
+      });
+    }
 
     if (files.length < 2) {
       return setMessage({
@@ -134,7 +121,6 @@ function Register() {
     }
 
     const regex = /^(07(8|9|2|3)\d{7})$/;
-
     if (!regex.test(phone)) {
       return setMessage({
         text: "Invalid Phone Number",
@@ -143,7 +129,6 @@ function Register() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     if (!emailRegex.test(email)) {
       return setMessage({
         text: "Invalid Email Try Again",
@@ -151,31 +136,40 @@ function Register() {
       });
     }
 
-   // Inside your Register.js handleSubmit function:
+    // Dynamic Mobile Form Constructor
+    const formData = new FormData();
+    formData.append("name", name.trim());
+    formData.append("location", location.trim());
+    formData.append("phone", phone.trim());
+    formData.append("email", email.trim());
+    formData.append("password", password.trim());
+    formData.append("repeat_pass", repeat_pass.trim());
+    formData.append("description", description.trim());
+    formData.append("category", category.trim());
+    formData.append("sellerType", sellerType.trim());
+    formData.append("acceptedPolicies", String(agreed));
 
-const formData = new FormData();
+    // Fix 1: Handle Profile File extension dynamically with fallback naming
+    const profileExt = profile.name ? profile.name.split('.').pop() : 'jpg';
+    formData.append("profile", profile, `profile_${Date.now()}.${profileExt}`);
 
-formData.append("name", name.trim());
-formData.append("location", location.trim());
-formData.append("phone", phone.trim());
-formData.append("email", email.trim());
-formData.append("password", password.trim());
-formData.append("repeat_pass", repeat_pass.trim());
-formData.append("description", description.trim());
-formData.append("category", category.trim());
-formData.append("sellerType", sellerType.trim());
-formData.append("acceptedPolicies", String(agreed)); // explicitly send as string string "true"/"false"
-
-formData.append("profile", profile); // Must match backend name: "profile"
-
-files.forEach((file) => {
-  formData.append("files", file); // Must match backend name: "files"
-});
+    // Fix 2: Force clean distinct naming indexing across all mobile items
+    files.forEach((file, index) => {
+      if (file.size > 0) { // Safety buffer checking against corrupt phone assets
+        const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
+        formData.append("files", file, `gallery_${index}_${Date.now()}.${fileExt}`);
+      }
+    });
 
     setLoading(true);
 
     try {
-      const res = await api.post("/api/register", formData);
+      // Fix 3: Explicitly include the multi-part content definition boundary header
+      const res = await api.post("/api/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
 
       setMessage({
         text: res.data.message,
@@ -213,15 +207,14 @@ files.forEach((file) => {
       {loading && <div className="modern-progress-bar"></div>}
 
       <div className="modern-reg-container">
-
         {/* SIDEBAR */}
         <div className="modern-reg-sidebar">
           <div className="sidebar-branding">
             <img 
-  src="/my_logo1.png" 
-  alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto" }} 
-/>
+              src="/my_logo1.png" 
+              alt="Isonga Market Logo" 
+              style={{ width: "100px", height: "auto" }} 
+            />
             <h2>
               Isonga <span>Market</span>
             </h2>
@@ -231,11 +224,9 @@ files.forEach((file) => {
             <div className="step-item active">
               <span className="step-num">1</span> Shop Identity
             </div>
-
             <div className="step-item active">
               <span className="step-num">2</span> Visuals & Location
             </div>
-
             <div className="step-item active">
               <span className="step-num">3</span> Account Security
             </div>
@@ -252,7 +243,6 @@ files.forEach((file) => {
         {/* FORM */}
         <div className="modern-reg-main">
           <div className="form-content-wrap">
-
             <div className="form-header">
               <h1>Become a Seller</h1>
               <p>Set up your professional store in minutes.</p>
@@ -260,7 +250,6 @@ files.forEach((file) => {
             </div>
 
             <form onSubmit={handleSubmit} className="modern-form">
-
               {/* PROFILE */}
               <div className="modern-upload-section">
                 <div
@@ -283,47 +272,37 @@ files.forEach((file) => {
                   type="file"
                   ref={profileInputRef}
                   hidden
-                  accept="image/*"
+                  accept="image/jpeg, image/png, image/webp"
                   onChange={(e) => {
                     const file = e.target.files[0];
-
                     if (!file) return;
 
                     if (!file.type.startsWith("image/")) {
-                      return alert(
-                        "Please upload an image file for your profile."
-                      );
+                      return alert("Please upload an image file for your profile.");
                     }
 
                     if (file.size > 5 * 1024 * 1024) {
-                      return alert(
-                        "Profile image must not exceed 5MB"
-                      );
+                      return alert("Profile image must not exceed 5MB");
                     }
 
                     setProfile(file);
                     setPreviewProfile(URL.createObjectURL(file));
+                    e.target.value = ""; // Fix 4: Clear target mobile frame cache value
                   }}
                 />
 
                 <div className="upload-text">
                   <h3>Shop Profile</h3>
-                  <p>
-                    Upload your brand logo or a clear photo.
-                  </p>
+                  <p>Upload your brand logo or a clear photo.</p>
                 </div>
               </div>
 
               {/* SHOP INFO */}
               <div className="modern-grid">
-
-                {/* SHOP NAME */}
                 <div className="modern-input-group">
                   <label>Shop Name</label>
-
                   <div className="input-with-icon">
                     <FontAwesomeIcon icon={faStore} />
-
                     <input
                       type="text"
                       placeholder="Enter Shop Name"
@@ -333,10 +312,8 @@ files.forEach((file) => {
                   </div>
                 </div>
 
-                {/* SELLER TYPE */}
                 <div className="modern-input-group">
                   <label>Seller Type</label>
-
                   <select
                     value={sellerType}
                     onChange={(e) => {
@@ -345,41 +322,29 @@ files.forEach((file) => {
                     }}
                     required
                   >
-                    <option value="">
-                      -- Select Seller Type --
-                    </option>
-
+                    <option value="">-- Select Seller Type --</option>
                     <option value="Product">Product</option>
                     <option value="Asset">Asset</option>
                   </select>
                 </div>
 
-                {/* CATEGORY */}
                 <div className="modern-input-group">
                   <label>Category</label>
-
                   <select
                     value={category}
-                    onChange={(e) =>
-                      setCategory(e.target.value)
-                    }
+                    onChange={(e) => setCategory(e.target.value)}
                     required
                     disabled={!sellerType}
                   >
                     <option value="">
-                      {sellerType
-                        ? "-- Select Category --"
-                        : "Select Seller Type First"}
+                      {sellerType ? "-- Select Category --" : "Select Seller Type First"}
                     </option>
-
                     {sellerType &&
-                      categoryOptions[sellerType].map(
-                        (cat, index) => (
-                          <option key={index} value={cat}>
-                            {cat}
-                          </option>
-                        )
-                      )}
+                      categoryOptions[sellerType].map((cat, index) => (
+                        <option key={index} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -387,12 +352,9 @@ files.forEach((file) => {
               {/* GALLERY */}
               <div className="modern-multi-upload">
                 <label>Location Photos (Min 2 photos)</label>
-
                 <div
                   className="multi-upload-trigger"
-                  onClick={() =>
-                    locationImagesRef.current.click()
-                  }
+                  onClick={() => locationImagesRef.current.click()}
                 >
                   <FontAwesomeIcon icon={faImages} />
                   <span> Location Photos</span>
@@ -403,46 +365,27 @@ files.forEach((file) => {
                   ref={locationImagesRef}
                   hidden
                   multiple
-                  accept="image/*"
+                  accept="image/jpeg, image/png, image/webp"
                   onChange={(e) => {
-                    const selectedFiles = Array.from(
-                      e.target.files
+                    const selectedFiles = Array.from(e.target.files);
+                    const validImages = selectedFiles.filter((file) =>
+                      file.type.startsWith("image/")
                     );
 
-                    const validImages = selectedFiles.filter(
-                      (file) =>
-                        file.type.startsWith("image/")
-                    );
-
-                    if (
-                      validImages.length !==
-                      selectedFiles.length
-                    ) {
-                      alert(
-                        "Some files were skipped because they were not images."
-                      );
+                    if (validImages.length !== selectedFiles.length) {
+                      alert("Some files were skipped because they were not images.");
                     }
 
-                    if (
-                      files.length + validImages.length >
-                      6
-                    ) {
-                      return alert(
-                        "Max 6 photos allowed total"
-                      );
+                    if (files.length + validImages.length > 6) {
+                      return alert("Max 6 photos allowed total");
                     }
 
-                    setFiles([
-                      ...files,
-                      ...validImages,
-                    ]);
-
+                    setFiles([...files, ...validImages]);
                     setPreviewFiles([
                       ...previewFiles,
-                      ...validImages.map((f) =>
-                        URL.createObjectURL(f)
-                      ),
+                      ...validImages.map((f) => URL.createObjectURL(f)),
                     ]);
+                    e.target.value = ""; // Fix 5: Clear sequential layout stack for mobile inputs
                   }}
                 />
 
@@ -450,21 +393,11 @@ files.forEach((file) => {
                   {previewFiles.map((img, i) => (
                     <div key={i} className="gallery-item">
                       <img src={img} alt="Preview" />
-
                       <button
                         type="button"
                         onClick={() => {
-                          setFiles(
-                            files.filter(
-                              (_, idx) => idx !== i
-                            )
-                          );
-
-                          setPreviewFiles(
-                            previewFiles.filter(
-                              (_, idx) => idx !== i
-                            )
-                          );
+                          setFiles(files.filter((_, idx) => idx !== i));
+                          setPreviewFiles(previewFiles.filter((_, idx) => idx !== i));
                         }}
                       >
                         <FontAwesomeIcon icon={faTrash} />
@@ -476,19 +409,14 @@ files.forEach((file) => {
 
               {/* LOCATION & PHONE */}
               <div className="modern-grid">
-
                 <div className="modern-input-group">
                   <label>Location</label>
-
                   <div className="input-with-icon">
                     <FontAwesomeIcon icon={faMapPin} />
-
                     <input
                       type="text"
                       placeholder="Enter Location"
-                      onChange={(e) =>
-                        setLocation(e.target.value)
-                      }
+                      onChange={(e) => setLocation(e.target.value)}
                       required
                     />
                   </div>
@@ -496,16 +424,12 @@ files.forEach((file) => {
 
                 <div className="modern-input-group">
                   <label>Phone Number</label>
-
                   <div className="input-with-icon">
                     <FontAwesomeIcon icon={faPhone} />
-
                     <input
                       type="tel"
                       placeholder="07XXXXXXXX"
-                      onChange={(e) =>
-                        setPhone(e.target.value)
-                      }
+                      onChange={(e) => setPhone(e.target.value)}
                       required
                     />
                   </div>
@@ -515,12 +439,9 @@ files.forEach((file) => {
               {/* DESCRIPTION */}
               <div className="modern-input-group">
                 <label>Business Description</label>
-
                 <textarea
                   placeholder="Tell customers what makes your shop special..."
-                  onChange={(e) =>
-                    setDescription(e.target.value)
-                  }
+                  onChange={(e) => setDescription(e.target.value)}
                   required
                 ></textarea>
               </div>
@@ -528,16 +449,12 @@ files.forEach((file) => {
               {/* EMAIL */}
               <div className="modern-input-group">
                 <label>Email Address</label>
-
                 <div className="input-with-icon">
                   <FontAwesomeIcon icon={faEnvelope} />
-
                   <input
                     type="email"
                     placeholder="Enter Email"
-                    onChange={(e) =>
-                      setEmail(e.target.value)
-                    }
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -545,138 +462,76 @@ files.forEach((file) => {
 
               {/* PASSWORDS */}
               <div className="modern-grid">
-
-                {/* PASSWORD */}
                 <div className="modern-input-group">
                   <label>Password</label>
-
                   <div className="input-with-icon">
                     <div className="buyer_reg_input_wrapper">
-
                       <FontAwesomeIcon icon={faLock} />
-
                       <input
-                        type={
-                          showPassword
-                            ? "text"
-                            : "password"
-                        }
+                        type={showPassword ? "text" : "password"}
                         placeholder="Enter Password"
-                        onChange={(e) =>
-                          setPassword(e.target.value)
-                        }
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                       />
-
-                      <span
-                        className="eye-icon"
-                        onClick={togglePassword}
-                      >
-                        <FontAwesomeIcon
-                          icon={
-                            showPassword
-                              ? faEyeSlash
-                              : faEye
-                          }
-                        />
+                      <span className="eye-icon" onClick={togglePassword}>
+                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* CONFIRM PASSWORD */}
                 <div className="modern-input-group">
                   <label>Confirm Password</label>
-
                   <div className="input-with-icon">
                     <div className="buyer_reg_input_wrapper">
-
                       <FontAwesomeIcon icon={faLock} />
-
                       <input
-                        type={
-                          showPassword
-                            ? "text"
-                            : "password"
-                        }
+                        type={showPassword ? "text" : "password"}
                         placeholder="Repeat Password"
-                        onChange={(e) =>
-                          setRepeat_Pass(
-                            e.target.value
-                          )
-                        }
+                        onChange={(e) => setRepeat_Pass(e.target.value)}
                         required
                       />
-
-                      <span
-                        className="eye-icon"
-                        onClick={togglePassword}
-                      >
-                        <FontAwesomeIcon
-                          icon={
-                            showPassword
-                              ? faEyeSlash
-                              : faEye
-                          }
-                        />
+                      <span className="eye-icon" onClick={togglePassword}>
+                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* TERMS & CONDITIONS */}
               <div className="modern-checkbox-wrapper">
+                <input
+                  type="checkbox"
+                  id="sellerAgree"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  required
+                />
+                <label htmlFor="sellerAgree">
+                  I agree to the{" "}
+                  <Link to="/PrivacyRules">Privacy Policy & Marketplace Rules</Link>
+                </label>
+              </div>
 
-  <input
-    type="checkbox"
-    id="sellerAgree"
-    checked={agreed}
-    onChange={(e) => setAgreed(e.target.checked)}
-    required
-  />
-
-  <label htmlFor="sellerAgree">
-    I agree to the{" "}
-    <Link to="/PrivacyRules">
-      Privacy Policy & Marketplace Rules
-    </Link>
-  </label>
-
-</div>
-
-              {/* SUBMIT */}
-              <button
-                type="submit"
-                className="modern-submit-btn"
-                disabled={loading}
-              >
+              {/* SUBMIT BUTTON */}
+              <button type="submit" className="modern-submit-btn" disabled={loading}>
                 {loading ? (
                   "Creating Store..."
                 ) : (
                   <>
-                    Get Started{" "}
-                    <FontAwesomeIcon
-                      icon={faChevronRight}
-                    />
+                    Get Started <FontAwesomeIcon icon={faChevronRight} />
                   </>
                 )}
               </button>
 
-              {/* MESSAGE */}
-              {message && (
-                <div
-                  className={`modern-alert-box ${message.type}`}
-                >
-                  {message.text}
-                </div>
-              )}
+              {/* RESPONSE ALERT MESSAGE */}
+              {message && <div className={`modern-alert-box ${message.type}`}>{message.text}</div>}
             </form>
 
             <div className="modern-footer-link">
-              Already a seller?{" "}
-              <Link to="/login">Sign In</Link>
+              Already a seller? <Link to="/login">Sign In</Link>
             </div>
-
           </div>
         </div>
       </div>
