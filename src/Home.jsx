@@ -140,10 +140,27 @@ if (loading) {
     <div className="Home">
       <Helmet>
   <title>Isonga Market Rwanda - Buy & Sell Online</title>
+
   <meta
     name="description"
     content="Buy and sell products, shops, phones, clothes and more in Rwanda using Isonga Market."
   />
+
+  <link
+    rel="canonical"
+    href="https://www.isongamarket.com/"
+  />
+
+  <meta property="og:title" content="Isonga Market Rwanda - Buy & Sell Online" />
+  <meta
+    property="og:description"
+    content="Buy and sell products, shops, phones, clothes and more in Rwanda using Isonga Market."
+  />
+  <meta
+    property="og:url"
+    content="https://www.isongamarket.com/"
+  />
+  <meta property="og:type" content="website" />
 </Helmet>
       {/* Navbar */}
       <div className="Home_navbar">
