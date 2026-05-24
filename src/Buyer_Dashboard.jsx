@@ -406,7 +406,9 @@ useEffect(() => {
                   <div className="rating">{renderStars(seller.averageRating)}<span>({seller.numReviews})</span></div>
                   <p>{seller.description}</p>
                   <div className="card-actions">
-                    <Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">Visit</button></Link>
+                    <Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">
+                      View Products
+                      </button></Link>
                     <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
                   </div>
                 </div>
