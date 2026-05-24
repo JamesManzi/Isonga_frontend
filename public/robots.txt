@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://isongamarket.com/sitemap.xml
+Sitemap: https://www.isongamarket.com/sitemap.xml
