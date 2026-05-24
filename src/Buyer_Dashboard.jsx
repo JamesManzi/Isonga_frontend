@@ -409,7 +409,9 @@ useEffect(() => {
                     <Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">
                       View Listings
                       </button></Link>
-                    <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
+                    <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">
+                      Chat Seller
+                      </button></Link>
                   </div>
                 </div>
               </div>
