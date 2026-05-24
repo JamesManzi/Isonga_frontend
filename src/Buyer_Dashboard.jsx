@@ -407,7 +407,7 @@ useEffect(() => {
                   <p>{seller.description}</p>
                   <div className="card-actions">
                     <Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">
-                      View Products
+                      View Listings
                       </button></Link>
                     <Link to={`/buyer_chat/${seller._id}`}><button className="chat-btn">Chat</button></Link>
                   </div>
