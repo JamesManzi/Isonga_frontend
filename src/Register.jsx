@@ -151,24 +151,26 @@ function Register() {
       });
     }
 
-    const formData = new FormData();
+   // Inside your Register.js handleSubmit function:
 
-    formData.append("name", name.trim());
-    formData.append("location", location.trim());
-    formData.append("phone", phone.trim());
-    formData.append("email", email.trim());
-    formData.append("password", password.trim());
-    formData.append("repeat_pass", repeat_pass.trim());
-    formData.append("description", description.trim());
-    formData.append("category", category.trim());
-    formData.append("sellerType", sellerType.trim());
-    formData.append("acceptedPolicies", agreed);
+const formData = new FormData();
 
-    formData.append("profile", profile);
+formData.append("name", name.trim());
+formData.append("location", location.trim());
+formData.append("phone", phone.trim());
+formData.append("email", email.trim());
+formData.append("password", password.trim());
+formData.append("repeat_pass", repeat_pass.trim());
+formData.append("description", description.trim());
+formData.append("category", category.trim());
+formData.append("sellerType", sellerType.trim());
+formData.append("acceptedPolicies", String(agreed)); // explicitly send as string string "true"/"false"
 
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
+formData.append("profile", profile); // Must match backend name: "profile"
+
+files.forEach((file) => {
+  formData.append("files", file); // Must match backend name: "files"
+});
 
     setLoading(true);
 
