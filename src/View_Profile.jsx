@@ -167,7 +167,6 @@ if (!seller) {
       <div className="Seller_Profile_info">
         <p><strong>Location:</strong> {seller.location}</p>
         <p><strong>Phone:</strong> {seller.phone}</p>
-        <p><strong>Email:</strong> {seller.email}</p>
         <p>{seller.description}</p>
         <div className="seller_profile_location">
                 <h2>Our Store</h2><br/>
