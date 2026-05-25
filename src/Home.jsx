@@ -282,10 +282,10 @@ if (loading) {
                   <p className="seller-description">{seller.description}</p>
                   <div className="card-actions">
                     <button className="visit-btn" onClick={() => showAlert("Please login first!")}>
-                      Visit Shop
+                                            View Listings
                     </button>
                     <button className="chat-btn" onClick={() => showAlert("Please login first!")}>
-                      Chat
+                      Chat Seller
                     </button>
                   </div>
                 </div>
