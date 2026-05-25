@@ -43,15 +43,6 @@ function Add_Product() {
 
   const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
-  const ACCEPTED_FORMATS = [
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/gif",
-    "video/mp4",
-    "video/webm",
-    "video/ogg"
-  ];
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -64,10 +55,6 @@ function Add_Product() {
         return;
       }
 
-      if (!ACCEPTED_FORMATS.includes(file.type)) {
-        alert(`${file.name} is not supported.`);
-        return;
-      }
 
       validFiles.push(file);
       previews.push({
@@ -217,7 +204,6 @@ function Add_Product() {
             placeholder="Enter Price"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            required
           />
 
           {type === "Product" && (
