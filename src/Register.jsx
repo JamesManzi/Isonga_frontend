@@ -351,7 +351,7 @@ function Register() {
 
               {/* GALLERY */}
               <div className="modern-multi-upload">
-                <label>Location Photos (Min 2 photos)</label>
+                <label>Store Photos (Min 2 photos)</label>
                 <div
                   className="multi-upload-trigger"
                   onClick={() => locationImagesRef.current.click()}

@@ -170,7 +170,7 @@ if (!seller) {
         <p><strong>Email:</strong> {seller.email}</p>
         <p>{seller.description}</p>
         <div className="seller_profile_location">
-                <h2>Our Location</h2><br/>
+                <h2>Our Store</h2><br/>
   {seller.files && seller.files.map((file, index) => (
     <img
       key={index}
