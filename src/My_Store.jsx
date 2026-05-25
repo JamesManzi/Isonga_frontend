@@ -322,7 +322,6 @@ function My_Store() {
 
                 <div className="product-details">
                   <h1>{product.name}</h1>
-                  <p>Price: {product.price} Rwf</p>
                   {product.type === "Product" && <p>Quantity: {product.quantity}</p>}
                   <p className="desc-text">{product.description}</p>
                   <div className="My_Store_btns">
@@ -386,7 +385,6 @@ function My_Store() {
                   price: e.target.value,
                 })
               }
-              required
             />
         </div>
     </div>
