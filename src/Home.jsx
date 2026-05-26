@@ -261,14 +261,6 @@ if (loading) {
                   ) : (
                     <img src="/placeholder.png" alt="Placeholder" className="slider-image" />
                   )}
-
-                  <img
-                    src={getFileUrl(seller.profile)}
-                    alt={`${seller.name} Profile`}
-                    className="profile_avatar"
-                    onError={(e) => { e.target.src = "/default-avatar.png"; }}
-                    onClick={() => showAlert("Please login first!")}
-                  />
                 </div>
                 <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
                                   <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image" />
