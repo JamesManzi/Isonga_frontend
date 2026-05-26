@@ -32,6 +32,7 @@ function Buyer_Dashboard() {
   const [loading, setLoading] = useState(true);
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
+  const [expandedCards, setExpandedCards] = useState({});
 
   const productCategories = ["Fashion", "Electronics", "Furniture", "building supplies","Food"];
   const assetCategories = ["RealEstate", "Vehicles"];
@@ -400,13 +401,33 @@ useEffect(() => {
                   <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image" />
                 </Link>
                 <div className="shop-card-info">
-                  <h3>{seller.name} Shop</h3>
+                  <h3>{seller.name}</h3>
                   <p>{seller.location}</p>
                   <p>{seller.category} Company</p>
                   <div className="rating">{renderStars(seller.averageRating)}<span>({seller.numReviews})</span></div>
-                  <p className="seller-description">
-  {seller.description}
-</p>
+                  <div className="description-container">
+  <p
+    className={`seller-description ${
+      expandedCards[seller._id] ? "expanded" : ""
+    }`}
+  >
+    {seller.description}
+  </p>
+
+  {seller.description?.length > 120 && (
+    <button
+      className="show-more-btn"
+      onClick={() =>
+        setExpandedCards((prev) => ({
+          ...prev,
+          [seller._id]: !prev[seller._id],
+        }))
+      }
+    >
+      {expandedCards[seller._id] ? "Show Less" : "Show More"}
+    </button>
+  )}
+</div>
                   <div className="card-actions">
                     <Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">
                       View Listings
