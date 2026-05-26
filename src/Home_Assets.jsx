@@ -192,7 +192,7 @@ function Home_Assets() {
                   )}
 
                   {seller && (
-                    <Link to={`/view_profile/${seller._id}`} className="Asset_Products-profile-avatar">
+                    <Link to={`/Home_profile/${seller._id}`} className="Asset_Products-profile-avatar">
                       <img src={getFileUrl(seller.profile)} alt="seller" />
                     </Link>
                   )}

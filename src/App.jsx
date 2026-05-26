@@ -62,6 +62,7 @@ import AdminProfile from "./AdminProfile";
 import Business_Services from "./Business_Services";
 import Home_Products from "./Home_Products";
 import Home_Assets from "./Home_Assets";
+import Home_Profile from "./Home_Profile";
 function App(){
   return(
     <div>
@@ -130,6 +131,7 @@ function App(){
          <Route path="/Business_Services" element={<Business_Services/>}/>
          <Route path="/Home_products/:id" element={<Home_Products/>}/>
          <Route path="/Home_Assets/:id" element={<Home_Assets/>}/>
+         <Route path="/Home_profile/:id" element={<Home_Profile/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>
