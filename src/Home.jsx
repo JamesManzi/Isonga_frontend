@@ -270,6 +270,9 @@ if (loading) {
                     onClick={() => showAlert("Please login first!")}
                   />
                 </div>
+                <Link to={`/view_profile/${seller._id}`} className="profile-avatar">
+                                  <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image" />
+                                </Link>
 
                 <div className="shop-card-info">
                   <h3 className="seller-name">{seller.name} Shop</h3>
