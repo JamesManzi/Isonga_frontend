@@ -64,10 +64,6 @@ function Home_Profile() {
   useEffect(() => {
     const fetchSeller = async () => {
       const token = localStorage.getItem("token");
-        if (!token) {
-        navigate("/buyer_login");
-        return;
-      }
       try {
       const res = await api.get(`/api/Home_profile/${id}`);
         if (res.data.success) {
@@ -83,7 +79,7 @@ function Home_Profile() {
 
   const fetchReviews = async () => {
     try {
-     const res = await api.get(`/api/view_profile/${id}`);
+     const res = await api.get(`/api/Home_profile/${id}`);
       if (res.data.success) setReviews(res.data.seller.ratings || []);
     } catch (err) { console.log(err); }
   };
