@@ -279,7 +279,7 @@ if (loading) {
                                 </Link>
 
                 <div className="shop-card-info">
-  <h3 className="seller-name">{seller.name} Company</h3>
+  <h3 className="seller-name">{seller.name} Business</h3>
 
   <p className="seller-location">{seller.location}</p>
 
