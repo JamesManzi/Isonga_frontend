@@ -280,12 +280,14 @@ if (loading) {
                 <div className="shop-card-info">
                   <h3 className="seller-name">{seller.name} Company</h3>
                   <p className="seller-location">{seller.location}</p>
-                  <p className="seller-category">{seller.category} Shop</p>
+                  <p className="seller-category">{seller.category}</p>
                   <div className="rating">
                     {renderStars(seller.averageRating)}
                     <span>({seller.numReviews})</span>
                   </div>
-                  <p className="seller-description">{seller.description}</p>
+                 <p className="seller-description">
+  {seller.description}
+</p>
                   <div className="card-actions">
                   < Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">
                       View Listings
