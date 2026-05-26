@@ -16,6 +16,17 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [alertMessage, setAlertMessage] = useState("");
 
+   const productCategories = ["Fashion", "Electronics", "Furniture", "building supplies","Food"];
+  const assetCategories = ["RealEstate", "Vehicles"];
+  const [notifications, setNotifications] = useState([]);
+  const [orderNotifications, setOrderNotifications] = useState([]);
+  const getSellerRoute = (category, id) => {
+    if (productCategories.includes(category)) return `/view_products/${id}`;
+    if (assetCategories.includes(category)) return `/Asset_products/${id}`;
+    return `/view_products/${id}`;
+  };
+
+
   // Show alert
   const showAlert = (msg) => {
     setAlertMessage(msg);
