@@ -24,7 +24,7 @@ function Asset_Products() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
-
+   const [expandedCards, setExpandedCards] = useState({});
   // Zoom Modal State
   const [modalMedia, setModalMedia] = useState({ productId: null, index: 0 });
 
@@ -189,8 +189,29 @@ function Asset_Products() {
 
                 <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
-                <p><strong>{product.description}</strong></p>
+                <div className="description-container">
+  <p
+    className={`product-description ${
+      expandedCards[product._id] ? "expanded" : ""
+    }`}
+  >
+    {product.description}
+  </p>
 
+  {product.description?.length > 120 && (
+    <button
+      className="show-more-btn"
+      onClick={() =>
+        setExpandedCards((prev) => ({
+          ...prev,
+          [product._id]: !prev[product._id],
+        }))
+      }
+    >
+      {expandedCards[product._id] ? "Show Less" : "Show More"}
+    </button>
+  )}
+</div>
                 <div className="Asset_Products_btns">
                   <Link
     to={`/buyer_chat/${seller?._id}?productId=${product._id}&productName=${encodeURIComponent(product.name)}&productImage=${encodeURIComponent(product.files[0] || "")}&productPrice=${product.price}`}
