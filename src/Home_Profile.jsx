@@ -84,34 +84,6 @@ function Home_Profile() {
     } catch (err) { console.log(err); }
   };
 
-  const submitRating = async () => {
-  if (!rating) { setMessage("Select a rating!"); return; }
-  setLoading(true);
-  try {
-    // REMOVE ${id} from the URL and put it in the body object instead
-    const res = await api.post(`/api/rate_seller`, { 
-      sellerId: id, // Pass the id here
-      rating, 
-      comment 
-    });
-
-    if (res.data.success) {
-      setMessage("Rating submitted!");
-      setRating(0);
-      setComment("");
-      // Note: Ensure your backend actually returns these values in the response!
-      if(res.data.averageRating) setAverageRating(res.data.averageRating);
-      if(res.data.numReviews) setNumReviews(res.data.numReviews);
-      fetchReviews();
-    }
-  } catch (err) {
-    console.error(err);
-    setMessage("Error submitting rating");
-  } finally {
-    setLoading(false);
-  }
-};
-
   const renderStars = (avg) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
