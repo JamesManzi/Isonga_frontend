@@ -250,8 +250,19 @@ function Home_Assets() {
         </div>
       )}
 
-      {showCartPopup && <div className="Asset_Products-cart-popup">{popupMessage}</div>}
+    <div className={`cart-popup ${showCartPopup ? "show" : ""}`}>
+  {popupMessage}
+</div>
 
+{/* Alert Modal */}
+{alertMessage && (
+  <div className="alert-overlay">
+    <div className="alert-box">
+      <p>{alertMessage}</p>
+      <button onClick={closeAlert}>OK</button>
+    </div>
+  </div>
+)}
       {/* Original Footer */}
       <footer className="Asset_Products-Buyer_Footer">
         <div className="Asset_Products-Footer_Container">
@@ -269,10 +280,10 @@ function Home_Assets() {
           <div className="Footer_Section">
             <h4>Quick Links</h4>
             <ul>
-              <li><Link to="/fashion">All Products</Link></li>
-              <li><Link to="/services">Services</Link></li>
-              <li><Link to="/RealEstate">Assets</Link></li>
-              <li><Link to="/cart">My Cart</Link></li>
+              <li><Link to="#">All Products</Link></li>
+              <li><Link to="#">Services</Link></li>
+              <li><Link to="#">Assets</Link></li>
+              <li><Link to="#">My Cart</Link></li>
             </ul>
           </div>
           <div className="Footer_Section">
