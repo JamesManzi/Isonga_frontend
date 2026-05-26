@@ -279,14 +279,18 @@ if (loading) {
                                 </Link>
 
                 <div className="shop-card-info">
-                  <h3 className="seller-name">{seller.name} Company</h3>
-                  <p className="seller-location">{seller.location}</p>
-                  <p className="seller-category">{seller.category}</p>
-                  <div className="rating">
-                    {renderStars(seller.averageRating)}
-                    <span>({seller.numReviews})</span>
-                  </div>
-                <p
+  <h3 className="seller-name">{seller.name} Company</h3>
+
+  <p className="seller-location">{seller.location}</p>
+
+  <p className="seller-category">{seller.category}</p>
+
+  <div className="rating">
+    {renderStars(seller.averageRating)}
+    <span>({seller.numReviews})</span>
+  </div>
+
+  <p
     className={`seller-description ${
       expandedCards[seller._id] ? "expanded" : ""
     }`}
@@ -307,17 +311,23 @@ if (loading) {
       {expandedCards[seller._id] ? "Show Less" : "Show More"}
     </button>
   )}
+
+  <div className="card-actions">
+    <Link to={getSellerRoute(seller.category, seller._id)}>
+      <button className="visit-btn">
+        View Listings
+      </button>
+    </Link>
+
+    <button
+      className="chat-btn"
+      onClick={() => showAlert("Please login first!")}
+    >
+      Chat Seller
+    </button>
+  </div>
 </div>
-                  <div className="card-actions">
-                  < Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">
-                      View Listings
-                      </button></Link>
-                     
-                     <button className="chat-btn" onClick={()=>showAlert("Please login first!")}>
-                      Chat Seller
-                      </button>
-                  </div>
-                </div>
+</div>
             );
           })
         ) : (
