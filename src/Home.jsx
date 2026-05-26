@@ -276,12 +276,13 @@ if (loading) {
                   </div>
                   <p className="seller-description">{seller.description}</p>
                   <div className="card-actions">
-                    <button className="visit-btn" onClick={() => showAlert("Please login first!")}>
-                                            View Listings
-                    </button>
-                    <button className="chat-btn" onClick={() => showAlert("Please login first!")}>
+                  < Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">
+                      View Listings
+                      </button></Link>
+                     <Link to={`/buyer_chat/${seller._id}`}>
+                     <button className="chat-btn" onClick={()=>showAlert("Please login first!")}>
                       Chat Seller
-                    </button>
+                      </button></Link>
                   </div>
                 </div>
               </div>
