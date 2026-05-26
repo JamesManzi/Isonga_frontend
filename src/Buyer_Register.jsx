@@ -105,7 +105,7 @@ function Buyer_Register() {
     className="buyer_reg_logo_img"
   />
 
-  improve this and give css  <h1>Isonga Market</h1>
+                 <h1>Isonga Market</h1>
                         <h1>Start buyer Journey</h1>
                         <p>Join Isonga Market and get access
                              to the best products services and assets from verified  sellers.</p>
