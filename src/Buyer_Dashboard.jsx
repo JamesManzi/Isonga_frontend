@@ -401,9 +401,9 @@ useEffect(() => {
                   <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image" />
                 </Link>
                 <div className="shop-card-info">
-                  <h3>{seller.name}</h3>
+                  <h3>{seller.name} Business</h3>
                   <p>{seller.location}</p>
-                  <p>{seller.category} Company</p>
+                  <p>{seller.category}</p>
                   <div className="rating">{renderStars(seller.averageRating)}<span>({seller.numReviews})</span></div>
                   <div className="description-container">
   <p
