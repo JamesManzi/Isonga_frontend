@@ -298,7 +298,6 @@ function Home_Assets() {
             <h4>Quick Links</h4>
             <ul>
               <li><Link to="#">All Products</Link></li>
-              <li><Link to="#">Services</Link></li>
               <li><Link to="#">Assets</Link></li>
               <li><Link to="#">My Cart</Link></li>
             </ul>
