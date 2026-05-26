@@ -26,7 +26,8 @@ function Home_Products() {
   const [popupMessage, setPopupMessage] = useState("");
   const [cartLoading, setCartLoading] = useState(null);
  const [alertMessage, setAlertMessage] = useState("");
-
+ const [expandedCards, setExpandedCards] = useState({});
+  
    // Show alert
   const showAlert = (msg) => {
     setAlertMessage(msg);
@@ -219,7 +220,29 @@ function Home_Products() {
                  <h1>{product.name}</h1>
                 <p><strong>Price:</strong> {product.price} Rwf</p>
                 <p><strong>Quantity:</strong> {product.quantity}</p>
-                <p><strong>{product.description}</strong></p>
+                <div className="description-container">
+  <p
+    className={`product-description ${
+      expandedCards[product._id] ? "expanded" : ""
+    }`}
+  >
+    {product.description}
+  </p>
+
+  {product.description?.length > 120 && (
+    <button
+      className="show-more-btn"
+      onClick={() =>
+        setExpandedCards((prev) => ({
+          ...prev,
+          [product._id]: !prev[product._id],
+        }))
+      }
+    >
+      {expandedCards[product._id] ? "Show Less" : "Show More"}
+    </button>
+  )}
+</div>
 </div>
 <div className="View_Products_btns">
     <button className="chat-btn" onClick={()=>showAlert("Please Login First!")}>
