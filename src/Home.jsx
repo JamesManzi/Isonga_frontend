@@ -15,6 +15,7 @@ function Home() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [alertMessage, setAlertMessage] = useState("");
+  const [expandedCards, setExpandedCards] = useState({});
 
    const productCategories = ["Fashion", "Electronics", "Furniture", "building supplies","Food"];
   const assetCategories = ["RealEstate", "Vehicles"];
@@ -285,9 +286,28 @@ if (loading) {
                     {renderStars(seller.averageRating)}
                     <span>({seller.numReviews})</span>
                   </div>
-                 <p className="seller-description">
-  {seller.description}
-</p>
+                <p
+    className={`seller-description ${
+      expandedCards[seller._id] ? "expanded" : ""
+    }`}
+  >
+    {seller.description}
+  </p>
+
+  {seller.description?.length > 120 && (
+    <button
+      className="show-more-btn"
+      onClick={() =>
+        setExpandedCards((prev) => ({
+          ...prev,
+          [seller._id]: !prev[seller._id],
+        }))
+      }
+    >
+      {expandedCards[seller._id] ? "Show Less" : "Show More"}
+    </button>
+  )}
+</div>
                   <div className="card-actions">
                   < Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">
                       View Listings
@@ -298,7 +318,6 @@ if (loading) {
                       </button>
                   </div>
                 </div>
-              </div>
             );
           })
         ) : (
