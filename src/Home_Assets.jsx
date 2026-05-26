@@ -48,11 +48,6 @@ function Home_Assets() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-        if (!token) {
-        navigate("/buyer_login");
-        return;
-      }
      const res = await api.get(`/api/Home_Assets/${id}`);
       const fetchedProducts = res.data.products;
       setProducts(fetchedProducts);
