@@ -266,7 +266,7 @@ if (!seller) {
           <img src={getFileUrl(selectedImage)} alt="Full view" />
         </div>
       )}
-    </div> // This closes View_Profile
+    </div> 
   );
 }
 
