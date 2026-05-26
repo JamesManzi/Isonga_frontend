@@ -185,8 +185,6 @@ useEffect(() => {
             <ul>
               <li><Link to="/Electronics">Electronics</Link></li>
               <li><Link to="/Furniture">Furniture</Link></li>
-              <li><Link to="/Construction">Construction</Link></li>
-              <li><Link to="/Food">Food</Link></li>
             </ul>
           </nav>
         </div>

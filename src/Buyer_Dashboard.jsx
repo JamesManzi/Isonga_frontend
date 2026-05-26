@@ -402,7 +402,7 @@ useEffect(() => {
                 <div className="shop-card-info">
                   <h3>{seller.name} Shop</h3>
                   <p>{seller.location}</p>
-                  <p>{seller.category} Shop</p>
+                  <p>{seller.category} Company</p>
                   <div className="rating">{renderStars(seller.averageRating)}<span>({seller.numReviews})</span></div>
                   <p>{seller.description}</p>
                   <div className="card-actions">

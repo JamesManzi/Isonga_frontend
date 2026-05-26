@@ -278,7 +278,7 @@ if (loading) {
                                 </Link>
 
                 <div className="shop-card-info">
-                  <h3 className="seller-name">{seller.name} Shop</h3>
+                  <h3 className="seller-name">{seller.name} Company</h3>
                   <p className="seller-location">{seller.location}</p>
                   <p className="seller-category">{seller.category} Shop</p>
                   <div className="rating">
