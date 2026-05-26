@@ -290,10 +290,10 @@ if (loading) {
                   < Link to={getSellerRoute(seller.category, seller._id)}><button className="visit-btn">
                       View Listings
                       </button></Link>
-                     <Link to={`/buyer_chat/${seller._id}`}>
+                     
                      <button className="chat-btn" onClick={()=>showAlert("Please login first!")}>
                       Chat Seller
-                      </button></Link>
+                      </button>
                   </div>
                 </div>
               </div>
