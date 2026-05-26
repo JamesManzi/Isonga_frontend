@@ -22,7 +22,7 @@ function Home() {
   const [orderNotifications, setOrderNotifications] = useState([]);
   const getSellerRoute = (category, id) => {
     if (productCategories.includes(category)) return `/Home_products/${id}`;
-    if (assetCategories.includes(category)) return `/Asset_products/${id}`;
+    if (assetCategories.includes(category)) return `/Home_Assets/${id}`;
     return `/Home_products/${id}`;
   };
 
