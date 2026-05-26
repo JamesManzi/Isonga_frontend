@@ -17,6 +17,18 @@ function Home_Profile() {
   const [numReviews, setNumReviews] = useState(0);
   const [message, setMessage] = useState("");
   const [loading,setLoading]=useState(false)
+  const [alertMessage, setAlertMessage] = useState("");
+
+
+    // Show alert
+  const showAlert = (msg) => {
+    setAlertMessage(msg);
+  };
+
+  // Close alert
+  const closeAlert = () => {
+    setAlertMessage("");
+  };
 
   const navigate = useNavigate();
   // Socket for live rating updates
@@ -182,6 +194,16 @@ if (!seller) {
         </div>
       </div>
 
+      {/* Alert Modal */}
+      {alertMessage && (
+        <div className="alert-overlay">
+          <div className="alert-box">
+            <p>{alertMessage}</p>
+            <button onClick={closeAlert}>OK</button>
+          </div>
+        </div>
+      )}
+
       {/* Ratings */}
       <div className="seller-rating">
         <h3>Ratings & Reviews</h3>
@@ -194,8 +216,8 @@ if (!seller) {
             <FontAwesomeIcon key={star} icon={faStar} color={star <= rating ? "gold" : "gray"} onClick={() => setRating(star)} style={{ cursor: "pointer" }} />
           ))}
           <textarea placeholder="Comment" value={comment} onChange={(e) => setComment(e.target.value)} />
-          <button onClick={submitRating} disabled={loading}>
-  {loading ? "Submiting..." : "submit Rating"}
+          <button onClick={()=>showAlert("Please Login First")}>
+            Submit
 </button>
           {message && <p>{message}</p>}
         </div>
