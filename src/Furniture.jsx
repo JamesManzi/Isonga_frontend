@@ -158,8 +158,6 @@ function Furniture() {
             <ul>
               <li><Link to="/fashion">Fashion</Link></li>
               <li><Link to="/Electronics">Electronics</Link></li>
-              <li><Link to="/Construction">Construction</Link></li>
-              <li><Link to="/Food">Food</Link></li>
             </ul>
           </nav>
         </div>
