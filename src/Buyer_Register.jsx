@@ -112,30 +112,20 @@ function Buyer_Register() {
     className="buyer_reg_logo_img"
   />
 
-  <span className="buyer_reg_badge">Trusted Marketplace</span>
-
-  <h1>Welcome to Isonga Market</h1>
-
-  <h2>Start Your Buyer Journey Today</h2>
-
-  <p className="buyer_reg_intro">
-    Join Isonga Market and discover quality products, trusted services,
-    vehicles, houses, apartments, and more from verified sellers across Rwanda.
-  </p>
-
-  <p className="buyer_reg_shipping">
-    🚚 Enjoy fast and secure delivery services for purchased products.
-  </p>
-
-  <ul className="buyer_reg_feature_list">
-    <li> Wide variety of categories</li>
-    <li> Verified & trusted sellers</li>
-    <li> Safe and secure shopping experience</li>
-    <li> Easy communication with sellers</li>
-    <li>Fast product delivery services</li>
-  </ul>
-</div>
-</div>
+  improve this and give css  <h1>Isonga Market</h1>
+                        <h1>Start buyer Journey</h1>
+                        <p>Join Isonga Market and get access
+                             to the best products services and assets from verified  sellers.</p>
+                             <p>Also you get shipping services for purchased products 
+                             </p>
+                        
+                        <ul className="buyer_reg_feature_list">
+                            <li> Wide variety of categories</li>
+                            <li> Verified & trusted sellers</li>
+                            <li> Secure shopping experience</li>
+                        </ul>
+                    </div>
+                </div>
                 {/* Right Side: Form */}
                 <div className="buyer_reg_form_side">
                     <header className="buyer_reg_header">
