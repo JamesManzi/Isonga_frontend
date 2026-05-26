@@ -246,9 +246,9 @@ function Furniture() {
               </div>
 
               <div className="shop-card-info">
-                <h3 className="seller-name">{seller.name} Shop</h3>
+                <h3 className="seller-name">{seller.name} Business</h3>
                 <p className="seller-location">{seller.location}</p>
-                <p className="seller-category">{seller.category} Shop</p>
+                <p className="seller-category">{seller.category}</p>
                 <div className="rating">
                   <p>{renderStars(seller.averageRating || 0)} ({seller.numReviews || 0})</p>
                 </div>
