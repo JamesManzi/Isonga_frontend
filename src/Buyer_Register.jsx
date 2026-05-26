@@ -105,34 +105,37 @@ function Buyer_Register() {
   className="buyer_reg_logo_img"
   style={{ width: "100px", height: "auto" }} 
 />
-                        <div className="buyer_reg_content">
-  <span className="buyer_reg_badge">Welcome to Isonga Market</span>
+                        <div className="buyer_reg_info_content">
+  <img
+    src="/my_logo1.png"
+    alt="Isonga Market"
+    className="buyer_reg_logo_img"
+  />
 
-  <h1>
-    Start Your Buyer Journey <br />
-    With Confidence
-  </h1>
+  <span className="buyer_reg_badge">Trusted Marketplace</span>
 
-  <p className="buyer_reg_text">
+  <h1>Welcome to Isonga Market</h1>
+
+  <h2>Start Your Buyer Journey Today</h2>
+
+  <p className="buyer_reg_intro">
     Join Isonga Market and discover quality products, trusted services,
-    vehicles, real estate, and more from verified sellers across Rwanda.
+    vehicles, houses, apartments, and more from verified sellers across Rwanda.
   </p>
 
-  <p className="buyer_reg_text">
-    Enjoy secure shopping, fast communication with sellers, and reliable
-    shipping services for your purchased products.
+  <p className="buyer_reg_shipping">
+    🚚 Enjoy fast and secure delivery services for purchased products.
   </p>
 
   <ul className="buyer_reg_feature_list">
-    <li> Wide variety of products & assets</li>
-    <li> Verified and trusted sellers</li>
-    <li> Safe and secure shopping</li>
-    <li> Fast delivery & shipping services</li>
+    <li> Wide variety of categories</li>
+    <li> Verified & trusted sellers</li>
+    <li> Safe and secure shopping experience</li>
     <li> Easy communication with sellers</li>
+    <li>Fast product delivery services</li>
   </ul>
 </div>
 </div>
-
                 {/* Right Side: Form */}
                 <div className="buyer_reg_form_side">
                     <header className="buyer_reg_header">
