@@ -105,14 +105,7 @@ function Buyer_Register() {
   className="buyer_reg_logo_img"
   style={{ width: "100px", height: "auto" }} 
 />
-                        <div className="buyer_reg_info_content">
-  <img
-    src="/my_logo1.png"
-    alt="Isonga Market"
-    className="buyer_reg_logo_img"
-  />
-
-  improve this and give css  <h1>Isonga Market</h1>
+                         <h1>Isonga Market</h1>
                         <h1>Start buyer Journey</h1>
                         <p>Join Isonga Market and get access
                              to the best products services and assets from verified  sellers.</p>
@@ -264,7 +257,6 @@ function Buyer_Register() {
                     </footer>
                 </div>
             </div>
-        </div>
         </div>
     );
 }
