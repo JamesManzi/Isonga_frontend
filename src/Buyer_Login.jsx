@@ -114,7 +114,7 @@ function Buyer_Login() {
 />
             <h1>Isonga Market</h1>
             <p>Discover Shops of All Kind Across Country
-              With Verified Sellers and be Able to Access Products Services and Assets
+              With Verified Sellers and be Able to Access Products  and Assets
               at Suitable Prices
             </p>
           </div>

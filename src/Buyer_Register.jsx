@@ -108,7 +108,7 @@ function Buyer_Register() {
                  <h1>Isonga Market</h1>
                         <h1>Start buyer Journey</h1>
                         <p>Join Isonga Market and get access
-                             to the best products services and assets from verified  sellers.</p>
+                             to the best products  and assets from verified  sellers.</p>
                              <p>Also you get shipping services for purchased products 
                              </p>
                         
