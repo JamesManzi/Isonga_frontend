@@ -283,7 +283,29 @@ useEffect(() => {
                     ({seller.numReviews || 0})
                   </p>
                 </div>
-                <p className="seller-description">{seller.description}</p>
+                <div className="description-container">
+  <p
+    className={`seller-description ${
+      expandedCards[seller._id] ? "expanded" : ""
+    }`}
+  >
+    {seller.description}
+  </p>
+
+  {seller.description?.length > 120 && (
+    <button
+      className="show-more-btn"
+      onClick={() =>
+        setExpandedCards((prev) => ({
+          ...prev,
+          [seller._id]: !prev[seller._id],
+        }))
+      }
+    >
+      {expandedCards[seller._id] ? "Show Less" : "Show More"}
+    </button>
+  )}
+</div>
 
                 <div className="card-actions">
                   <Link to={`/view_products/${seller._id}`}>
