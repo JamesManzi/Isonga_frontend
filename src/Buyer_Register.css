@@ -352,3 +352,61 @@ body {
 }
 
 
+/* GLOBAL FONT */
+body {
+  font-family: "Inter", sans-serif;
+}
+
+/* LEFT SIDE TITLES */
+.buyer_reg_info_content h1 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #111827;
+}
+
+/* FIRST TITLE */
+.buyer_reg_info_content h1:first-of-type {
+  font-size: 2.8rem;
+  color: #2563eb;
+}
+
+/* SECOND TITLE */
+.buyer_reg_info_content h1:last-of-type {
+  font-size: 3.2rem;
+  margin-bottom: 20px;
+}
+
+/* PARAGRAPHS */
+.buyer_reg_info_content p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #4b5563;
+  margin-bottom: 14px;
+  max-width: 520px;
+}
+
+/* FEATURE LIST */
+.buyer_reg_feature_list {
+  margin-top: 25px;
+  list-style: none;
+  padding: 0;
+}
+
+.buyer_reg_feature_list li {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+
+
+.buyer_reg_card {
+  border-radius: 24px;
+}
+
+.buyer_reg_submit_btn {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+}
