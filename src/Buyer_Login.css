@@ -241,3 +241,42 @@ body {
     padding: 25px;
   }
 }
+
+
+/* GLOBAL FONT */
+body {
+  font-family: "Inter", sans-serif;
+}
+
+/* HERO TITLE */
+.buyer-hero-content h1 {
+  font-family: "Poppins", sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: white;
+  margin-bottom: 20px;
+}
+
+/* HERO PARAGRAPH */
+.buyer-hero-content p {
+  font-family: "Inter", sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.9;
+  font-weight: 400;
+  color: rgba(255,255,255,0.92);
+  max-width: 600px;
+}
+
+/* FORM TITLES */
+.buyer-form-header h2 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+}
+
+.buyer-form-header p,
+.buyer-input-group label,
+.buyer-register-redirect,
+.buyer-form-footer {
+  font-family: "Inter", sans-serif;
+}

@@ -112,11 +112,12 @@ function Buyer_Login() {
   className="buyer-hero-logo"
   style={{ width: "100px", height: "auto" }} 
 />
-            <h1>Isonga Market</h1>
-            <p>Discover Shops of All Kind Across Country
-              With Verified Sellers and be Able to Access Products  and Assets
-              at Suitable Prices
-            </p>
+           <h1>Isonga Market</h1>
+
+<p>
+  Discover trusted shops across the country with verified sellers.
+  Explore quality products and valuable assets at affordable prices.
+</p>
           </div>
         </div>
 
