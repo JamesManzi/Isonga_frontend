@@ -195,7 +195,9 @@ function My_Store() {
   const formData = new FormData();
   formData.append("type", editingProduct.type);
   formData.append("name", editingProduct.name);
+  if (editingProduct.price) {
   formData.append("price", Number(editingProduct.price));
+}
   formData.append("location", editingProduct.location);
   formData.append("category", editingProduct.category);
   formData.append("description", editingProduct.description);
@@ -322,7 +324,14 @@ function My_Store() {
 
                 <div className="product-details">
                   <h1>{product.name}</h1>
-                  <p><strong>Price:{product.price}</strong></p>
+                 {product.price !== undefined &&
+ product.price !== null &&
+ product.price !== "" &&
+ Number(product.price) > 0 && (
+  <p>
+    <strong>Price: {product.price} Rwf</strong>
+  </p>
+)}
                   {product.type === "Product" && <p>Quantity: {product.quantity}</p>}
                   <p className="desc-text">{product.description}</p>
                   <div className="My_Store_btns">
