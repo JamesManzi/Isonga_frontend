@@ -246,3 +246,37 @@ body {
     padding: 25px;
   }
 }
+
+
+/* HERO TITLE */
+.hero-content h1 {
+  font-family: "Poppins", sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: white;
+  margin-bottom: 20px;
+}
+
+/* HERO TEXT */
+.hero-content p {
+  font-family: "Inter", sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.9;
+  color: rgba(255,255,255,0.92);
+  max-width: 620px;
+  margin-bottom: 12px;
+}
+
+/* FORM HEADER */
+.form-header h2 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+}
+
+.form-header p,
+.input-group label,
+.register-redirect,
+.form-footer {
+  font-family: "Inter", sans-serif;
+}

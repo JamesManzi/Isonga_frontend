@@ -120,8 +120,15 @@ function Login() {
   style={{ width: "100px", height: "auto" }} 
 />
             <h1>Isonga Market</h1>
-            <p>Empowering Rwandan entrepreneurs to reach more customers, faster.</p>
-            <p>Get Connected With Customers Nationwide Online.</p>
+
+<p>
+  Empowering Rwandan entrepreneurs to grow their businesses
+  and reach more customers faster.
+</p>
+
+<p>
+  Connect with buyers nationwide and sell your products online with confidence.
+</p>
           </div>
         </div>
 
