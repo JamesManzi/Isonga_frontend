@@ -213,8 +213,22 @@ function Home_Products() {
               {/* PRODUCT INFO */}
               <div className="product-info">
                  <h1>{product.name}</h1>
-                <p><strong>Price:</strong> {product.price} Rwf</p>
-                <p><strong>Quantity:</strong> {product.quantity}</p>
+                {product.price !== undefined &&
+ product.price !== null &&
+ product.price !== "" &&
+ Number(product.price) > 0 && (
+  <p>
+    <strong>Price:</strong> {product.price} Rwf
+  </p>
+)}
+                {product.quantity !== undefined &&
+ product.quantity !== null &&
+ product.quantity !== "" &&
+ Number(product.quantity) > 0 && (
+  <p>
+    <strong>Quantity:</strong> {product.quantity}
+  </p>
+)}
                 <div className="description-container">
   <p
     className={`product-description ${
