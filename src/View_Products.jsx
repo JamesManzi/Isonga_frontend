@@ -311,7 +311,6 @@ function View_Products() {
               <h4>Quick Links</h4>
               <ul>
                 <li><Link to="/fashion">All Products</Link></li>
-                <li><Link to="/services">Services</Link></li>
                 <li><Link to="/RealEstate">Assets</Link></li>
                 <li><Link to="/cart">My Cart</Link></li>
               </ul>
