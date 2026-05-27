@@ -52,7 +52,7 @@ function Register() {
   };
 
   const categoryOptions = {
-    Product: ["Fashion", "Electronics", "Furniture", "Food", "building supplies"],
+    Product: ["Fashion", "Electronics", "Furniture"],
     Asset: ["RealEstate", "Vehicles"],
   };
 
