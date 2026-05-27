@@ -332,7 +332,15 @@ function My_Store() {
     <strong>Price: {product.price} Rwf</strong>
   </p>
 )}
-                  {product.type === "Product" && <p>Quantity: {product.quantity}</p>}
+                  {product.type === "Product" &&
+ product.quantity !== undefined &&
+ product.quantity !== null &&
+ product.quantity !== "" &&
+ Number(product.quantity) > 0 && (
+  <p>
+    <strong>Quantity:</strong> {product.quantity}
+  </p>
+)}
                   <p className="desc-text">{product.description}</p>
                   <div className="My_Store_btns">
                     <button className="delete" onClick={() => confirmDelete(product._id)}>Delete</button>
@@ -414,7 +422,6 @@ function My_Store() {
                     quantity: e.target.value,
                   })
                 }
-                required
               />
           </div>
       </div>
@@ -423,7 +430,7 @@ function My_Store() {
 
                             <div className="modern-input-group">
                                 <label>Description</label>
-                                <textarea value={editingProduct.description} onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})} required></textarea>
+                                <textarea value={editingProduct.description} onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}></textarea>
                             </div>
 
                             <div className="modern-multi-upload">
