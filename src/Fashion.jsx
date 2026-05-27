@@ -15,7 +15,8 @@ function Fashion() {
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
   const navigate = useNavigate(); // FIX: Added missing navigate initialization
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
-  
+  const [expandedCards, setExpandedCards] = useState({});
+
   const [cartCount, setCartCount] = useState(0);
 
   const fetchCartCount = async () => {

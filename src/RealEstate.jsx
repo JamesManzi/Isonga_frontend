@@ -21,7 +21,8 @@ function RealEstate() {
   const [currentImageIndex, setCurrentImageIndex] = useState({});
   const [modalMedia, setModalMedia] = useState({ sellerId: null, index: 0 });
   const [cartCount, setCartCount] = useState(0);
-
+  const [expandedCards, setExpandedCards] = useState({});
+  
   // --- Cart Count Logic ---
   const fetchCartCount = async () => {
     try {
