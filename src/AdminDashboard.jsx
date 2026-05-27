@@ -577,7 +577,7 @@ useEffect(() => {
 
         </Link>
 
-         <div className="views">
+         <div className="footer_item">
 
   <FontAwesomeIcon icon={faChartLine} />
 
