@@ -194,7 +194,14 @@ function Home_Assets() {
                 </div>
 
                 <h1>{product.name}</h1>
-                <p><strong>Price:</strong> {product.price} Rwf</p>
+                {product.price !== undefined &&
+ product.price !== null &&
+ product.price !== "" &&
+ Number(product.price) > 0 && (
+  <p>
+    <strong>Price:</strong> {product.price} Rwf
+  </p>
+)}
                 <div className="description-container">
   <p
     className={`product-description ${
