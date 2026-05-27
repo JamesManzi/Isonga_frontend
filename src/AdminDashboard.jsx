@@ -551,7 +551,7 @@ useEffect(() => {
 
           <FontAwesomeIcon icon={faChartLine} />
 
-          <h2>Dashboard</h2>
+          <h2>New Orders</h2>
 
         </Link>
 
