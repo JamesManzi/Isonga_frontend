@@ -577,13 +577,15 @@ useEffect(() => {
 
         </Link>
 
-        <div className="orders">
-          
-          <FontAwesomeIcon icon={faChartLine} />
+         <div className="views">
 
-          <h2> New Orders</h2>
-          {stats?.newOrders}
-        </div>
+  <FontAwesomeIcon icon={faChartLine} />
+
+  <p>New Orders</p>
+
+  <h2>{stats?.newOrders || 0}</h2>
+
+</div>
       </div>
 
     </div>
