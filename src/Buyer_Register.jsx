@@ -105,18 +105,23 @@ function Buyer_Register() {
     className="buyer_reg_logo_img"
   />
 
-                 <h1>Isonga Market</h1>
-                        <h1>Start buyer Journey</h1>
-                        <p>Join Isonga Market and get access
-                             to the best products  and assets from verified  sellers.</p>
-                             <p>Also you get shipping services for purchased products 
-                             </p>
-                        
-                        <ul className="buyer_reg_feature_list">
-                            <li> Wide variety of categories</li>
-                            <li> Verified & trusted sellers</li>
-                            <li> Secure shopping experience</li>
-                        </ul>
+                <h1>Isonga Market</h1>
+<h1>Start Your Buyer Journey</h1>
+
+<p>
+  Join Isonga Market and discover quality products and valuable assets
+  from trusted and verified sellers.
+</p>
+
+<p>
+  Enjoy secure shopping and reliable shipping services for your purchases.
+</p>
+
+<ul className="buyer_reg_feature_list">
+  <li>Wide variety of categories</li>
+  <li>Verified & trusted sellers</li>
+  <li>Secure shopping experience</li>
+</ul>
                     </div>
                 </div>
                 {/* Right Side: Form */}
