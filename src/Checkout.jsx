@@ -101,14 +101,18 @@ function Checkout() {
     }
 
     // validate proofs
-    if (form.paymentMethod !== "cash") {
-      for (let s of sellers) {
-        if (!sellerPayments[s._id]?.file) {
-          setError("Upload payment proof for each seller");
-          return;
-        }
-      }
+   // validate proofs
+if (form.paymentMethod !== "cash") {
+  for (let s of sellers) {
+    const totalForSeller = sellerTotals[s._id] || 0;
+
+    // ONLY require a file if the user actually owes this seller money!
+    if (totalForSeller > 0 && !sellerPayments[s._id]?.file) {
+      setError(`Upload payment proof for ${s.name}`);
+      return;
     }
+  }
+}
 
     try {
       setPlacingOrder(true);
@@ -234,21 +238,26 @@ function Checkout() {
               <div key={s._id} className="seller-card">
                 <h3>Seller:{s.name}</h3>
 
-                {/*  SHOW AMOUNT */}
-                <p><strong>Amount:</strong> {sellerTotals[s._id] || 0} Rwf</p>
+                {/* SHOW AMOUNT */}
+<p><strong>Amount:</strong> {sellerTotals[s._id] || 0} Rwf</p>
 
-                {/*  DIAL CODE WITH AMOUNT */}
-                <p>
-                  Dial: *182*1*1*{s.phone}*{sellerTotals[s._id] || 0}# Then Upload Screenshot
-                </p>
+{/* DIAL CODE WITH AMOUNT */}
+{(sellerTotals[s._id] || 0) > 0 ? (
+  <p>
+    Dial: *182*1*1*{s.phone}*{sellerTotals[s._id]}# Then Upload Screenshot
+  </p>
+) : (
+  <p style={{ color: "green" }}>Free item/order — No payment upload required.</p>
+)}
 
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    handleSellerFileChange(s._id, e.target.files[0])
-                  }
-                />
+{/* Only show file input if amount > 0 */}
+{(sellerTotals[s._id] || 0) > 0 && (
+  <input
+    type="file"
+    accept="image/*"
+    onChange={(e) => handleSellerFileChange(s._id, e.target.files[0])}
+  />
+)}
 
                 {sellerPayments[s._id]?.preview && (
                   <img
