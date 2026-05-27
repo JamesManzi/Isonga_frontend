@@ -63,6 +63,7 @@ import Business_Services from "./Business_Services";
 import Home_Products from "./Home_Products";
 import Home_Assets from "./Home_Assets";
 import Home_Profile from "./Home_Profile";
+import AdminPendingOrders from "./AdminPendingOrders";
 function App(){
   return(
     <div>
@@ -132,6 +133,7 @@ function App(){
          <Route path="/Home_products/:id" element={<Home_Products/>}/>
          <Route path="/Home_Assets/:id" element={<Home_Assets/>}/>
          <Route path="/Home_profile/:id" element={<Home_Profile/>}/>
+         <Route path="/AdminPendingOrders" element={<AdminPendingOrders/>}/>
       </Routes>
       </BrowserRouter>
       </HelmetProvider>

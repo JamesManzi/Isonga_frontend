@@ -545,11 +545,11 @@ useEffect(() => {
       <div className="Dashboard_footer">
 
         <Link
-          to="/admin/dashboard"
+          to="/AdminPendingOrders"
           className="footer_item"
         >
 
-          <FontAwesomeIcon icon={faHome} />
+          <FontAwesomeIcon icon={faChartLine} />
 
           <h2>Dashboard</h2>
 
