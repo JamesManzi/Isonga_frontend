@@ -107,10 +107,10 @@ function Buyer_Login() {
           <div className="buyer-hero-overlay"></div>
           <div className="buyer-hero-content">
              <img 
-  src="/my_logo1.png" 
+  src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
   className="buyer-hero-logo"
-  style={{ width: "100px", height: "auto" }} 
+  style={{ width: "110px", height: "auto",borderRadius:"50%" }} 
 />
            <h1>Isonga Market</h1>
 

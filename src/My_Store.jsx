@@ -41,6 +41,7 @@ function My_Store() {
   const [productToDelete, setProductToDelete] = useState(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewFiles, setPreviewFiles] = useState([]);
+  const [expandedCards, setExpandedCards] = useState({});
 
   // 1. Fetch Store Data
   useEffect(() => {
@@ -259,9 +260,9 @@ function My_Store() {
       <div className="My_Store_navbar">
         <div className="My_Store_logo">
           <img 
-  src="/my_logo1.png" 
+  src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto" }} 
+  style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
 />
           <div className="My_Store_heads">
             <h1>Isonga</h1>
@@ -341,7 +342,30 @@ function My_Store() {
     <strong>Quantity:</strong> {product.quantity}
   </p>
 )}
-                  <p className="desc-text">{product.description}</p>
+                <div className="description-container">
+  <p
+    className={`seller-description ${
+      expandedCards[product._id] ? "expanded" : ""
+    }`}
+  >
+    {product.description}
+  </p>
+
+  {product.description?.length > 120 && (
+    <button
+      className="show-more-btn"
+      onClick={() =>
+        setExpandedCards((prev) => ({
+          ...prev,
+          [product._id]: !prev[product._id],
+        }))
+      }
+    >
+      {expandedCards[product._id] ? "Show Less" : "Show More"}
+    </button>
+  )}
+</div>
+
                   <div className="My_Store_btns">
                     <button className="delete" onClick={() => confirmDelete(product._id)}>Delete</button>
                     <button className="update" onClick={() => {

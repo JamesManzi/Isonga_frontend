@@ -211,9 +211,9 @@ function Register() {
         <div className="modern-reg-sidebar">
           <div className="sidebar-branding">
             <img 
-              src="/my_logo1.png" 
+              src="/isonga_logo.png" 
               alt="Isonga Market Logo" 
-              style={{ width: "100px", height: "auto" }} 
+              style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
             />
             <h2>
               Isonga <span>Market</span>

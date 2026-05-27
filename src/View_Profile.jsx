@@ -148,9 +148,9 @@ if (!seller) {
       <div className="Seller_Profile_navbar">
         <div className="Seller_profile_logos">
           <img 
-  src="/my_logo1.png" 
+  src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto" }} 
+  style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
 />
         </div>
         <div className="seller_profile_heads"><h1>Isonga</h1><h2>Market</h2></div>

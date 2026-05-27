@@ -114,10 +114,10 @@ function Login() {
           <div className="hero-overlay"></div>
           <div className="hero-content">
             <img 
-  src="/my_logo1.png" 
+  src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
   className="hero-logo" 
-  style={{ width: "100px", height: "auto" }} 
+  style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
 />
             <h1>Isonga Market</h1>
 

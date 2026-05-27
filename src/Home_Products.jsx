@@ -148,9 +148,9 @@ function Home_Products() {
       <div className="View_Products_navbar">
         <div className="View_Products_logo">
            <img 
-  src="/my_logo1.png" 
+  src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto" }} 
+  style={{ width: "120px", height: "auto" }} 
 />
           <div className="View_Products_heads"><h1>Isonga</h1><h2>Market</h2></div>
         </div>
@@ -316,9 +316,9 @@ function Home_Products() {
             <div className="Footer_Section">
               <div className="Footer_Logo">
                  <img 
-  src="/my_logo1.png" 
+  src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto" }} 
+  style={{ width: "120px", height: "auto",borderRadius:"50%" }} 
 />
                 <h3>Isonga Market</h3></div>
               <p>© {new Date().getFullYear()} Isonga Market • Built for growth 🚀</p>

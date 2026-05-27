@@ -103,9 +103,9 @@ function HelpCenter() {
         <div className="Footer_Content">
           <div className="Footer_Info">
             <img 
-  src="/my_logo1.png" 
+  src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto" }} 
+  style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
 />
             <p>Connecting Rwanda's buyers and sellers safely.</p>
           </div>

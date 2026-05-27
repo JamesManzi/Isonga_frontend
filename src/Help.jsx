@@ -44,7 +44,7 @@ function Help() {
       {/* Clean Navbar: Brand + Login + 2 Signups */}
       <nav className="Landing_Navbar">
         <div className="Navbar_Brand">
-          <img src="/logo.png" alt="Isonga Logo" />
+          <img src="/isonga_logo.png" alt="Isonga Logo"  style={{width:"120px",height:"100px"}}/>
           <div className="Brand_Text">
             <h1>Isonga</h1>
             <span>Market</span>
@@ -106,7 +106,7 @@ function Help() {
       <footer className="Landing_Footer">
         <div className="Footer_Content">
           <div className="Footer_Info">
-            <img src="/logo.png" alt="Logo" />
+            <img src="/isonga_logo.png" alt="Logo" style={{width:"100px",height:"auto",borderRadius:"50%"}} />
             <p>Connecting Rwanda's buyers and sellers safely.</p>
           </div>
           <div className="Footer_Payments">

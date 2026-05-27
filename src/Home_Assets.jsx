@@ -132,9 +132,9 @@ function Home_Assets() {
       <div className="Asset_Products_navbar">
         <div className="Asset_Products_logo">
            <img 
-  src="/my_logo1.png" 
+  src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto" }} 
+  style={{ width: "120px", height: "auto",borderRadius:"50px" }} 
 />
           <div className="Asset_Products_heads"><h1>Isonga</h1><h2>Market</h2></div>
         </div>
@@ -293,9 +293,9 @@ function Home_Assets() {
           <div className="Asset_Products-Footer_Section">
             <div className="Asset_Products-Footer_Logo">
                <img 
-  src="/my_logo1.png" 
+  src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto" }} 
+  style={{ width: "100px", height: "auto",borderRadius:"50px" }} 
 />
               <h3>Isonga Market</h3>
             </div>

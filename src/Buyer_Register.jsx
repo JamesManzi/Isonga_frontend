@@ -100,9 +100,10 @@ function Buyer_Register() {
                 <div className="buyer_reg_info_side">
                     <div className="buyer_reg_info_content">
   <img
-    src="/my_logo1.png"
+    src="/isonga_logo.png"
     alt="Isonga Market"
     className="buyer_reg_logo_img"
+    style={{width:"110px",height:"auto",borderRadius:"50%"}}
   />
 
                 <h1>Isonga Market</h1>
