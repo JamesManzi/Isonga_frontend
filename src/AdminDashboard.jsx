@@ -577,17 +577,13 @@ useEffect(() => {
 
         </Link>
 
-        <Link
-          to="/AdminOrders"
-          className="footer_item"
-        >
-
+        <div className="orders">
+          
           <FontAwesomeIcon icon={faChartLine} />
 
-          <h2>Orders</h2>
-
-        </Link>
-
+          <h2> New Orders</h2>
+          {stats?.newOrders}
+        </div>
       </div>
 
     </div>
