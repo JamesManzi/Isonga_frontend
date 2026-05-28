@@ -121,16 +121,7 @@ function My_Store() {
       : `https://api.isongamarket.com/uploads/${path}`;
   };
 // 1. Add these validation constants right above your handleFileChange function
-  const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
-  const ACCEPTED_FORMATS = [
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/gif",
-    "video/mp4",
-    "video/webm",
-    "video/ogg"
-  ];
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
   // 2. Replace your old handleFileChange with this protected version
   const handleFileChange = (e) => {
@@ -141,15 +132,11 @@ function My_Store() {
     newFiles.forEach((file) => {
       // Check file size (20MB)
       if (file.size > MAX_FILE_SIZE) {
-        alert(`${file.name} is too large. Max size is 20MB.`);
+        alert(`${file.name} is too large. Max size is 50MB.`);
         return;
       }
 
-      // Check file format
-      if (!ACCEPTED_FORMATS.includes(file.type)) {
-        alert(`${file.name} format is not supported.`);
-        return;
-      }
+      
 
       validFiles.push(file);
       newPreviews.push({
