@@ -20,7 +20,7 @@ const [showPassword,setShowPassword]=useState(false);
 const [message, setMessage] = useState({ text: "", type: "" });
 
 const [isZoomed, setIsZoomed] = useState(false);
- const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
+  const rule = /^(?=.*\d).{6,}$/;
 const togglePassword=()=>{
   setShowPassword(prev=>!prev)
 }

@@ -19,7 +19,7 @@ function Buyer_Register() {
     const [showPassword,setShowPassword]=useState(false);
     const [agreed, setAgreed] = useState(false);
     const navigate = useNavigate();
-    const rule = /^(?=.{10,})(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
+     const rule = /^(?=.*\d).{6,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const togglePassword=()=>{
         setShowPassword(prev=>!prev)
