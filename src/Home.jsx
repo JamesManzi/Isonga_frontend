@@ -183,8 +183,6 @@ if (loading) {
   style={{ width: "120px", height: "auto" }} 
 />
           <div className="Home_heads">
-            <h1>Isonga</h1>
-            <h2>Market</h2>
           </div>
         </div>
         <nav>

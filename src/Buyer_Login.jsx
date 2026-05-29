@@ -110,9 +110,8 @@ function Buyer_Login() {
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
   className="buyer-hero-logo"
-  style={{ width: "110px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "150px", height: "auto",borderRadius:"50%" }} 
 />
-           <h1>Isonga Market</h1>
 
 <p>
   Discover trusted shops across the country with verified sellers.
