@@ -136,7 +136,7 @@ function Home_Assets() {
   alt="Isonga Market Logo" 
   style={{ width: "120px", height: "auto",borderRadius:"50px" }} 
 />
-          <div className="Asset_Products_heads"><h1>Isonga</h1><h2>Market</h2></div>
+          
         </div>
         <div className="Asset_Products_back" onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>
           <FontAwesomeIcon icon={faArrowRight} />
@@ -295,9 +295,9 @@ function Home_Assets() {
                <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto",borderRadius:"50px" }} 
+  style={{ width: "120px", height: "auto",borderRadius:"50px" }} 
 />
-              <h3>Isonga Market</h3>
+              
             </div>
             <p>The leading digital marketplace in Rwanda.</p>
           </div>

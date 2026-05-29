@@ -213,11 +213,9 @@ function Register() {
             <img 
               src="/isonga_logo.png" 
               alt="Isonga Market Logo" 
-              style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
+              style={{ width: "200px", height: "auto",borderRadius:"50%" }} 
             />
-            <h2>
-              Isonga <span>Market</span>
-            </h2>
+            
           </div>
 
           <div className="step-list">

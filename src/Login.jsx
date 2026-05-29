@@ -117,9 +117,9 @@ function Login() {
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
   className="hero-logo" 
-  style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "160px", height: "auto",borderRadius:"50%" }} 
 />
-            <h1>Isonga Market</h1>
+           
 
 <p>
   Empowering Rwandan entrepreneurs to grow their businesses

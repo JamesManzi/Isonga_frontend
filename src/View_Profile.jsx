@@ -150,10 +150,10 @@ if (!seller) {
           <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "140px", height: "auto",borderRadius:"50%" }} 
 />
         </div>
-        <div className="seller_profile_heads"><h1>Isonga</h1><h2>Market</h2></div>
+        <div className="seller_profile_heads"></div>
         <div className="seller_profile_logout"><button onClick={()=>navigate(-1)}>
           <FontAwesomeIcon icon={faArrowRight} />
           </button></div>

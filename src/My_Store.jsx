@@ -252,8 +252,6 @@ function My_Store() {
   style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
 />
           <div className="My_Store_heads">
-            <h1>Isonga</h1>
-            <h2>Market</h2>
           </div>
         </div>
         <div className="My_Store_back">

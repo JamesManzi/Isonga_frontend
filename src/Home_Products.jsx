@@ -150,9 +150,9 @@ function Home_Products() {
            <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "120px", height: "auto" }} 
+  style={{ width: "140px", height: "auto" }} 
 />
-          <div className="View_Products_heads"><h1>Isonga</h1><h2>Market</h2></div>
+          <div className="View_Products_heads"></div>
         </div>
         <div className="View_Products_back" onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>
           <FontAwesomeIcon icon={faArrowRight} />
@@ -318,9 +318,9 @@ function Home_Products() {
                  <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "120px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "140px", height: "auto",borderRadius:"50%" }} 
 />
-                <h3>Isonga Market</h3></div>
+               </div>
               <p>© {new Date().getFullYear()} Isonga Market • Built for growth 🚀</p>
             </div>
             {/* Footer content remains same */}

@@ -130,7 +130,7 @@ if (!seller) {
           <img 
           src="/isonga_logo.png"
   alt="Isonga Market Logo" 
-  style={{ width: "120px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "140px", height: "auto",borderRadius:"50%" }} 
 />
         </div>
         <div className="seller_profile_heads"><h1>Isonga</h1><h2>Market</h2></div>

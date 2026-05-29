@@ -46,8 +46,6 @@ function Help() {
         <div className="Navbar_Brand">
           <img src="/isonga_logo.png" alt="Isonga Logo"  style={{width:"120px",height:"100px"}}/>
           <div className="Brand_Text">
-            <h1>Isonga</h1>
-            <span>Market</span>
           </div>
         </div>
         

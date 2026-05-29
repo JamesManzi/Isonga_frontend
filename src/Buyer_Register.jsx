@@ -106,7 +106,7 @@ function Buyer_Register() {
     style={{width:"110px",height:"auto",borderRadius:"50%"}}
   />
 
-                <h1>Isonga Market</h1>
+               
 <h1>Start Your Buyer Journey</h1>
 
 <p>
