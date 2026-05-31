@@ -41,7 +41,7 @@ function Add_Product() {
 
   const [message, setMessage] = useState("");
 
-  const MAX_FILE_SIZE = 20 * 1024 * 1024;
+  const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 
   const handleFileChange = (e) => {
@@ -51,7 +51,7 @@ function Add_Product() {
 
     selectedFiles.forEach((file) => {
       if (file.size > MAX_FILE_SIZE) {
-        alert(`${file.name} is too large. Max size is 20MB.`);
+        alert(`${file.name} is too large. Max size is 50MB.`);
         return;
       }
 
@@ -78,11 +78,6 @@ function Add_Product() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (files.length < 2) {
-      alert("Upload at least two images or videos.");
-      return;
-    }
 
     const formData = new FormData();
     formData.append("type", type);
