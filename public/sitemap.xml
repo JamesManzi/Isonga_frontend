@@ -6,15 +6,18 @@
 </url>
 
 <url>
-  <loc>https://www.isongamarket.com/Home_products/123</loc>
+  <loc>https://www.isongamarket.com/buyer_login</loc>
 </url>
 
 <url>
-  <loc>https://www.isongamarket.com/Home_Assets/456</loc>
+  <loc>https://www.isongamarket.com/buyer_register</loc>
 </url>
 
 <url>
-  <loc>https://www.isongamarket.com/Home_profile/789</loc>
+  <loc>https://www.isongamarket.com/register</loc>
+</url>
+<url>
+  <loc>https://www.isongamarket.com/login</loc>
 </url>
 
 </urlset>

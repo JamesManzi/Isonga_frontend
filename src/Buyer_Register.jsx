@@ -107,7 +107,6 @@ function Buyer_Register() {
   />
 
                
-<h1>Start Your Buyer Journey</h1>
 
 <p>
   Join Isonga Market and discover quality products and valuable assets
