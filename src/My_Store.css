@@ -1,419 +1,833 @@
-/* ===== GLOBAL ===== */
-body {
-  margin: 0;
-  font-family: "Inter", sans-serif;
-  background: #f6f8fb;
+/* ==========================================================================
+   GLOBAL STYLES & LAYOUT RESET
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.My_Store {
+  width: 100%;
+  min-height: 100vh;
+  background: #f5f7fb;
+  font-family: "Poppins", sans-serif;
+  color: #1e293b;
+  box-sizing: border-box;
 }
 
-/* ===== LOADING ===== */
-.store-loading {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.My_Store * {
+  box-sizing: border-box;
 }
 
-.spinner {
-  width: 45px;
-  height: 45px;
-  border: 4px solid #ddd;
-  border-top: 4px solid #4f46e5;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-
-/* ===== NAVBAR ===== */
+/* ==========================================================================
+   STICKY STYLISH NAVBAR
+   ========================================================================== */
 .My_Store_navbar {
+  width: 100%;
+  padding: 10px 4%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
-  background: white;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  max-height: 75px;
 }
 
 .My_Store_logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .My_Store_logo img {
-  width: 45px;
-}
-
-.My_Store_heads h1 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.My_Store_heads h2 {
-  margin: 0;
-  font-size: 14px;
-  color: gray;
+  display: block;
 }
 
 .My_Store_back a {
-  font-size: 20px;
-  color: #4f46e5;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, background 0.25s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  cursor: pointer;
+  text-decoration: none;
 }
 
-/* ===== HEADER ===== */
+.My_Store_back a:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #1d4ed8, #4338ca);
+}
+
+/* ==========================================================================
+   HERO / GREETING SECTION
+   ========================================================================== */
 .My_Store_body {
   text-align: center;
-  padding: 30px 10px;
+  padding: 24px 20px 8px;
+}
+
+.My_Store_body h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px 0;
 }
 
 .My_Store_body p {
-  color: gray;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+  margin: 0;
 }
 
-/* ===== SEARCH ===== */
+/* ==========================================================================
+   SEARCH BAR COMPONENT
+   ========================================================================== */
 .Buyer_Dashboard_search {
+  width: 92%;
+  max-width: 500px;
+  margin: 15px auto 25px;
+  background: white;
+  border-radius: 20px;
+  padding: 6px;
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 30px;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
 }
 
 .Buyer_Dashboard_search input {
-  width: 320px;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
+  flex: 1;
+  border: none;
   outline: none;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  border-radius: 14px;
+  background: #f1f5f9;
+  color: #1e293b;
 }
 
 .Buyer_Dashboard_search button {
-  padding: 14px 22px;
   border: none;
-  border-radius: 12px;
-  background: #4f46e5;
+  padding: 0 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
+  font-size: 0.88rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .Buyer_Dashboard_search button:hover {
-  background: #4338ca;
+  opacity: 0.95;
 }
 
-/* ===== PRODUCTS GRID ===== */
+/* ==========================================================================
+   INVENTORY GRID LAYOUT
+   ========================================================================== */
 .store_container {
+  width: 92%;
+  margin: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
-  padding: 20px 40px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 0 0 40px;
+  align-items: stretch;
 }
 
-/* ===== PRODUCT CARD ===== */
+.no-products {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   PRODUCT CARDS
+   ========================================================================== */
 .productcard {
   background: white;
-  border-radius: 18px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  transition: 0.3s;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid #e2e8f0;
 }
 
 .productcard:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== IMAGE ===== */
+/* --- Media / Image Slider Wrapper --- */
 .image-slider {
   position: relative;
+  width: 100%;
+  height: 190px;
+  background: #f8f9fa;
+  overflow: hidden;
 }
 
 .product-media {
   width: 100%;
-  height: 230px;
+  height: 190px;
   object-fit: cover;
   cursor: pointer;
+  display: block;
 }
 
+/* Floating Type Tag Base Accent */
 .type-tag {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(79,70,229,0.9);
+  top: 8px;
+  left: 8px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
   color: white;
-  padding: 6px 14px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
   border-radius: 20px;
-  font-size: 12px;
+  z-index: 5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* ===== DETAILS ===== */
+/* --- Product Meta Card Details --- */
 .product-details {
-  padding: 18px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
 }
 
 .product-details h1 {
-  font-size: 18px;
-  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #0f172a;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
 }
 
 .product-details p {
-  margin: 5px 0;
-  font-size: 14px;
-  color: #555;
+  margin: 0;
+  color: #475569;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
-.desc-text {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #777;
+/* Distinct Highlight Color Rules for Currencies */
+.product-details p:has(strong:contains("Price")) {
+  font-size: 1.05rem;
+  color: #e67e22;
+  font-weight: 700;
+  margin-top: 2px;
 }
 
-/* ===== BUTTONS ===== */
+.product-details p strong {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* --- Description Layer Toggle Truncation --- */
+.description-container {
+  margin-top: 4px;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 6px;
+}
+
+.seller-description {
+  font-size: 0.8rem !important;
+  color: #64748b !important;
+  margin: 0 !important;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seller-description.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.show-more-btn {
+  border: none;
+  background: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0;
+  margin-top: 2px;
+  display: block;
+  text-align: left;
+}
+
+.show-more-btn:hover {
+  text-decoration: underline;
+}
+
+/* --- Card Dashboard Button Interfaces --- */
 .My_Store_btns {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
 }
 
 .My_Store_btns button {
   flex: 1;
-  padding: 12px;
-  border-radius: 10px;
   border: none;
+  padding: 8px 4px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
-  font-size: 14px;
+  transition: all 0.2s ease;
 }
 
-.delete {
-  background: #ef4444;
+.My_Store_btns .delete {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.My_Store_btns .delete:hover {
+  background: #fca5a5;
+  color: #b91c1c;
+}
+
+.My_Store_btns .update {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
 }
 
-.delete:hover {
-  background: #dc2626;
+.My_Store_btns .update:hover {
+  opacity: 0.95;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 }
 
-.update {
-  background: #10b981;
-  color: white;
-}
-
-.update:hover {
-  background: #059669;
-}
-
-/* ===== EMPTY ===== */
-.no-products {
-  text-align: center;
-  grid-column: 1/-1;
-  color: gray;
-}
-
-/* ===== MODAL ===== */
+/* ==========================================================================
+   MODERN MANAGEMENT PORTAL WINDOW (UPDATE MODAL)
+   ========================================================================== */
 .modern-reg-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  overflow-y: auto;
-  background: rgba(0,0,0,0.85);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 10px;
   backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease-out;
 }
 
 .modern-reg-container {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  width: 95%;
-  max-width: 1100px;
+  width: 92%;
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ===== FORM ===== */
+.modern-reg-main {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-content-wrap {
+  padding: 32px;
+}
+
+.form-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 16px;
+}
+
 .form-header h1 {
-  font-size: 24px;
-  margin: 0;
+  font-size: 1.5rem;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  font-weight: 700;
 }
 
 .form-header p {
-  color: gray;
-  margin-top: 5px;
+  color: #64748b;
+  font-size: 0.88rem;
+  margin: 0;
 }
 
+/* --- Responsive Form Inputs Grid --- */
 .modern-form {
-  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .modern-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
 }
 
 .modern-input-group {
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 
 .modern-input-group label {
-  font-size: 13px;
-  margin-bottom: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
 }
 
-/* INPUT */
 .input-with-icon {
+  position: relative;
   display: flex;
   align-items: center;
-  background: #f3f4f6;
-  padding: 14px;
-  border-radius: 12px;
-  gap: 10px;
+}
+
+.input-with-icon svg {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  font-size: 0.9rem;
 }
 
 .input-with-icon input,
-.input-with-icon select {
-  border: none;
-  background: transparent;
+.modern-input-group textarea {
   width: 100%;
+  padding: 10px 14px 10px 40px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #f8fafc;
+  color: #1e293b;
+  transition: all 0.2s ease;
   outline: none;
-  font-size: 15px;
 }
 
-/* TEXTAREA */
-textarea {
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  resize: none;
-  min-height: 120px;
-  font-size: 15px;
+.modern-input-group textarea {
+  padding: 12px;
+  min-height: 100px;
+  resize: vertical;
 }
 
-/* ===== UPLOAD ===== */
+.input-with-icon input:focus,
+.modern-input-group textarea:focus {
+  border-color: #2563eb;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* --- Multi-File Custom Dropzone --- */
+.modern-multi-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modern-multi-upload label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
+}
+
 .multi-upload-trigger {
-  border: 2px dashed #ccc;
-  padding: 25px;
-  text-align: center;
+  border: 2px dashed #cbd5e1;
+  padding: 24px;
   border-radius: 12px;
+  text-align: center;
+  background: #f8fafc;
   cursor: pointer;
-  margin-bottom: 10px;
-  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 
 .multi-upload-trigger:hover {
-  border-color: #4f46e5;
+  border-color: #2563eb;
+  background: #eff6ff;
 }
 
+.multi-upload-trigger svg {
+  font-size: 1.8rem;
+  color: #2563eb;
+}
+
+.multi-upload-trigger span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+/* --- Media Preview Galleries Grid --- */
 .modern-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
   gap: 10px;
+  margin-top: 10px;
 }
 
 .gallery-item {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  overflow: hidden;
   position: relative;
+  background: #000;
+  border: 1px solid #e2e8f0;
 }
 
 .gallery-item img,
 .gallery-item video {
   width: 100%;
-  height: 90px;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
 }
 
 .remove-preview-btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  background: red;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.9);
   color: white;
   border: none;
-  border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
-/* ===== ACTIONS ===== */
+.remove-preview-btn:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+/* --- Form Actions Section Triggers --- */
 .form-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 25px;
+  gap: 12px;
+  margin-top: 12px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 20px;
 }
 
-.modern-submit-btn,
-.modern-cancel-btn {
-  flex: 1;
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  font-size: 15px;
+.form-actions button {
+  padding: 11px 24px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .modern-submit-btn {
-  background: #4f46e5;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
+  border: none;
+  flex: 2;
+}
+
+.modern-submit-btn:hover:not(:disabled) {
+  opacity: 0.95;
+}
+
+.modern-submit-btn:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
 }
 
 .modern-cancel-btn {
-  background: #e5e7eb;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  flex: 1;
 }
 
-/* ===== DELETE MODAL ===== */
+.modern-cancel-btn:hover {
+  background: #e2e8f0;
+}
+
+/* ==========================================================================
+   ZOOM LIGHTBOX MODAL
+   ========================================================================== */
+.media-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.94);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-media {
+  width: 90%;
+  max-width: 850px;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 8px;
+  animation: zoomIn 0.25s ease;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 2.5rem;
+  color: white;
+  cursor: pointer;
+  line-height: 1;
+  transition: opacity 0.2s;
+}
+
+.close-btn:hover {
+  opacity: 0.7;
+}
+
+.modal-controls {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4%;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.modal-arrow {
+  color: white;
+  font-size: 2.2rem;
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.modal-arrow:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* ==========================================================================
+   DELETE OVERLAY ALERT CONFIRMATION
+   ========================================================================== */
 .delete-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 2500;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
 }
 
 .delete-modal-content {
   background: white;
+  border-radius: 16px;
   padding: 30px;
-  border-radius: 15px;
+  max-width: 380px;
+  width: 90%;
   text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.delete-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.delete-modal-content h2 {
+  font-size: 1.3rem;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.delete-modal-content p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0 0 24px 0;
 }
 
 .delete-modal-actions {
   display: flex;
   gap: 10px;
-  margin-top: 15px;
 }
 
-.cancel-btn,
-.confirm-btn {
+.delete-modal-actions button {
   flex: 1;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
   border: none;
 }
 
-.confirm-btn {
-  background: red;
+.delete-modal-actions .cancel-btn {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.delete-modal-actions .cancel-btn:hover {
+  background: #e2e8f0;
+}
+
+.delete-modal-actions .confirm-btn {
+  background: #ef4444;
   color: white;
 }
 
-.cancel-btn {
-  background: #e5e7eb;
+.delete-modal-actions .confirm-btn:hover:not(:disabled) {
+  background: #dc2626;
 }
 
-/* ===== ERROR ===== */
+.delete-modal-actions .confirm-btn:disabled {
+  background: #fca5a5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   STATUS ERRORS & LOADING SPINNERS
+   ========================================================================== */
+.store-loading {
+  width: 100%;
+  height: 100vh;
+  background: #f5f7fb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.spinner {
+  width: 45px;
+  height: 45px;
+  border: 4px solid #cbd5e1;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.store-loading h2 {
+  font-size: 1.1rem;
+  color: #475569;
+  margin: 0;
+  font-weight: 500;
+}
+
 .error-message {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: red;
+  bottom: 24px;
+  right: 24px;
+  background: #ef4444;
   color: white;
-  padding: 12px 20px;
-  border-radius: 10px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+  z-index: 3000;
+  animation: slideUp 0.3s ease;
+}
+
+/* ==========================================================================
+   ANIMATIONS KEYFRAMES
+   ========================================================================== */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes zoomIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================================================
+   HIGH-DENSITY SMART RESPONSE RESPONSIVE MATRIX
+   ========================================================================== */
+@media (max-width: 576px) {
+  .store_container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+    padding: 0 10px 30px;
+  }
+
+  .image-slider,
+  .product-media {
+    height: 140px;
+  }
+
+  .product-details h1 {
+    font-size: 0.85rem;
+  }
+
+  .product-details {
+    padding: 8px;
+    gap: 2px;
+  }
+
+  .description-container {
+    padding: 0;
+  }
+
+  .My_Store_btns {
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 8px;
+  }
+
+  .My_Store_btns button {
+    padding: 6px 4px;
+    font-size: 0.75rem;
+  }
+
+  .form-content-wrap {
+    padding: 20px;
+  }
+  
+  .modern-grid {
+    grid-template-columns: 1fr;
+  }
 }
