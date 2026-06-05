@@ -327,10 +327,10 @@ useEffect(() => {
            <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "180px", height: "auto" }} 
 />
         </div>
-        <div className="Buyer_Dashboard_heads"><h1>Isonga</h1><h2>Market</h2></div>
+        <div className="Buyer_Dashboard_heads"></div>
         <div className="Buyer_Dashboard_user">
           <Link to="/buyer_profile"><img src={profile ? getFileUrl(profile) : "/placeholder.png"} alt="profile" /></Link>
           <ChatNotification userId={buyerId} />
@@ -474,9 +474,9 @@ useEffect(() => {
                <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "190px", height: "auto" }} 
 />
-              <h3>Isonga Market</h3></div>
+              </div>
             <p>© {new Date().getFullYear()} Isonga Market • Built for growth 🚀</p>
           </div>
           {/* Footer content remains same */}

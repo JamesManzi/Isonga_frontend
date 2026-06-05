@@ -138,7 +138,7 @@ function Vehicles() {
           <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "120px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "190px", height: "auto" }} 
 />
         </div>
         <div className="Buyer_Dashboard_user">

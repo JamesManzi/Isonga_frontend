@@ -29,6 +29,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  max-height: 120px;
 }
 
 .Buyer_Dashboard_logos img {

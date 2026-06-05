@@ -117,7 +117,7 @@ function Login() {
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
   className="hero-logo" 
-  style={{ width: "160px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "230px", height: "auto"}} 
 />
            
 

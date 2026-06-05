@@ -103,7 +103,7 @@ function Buyer_Register() {
     src="/isonga_logo.png"
     alt="Isonga Market"
     className="buyer_reg_logo_img"
-    style={{width:"110px",height:"auto",borderRadius:"50%"}}
+    style={{width:"230px",height:"auto"}}
   />
 
                

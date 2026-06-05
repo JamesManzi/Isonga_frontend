@@ -110,7 +110,7 @@ function Buyer_Login() {
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
   className="buyer-hero-logo"
-  style={{ width: "150px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "230px", height: "auto" }} 
 />
 
 <p>

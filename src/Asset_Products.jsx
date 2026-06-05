@@ -128,7 +128,7 @@ function Asset_Products() {
            <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "120px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "190px", height: "auto" }} 
 />
           <div className="Asset_Products_heads"></div>
         </div>
@@ -278,7 +278,7 @@ function Asset_Products() {
                <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "120px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "190px", height: "auto" }} 
 />
             </div>
             <p>The leading digital marketplace in Rwanda.</p>

@@ -180,7 +180,7 @@ if (loading) {
           <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "120px", height: "auto" }} 
+  style={{ width: "180px", height: "auto" }} 
 />
           <div className="Home_heads">
           </div>
