@@ -150,7 +150,7 @@ function Home_Products() {
            <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "140px", height: "auto" }} 
+  style={{ width: "190px", height:"auto"}} 
 />
           <div className="View_Products_heads"></div>
         </div>

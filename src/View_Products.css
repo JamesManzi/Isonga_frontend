@@ -1,207 +1,317 @@
-/* --- Root Layout & Background --- */
+/* =========================
+   GLOBAL
+========================= */
 .View_Products {
-  background-color: #f8f9fa;
+  width: 100%;
   min-height: 100vh;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #2d3436;
+  background: #f5f7fb;
+  font-family: "Poppins", sans-serif;
+  color: #1e293b;
 }
 
-/* --- Navbar Styling --- */
+/* =========================
+   NAVBAR
+========================= */
 .View_Products_navbar {
+  width: 100%;
+  padding: 10px 4%;  /* Compact layout padding */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 5%;
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
   z-index: 100;
-  max-height: 100px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  max-height: 75px;   /* Dropped layout ceiling from 100px */
 }
 
 .View_Products_logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .View_Products_logo img {
-  height: 40px;
+  width: 190px !important;
+  height: auto !important;
+  border-radius: 0;
+  display: block;
 }
 
-.View_Products_heads h1 {
-  font-size: 1.2rem;
-  margin: 0;
-  color: #ff4757;
-  line-height: 1;
+.View_Products_back {
+  width: 36px;       /* Shrunk asset interaction size */
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  cursor: pointer;
 }
 
-.View_Products_heads h2 {
-  font-size: 0.9rem;
-  margin: 0;
-  font-weight: 400;
-  color: #636e72;
+.View_Products_back:hover {
+  transform: scale(1.05);
+  color: white;
 }
 
-/* --- Header & Search Bar --- */
+/* =========================
+   HERO TEXT
+========================= */
 .View_Products_body {
   text-align: center;
-  padding: 2rem 1rem 1rem;
+  padding: 20px 20px 5px; /* Dropped padding blocks */
 }
 
 .View_Products_body p {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #2d3436;
+  font-size: 1.3rem;     /* Shrunk to look like a clean filter label */
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
 }
 
+/* =========================
+   SEARCH
+========================= */
 .View_Products_search {
+  width: 92%;
+  max-width: 500px;      /* Made compact to prevent empty space stretching */
+  margin: 15px auto 25px;
+  background: white;
+  border-radius: 20px;
+  padding: 6px;
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  max-width: 600px;
-  margin: 0 auto 2rem;
-  padding: 0 1rem;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  border: 1px solid #e2e8f0;
 }
 
 .View_Products_search input {
   flex: 1;
-  padding: 12px 20px;
-  border: 2px solid #dfe6e9;
-  border-radius: 50px;
+  border: none;
   outline: none;
-  transition: border-color 0.3s;
-}
-
-.View_Products_search input:focus {
-  border-color: #ff4757;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  border-radius: 14px;
+  background: #f1f5f9;
 }
 
 .View_Products_search button {
-  padding: 12px 25px;
-  background: #ff4757;
-  color: white;
   border: none;
-  border-radius: 50px;
-  cursor: pointer;
+  padding: 0 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  font-size: 0.88rem;
   font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  white-space: nowrap;
 }
 
-/* --- Products Grid --- */
+.View_Products_search button:hover {
+  opacity: 0.95;
+}
+
+/* =========================
+   REAL E-COMMERCE MINI-GRID
+========================= */
 .store_container {
+  width: 92%;
+  margin: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  padding: 0 5% 50px;
+  /* Uniform column sizes down to 220px like high-density marketplaces */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;             /* Reduced grid gap from 28px */
+  padding: 0 0 40px;
+  align-items: stretch;
 }
 
-/* --- THE CARD (Pinning Buttons to Bottom) --- */
+/* =========================
+   COMPACT PRODUCT CARD
+========================= */
 .productcard {
-  background: #fff;
-  border-radius: 16px;
+  background: white;
+  border-radius: 12px;   /* Clean modern edge profile */
   overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease;
-  
+  position: relative;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden; /* prevents overflow issues */
+  border: 1px solid #e2e8f0;
 }
 
 .productcard:hover {
-  transform: translateY(-8px);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
 
+/* PRODUCT TEXT SPECIFICATIONS CONTAINER */
+.product-info {
+  padding: 12px 12px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1; /* Pushes content boundaries naturally */
+}
+
+.product-info h1 {
+  font-size: 0.95rem;    /* Shrunk text scale from 1.3rem */
+  font-weight: 600;
+  margin: 0 0 2px 0;
+  color: #0f172a;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Truncate name line breaks cleanly at 2 rows */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.product-info p {
+  margin: 0;      /* Standardized alignment */
+  color: #475569;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Standalone Price tag formatting */
+.product-info p:has(strong) {
+  font-size: 1.05rem;
+  color: #e67e22;        /* Highlight price tags with amber accent */
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.product-info p strong {
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+/* =========================
+   IMAGE SLIDER
+========================= */
 .image-slider {
   position: relative;
   width: 100%;
-  height: 250px; /* ✅ FIXED */
+  height: 190px;         /* Lowered media footprint from 260px */
+  background: #f8f9fa;
   overflow: hidden;
-  background: #f1f2f6;
 }
 
 .slider-media {
   width: 100%;
-  height: 100%;
+  height: 190px;         /* Match container layout wrapper safely */
   object-fit: cover;
+  transition: transform 0.3s ease;
+  cursor: pointer;
   display: block;
 }
 
-/* Dots on image */
-.slider-dots {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 6px;
-  background: rgba(0,0,0,0.2);
-  padding: 5px 10px;
-  border-radius: 20px;
-}
-
-.dot {
-  width: 6px;
-  height: 6px;
-  background: rgba(255,255,255,0.5);
-  border-radius: 50%;
-}
-
-.dot.active {
-  background: #fff;
-  width: 12px;
-  border-radius: 4px;
-}
-
-/* Profile Avatar Overlap */
+/* =========================
+   FLOATING PROFILE AVATAR
+========================= */
 .profile-avatar {
   position: absolute;
-  bottom: -20px;
-  right: 15px;
-  z-index: 10;
+  top: 8px;              /* Relocated from bottom to prevent text overlaps */
+  right: 8px;
+  bottom: auto;
+  z-index: 5;
 }
 
 .profile-avatar img {
-  width: 45px;
-  height: 45px;
+  width: 32px;           /* Rescaled avatar component */
+  height: 32px;
   border-radius: 50%;
-  border: 3px solid #fff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  object-fit: cover;
 }
 
-/* --- Product Info Content --- */
-.product-info {
-  padding: 25px 20px 15px;
-  /* This pushes the buttons down even if text is short */
-  flex-grow: 1; 
+/* =========================
+   SLIDER DOTS
+========================= */
+.slider-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  flex-direction: column;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 3px 6px;
+  border-radius: 10px;
+  z-index: 5;
 }
 
-.product-info h1 {
-  font-size: 1.25rem;
-  margin-bottom: 10px;
-  color: #2d3436;
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  transition: all 0.2s ease;
 }
 
-.product-info p {
-  font-size: 0.9rem;
-  margin: 4px 0;
-  color: #636e72;
+.dot.active {
+  background: white;
+  transform: scale(1.2);
 }
 
-.product-info p strong {
-  color: #2d3436;
+/* =========================
+   DESCRIPTION LAYER
+========================= */
+.description-container {
+  padding: 0 12px;
+  margin-top: 2px;
 }
 
-/* --- Buttons Container --- */
+.product-description {
+  font-size: 0.8rem !important;
+  color: #64748b !important;
+  margin: 0 !important;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Strict bounds restriction */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-description.expanded {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.show-more-btn {
+  border: none;
+  background: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0;
+  margin-top: 2px;
+  display: block;
+  text-align: left;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
 .View_Products_btns {
-  padding: 15px 20px 20px;
   display: flex;
-  gap: 10px;
-  border-top: 1px solid #f1f2f6;
+  gap: 6px;
+  padding: 12px;         /* Reduced inner gap spacing from 20px */
+  margin-top: auto;
+  background: white;
 }
 
 .View_Products_btns a {
@@ -211,64 +321,74 @@
 
 .View_Products_btns button {
   width: 100%;
-  padding: 12px;
+  border: none;
+  padding: 8px 4px;     /* Tightened interface parameters */
   border-radius: 8px;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  border: none;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 5px;
 }
 
-.chat-btn {
-  background: #f1f2f6;
-  color: #2d3436;
+/* CHAT BUTTON */
+.View_Products_btns .chat-btn {
+  background: #f0f2f5;   /* Neutral modern background alternative */
+  color: #1e293b;
 }
 
-.chat-btn:hover {
-  background: #dfe6e9;
+.View_Products_btns .chat-btn:hover {
+  background: #e4e6e9;
 }
 
+/* ADD TO CART ACTION BUTTON */
 .View_Products_btns button:not(.chat-btn) {
-  background: #ff4757;
-  color: white;
-  flex: 1.5; /* Makes "Add to Cart" wider */
+  background: #f1c40f;   /* High conversion Gold cart color */
+  color: #111;
+  flex: 1.3;             /* Cart button given broader presence ratio */
 }
 
 .View_Products_btns button:not(.chat-btn):hover {
-  background: #ff6b81;
+  background: #f39c12;
 }
 
-/* --- Modal Styling --- */
+.View_Products_btns button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* =========================
+   MODAL LIGHTBOX
+========================= */
 .media-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.9);
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
 }
 
 .full-media {
-  max-width: 90%;
-  max-height: 80%;
+  width: 90%;
+  max-width: 850px;
+  max-height: 80vh;
+  object-fit: contain;
   border-radius: 8px;
 }
 
 .close-btn {
   position: absolute;
   top: 20px;
-  right: 30px;
+  right: 25px;
+  font-size: 2.5rem;
   color: white;
-  font-size: 40px;
   cursor: pointer;
+  line-height: 1;
 }
 
 .modal-controls {
@@ -276,8 +396,9 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 30px;
   pointer-events: none;
+  box-sizing: border-box;
 }
 
 .modal-arrow {
@@ -286,16 +407,21 @@
   cursor: pointer;
   pointer-events: auto;
   opacity: 0.7;
-  transition: opacity 0.2s;
+  transition: 0.2s ease;
 }
 
 .modal-arrow:hover {
   opacity: 1;
+  transform: scale(1.1);
 }
 
-/* --- Loading & Popups --- */
+/* =========================
+   STATUS LAYERS & LOADERS
+========================= */
 .products-loading {
+  width: 100%;
   height: 100vh;
+  background: #f5f7fb;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -303,87 +429,164 @@
 
 .products-loader-card {
   text-align: center;
-  animation: pulse 1.5s infinite;
+  color: #0f172a;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-@keyframes pulse {
-  0% { opacity: 0.6; transform: scale(0.98); }
-  50% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0.6; transform: scale(0.98); }
-}
-
+/* =========================
+   ALERTS & POPUPS
+========================= */
 .cart-popup {
   position: fixed;
-  top: 80px; /* 🔥 move it ABOVE (below navbar) */
+  bottom: 25px;
   left: 50%;
-  transform: translate(-50%, -20px); /* start slightly higher */
-  
-  background: rgba(45, 52, 54, 0.95);
-  color: #fff;
-  padding: 14px 28px;
-  border-radius: 50px;
-
-  font-size: 14px;
+  transform: translateX(-50%) translateY(100px);
+  background: #1e293b;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
   font-weight: 500;
-
-  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-  backdrop-filter: blur(10px);
-
-  z-index: 2000;
-
-  opacity: 0;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
   pointer-events: none;
-  transition: all 0.35s ease;
+  opacity: 0;
 }
 
 .cart-popup.show {
+  transform: translateX(-50%) translateY(0);
   opacity: 1;
-  transform: translate(-50%, 0); /* smooth drop-in */
 }
 
-
-
-.product-description {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.5;
-  color: #555;
-  margin-top: 8px;
+/* =========================
+   FOOTER COMPONENT ACCORD
+========================= */
+.Buyer_Footer {
+  background: #0f172a;
+  color: white;
+  padding: 40px 4% 20px;
+  margin-top: 40px;
 }
 
-.product-description.expanded {
-  -webkit-line-clamp: unset;
-  overflow: visible;
+.Footer_Container {
+  width: 92%;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.show-more-btn {
-  background: none;
-  border: none;
-  color: #2563eb;
-  cursor: pointer;
-  font-weight: 600;
+.Footer_Logo img {
+  width: 140px;
+  height: auto;
+  border-radius: 0;
+  margin-bottom: 10px;
+}
+
+.Footer_Section h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  color: #3b82f6;
+}
+
+.Footer_Section ul {
+  list-style: none;
   padding: 0;
-  margin-top: 5px;
+  margin: 0;
 }
 
-.product-info {
+.Footer_Section ul li {
+  margin-bottom: 8px;
+}
+
+.Footer_Section a {
+  text-decoration: none;
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+
+.Footer_Section a:hover {
+  color: white;
+}
+
+.Payment_Methods {
   display: flex;
-  flex-direction: column;
   gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.Payment_Badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.momo { background: #facc15; color: black; }
+.airtel { background: #ef4444; color: white; }
+
+.Secure_Note {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.Footer_Bottom {
+  text-align: center;
   padding: 15px;
+  color: #94a3b8;
+  font-size: 0.8rem;
 }
 
-.productcard {
-  background: white;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  transition: 0.3s ease;
-}
+/* =========================
+   SMART RESPONSE MATRIX
+========================= */
+@media (max-width: 576px) {
+  .store_container {
+    /* Absolute native e-commerce 2-column layout mapping */
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+    padding: 0 10px 30px;
+  }
 
-.productcard:hover {
-  transform: translateY(-4px);
+  .image-slider,
+  .slider-media {
+    height: 140px;       /* Cuts card heights to maintain clean screen ratios */
+  }
+
+  .product-info h1 {
+    font-size: 0.85rem;
+  }
+
+  .product-info {
+    padding: 8px 8px 2px;
+  }
+
+  .description-container {
+    padding: 0 8px;
+  }
+
+  .View_Products_btns {
+    flex-direction: column; /* Stack actions smoothly to ensure structural stability */
+    gap: 4px;
+    padding: 0 8px 8px 8px;
+  }
+
+  .View_Products_btns button {
+    padding: 6px 4px;
+    font-size: 0.75rem;
+  }
+
+  .View_Products_search {
+    flex-direction: row; /* Avoid vertical block stacking to keep header area slim */
+  }
 }
