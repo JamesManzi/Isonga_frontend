@@ -149,11 +149,11 @@ function Add_Product() {
     <div className="Add_Product">
       <div className="Add_Product_navbar">
         <div className="Add_Product_logos">
-          <img src="/isonga_logo.png" alt="logo" style={{width:"60px",height:"auto",borderRadius:"50%"}}/>
+          <img src="/isonga_logo.png" alt="logo" style={{
+            width:"190px",height:"auto"}}/>
         </div>
         <div className="Add_Product_heads">
-          <h1>Isonga</h1>
-          <h2>Market</h2>
+    
         </div>
         <div className="Add_Product_logout">
           <Link to="/dashboard">

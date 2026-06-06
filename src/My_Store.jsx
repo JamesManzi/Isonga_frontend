@@ -249,7 +249,7 @@ function My_Store() {
           <img 
   src="/isonga_logo.png" 
   alt="Isonga Market Logo" 
-  style={{ width: "100px", height: "auto",borderRadius:"50%" }} 
+  style={{ width: "190px", height: "auto"}} 
 />
           <div className="My_Store_heads">
           </div>
