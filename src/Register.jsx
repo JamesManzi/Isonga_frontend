@@ -355,7 +355,7 @@ function Register() {
                   onClick={() => locationImagesRef.current.click()}
                 >
                   <FontAwesomeIcon icon={faImages} />
-                  <span> Location Photos</span>
+                  <span> Store Photos</span>
                 </div>
 
                 <input
