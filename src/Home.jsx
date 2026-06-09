@@ -153,10 +153,10 @@ if (loading) {
       <Helmet>
   <title>Isonga Market Rwanda - Buy & Sell Online</title>
 
-  <meta
-    name="description"
-    content="Buy and sell products, shops, phones, clothes and more in Rwanda using Isonga Market."
-  />
+ <meta
+  name="description"
+  content="Buy products and assets from trusted businesses across Rwanda on Isonga Market."
+/>
 
   <link
     rel="canonical"
@@ -166,7 +166,7 @@ if (loading) {
   <meta property="og:title" content="Isonga Market Rwanda - Buy & Sell Online" />
   <meta
     property="og:description"
-    content="Buy and sell products, shops, phones, clothes and more in Rwanda using Isonga Market."
+    content="Buy products and assets from trusted businesses across Rwanda on Isonga Market."
   />
   <meta
     property="og:url"
