@@ -475,8 +475,12 @@ function AdminManageSellers() {
       <div className="Buyer_Dashboard_navbar">
         <div className="Buyer_Dashboard_logos">
           <img
-            src="/logo.png"
+            src="/isonga_logo.png"
             alt="logo"
+            style={{
+              width:"190px",
+              height:"auto"
+            }}
           />
         </div>
 

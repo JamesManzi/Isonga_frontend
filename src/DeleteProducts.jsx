@@ -202,8 +202,15 @@ function DeleteProducts() {
       {/* Navbar */}
       <div className="View_Products_navbar">
         <div className="View_Products_logo">
-          <img src="/logo.png" alt="logo" />
-          <div className="View_Products_heads"><h1>Isonga</h1><h2>Market</h2></div>
+          <img
+            src="/isonga_logo.png"
+            alt="logo"
+            style={{
+              width:"190px",
+              height:"auto"
+            }}
+          />
+          <div className="View_Products_heads"></div>
         </div>
         <div className="View_Products_back" onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>
           <FontAwesomeIcon icon={faArrowRight} />
