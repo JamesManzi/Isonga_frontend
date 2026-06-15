@@ -11,20 +11,23 @@
   font-family: 'Inter', sans-serif;
   color: var(--text);
   background-color: var(--white);
+  margin-top: 100px;
 }
 
-/* --- Navbar --- */
 .Home_navbar {
   display: flex;
-  position: fixed;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 5%;
-  background: var(--white);
+  background: white;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+
   z-index: 1000;
-  max-height: 100px;
 }
 
 .Home_brand {
