@@ -28,6 +28,7 @@
   right: 0;
 
   z-index: 1000;
+  max-height: 100px;
 }
 
 .Home_brand {
