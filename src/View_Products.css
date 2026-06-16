@@ -554,9 +554,10 @@
   .store_container {
     display: flex;
     overflow-x: auto;
-    gap: 10px;
-    padding: 0 10px 30px;
-    scroll-snap-type: x mandatory;
+    gap: 12px;
+    padding: 0 10px 20px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .store_container::-webkit-scrollbar {
@@ -564,38 +565,38 @@
   }
 
   .productcard {
-    flex: 0 0 32%;
-    scroll-snap-align: start;
+    flex: 0 0 33.33%;
+    min-width: 33.33%;
   }
 
   .image-slider,
   .slider-media {
-    height: 140px;
-  }
-
-  .product-info h1 {
-    font-size: 0.85rem;
+    height: 120px;
   }
 
   .product-info {
-    padding: 8px 8px 2px;
+    padding: 8px;
+  }
+
+  .product-info h1 {
+    font-size: 0.8rem;
   }
 
   .description-container {
     padding: 0 8px;
   }
-}
+
   .View_Products_btns {
-    flex-direction: column; /* Stack actions smoothly to ensure structural stability */
+    flex-direction: column;
     gap: 4px;
-    padding: 0 8px 8px 8px;
+    padding: 8px;
   }
 
   .View_Products_btns button {
-    padding: 6px 4px;
     font-size: 0.75rem;
+    padding: 6px;
   }
-
+}
   .View_Products_search {
     flex-direction: row; /* Avoid vertical block stacking to keep header area slim */
   }
