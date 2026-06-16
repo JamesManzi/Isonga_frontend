@@ -88,6 +88,7 @@
   gap: 8px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.04);
   border: 1px solid #e2e8f0;
+  flex-direction: row;   /* Avoid vertical block stacking to keep header area slim */
 }
 
 .View_Products_search input {
@@ -118,7 +119,7 @@
 }
 
 /* =========================
-   REAL E-COMMERCE MINI-GRID
+   REAL E-COMMERCE MINI-GRID (Desktop Layout)
 ========================= */
 .store_container {
   width: 92%;
@@ -548,55 +549,55 @@
 }
 
 /* =========================
-   SMART RESPONSE MATRIX
+   SMART RESPONSE MATRIX (Mobile Scroller Layout)
 ========================= */
 @media (max-width: 576px) {
   .store_container {
     display: flex;
     overflow-x: auto;
-    gap: 12px;
-    padding: 0 10px 20px;
-    scrollbar-width: none;
+    gap: 8px;                  /* Reduced gap size to give cards more space */
+    padding: 10px 4% 20px;     /* Aligns scroll starting position safely */
+    scrollbar-width: none;     /* Hides scrollbar on Firefox */
     -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory; /* Smooth snap scroll animation */
   }
 
   .store_container::-webkit-scrollbar {
-    display: none;
+    display: none;             /* Hides scrollbar on Chrome, Safari */
   }
 
   .productcard {
-    flex: 0 0 33.33%;
-    min-width: 33.33%;
+    /* Formula: Subtract total gap values (2 gaps of 8px = 16px) from 100% space, then split by 3 */
+    flex: 0 0 calc((100% - 16px) / 3);
+    min-width: calc((100% - 16px) / 3);
+    scroll-snap-align: start;
   }
 
   .image-slider,
   .slider-media {
-    height: 120px;
+    height: 100px;             /* Lowered layout height slightly so mini text fits nicely */
   }
 
   .product-info {
-    padding: 8px;
+    padding: 6px;
   }
 
   .product-info h1 {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 
   .description-container {
-    padding: 0 8px;
+    padding: 0 6px;
   }
 
   .View_Products_btns {
     flex-direction: column;
     gap: 4px;
-    padding: 8px;
+    padding: 6px;
   }
 
   .View_Products_btns button {
-    font-size: 0.75rem;
-    padding: 6px;
+    font-size: 0.7rem;
+    padding: 6px 4px;
   }
 }
-  .View_Products_search {
-    flex-direction: row; /* Avoid vertical block stacking to keep header area slim */
-  }
