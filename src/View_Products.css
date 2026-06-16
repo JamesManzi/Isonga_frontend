@@ -544,64 +544,67 @@
 }
 
 /* =========================
-   MOBILE RESPONSIVE MATRIX (3 Cards Horizontal Scroller)
-========================= */
-/* =========================
-   MOBILE RESPONSIVE MATRIX (Strict 3 Columns Per Row)
+   MOBILE RESPONSIVE MATRIX (PC Width Cards / Multi-Row Horizontal Scroll)
 ========================= */
 @media (max-width: 576px) {
   .store_container {
     display: grid !important;
-    /* This forces EXACTLY 3 equal columns per row */
-    grid-template-columns: repeat(3, 1fr) !important; 
-    gap: 8px !important;            
+    /* Forces items to fill columns first, creating side-by-side horizontal rows */
+    grid-auto-flow: column !important;
+    /* Stacks exactly 2 rows vertically; change to '3' if you want 3 rows stacked */
+    grid-template-rows: repeat(2, auto) !important; 
+    gap: 16px !important;            
     padding: 10px 4% 40px !important;
-    overflow-x: hidden !important; /* No horizontal page scrolling needed anymore */
+    overflow-x: auto !important;       /* Activates smooth horizontal scrolling */
+    overflow-y: hidden !important;      
+    scrollbar-width: auto !important;  /* Keeps the scrollbar interactive */
+    -webkit-overflow-scrolling: touch !important; 
   }
 
   .productcard {
-    width: 100% !important;
-    min-width: 0 !important; /* Allows cards to shrink properly into their 1/3 grid slot */
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    /* Hard locks the card to the exact desktop pixel sizing so they don't shrink down */
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+    height: auto !important;
   }
 
+  /* Retain high-fidelity PC dimension footprints */
   .image-slider,
   .slider-media {
-    height: 90px !important; /* Compact height so 3 cards fit nicely on a phone screen */
+    height: 190px !important; 
   }
 
   .product-info {
-    padding: 6px !important;
+    padding: 12px 12px 4px !important;
   }
 
   .product-info h1 {
-    font-size: 0.75rem !important;
-    line-height: 1.2;
+    font-size: 0.95rem !important;
+    line-height: 1.3;
   }
 
   .product-info p {
-    font-size: 0.7rem !important;
-  }
-
-  .product-info p:has(strong) {
     font-size: 0.85rem !important;
   }
 
+  .product-info p:has(strong) {
+    font-size: 1.05rem !important;
+  }
+
   .description-container {
-    padding: 0 6px !important;
+    padding: 0 12px !important;
   }
 
   .View_Products_btns {
-    flex-direction: column !important;         
-    gap: 4px !important;
-    padding: 6px !important;
-    margin-top: auto; /* Keeps buttons locked to the bottom of the card */
+    flex-direction: row !important;     /* Keep layout action buttons side-by-side since width is 220px */
+    gap: 6px !important;
+    padding: 12px !important;
   }
 
   .View_Products_btns button {
-    font-size: 0.65rem !important;
-    padding: 6px 2px !important;
+    font-size: 0.8rem !important;
+    padding: 8px 4px !important;
   }
 }
