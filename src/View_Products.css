@@ -552,15 +552,25 @@
 ========================= */
 @media (max-width: 576px) {
   .store_container {
-    /* Absolute native e-commerce 2-column layout mapping */
-    grid-template-columns: repeat(2, 1fr) !important;
+    display: flex;
+    overflow-x: auto;
     gap: 10px;
     padding: 0 10px 30px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .store_container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .productcard {
+    flex: 0 0 48%;
+    scroll-snap-align: start;
   }
 
   .image-slider,
   .slider-media {
-    height: 140px;       /* Cuts card heights to maintain clean screen ratios */
+    height: 140px;
   }
 
   .product-info h1 {
@@ -574,6 +584,7 @@
   .description-container {
     padding: 0 8px;
   }
+}
 
   .View_Products_btns {
     flex-direction: column; /* Stack actions smoothly to ensure structural stability */
@@ -589,4 +600,3 @@
   .View_Products_search {
     flex-direction: row; /* Avoid vertical block stacking to keep header area slim */
   }
-}
