@@ -1,4 +1,6 @@
-/* --- Global Styles --- */
+/* ==========================================================================
+   GLOBAL STYLES & VARIABLES
+   ========================================================================== */
 :root {
   --primary: #2c3e50;
   --accent: #27ae60;
@@ -14,6 +16,9 @@
   margin-top: 100px;
 }
 
+/* ==========================================================================
+   NAVBAR COMPONENT
+   ========================================================================== */
 .Home_navbar {
   display: flex;
   justify-content: space-between;
@@ -21,14 +26,12 @@
   padding: 1rem 5%;
   background: white;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-
   z-index: 1000;
-  max-height: 110px;
+  max-height: 110px; /* Restrict layout container explicitly on desktop viewports */
 }
 
 .Home_brand {
@@ -37,14 +40,28 @@
   gap: 10px;
 }
 
-.Home_brand img { height: 40px; }
-.Home_heads h1 { font-size: 1.4rem; color: var(--primary); margin: 0; }
-.Home_heads h2 { font-size: 1.4rem; color: var(--accent); margin: 0; }
+.Home_brand img { 
+  height: 40px; 
+}
+
+.Home_heads h1 { 
+  font-size: 1.4rem; 
+  color: var(--primary); 
+  margin: 0; 
+}
+
+.Home_heads h2 { 
+  font-size: 1.4rem; 
+  color: var(--accent); 
+  margin: 0; 
+}
 
 .Home_navbar nav ul {
   display: flex;
   list-style: none;
   gap: 25px;
+  margin: 0;
+  padding: 0;
 }
 
 .Home_navbar a {
@@ -53,7 +70,9 @@
   font-weight: 500;
 }
 
-/* --- Hero Section --- */
+/* ==========================================================================
+   HERO CORE CONTAINER
+   ========================================================================== */
 .Home_body {
   padding: 80px 5%;
   text-align: center;
@@ -92,7 +111,9 @@
 .home_seller_btn { background: var(--primary); color: white; }
 .home_body_btns button:hover { transform: scale(1.05); }
 
-/* --- Search & Grid (Shared with Dashboard) --- */
+/* ==========================================================================
+   SEARCH LAYOUT STRIPS
+   ========================================================================== */
 .searching {
   width: 60%;
   padding: 15px 25px;
@@ -108,10 +129,15 @@
   border: none;
 }
 
-/* --- Alert Overlay --- */
+/* ==========================================================================
+   MODAL DIALOG OVERLAYS
+   ========================================================================== */
 .alert-overlay {
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
   background: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
@@ -137,7 +163,9 @@
   cursor: pointer;
 }
 
-/* --- Premium Footer --- */
+/* ==========================================================================
+   GENERIC FOOTER BLOCK
+   ========================================================================== */
 .footer {
   background-color: #232f3e;
   color: white;
@@ -200,61 +228,9 @@
   font-size: 0.8rem;
 }
 
-/* --- Mobile Responsiveness --- */
-@media screen and (max-width: 768px) {
-  .Home_navbar { flex-direction: column; gap: 10px; }
-  .Home_navbar nav ul { gap: 15px; padding: 10px 0; }
-  
-  .Home_body_text h1 { font-size: 1.8rem; }
-  .home_body_btns { flex-direction: column; padding: 0 20px; }
-  
-  .footer-container {
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  
-  .trust-section {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .searching { width: 70%; }
-}
-
-/* --- Profile Avatar --- */
-.profile_avatar {
-  position: absolute;
-  bottom: -25px;        /* slightly lower for overlap effect */
-  right: 15px;
-  width: 60px;           /* fixed size for all avatars */
-  height: 60px;
-  border-radius: 50%;    /* makes it circular */
-  border: 3px solid var(--accent); /* colored border */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* subtle shadow */
-  object-fit: cover;     /* ensures image covers circle without distortion */
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  z-index: 2;            /* makes sure it stays on top */
-}
-
-.profile_avatar:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* --- Mobile Adjustments --- */
-@media screen and (max-width: 768px) {
-  .profile_avatar {
-    width: 50px;
-    height: 50px;
-    bottom: -20px;
-    right: 10px;
-  }
-}
-
-
-
+/* ==========================================================================
+   ISONGA BRAND PREMIUM FOOTER
+   ========================================================================== */
 .isonga-footer {
   background: linear-gradient(135deg, #020617, #0f172a);
   color: white;
@@ -262,7 +238,6 @@
   font-family: "Poppins", sans-serif;
 }
 
-/* CTA */
 .footer-cta {
   text-align: center;
   padding: 50px 20px;
@@ -310,7 +285,6 @@
   opacity: 0.9;
 }
 
-/* MAIN */
 .footer-main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -318,7 +292,6 @@
   padding: 40px 60px;
 }
 
-/* BRAND */
 .footer-brand img {
   width: 50px;
   margin-bottom: 10px;
@@ -329,7 +302,6 @@
   font-size: 14px;
 }
 
-/* LINKS */
 .footer-links {
   display: flex;
   gap: 40px;
@@ -353,7 +325,6 @@
   transform: translateX(5px);
 }
 
-/* CONTACT */
 .footer-contact p {
   font-size: 14px;
   color: #94a3b8;
@@ -375,7 +346,6 @@
   transform: scale(1.2);
 }
 
-/* BOTTOM */
 .footer-bottom-bar {
   display: flex;
   justify-content: space-between;
@@ -395,20 +365,9 @@
   color: #38bdf8;
 }
 
-/* MOBILE */
-@media (max-width: 768px) {
-  .footer-links {
-    flex-direction: column;
-  }
-
-  .footer-bottom-bar {
-    flex-direction: column;
-    gap: 10px;
-  }
-}
-
-
-
+/* ==========================================================================
+   APP INITIALIZATION SPINNERS
+   ========================================================================== */
 .home-loading {
   height: 100vh;
   display: flex;
@@ -440,8 +399,9 @@
   to { transform: rotate(360deg); }
 }
 
-
-
+/* ==========================================================================
+   STOREFRONT DISPLAY MATRIX (PC VIEW)
+   ========================================================================== */
 .shop-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -507,7 +467,7 @@
   background: #f1f5f9;
 }
 
-
+/* FLOATING PRODUCT AVATARS OVERLAPS */
 .profile-avatar {
   position: absolute;
   bottom: -25px;
@@ -521,4 +481,81 @@
   border-radius: 50%;
   border: 3px solid white;
   object-fit: cover;
+}
+
+/* ==========================================================================
+   GLOBAL BRAND PROFILE INTERFACES
+   ========================================================================== */
+.profile_avatar {
+  position: absolute;
+  bottom: -25px;        
+  right: 15px;
+  width: 60px;           
+  height: 60px;
+  border-radius: 50%;    
+  border: 3px solid var(--accent); 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+  object-fit: cover;     
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 2;            
+}
+
+.profile_avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   CONSOLIDATED MOBILE RESPONSIVE MEDIA BREAKPOINT
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+  /* NAVBAR FIX: Remove desktop height ceilings during column re-ordering */
+  .Home_navbar { 
+    flex-direction: column !important; 
+    gap: 10px !important; 
+    max-height: none !important;  /* Overwrites desktop limitation completely */
+    height: auto !important;       /* Lets content flow expand safely */
+    padding: 1rem 5% 0.5rem !important; 
+  }
+
+  .Home_navbar nav ul { 
+    gap: 15px !important; 
+    padding: 5px 0 10px !important; 
+    margin: 0 !important;
+  }
+  
+  /* CORE LAYOUT ELEMENTS */
+  .Home_body_text h1 { font-size: 1.8rem; }
+  .home_body_btns { flex-direction: column; padding: 0 20px; }
+  .searching { width: 70%; }
+
+  /* OVERLAPPING AVATAR MATRIX ACCORDIONS */
+  .profile_avatar {
+    width: 50px;
+    height: 50px;
+    bottom: -20px;
+    right: 10px;
+  }
+
+  /* FOOTER SYSTEMS ADJUSTMENTS */
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .trust-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-links {
+    flex-direction: column;
+  }
+
+  .footer-bottom-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
