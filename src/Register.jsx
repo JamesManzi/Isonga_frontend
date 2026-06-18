@@ -136,7 +136,6 @@ function Register() {
       });
     }
 
-    // Dynamic Mobile Form Constructor
     const formData = new FormData();
     formData.append("name", name.trim());
     formData.append("location", location.trim());
@@ -149,13 +148,11 @@ function Register() {
     formData.append("sellerType", sellerType.trim());
     formData.append("acceptedPolicies", String(agreed));
 
-    // Fix 1: Handle Profile File extension dynamically with fallback naming
     const profileExt = profile.name ? profile.name.split('.').pop() : 'jpg';
     formData.append("profile", profile, `profile_${Date.now()}.${profileExt}`);
 
-    // Fix 2: Force clean distinct naming indexing across all mobile items
     files.forEach((file, index) => {
-      if (file.size > 0) { // Safety buffer checking against corrupt phone assets
+      if (file.size > 0) {
         const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
         formData.append("files", file, `gallery_${index}_${Date.now()}.${fileExt}`);
       }
@@ -164,7 +161,6 @@ function Register() {
     setLoading(true);
 
     try {
-      // Fix 3: Explicitly include the multi-part content definition boundary header
       const res = await api.post("/api/register", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
@@ -188,13 +184,8 @@ function Register() {
       }
     } catch (error) {
       console.log("ERROR:", error);
-      console.log("RESPONSE:", error.response);
-
       setMessage({
-        text:
-          error.response?.data?.message ||
-          error.message ||
-          "Server error",
+        text: error.response?.data?.message || error.message || "Server error",
         type: "error",
       });
     } finally {
@@ -203,63 +194,59 @@ function Register() {
   };
 
   return (
-    <div className="modern-reg-wrapper">
-      {loading && <div className="modern-progress-bar"></div>}
+    <div className="isonga-reg-wrapper">
+      {loading && <div className="isonga-reg-progress-bar"></div>}
 
-      <div className="modern-reg-container">
+      <div className="isonga-reg-container">
         {/* SIDEBAR */}
-        <div className="modern-reg-sidebar">
-          <div className="sidebar-branding">
+        <div className="isonga-reg-sidebar">
+          <div className="isonga-reg-sidebar-branding">
             <img 
               src="/isonga_logo.png" 
               alt="Isonga Market Logo" 
-              style={{ width: "200px", height: "auto",borderRadius:"50%" }} 
+              style={{ width: "200px", height: "auto", borderRadius: "50%" }} 
             />
-            
           </div>
 
-          <div className="step-list">
-            <div className="step-item active">
-              <span className="step-num">1</span> Shop Identity
+          <div className="isonga-reg-step-list">
+            <div className="isonga-reg-step-item isonga-reg-step-active">
+              <span className="isonga-reg-step-num">1</span> Shop Identity
             </div>
-            <div className="step-item active">
-              <span className="step-num">2</span> Visuals & Location
+            <div className="isonga-reg-step-item isonga-reg-step-active">
+              <span className="isonga-reg-step-num">2</span> Visuals & Location
             </div>
-            <div className="step-item active">
-              <span className="step-num">3</span> Account Security
+            <div className="isonga-reg-step-item isonga-reg-step-active">
+              <span className="isonga-reg-step-num">3</span> Account Security
             </div>
           </div>
 
-          <div className="sidebar-footer">
+          <div className="isonga-reg-sidebar-footer">
             <p>
-              &copy; {new Date().getFullYear()} Isonga Market.
-              Ecommerce Hub
+              &copy; {new Date().getFullYear()} Isonga Market Hub
             </p>
           </div>
         </div>
 
         {/* FORM */}
-        <div className="modern-reg-main">
-          <div className="form-content-wrap">
-            <div className="form-header">
+        <div className="isonga-reg-main">
+          <div className="isonga-reg-content-wrap">
+            <div className="isonga-reg-form-header">
               <h1>Become a Seller</h1>
               <p>Set up your professional store in minutes.</p>
-              <p>Sell whatever online 24 hours with Isonga Market</p>
+              <p style={{ color: '#2563eb', fontWeight: '500' }}>Sell online 24 hours with Isonga Market</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="modern-form">
+            <form onSubmit={handleSubmit} className="isonga-reg-form">
               {/* PROFILE */}
-              <div className="modern-upload-section">
+              <div className="isonga-reg-upload-section">
                 <div
-                  className={`profile-circle-upload ${
-                    previewProfile ? "has-image" : ""
-                  }`}
+                  className={`isonga-reg-circle-upload ${previewProfile ? "isonga-reg-has-image" : ""}`}
                   onClick={() => profileInputRef.current.click()}
                 >
                   {previewProfile ? (
                     <img src={previewProfile} alt="Profile" />
                   ) : (
-                    <div className="upload-placeholder">
+                    <div className="isonga-reg-upload-placeholder">
                       <FontAwesomeIcon icon={faCloudUploadAlt} />
                       <span>Logo</span>
                     </div>
@@ -285,21 +272,21 @@ function Register() {
 
                     setProfile(file);
                     setPreviewProfile(URL.createObjectURL(file));
-                    e.target.value = ""; // Fix 4: Clear target mobile frame cache value
+                    e.target.value = "";
                   }}
                 />
 
-                <div className="upload-text">
+                <div className="isonga-reg-upload-text">
                   <h3>Shop Profile</h3>
                   <p>Upload your brand logo or a clear photo.</p>
                 </div>
               </div>
 
               {/* SHOP INFO */}
-              <div className="modern-grid">
-                <div className="modern-input-group">
+              <div className="isonga-reg-grid">
+                <div className="isonga-reg-input-group">
                   <label>Shop Name</label>
-                  <div className="input-with-icon">
+                  <div className="isonga-reg-input-with-icon">
                     <FontAwesomeIcon icon={faStore} />
                     <input
                       type="text"
@@ -310,7 +297,7 @@ function Register() {
                   </div>
                 </div>
 
-                <div className="modern-input-group">
+                <div className="isonga-reg-input-group">
                   <label>Seller Type</label>
                   <select
                     value={sellerType}
@@ -326,7 +313,7 @@ function Register() {
                   </select>
                 </div>
 
-                <div className="modern-input-group">
+                <div className="isonga-reg-input-group">
                   <label>Category</label>
                   <select
                     value={category}
@@ -348,14 +335,14 @@ function Register() {
               </div>
 
               {/* GALLERY */}
-              <div className="modern-multi-upload">
-                <label>Store Photos (Min 2 photos)</label>
+              <div className="isonga-reg-multi-upload">
+                <label style={{ fontSize: '13px', fontWeight: '500', marginBottom: '6px', display: 'block' }}>Store Photos (Min 2 photos)</label>
                 <div
-                  className="multi-upload-trigger"
+                  className="isonga-reg-multi-upload-trigger"
                   onClick={() => locationImagesRef.current.click()}
                 >
                   <FontAwesomeIcon icon={faImages} />
-                  <span> Store Photos</span>
+                  <span> Upload Store Photos</span>
                 </div>
 
                 <input
@@ -383,13 +370,13 @@ function Register() {
                       ...previewFiles,
                       ...validImages.map((f) => URL.createObjectURL(f)),
                     ]);
-                    e.target.value = ""; // Fix 5: Clear sequential layout stack for mobile inputs
+                    e.target.value = "";
                   }}
                 />
 
-                <div className="modern-gallery-grid">
+                <div className="isonga-reg-gallery-grid">
                   {previewFiles.map((img, i) => (
-                    <div key={i} className="gallery-item">
+                    <div key={i} className="isonga-reg-gallery-item">
                       <img src={img} alt="Preview" />
                       <button
                         type="button"
@@ -406,10 +393,10 @@ function Register() {
               </div>
 
               {/* LOCATION & PHONE */}
-              <div className="modern-grid">
-                <div className="modern-input-group">
+              <div className="isonga-reg-grid">
+                <div className="isonga-reg-input-group">
                   <label>Location</label>
-                  <div className="input-with-icon">
+                  <div className="isonga-reg-input-with-icon">
                     <FontAwesomeIcon icon={faMapPin} />
                     <input
                       type="text"
@@ -420,9 +407,9 @@ function Register() {
                   </div>
                 </div>
 
-                <div className="modern-input-group">
+                <div className="isonga-reg-input-group">
                   <label>Phone Number</label>
-                  <div className="input-with-icon">
+                  <div className="isonga-reg-input-with-icon">
                     <FontAwesomeIcon icon={faPhone} />
                     <input
                       type="tel"
@@ -435,7 +422,7 @@ function Register() {
               </div>
 
               {/* DESCRIPTION */}
-              <div className="modern-input-group">
+              <div className="isonga-reg-input-group">
                 <label>Business Description</label>
                 <textarea
                   placeholder="Tell customers what makes your shop special..."
@@ -445,9 +432,9 @@ function Register() {
               </div>
 
               {/* EMAIL */}
-              <div className="modern-input-group">
+              <div className="isonga-reg-input-group">
                 <label>Email Address</label>
-                <div className="input-with-icon">
+                <div className="isonga-reg-input-with-icon">
                   <FontAwesomeIcon icon={faEnvelope} />
                   <input
                     type="email"
@@ -459,46 +446,42 @@ function Register() {
               </div>
 
               {/* PASSWORDS */}
-              <div className="modern-grid">
-                <div className="modern-input-group">
+              <div className="isonga-reg-grid">
+                <div className="isonga-reg-input-group">
                   <label>Password</label>
-                  <div className="input-with-icon">
-                    <div className="buyer_reg_input_wrapper">
-                      <FontAwesomeIcon icon={faLock} />
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter Password"
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                      <span className="eye-icon" onClick={togglePassword}>
-                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                      </span>
-                    </div>
+                  <div className="isonga-reg-input-with-icon isonga-reg-password-field-wrap">
+                    <FontAwesomeIcon icon={faLock} />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter Password"
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <span className="isonga-reg-eye-icon" onClick={togglePassword}>
+                      <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                    </span>
                   </div>
                 </div>
 
-                <div className="modern-input-group">
+                <div className="isonga-reg-input-group">
                   <label>Confirm Password</label>
-                  <div className="input-with-icon">
-                    <div className="buyer_reg_input_wrapper">
-                      <FontAwesomeIcon icon={faLock} />
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Repeat Password"
-                        onChange={(e) => setRepeat_Pass(e.target.value)}
-                        required
-                      />
-                      <span className="eye-icon" onClick={togglePassword}>
-                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                      </span>
-                    </div>
+                  <div className="isonga-reg-input-with-icon isonga-reg-password-field-wrap">
+                    <FontAwesomeIcon icon={faLock} />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Repeat Password"
+                      onChange={(e) => setRepeat_Pass(e.target.value)}
+                      required
+                    />
+                    <span className="isonga-reg-eye-icon" onClick={togglePassword}>
+                      <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* TERMS & CONDITIONS */}
-              <div className="modern-checkbox-wrapper">
+              <div className="isonga-reg-checkbox-wrapper">
                 <input
                   type="checkbox"
                   id="sellerAgree"
@@ -513,21 +496,25 @@ function Register() {
               </div>
 
               {/* SUBMIT BUTTON */}
-              <button type="submit" className="modern-submit-btn" disabled={loading}>
+              <button type="submit" className="isonga-reg-submit-btn" disabled={loading}>
                 {loading ? (
                   "Creating Store..."
                 ) : (
                   <>
-                    Get Started <FontAwesomeIcon icon={faChevronRight} />
+                    Get Started <FontAwesomeIcon icon={faChevronRight} style={{ marginLeft: '8px', color: '#fff' }} />
                   </>
                 )}
               </button>
 
               {/* RESPONSE ALERT MESSAGE */}
-              {message && <div className={`modern-alert-box ${message.type}`}>{message.text}</div>}
+              {message && (
+                <div className={`isonga-reg-alert-box isonga-reg-alert-${message.type}`}>
+                  {message.text}
+                </div>
+              )}
             </form>
 
-            <div className="modern-footer-link">
+            <div className="isonga-reg-footer-link">
               Already a seller? <Link to="/login">Sign In</Link>
             </div>
           </div>

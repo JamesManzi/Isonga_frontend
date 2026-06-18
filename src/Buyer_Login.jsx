@@ -11,22 +11,23 @@ function Buyer_Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
-  const [lockTime,setLockTime]=useState(null);
+  const [lockTime, setLockTime] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    if(lockTime===null||lockTime<=0) return;
-    const timer=setInterval(()=>{
-      setLockTime(prev=>{
-        if(prev<=1){
+  useEffect(() => {
+    if (lockTime === null || lockTime <= 0) return;
+    const timer = setInterval(() => {
+      setLockTime(prev => {
+        if (prev <= 1) {
           clearInterval(timer);
           return 0;
         }
-        return prev-1;
-      })
-    },1000);
-    return ()=>clearInterval(timer);
-  },[lockTime]);
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [lockTime]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (lockTime > 0) return;
@@ -44,82 +45,70 @@ function Buyer_Login() {
         localStorage.setItem("user", JSON.stringify(user));
 
         setMessage({ text: "Success! Welcome back.", type: "success" });
-        
-        // Navigate to buyer dashboard after a short delay
         setTimeout(() => navigate("/buyer_dashboard"), 1200);
 
       } else {
-  const msg = res.data.message || "Invalid credentials";
-  const lowerMsg = msg.toLowerCase();
- if (res.data.remaining) {
-    setLockTime(res.data.remaining);
-  }
-  console.log("LOGIN MESSAGE:", msg);
+        const msg = res.data.message || "Invalid credentials";
+        const lowerMsg = msg.toLowerCase();
+        
+        if (res.data.remaining) {
+          setLockTime(res.data.remaining);
+        }
+        console.log("LOGIN MESSAGE:", msg);
 
-  if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
-    navigate("/VerifyBuyerEmail", {
-      state: { email, role: "buyer" }
-    });
-    return;
-  }
-   setMessage({
-    text: msg,
-    type: "error"
-  });
-}
+        if (lowerMsg.includes("not verified") || lowerMsg.includes("email not verified")) {
+          navigate("/VerifyBuyerEmail", {
+            state: { email, role: "buyer" }
+          });
+          return;
+        }
+        setMessage({ text: msg, type: "error" });
+      }
     } catch (error) {
+      const errMsg = error.response?.data?.message || "Login failed. Please try again.";
+      console.log("CATCH MESSAGE:", errMsg);
 
-  const errMsg =
-    error.response?.data?.message ||
-    "Login failed. Please try again.";
+      if (error.response?.status === 429) {
+        setLockTime(error.response.data.remaining);
+      }
 
-  console.log("CATCH MESSAGE:", errMsg);
+      const lowerMsg = errMsg.toLowerCase();
+      if (lowerMsg.includes("not verified")) {
+        navigate("/VerifyBuyerEmail", {
+          state: { email, role: "buyer" }
+        });
+        return;
+      }
 
-  if (error.response?.status === 429) {
-    setLockTime(error.response.data.remaining);
-  }
-
-  const lowerMsg = errMsg.toLowerCase();
-
-  if (lowerMsg.includes("not verified")) {
-    navigate("/VerifyBuyerEmail", {
-      state: { email, role: "buyer" }
-    });
-    return;
-  }
-
-  setMessage({
-    text: errMsg,
-    type: "error"
-  });
-
-} finally {
-  setLoading(false);
-}
-};
+      setMessage({ text: errMsg, type: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="buyer-page">
       {loading && <div className="buyer-top-loading-bar"></div>}
 
       <div className="buyer-card-container">
+        {/* Left Side Hero Banner */}
         <div className="buyer-hero-side">
           <div className="buyer-hero-overlay"></div>
           <div className="buyer-hero-content">
-             <img 
-  src="/isonga_logo.png" 
-  alt="Isonga Market Logo" 
-  className="buyer-hero-logo"
-  style={{ width: "230px", height: "auto" }} 
-/>
-
-<p>
-  Discover trusted shops across the country with verified sellers.
-  Explore quality products and valuable assets at affordable prices.
-</p>
+            <img 
+              src="/isonga_logo.png" 
+              alt="Isonga Market Logo" 
+              className="buyer-hero-logo"
+            />
+            <h1>Isonga Market</h1>
+            <p>
+              Discover trusted shops across the country with verified sellers.
+              Explore quality products and valuable assets at affordable prices.
+            </p>
           </div>
         </div>
 
+        {/* Right Side Login Form */}
         <div className="buyer-form-side">
           <div className="buyer-form-header">
             <h2>Buyer Login</h2>
@@ -166,11 +155,9 @@ function Buyer_Login() {
               disabled={loading || lockTime > 0}
             >
               {lockTime > 0 ? (
-                  <>
-  Locked (
-  {Math.floor(lockTime / 60)}m {lockTime % 60}s
-  ) <FontAwesomeIcon icon={faLock} />
-</>
+                <>
+                  Locked ({Math.floor(lockTime / 60)}m {lockTime % 60}s) <FontAwesomeIcon icon={faLock} />
+                </>
               ) : loading ? (
                 "Verifying..."
               ) : (
@@ -185,6 +172,7 @@ function Buyer_Login() {
                 {message.text}
               </div>
             )}
+            
             <div className="buyer-register-redirect">
               New to Isonga? <Link to="/buyer_register">Create Account</Link>
             </div>

@@ -1,4 +1,4 @@
-/* Reset */
+/* RESET & GLOBAL */
 * {
   margin: 0;
   padding: 0;
@@ -10,7 +10,7 @@ body {
   background: #f4f6fb;
 }
 
-/* PAGE */
+/* PAGE WRAPPER */
 .buyer-page {
   min-height: 100vh;
   display: flex;
@@ -20,7 +20,7 @@ body {
   background: linear-gradient(135deg, #ecfeff, #f8fafc);
 }
 
-/* CARD */
+/* CARD CONTAINER */
 .buyer-card-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -52,27 +52,34 @@ body {
   position: relative;
   text-align: center;
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .buyer-hero-logo {
-  width: 70px;
+  width: 230px;
+  height: auto;
   margin-bottom: 20px;
 }
 
 .buyer-hero-content h1 {
-  font-size: 30px;
-  margin-bottom: 10px;
+  font-family: "Poppins", sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: white;
+  margin-bottom: 20px;
 }
 
 .buyer-hero-content p {
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-.buyer-hero-footer {
-  margin-top: 25px;
-  font-size: 13px;
-  opacity: 0.85;
+  font-family: "Inter", sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.9;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 600px;
 }
 
 /* FORM SIDE */
@@ -84,8 +91,11 @@ body {
 }
 
 .buyer-form-header h2 {
+  font-family: "Poppins", sans-serif;
   font-size: 25px;
+  font-weight: 700;
   margin-bottom: 8px;
+  color: #1f2937;
 }
 
 .buyer-form-header p {
@@ -94,7 +104,7 @@ body {
   margin-bottom: 25px;
 }
 
-/* INPUT */
+/* INPUTS */
 .buyer-input-group {
   margin-bottom: 18px;
 }
@@ -104,6 +114,7 @@ body {
   font-weight: 500;
   margin-bottom: 6px;
   display: block;
+  color: #374151;
 }
 
 .buyer-input-group input {
@@ -113,26 +124,43 @@ body {
   border: 1px solid #e5e7eb;
   outline: none;
   font-size: 14px;
-  transition: 0.2s;
+  color: #1f2937;
+  transition: all 0.2s ease;
 }
 
 .buyer-input-group input:focus {
   border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background: #fff;
 }
 
-/* PASSWORD */
+.buyer-input-group input:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* PASSWORD STYLING */
 .buyer-password-wrapper {
   position: relative;
 }
 
+.buyer-password-wrapper input {
+  padding-right: 40px; /* Leave space for the eye icon toggle */
+}
+
 .buyer-password-toggle {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
   color: #9ca3af;
+  transition: color 0.2s ease;
+}
+
+.buyer-password-toggle:hover {
+  color: #10b981;
 }
 
 /* OPTIONS */
@@ -146,9 +174,14 @@ body {
   font-size: 13px;
   color: #10b981;
   text-decoration: none;
+  font-weight: 500;
 }
 
-/* BUTTON */
+.buyer-form-options a:hover {
+  text-decoration: underline;
+}
+
+/* SUBMIT BUTTON */
 .buyer-main-btn {
   width: 100%;
   padding: 13px;
@@ -157,11 +190,16 @@ body {
   background: #10b981;
   color: white;
   font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
-  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
 }
 
-.buyer-main-btn:hover {
+.buyer-main-btn:hover:not(:disabled) {
   background: #059669;
 }
 
@@ -170,67 +208,94 @@ body {
   cursor: not-allowed;
 }
 
-/* ALERT */
+/* ACTION ALERTS */
 .buyer-modern-alert {
   margin-top: 15px;
-  padding: 12px;
+  padding: 12px 14px;
   border-radius: 10px;
   font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .buyer-modern-alert.success {
   background: #d1fae5;
   color: #065f46;
+  border: 1px solid #a7f3d0;
 }
 
 .buyer-modern-alert.error {
   background: #fee2e2;
   color: #991b1b;
+  border: 1px solid #fca5a5;
 }
 
-/* REGISTER */
+/* REGISTRATION REDIRECT */
 .buyer-register-redirect {
   margin-top: 20px;
   font-size: 14px;
+  text-align: center;
+  color: #4b5563;
 }
 
 .buyer-register-redirect a {
   color: #10b981;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
+  margin-left: 4px;
 }
 
-/* FOOTER */
+.buyer-register-redirect a:hover {
+  text-decoration: underline;
+}
+
+/* FOOTER BACK LINK */
 .buyer-form-footer {
   margin-top: 25px;
+  text-align: center;
   font-size: 13px;
 }
 
 .buyer-form-footer a {
   color: #6b7280;
   text-decoration: none;
+  transition: color 0.2s;
 }
 
-/* LOADING BAR */
+.buyer-form-footer a:hover {
+  color: #374151;
+  text-decoration: underline;
+}
+
+/* TOP LOADING BAR CSS FIXED */
 .buyer-top-loading-bar {
   position: fixed;
   top: 0;
   left: 0;
-  height: 3px;
+  height: 4px;
   width: 100%;
-  background: linear-gradient(90deg, #10b981, #34d399);
+  background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+  background-size: 200% 100%;
   animation: buyerLoading 1.5s infinite linear;
+  z-index: 9999;
 }
 
 @keyframes buyerLoading {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-/* RESPONSIVE */
+/* RESPONSIVE LAYOUT BREAKPOINTS */
+@media (max-width: 950px) {
+  .buyer-card-container {
+    width: 550px;
+  }
+}
+
 @media (max-width: 768px) {
   .buyer-card-container {
     grid-template-columns: 1fr;
+    width: 100%;
   }
 
   .buyer-hero-side {
@@ -238,45 +303,6 @@ body {
   }
 
   .buyer-form-side {
-    padding: 25px;
+    padding: 35px 25px;
   }
-}
-
-
-/* GLOBAL FONT */
-body {
-  font-family: "Inter", sans-serif;
-}
-
-/* HERO TITLE */
-.buyer-hero-content h1 {
-  font-family: "Poppins", sans-serif;
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.1;
-  color: white;
-  margin-bottom: 20px;
-}
-
-/* HERO PARAGRAPH */
-.buyer-hero-content p {
-  font-family: "Inter", sans-serif;
-  font-size: 1.1rem;
-  line-height: 1.9;
-  font-weight: 400;
-  color: rgba(255,255,255,0.92);
-  max-width: 600px;
-}
-
-/* FORM TITLES */
-.buyer-form-header h2 {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-}
-
-.buyer-form-header p,
-.buyer-input-group label,
-.buyer-register-redirect,
-.buyer-form-footer {
-  font-family: "Inter", sans-serif;
 }
