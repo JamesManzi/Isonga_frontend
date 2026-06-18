@@ -1,32 +1,59 @@
-/* =========================
-   GLOBAL
-========================= */
+/* ==========================================================================
+   GLOBAL STYLES & LAYOUT RESET
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 .Seller_Profile {
   max-width: 1100px;
   margin: auto;
   padding: 20px;
   font-family: "Poppins", sans-serif;
-  color: #222;
+  color: #1e293b;
+  box-sizing: border-box;
 }
 
-/* =========================
-   LOADING
-========================= */
+.Seller_Profile * {
+  box-sizing: border-box;
+}
+
+.modern-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  width: 100%;
+}
+
+/* ==========================================================================
+   BEAUTIFUL ANIMATED WAVE LOADING
+   ========================================================================== */
 .profile-beautiful-loading {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
 }
 
 .loading-card {
   background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   padding: 40px;
   border-radius: 20px;
   text-align: center;
   color: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.loading-card h2 {
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+  margin: 20px 0 5px;
+}
+
+.loading-card p {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin: 0;
 }
 
 .wave-loader span {
@@ -35,6 +62,7 @@
   height: 30px;
   margin: 0 3px;
   background: white;
+  border-radius: 4px;
   animation: wave 1.2s infinite ease-in-out;
 }
 
@@ -48,12 +76,17 @@
   50% { transform: scaleY(1.5); }
 }
 
-/* =========================
-   PROFILE HEADER
-========================= */
+/* ==========================================================================
+   PROFILE HEADER SECTION
+   ========================================================================== */
 .profile {
   text-align: center;
   margin-bottom: 30px;
+  background: white;
+  padding: 30px 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  border: 1px solid #e2e8f0;
 }
 
 .seller-image {
@@ -61,186 +94,341 @@
   height: 130px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #4facfe;
+  border: 4px solid #2563eb;
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
 .seller-image:hover {
-  transform: scale(1.05);
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
 }
 
 .profile h2 {
-  margin-top: 15px;
+  margin: 15px 0 5px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .sell {
   margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
 }
 
-/* =========================
-   BUTTONS
-========================= */
+/* ==========================================================================
+   INTERACTIVE BUTTON ACTIONS
+   ========================================================================== */
 .modern-submit-btn {
-  padding: 10px 18px;
-  border-radius: 8px;
+  padding: 10px 22px;
+  border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #4facfe, #00c6ff);
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
   cursor: pointer;
-  transition: 0.3s;
-  font-weight: 500;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.modern-submit-btn:hover {
+.modern-submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  opacity: 0.95;
+}
+
+.modern-submit-btn:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
 }
 
 .back-btn {
-  padding: 10px 18px;
-  border-radius: 8px;
-  border: none;
-  background: #ddd;
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  color: #475569;
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .back-btn:hover {
-  background: #ccc;
+  background: #e2e8f0;
+  color: #1e293b;
 }
 
-/* =========================
-   INFO SECTION
-========================= */
+/* ==========================================================================
+   BUSINESS PROFILE METADATA INFO CARD
+   ========================================================================== */
 .Seller_Profile_info {
   background: #fff;
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 25px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  border: 1px solid #e2e8f0;
 }
 
 .Seller_Profile_info p {
-  margin: 10px 0;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.Seller_Profile_info p strong {
+  color: #0f172a;
+  min-width: 80px;
+}
+
+.Seller_Profile_info p svg {
+  color: #2563eb;
+  font-size: 1.05rem;
 }
 
 .description-text {
-  margin-top: 10px;
-  color: #555;
-  line-height: 1.5;
+  margin-top: 16px !important;
+  padding-top: 16px;
+  border-top: 1px dashed #e2e8f0;
+  color: #475569 !important;
+  line-height: 1.6;
+  font-size: 0.92rem !important;
+  display: block !important;
 }
 
-/* =========================
-   GALLERY
-========================= */
+/* ==========================================================================
+   STOREFRONT IMAGE SHOWCASE GALLERY
+   ========================================================================== */
+h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 30px 0 16px;
+}
+
 .seller-files {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
 }
 
 .image-wrapper {
   position: relative;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  aspect-ratio: 1 / 1;
 }
 
 .image-wrapper img {
   width: 100%;
-  height: 150px;
+  height: 100%;
   object-fit: cover;
   cursor: pointer;
-  transition: 0.3s;
+  transition: transform 0.3s ease;
+  display: block;
 }
 
 .image-wrapper:hover img {
-  transform: scale(1.08);
+  transform: scale(1.06);
 }
 
 .delete-overlay {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(239, 68, 68, 0.9);
   border: none;
   color: white;
-  padding: 6px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* =========================
-   MODAL IMAGE VIEW
-========================= */
+.delete-overlay:hover {
+  background: #dc2626;
+  transform: scale(1.08);
+}
+
+/* ==========================================================================
+   IMAGE LIGHTBOX MODAL CONTAINER OVERLAYS
+   ========================================================================== */
 .image-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: rgba(0,0,0,0.9);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 2000;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out;
 }
 
 .full-image {
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 10px;
+  max-width: 92%;
+  max-height: 85vh;
+  border-radius: 12px;
+  object-fit: contain;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: zoomIn 0.25s ease-out;
 }
 
-/* =========================
-   REVIEW SECTION
-========================= */
+/* ==========================================================================
+   CUSTOMER REVIEW CARD BLOCKS
+   ========================================================================== */
+.reviews-section-wrapper {
+  margin-top: 40px;
+}
+
 .review-item {
   background: #fff;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #e2e8f0;
 }
 
 .review-stars {
-  color: gold;
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
 }
 
 .reply-textarea {
-  resize: none;
-  min-height: 80px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 90px;
+  transition: all 0.2s ease;
+}
+
+.reply-textarea:focus {
+  border-color: #2563eb;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .seller-reply-box {
-  margin-top: 10px;
+  margin-top: 14px;
+  background: #f8fafc;
+  padding: 14px;
+  border-radius: 10px;
+  border-left: 4px solid #2563eb;
 }
 
-/* =========================
-   MODERN FORM (EDIT MODAL)
-========================= */
-.modern-reg-container {
+/* ==========================================================================
+   MODERN SYSTEM MANAGEMENT PROFILE FORM MODAL
+   ========================================================================== */
+.modern-reg-wrapper {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.modern-reg-container-profile {
   background: #fff;
-  border-radius: 20px;
-  padding: 25px;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 550px;
+  max-height: 90vh;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modern-reg-main {
+  overflow-y: auto;
+  width: 100%;
+}
+
+.form-content-wrap {
+  padding: 32px;
+}
+
+.form-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 16px;
 }
 
 .form-header h1 {
-  margin-bottom: 5px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.form-header p {
+  color: #64748b;
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.modern-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .modern-form label {
-  font-size: 14px;
-  margin-bottom: 5px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
   display: block;
 }
 
 .input-with-icon {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: #f4f6fb;
-  padding: 10px;
-  border-radius: 8px;
+  gap: 12px;
+  background: #f8fafc;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  transition: all 0.2s ease;
+}
+
+.input-with-icon svg {
+  color: #94a3b8;
+  font-size: 0.95rem;
 }
 
 .input-with-icon input {
@@ -248,29 +436,73 @@
   outline: none;
   background: transparent;
   width: 100%;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #1e293b;
 }
 
-textarea {
+.input-with-icon:focus-within {
+  border-color: #2563eb;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.modern-input-group textarea {
   width: 100%;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  padding: 12px;
+  background: #f8fafc;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #1e293b;
+  min-height: 100px;
+  transition: all 0.2s ease;
 }
 
-/* =========================
-   PROFILE UPLOAD
-========================= */
+.modern-input-group textarea:focus {
+  border-color: #2563eb;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* ==========================================================================
+   CIRCULAR AVATAR PROFILE LOGO UPLOAD TRIGGER
+   ========================================================================== */
+.modern-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px dashed #cbd5e1;
+}
+
 .profile-circle-upload {
-  width: 110px;
-  height: 110px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: #f4f6fb;
+  background: #e2e8f0;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  margin: auto;
   overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.profile-circle-upload:hover {
+  transform: scale(1.04);
+}
+
+.profile-circle-upload svg {
+  font-size: 1.5rem;
+  color: #64748b;
 }
 
 .profile-circle-upload img {
@@ -279,59 +511,182 @@ textarea {
   object-fit: cover;
 }
 
-/* =========================
-   MULTI UPLOAD
-========================= */
+.upload-text h3 {
+  margin: 0 0 2px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.upload-text p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* ==========================================================================
+   MULTI IMAGE SELLER UPLOAD TRIGGER & PREVIEW GRID
+   ========================================================================== */
+.modern-multi-upload label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
+}
+
 .multi-upload-trigger {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  background: #eef4ff;
-  padding: 10px;
-  border-radius: 10px;
+  background: #eff6ff;
+  border: 2px dashed #bfdbfe;
+  padding: 14px;
+  border-radius: 12px;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.multi-upload-trigger:hover {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+.multi-upload-trigger svg {
+  color: #2563eb;
+  font-size: 1.1rem;
+}
+
+.multi-upload-trigger span {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #2563eb;
 }
 
 .modern-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 10px;
 }
 
 .gallery-item {
   position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
 }
 
 .gallery-item img {
   width: 100%;
-  height: 80px;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
+  display: block;
 }
 
 .gallery-item button {
   position: absolute;
-  top: 3px;
-  right: 3px;
-  background: red;
+  top: 4px;
+  right: 4px;
+  background: rgba(239, 68, 68, 0.95);
   border: none;
   color: white;
   border-radius: 50%;
-  padding: 4px;
+  width: 20px;
+  height: 20px;
+  font-size: 0.7rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+.gallery-item button:hover {
+  background: #dc2626;
+}
+
+/* Status Notifications Alert Elements */
+.modern-alert-box {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.modern-alert-box.error {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* ==========================================================================
+   ANIMATIONS STACK KEYFRAMES
+   ========================================================================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes zoomIn {
+  from { transform: scale(0.97); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================================================
+   SYSTEM HIGH RESOLUTION RESPONSIVE MEDIA BREAKPOINTS
+   ========================================================================== */
 @media (max-width: 768px) {
   .Seller_Profile {
-    padding: 10px;
+    padding: 12px;
+  }
+
+  .profile {
+    padding: 20px 12px;
+    margin-bottom: 20px;
   }
 
   .seller-image {
     width: 100px;
     height: 100px;
+  }
+
+  .profile h2 {
+    font-size: 1.35rem;
+  }
+
+  .sell {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .sell button,
+  .sell a {
+    width: 100%;
+  }
+
+  .sell a {
+    margin-left: 0 !important;
+  }
+
+  .back-btn, 
+  .modern-submit-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .seller-files {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+  }
+
+  .form-content-wrap {
+    padding: 20px;
   }
 }

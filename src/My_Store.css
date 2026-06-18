@@ -333,24 +333,40 @@
 }
 
 /* ==========================================================================
-   MODERN MANAGEMENT PORTAL WINDOW (UPDATE MODAL)
+   MODERN MANAGEMENT PORTAL WINDOW (UPDATE MODAL REPAIR)
    ========================================================================== */
 .modern-reg-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: fadeIn 0.3s ease-out;
 }
 
-.modern-reg-container {
+.modern-reg-container-store {
   width: 92%;
+  max-width: 650px;
+  max-height: 90vh;
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modern-reg-main {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  overflow-y: auto;
+  padding: 0;
 }
 
 .form-content-wrap {
@@ -385,8 +401,8 @@
 
 .modern-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
 }
 
 .modern-input-group {
@@ -412,9 +428,11 @@
   left: 14px;
   color: #94a3b8;
   font-size: 0.9rem;
+  z-index: 2;
 }
 
 .input-with-icon input,
+.input-with-icon select,
 .modern-input-group textarea {
   width: 100%;
   padding: 10px 14px 10px 40px;
@@ -435,6 +453,7 @@
 }
 
 .input-with-icon input:focus,
+.input-with-icon select:focus,
 .modern-input-group textarea:focus {
   border-color: #2563eb;
   background: white;
