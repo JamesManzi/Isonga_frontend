@@ -100,7 +100,6 @@ function Buyer_Login() {
               alt="Isonga Market Logo" 
               className="buyer-hero-logo"
             />
-            <h1>Isonga Market</h1>
             <p>
               Discover trusted shops across the country with verified sellers.
               Explore quality products and valuable assets at affordable prices.
