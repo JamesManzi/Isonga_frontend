@@ -141,7 +141,7 @@ if (!seller) {
 
       <div className="profile">
         {seller.profile && <img src={getFileUrl(seller.profile)} alt="Seller" className="seller-image" onClick={() => setSelectedImage(seller.profile)} />}
-        <p>{seller.name} Shop</p>
+        <p>{seller.name} Business</p>
       </div>
 
       <div className="Seller_Profile_info">
