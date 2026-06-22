@@ -197,8 +197,8 @@ if (loading) {
       {/* Hero */}
       <div className="Home_body">
         <div className="Home_body_text">
-          <h1>Connect Buyers And Sellers</h1>
-          <p>Buy And Sell Everywhere, Fast and Secure</p>
+          <h1><strong>Connect Buyers And Sellers</strong></h1>
+          <p><strong>Buy And Sell Everywhere, Fast and Secure</strong></p>
         </div>
         <div className="home_body_btns">
           <Link to="/buyer_login">
