@@ -45,7 +45,14 @@ function Buyer_Login() {
         localStorage.setItem("user", JSON.stringify(user));
 
         setMessage({ text: "Success! Welcome back.", type: "success" });
-        setTimeout(() => navigate("/buyer_dashboard"), 1200);
+        setTimeout(() => {
+          if(user.role==="admin"){
+            navigate("/AdminDashboard")
+          } else{
+            navigate("/buyer_dashboard")
+          }
+        },
+        1200);
 
       } else {
         const msg = res.data.message || "Invalid credentials";
