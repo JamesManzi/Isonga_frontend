@@ -6,6 +6,7 @@ import { faStar, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/fr
 import "./Home.css";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+
 function Home() {
   const [sellers, setSellers] = useState([]);
   const [filteredSellers, setFilteredSellers] = useState([]);
@@ -276,12 +277,18 @@ if (loading) {
                                   <img src={seller.profile ? getFileUrl(seller.profile) : "/placeholder.png"} alt={seller.name} className="avatar-image" />
                                 </Link>
 
-                <div className="shop-card-info">
-  <h3 className="seller-name">{seller.name} Business</h3>
+           <div className="shop-card-info">
+  <h3
+    className="seller-name"
+  >
+    {seller.name} Business
+  </h3>
 
-  <p className="seller-location">{seller.location}</p>
+  <p className="seller-location"
+  >{seller.location}</p>
 
-  <p className="seller-category">{seller.category}</p>
+  <p className="seller-category"
+  >{seller.category}</p>
 
   <div className="rating">
     {renderStars(seller.averageRating)}
