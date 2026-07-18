@@ -132,27 +132,20 @@ useEffect(() => {
 }, [modalMedia]);
 
 useEffect(() => {
-  let lastScrollY = window.scrollY;
-
-  const handleScroll = () => {
-    const navbar = document.querySelector(".Buyer_Dashboard_navbar");
-    if (!navbar) return; // Safety check
-
-    if (window.scrollY > lastScrollY) {
-      // scrolling down
-      navbar.style.transform = "translateY(-100%)";
-    } else {
-      // scrolling up
-      navbar.style.transform = "translateY(0)";
-    }
-
-    lastScrollY = window.scrollY;
-  };
-
-  window.addEventListener("scroll", handleScroll);
-
-  return () => window.removeEventListener("scroll", handleScroll);
-}, []);
+    let lastScrollY = window.scrollY;
+    const handleScroll = () => {
+      const navbar = document.querySelector(".Buyer_Dashboard_navbar");
+      if (!navbar) return;
+      if (window.scrollY > lastScrollY) {
+        navbar.style.transform = "translateY(-100%)";
+      } else {
+        navbar.style.transform = "translateY(0)";
+      }
+      lastScrollY = window.scrollY;
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   const isVideoFile = (filename) => /\.(mp4|webm|ogg|mov)$/i.test(filename);
 
   return (

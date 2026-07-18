@@ -91,7 +91,30 @@ function Home_Products() {
     }, 5000); 
     return () => clearInterval(interval);
   }, [products]);
+useEffect(() => {
+  let lastScrollY = window.scrollY;
 
+  const handleScroll = () => {
+    // 1. Change this to match your actual JSX class name
+    const navbar = document.querySelector(".View_Products_navbar");
+
+    if (!navbar) return;
+
+    if (window.scrollY > lastScrollY && window.scrollY > 100) {
+      navbar.style.transform = "translateY(-100%)";
+    } else {
+      navbar.style.transform = "translateY(0)";
+    }
+
+    lastScrollY = window.scrollY;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, []);
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredProducts(products);

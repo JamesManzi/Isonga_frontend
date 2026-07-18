@@ -35,7 +35,8 @@ body {
   left: 0;
   right: 0;
   z-index: 1000;
-  max-height: 110px; /* Restrict layout container explicitly on desktop viewports */
+  max-height: 110px;
+  transition: transform 0.3s ease-in-out;
 }
 
 .Home_brand {
@@ -44,8 +45,9 @@ body {
   gap: 10px;
 }
 
-.Home_brand img { 
-  height: 40px; 
+.Home_brand img {
+  width:120px;
+  height:auto;
 }
 
 .Home_heads h1 { 

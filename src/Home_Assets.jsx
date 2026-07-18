@@ -72,6 +72,33 @@ function Home_Assets() {
     }
   };
 
+ useEffect(() => {
+  let lastScrollY = window.scrollY;
+
+  const handleScroll = () => {
+    const navbar = document.querySelector(".Asset_Products_navbar");
+
+    if (!navbar) return;
+
+    if (window.scrollY > lastScrollY) {
+      // scrolling down
+      navbar.style.transform = "translateY(-100%)";
+    } else {
+      // scrolling up
+      navbar.style.transform = "translateY(0)";
+    }
+
+    lastScrollY = window.scrollY;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
+
+}, []);
+
   // Auto-Slider Logic (Matches My_Store)
   useEffect(() => {
     const interval = setInterval(() => {

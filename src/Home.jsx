@@ -64,6 +64,33 @@ function Home() {
     return stars;
   };
 
+  // Navbar hide/show on scroll
+useEffect(() => {
+  let lastScrollY = window.scrollY;
+
+  const handleScroll = () => {
+    const navbar = document.querySelector(".Home_navbar");
+
+    if (!navbar) return;
+
+    if (window.scrollY > lastScrollY) {
+      // scrolling down
+      navbar.style.transform = "translateY(-100%)";
+    } else {
+      // scrolling up
+      navbar.style.transform = "translateY(0)";
+    }
+
+    lastScrollY = window.scrollY;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
+
+}, []);
   // Fetch sellers
   useEffect(() => {
     const fetchSellers = async () => {
