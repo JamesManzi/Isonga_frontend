@@ -112,7 +112,10 @@ body {
   transition: transform 0.2s;
 }
 
-.home_buyer_btn { background: var(--accent); color: white; }
+.home_buyer_btn{
+  background: orange;
+  color: white;
+}
 .home_seller_btn { background: var(--primary); color: white; }
 .home_body_btns button:hover { transform: scale(1.05); }
 
