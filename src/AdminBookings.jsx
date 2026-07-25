@@ -137,7 +137,7 @@ export default AdminBookings;
 /* ---------------- STYLES ---------------- */
 
 const containerStyle = {
-  padding: "25px",
+  padding: "26px",
   maxWidth: "1100px",
   margin: "auto",
   fontFamily: "sans-serif",
